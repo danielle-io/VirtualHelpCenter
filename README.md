@@ -18,9 +18,8 @@ $ npm start
 For detailed explanation on how things work, checkout the [Nuxt.js docs](https://github.com/nuxt/nuxt.js).
 
 ## Workflow 
+workflow ~ from **YOUR** branch:
 ```bash
-# workflow ~ from _YOUR_ branch:
-
 # This will merge dev onto your branch. make sure everything is tested and working before you do the next steps. 
 # only put working code on Dev, it should be working at all times.
 $ git fetch origin git merge origin/dev
