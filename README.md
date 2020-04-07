@@ -19,9 +19,10 @@ For detailed explanation on how things work, checkout the [Nuxt.js docs](https:/
 
 ## Workflow 
 ```bash
-# workflow ~ from **YOUR** branch:
+# workflow ~ from _YOUR_ branch:
 
-# This will merge dev onto your branch. make sure everything is tested and working before you do the next steps. only put working code on Dev, it should be working at all times.
+# This will merge dev onto your branch. make sure everything is tested and working before you do the next steps. 
+# only put working code on Dev, it should be working at all times.
 $ git fetch origin git merge origin/dev
 
 $ git push origin your branch name
