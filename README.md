@@ -17,6 +17,12 @@ $ npm start
 
 For detailed explanation on how things work, checkout the [Nuxt.js docs](https://github.com/nuxt/nuxt.js).
 
+## Mongo Atlas Setup
+Instructions for Mongo Atlas:
+Once logged in via the invite link navigate to Database Access to create a profile. Save the password and username.
+After that has been accomplished head over to Network Access and click "Add IP Address" button in order to white list your ip
+When you have pulled the project on your computer navigate to the .env_example. (Follow the instructions there)
+
 ## Workflow 
 workflow ~ from **YOUR** branch:
 ```bash
