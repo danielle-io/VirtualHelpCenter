@@ -26,17 +26,17 @@ When you have pulled the project on your computer navigate to the .env_example. 
 ## Workflow 
 workflow ~ from **YOUR** branch:
 ```bash
-# This will merge dev onto your branch. make sure everything is tested and working before you do the next steps. 
-# only put working code on Dev, it should be working at all times.
-$ git fetch origin git merge origin/dev
+# This will merge master onto your branch. make sure everything is tested and working before you do the next steps. 
+# only put working code on master, it should be working at all times.
+$ git fetch origin git merge origin/master
 
 $ git push origin your branch name
 
-$ git checkout dev git merge origin/dev
+$ git checkout master git merge origin/master
 
 # this is bc the first merge only merged into ur local branch
 $ git merge your branch name
 
 # test one more time, make sure everything is working correctly. 
-$ git push origin dev
+$ git push origin master
 ```
