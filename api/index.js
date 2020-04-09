@@ -1,3 +1,7 @@
+
+// TO DO: figure out where to put this for MDL to run better
+{/* <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:400,500,700,400italic|Material+Icons"></link> */}
+
 require('dotenv').config()
 
 const express = require('express');
@@ -31,7 +35,7 @@ app.use(bodyParser.json());
 app.use(morgan("dev"));
 
 // Require API routes
-const users = require('./routes/users');
+const users = require('./routes/demo/users');
 
 // Import API Routes
 app.use(users)

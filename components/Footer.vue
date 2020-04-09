@@ -1,5 +1,5 @@
 <template>
   <footer>
-    Visit our website for more documentation : <a href="https://nuxtjs.org" target="_blank">nuxtjs.org</a>
+    For help please email : VirtualHelpCenter@uci.edu</a>
   </footer>
 </template>

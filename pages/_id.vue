@@ -1,13 +1,12 @@
 <template>
   <section class="container">
-    <img src="~assets/img/logo.png" alt="Nuxt.js Logo" class="logo" />
     <h1 class="title">
-      User
+      Home
     </h1>
     <h2 class="info">
       {{ user.name }}
     </h2>
-    <nuxt-link class="button" to="/">
+    <nuxt-link class="button" to="/testing/user_demo">
       Users
     </nuxt-link>
   </section>
