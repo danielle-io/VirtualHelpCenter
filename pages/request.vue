@@ -7,7 +7,7 @@
 
     <div class="row">
       <label>Brief one-sentence summary of the issue</label>
-      <b-form-input v-model="probDes" placeholder="Enter Problem Description" disabled=""></b-form-input>
+      <b-form-input v-model="probDes" placeholder="Enter Problem Description" disabled></b-form-input>
       <div class="mt-2">Value: {{ probDes }}</div>
     </div>
 
@@ -19,6 +19,7 @@
         placeholder="Enter something..."
         rows="6"
         max-rows="6"
+        disabled=""
       ></b-form-textarea>
       <pre class="mt-3 mb-0">{{ problem }}</pre>
     </div>
@@ -31,12 +32,13 @@
         placeholder="Enter something..."
         rows="6"
         max-rows="6"
+        disabled=""
       ></b-form-textarea>
       <pre class="mt-3 mb-0">{{ code }}</pre>
     </div>
 
     <div class="row">
-      <b-form-file v-model="file" class="mt-3" plain></b-form-file>
+      <b-form-file v-model="file" class="mt-3" plain disabled></b-form-file>
       <div class="mt-3">Selected file: {{ file ? file.name : '' }}</div>
     </div>
   </div>
@@ -44,7 +46,10 @@
 
 <script>
   import {BFormSelect, BFormInput, BFormTextarea, BFormFile} from 'bootstrap-vue'
+  import mongoose from 'mongoose'
+  import express from 'express'
 
+  
   export default {
     components: {
       'b-form-select': BFormSelect,
