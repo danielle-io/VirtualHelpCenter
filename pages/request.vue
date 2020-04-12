@@ -1,75 +1,84 @@
 <template>
-  <div class="form-container">
-    <md-field>
-      <label>Initial Value</label>
-      <md-input v-model="initial"></md-input>
-    </md-field>
+  <div class="container">
+    <div class="row">
+      <b-form-select v-model="selected" :options="options" size="sm" class="mt-3"></b-form-select>
+      <div class="mt-3">Selected: <strong>{{ selected }}</strong></div>
+    </div>
 
-    <md-field>
-      <label>Initial Value (Read Only)</label>
-      <md-input v-model="initial" readonly></md-input>
-    </md-field>
+    <div class="row">
+      <label>Brief one-sentence summary of the issue</label>
+      <b-form-input v-model="probDes" placeholder="Enter Problem Description" disabled=""></b-form-input>
+      <div class="mt-2">Value: {{ probDes }}</div>
+    </div>
 
-    <md-field>
-      <label>Type here!</label>
-      <md-input v-model="type"></md-input>
-      <span class="md-helper-text">Helper text</span>
-    </md-field>
+    <div class="row">
+      <label>Description of the issue</label>
+      <b-form-textarea
+        id="textarea"
+        v-model="problem"
+        placeholder="Enter something..."
+        rows="6"
+        max-rows="6"
+      ></b-form-textarea>
+      <pre class="mt-3 mb-0">{{ problem }}</pre>
+    </div>
 
-    <md-field>
-      <label>With label</label>
-      <md-input v-model="withLabel" placeholder="A nice placeholder"></md-input>
-    </md-field>
+    <div class="row">
+      <label>Paste your code below or attach a file</label>
+      <b-form-textarea
+        id="textarea"
+        v-model="code"
+        placeholder="Enter something..."
+        rows="6"
+        max-rows="6"
+      ></b-form-textarea>
+      <pre class="mt-3 mb-0">{{ code }}</pre>
+    </div>
 
-    <md-field md-inline>
-      <label>Inline</label>
-      <md-input v-model="inline"></md-input>
-    </md-field>
-
-    <md-field>
-      <label>Number</label>
-      <md-input v-model="number" type="number"></md-input>
-    </md-field>
-
-    <md-field>
-      <label>Paste some code here!</label>
-      <md-textarea v-model="textarea"></md-textarea>
-    </md-field>
-
-    <md-field>
-      <label>A longer description of the problem</label>
-      <md-textarea v-model="autogrow" md-autogrow></md-textarea>
-    </md-field>
-
-    <md-field>
-      <label>Disabled</label>
-      <md-input v-model="disabled" disabled></md-input>
-    </md-field>
+    <div class="row">
+      <b-form-file v-model="file" class="mt-3" plain></b-form-file>
+      <div class="mt-3">Selected file: {{ file ? file.name : '' }}</div>
+    </div>
   </div>
 </template>
 
 <script>
+  import {BFormSelect, BFormInput, BFormTextarea, BFormFile} from 'bootstrap-vue'
+
   export default {
-    name: 'TextFields',
+    components: {
+      'b-form-select': BFormSelect,
+      'b-form-input' : BFormInput,
+      'b-form-textarea' : BFormTextarea,
+      'b-form-file' : BFormFile
+    },
     data: () => ({
-      initial: 'Initial Value',
-      type: null,
-      withLabel: null,
-      inline: null,
-      number: null,
-      textarea: null,
-      autogrow: null,
-      disabled: null
+      problem: '',
+      probDes: '',
+      code: '',
+      file: null,
+      selected: null,
+        options: [
+          { value: null, text: 'Please select a class' },
+          { value: 'a', text: 'This is First option' },
+          { value: 'b', text: 'Selected Option' },
+          { value: { C: '3PO' }, text: 'This is an option with object value' },
+          { value: 'd', text: 'This one is disabled', disabled: true }
+        ]
     })
   }
 </script>
 
 
 <style>
-.form-container 
-{
-  margin-left: 30px;
-  margin-right:30px;
-  margin-top:20px;
+.container {
+  width: 100%;
+  padding: 100px 0;
+  text-align: center;
 }
+
+.row{
+  border-color: #448aff;
+}
+
 </style>
