@@ -4,31 +4,33 @@
       <h1 class="title">Testing Home Page</h1>
     </section>
 
-    <md-card>
-      <md-card-header>
-        <md-card-header-text>
-          <div class="md-title">User Demo</div>
-          <div class="md-subhead">Click here to go to the previous home page with a user demo</div>
-        </md-card-header-text>
-      </md-card-header>
+    <div class="card-row">
+      <md-card>
+        <md-card-header>
+          <md-card-header-text>
+            <div class="md-title">User Demo</div>
+            <div class="md-subhead">Click here to go to the previous home page with a user demo</div>
+          </md-card-header-text>
+        </md-card-header>
 
-      <md-card-actions>
-        <nuxt-link to="/testing/user_demo">User Demo</nuxt-link>
-      </md-card-actions>
-    </md-card>
+        <md-card-actions>
+          <nuxt-link to="/testing/user_demo">User Demo</nuxt-link>
+        </md-card-actions>
+      </md-card>
 
-     <md-card>
-      <md-card-header>
-        <md-card-header-text>
-          <div class="md-title">Ticket Demo</div>
-          <div class="md-subhead">Click here to go to the ticket demo! </div>
-        </md-card-header-text>
-      </md-card-header>
+      <md-card>
+        <md-card-header>
+          <md-card-header-text>
+            <div class="md-title">Ticket Demo</div>
+            <div class="md-subhead">Click here to go to the ticket demo!</div>
+          </md-card-header-text>
+        </md-card-header>
 
-      <md-card-actions>
-        <nuxt-link to="/ticketUI">Ticket Demo</nuxt-link>
-      </md-card-actions>
-    </md-card>
+        <md-card-actions>
+          <nuxt-link to="/ticketUI">Ticket Demo</nuxt-link>
+        </md-card-actions>
+      </md-card>
+    </div>
   </div>
 </template>
 
@@ -48,7 +50,6 @@ import "vue-material/dist/theme/default.css";
 
 Vue.config.productionTip = false;
 Vue.use(VueMaterial);
-
 
 export default {
   async asyncData() {
@@ -79,8 +80,12 @@ export default {
 
 .md-card {
   width: 320px;
-  margin: 24px;
+  margin: 14px;
   display: inline-block;
   vertical-align: top;
+}
+
+.card-row{
+  display: inline-block;
 }
 </style>
