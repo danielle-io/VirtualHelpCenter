@@ -3,11 +3,7 @@
     <h1 class="title">
       Home
     </h1>
-    <h2 class="info">
-      {{ ticket.owner }}
-    </h2>
     <nuxt-link class="button" to="/testing/user_demo">
-      Users
     </nuxt-link>
   </section>
 </template>
