@@ -1,6 +1,7 @@
+var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-var TicketSchema = new Schema({
+const TicketSchema = new mongoose.Schema({
     status: {
         type: String,
         enum: ["open", "closed", "unresolved", "in progress"],
@@ -18,8 +19,8 @@ var TicketSchema = new Schema({
         max: 2000,
         required: true
     },
-    owner: Schema.Types.ObjectId,
-    acceptedBy: Schema.Types.ObjectId
+    owner: String,
+    acceptedBy: String
 });
 
-var TicketModel = mongoose.model('TicketModel', TicketSchema);
+module.exports = ticket = mongoose.model('ticket', TicketSchema);

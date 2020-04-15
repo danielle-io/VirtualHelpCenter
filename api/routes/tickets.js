@@ -4,33 +4,18 @@ const router = Router()
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-var ticketSchema = new Schema({
-  status:  {
-    type: String,
-    enum: ['Open', 'Closed', 'In Progress', 'Unresolved']
-  },
-  codeSnippet: String,
-  questions:   [String],
-  attachments: [String],
-  oneLineOverview: String,
-  longerDescription: String,
-  owner: String,
-  acceptedBy: String,
-  timeSubmitted: String,
-});
-
-var Ticket = mongoose.model('Ticket', ticketSchema);
+const TicketModel = require('../model/ticket')
 
 /* GET tickets listing. */
 router.get('/tickets', function (req, res, next) {
-    Ticket.find(function (err, tickets) {
+    TicketModel.find({}, function (err, tickets) {
         if (err) return console.error(err);
         res.send(tickets);
     })
 })
 
 router.post('/insertTicket',function(req, res, next) {
-    let ticketData = new Ticket(req.body);
+    let ticketData = new TicketModel(req.body);
     console.log('Ticket data before insert');
     console.log(ticketData);
     console.log('============');
