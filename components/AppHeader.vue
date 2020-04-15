@@ -1,6 +1,5 @@
 <template>
 
-
   <md-tabs class="center-tabs" md-sync-route>
     <md-tab id="tab-home" md-label="Home" to="/"></md-tab>
 
@@ -9,7 +8,6 @@
     <md-tab id="tab-help" md-label="Help" to="../help"></md-tab>
   </md-tabs>
 </template>
-
 
 
 <script>
