@@ -14,7 +14,7 @@
           </md-card-header>
 
           <md-card-actions>
-            <!-- <nuxt-link to="/testing/user_demo">User Demo</nuxt-link> -->
+            <nuxt-link to="/testing/user_demo">User Demo</nuxt-link>
           </md-card-actions>
         </md-card>
 
