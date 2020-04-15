@@ -55,7 +55,11 @@ export default {
     return {
       title: "Tickets"
     };
-  }
+  },
+  async fetch ({ store, params }){
+    await store.dispatch('GET_TICKETS');
+    console.log(store.state.tickets.list)
+}
 };
 </script>
 
