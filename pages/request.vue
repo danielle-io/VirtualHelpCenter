@@ -44,7 +44,8 @@
 
 <script>
   import {BFormSelect, BFormInput, BFormTextarea, BFormFile} from 'bootstrap-vue'
-  
+  import axios from "~/plugins/axios"
+
   export default {
     components: {
       'b-form-select': BFormSelect,
@@ -64,9 +65,15 @@
           { value: 'b', text: 'Selected Option' },
           { value: { C: '3PO' }, text: 'This is an option with object value' },
           { value: 'd', text: 'This one is disabled', disabled: true }
-        ]
+        ],
+      users: []
     }),
-    
+    async asyncData({params, error}) {
+      const res = await axios.get("/api/users");
+      console.log(res);
+      let {data} = await axios.get("/api/users");
+      return {users: data};
+    }
   }
 </script>
 
