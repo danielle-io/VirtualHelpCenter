@@ -12,6 +12,3 @@ axios.post('/api/insertTicket',
     owner: 'Johnny John',
     acceptedBy: 'General Pattis'
 });
-
-
-axios.get
