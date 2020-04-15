@@ -13,8 +13,8 @@ var ticketSchema = new Schema({
   longerDescription: String,
   owner: String,
   acceptedBy: String,
-  timeSubmitted: String,
 },
-{ collection: 'Ticket' });
+{ timestamps: true,
+  collection: 'Ticket' });
 
 module.exports = mongoose.model('Ticket', ticketSchema);

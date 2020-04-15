@@ -6,7 +6,7 @@ const router = Router()
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-const TicketModel = require('../model/ticket')
+// const TicketModel = require('../model/ticket')
 
 /* GET tickets listing. */
 router.get('/tickets', function (req, res, next) {
