@@ -30,6 +30,21 @@
           <nuxt-link to="/ticketUI">Ticket Demo</nuxt-link>
         </md-card-actions>
       </md-card>
+
+            <md-card>
+        <md-card-header>
+          <md-card-header-text>
+            <div class="md-title">Ticket Display</div>
+            <div class="md-subhead">Click here to See a display of the tickets</div>
+          </md-card-header-text>
+        </md-card-header>
+
+        <md-card-actions>
+          <nuxt-link to="/listTickets">Ticket Display</nuxt-link>
+        </md-card-actions>
+      </md-card>
+
+
     </div>
   </div>
 </template>
