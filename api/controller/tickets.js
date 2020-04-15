@@ -3,21 +3,16 @@ var Ticket = require('../model/tickets.js');
 const { Router } = require('express')
 const router = Router()
 
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
-
-//const TicketModel = require('../model/ticket')
-
 /* GET tickets listing. */
 router.get('/tickets', function (req, res, next) {
-    TicketModel.find({}, function (err, tickets) {
+    Ticket.find(function (err, tickets) {
         if (err) return console.error(err);
         res.send(tickets);
     })
 })
 
 router.post('/insertTicket',function(req, res, next) {
-    let ticketData = new TicketModel(req.body);
+    let ticketData = new Ticket(req.body);
     console.log('Ticket data before insert');
     console.log(ticketData);
     console.log('============');
@@ -25,7 +20,7 @@ router.post('/insertTicket',function(req, res, next) {
         res.send(item);
     })
     .catch(err => {
-        res.status(400).send("unable to save to database");
+        res.status(400).send(err);
     });
 })
 
