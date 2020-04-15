@@ -16,6 +16,19 @@
         <nuxt-link to="/testing/user_demo">User Demo</nuxt-link>
       </md-card-actions>
     </md-card>
+
+     <md-card>
+      <md-card-header>
+        <md-card-header-text>
+          <div class="md-title">Ticket Demo</div>
+          <div class="md-subhead">Click here to go to the ticket demo! </div>
+        </md-card-header-text>
+      </md-card-header>
+
+      <md-card-actions>
+        <nuxt-link to="/ticketUI">Ticket Demo</nuxt-link>
+      </md-card-actions>
+    </md-card>
   </div>
 </template>
 

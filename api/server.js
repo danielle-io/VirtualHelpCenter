@@ -36,9 +36,11 @@ app.use(morgan("dev"));
 
 // Require API routes
 const users = require('./routes/demo/users');
+const tickets = require('./controller/tickets');
 
 // Import API Routes
 app.use(users)
+app.use(tickets);
 
 // Export the server middleware
 module.exports = {
