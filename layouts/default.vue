@@ -1,4 +1,3 @@
-// Tabs
 <template>
   <div>
     <AppHeader/>

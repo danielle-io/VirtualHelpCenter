@@ -1,9 +1,9 @@
 <template>
-  <section class="container">
+  <section class="ticket-container">
     <div class="topElement">
-      <h1 class="title">Ticket Display</h1>
-      <!-- <ul class="users"> -->
-      <div v-for="(thing, index) in tickets" :key="index" class="tickets">
+      <!-- <h1 class="title">Ticket Display</h1> -->
+      <h4>Total Tickets: {{tickets.length}}</h4>
+      <div v-for="(item, index) in tickets" :key="index" class="tickets">
         <md-card>
           <md-card-header>
             <div class="md-title">Ticket</div>
@@ -11,12 +11,12 @@
 
           <div class="md-card-content">
             <strong>Student:</strong>
-            {{ thing.owner }}
+            {{ item.owner }}
           </div>
 
           <div class="md-card-content">
             <strong>Status:</strong>
-            {{ thing.status }}
+            {{ item.status }}
           </div>
           <div class="md-card-content">
             <strong>Questions:</strong>
@@ -25,19 +25,16 @@
           <div
             class="md-card-content"
             style="margin-left: 25px;"
-            v-for="(question, index) in thing.questions"
+            v-for="(question, index) in item.questions"
             :key="index"
           >
             <strong>{{index + 1}}.</strong>
-            {{ thing.questions[index] }}
+            {{ item.questions[index] }}
           </div>
 
-          <!-- <div class="md-subhead">Questions: {{ thing.questions }}</div> -->
         </md-card>
 
-        <!-- <nuxt-link :to="{ status: 'id', params: { ststus: index }}">{{ user.name }}</nuxt-link> -->
       </div>
-      <!-- </ul> -->
     </div>
   </section>
 </template>
@@ -63,14 +60,15 @@ export default {
 </script>
 
 <style scoped>
-.container {
+.ticket-container {
   margin: 0;
   width: 100%;
-  padding: 100px 0;
+  margin-top: 30px;
   text-align: center;
+  justify-content: center;
 }
 .title {
-  margin: 30px 0;
+  /* margin: 30px 0; */
 }
 .users {
   list-style: none;
@@ -93,6 +91,9 @@ export default {
   margin: 14px;
   display: inline-block;
   vertical-align: top;
+}
+.topElement{
+  margin-top: 100px;
 }
 
 .card-row {
