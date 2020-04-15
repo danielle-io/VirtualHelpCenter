@@ -53,26 +53,22 @@
       'b-form-textarea' : BFormTextarea,
       'b-form-file' : BFormFile
     },
-    data: () => ({
-      problem: '',
-      probDes: '',
-      code: '',
-      file: null,
-      selected: null,
+    data(){
+      return {
+        problem: 'example',
+        probDes: '',
+        code: '',
+        file: null,
+        selected: null,
         options: [
           { value: null, text: 'Please select a class' },
-          { value: 'a', text: 'This is First option' },
-          { value: 'b', text: 'Selected Option' },
-          { value: { C: '3PO' }, text: 'This is an option with object value' },
-          { value: 'd', text: 'This one is disabled', disabled: true }
-        ],
-      users: []
-    }),
-    async asyncData({params, error}) {
-      const res = await axios.get("/api/users");
-      console.log(res);
-      let {data} = await axios.get("/api/users");
-      return {users: data};
+        ]
+      }
+    } ,
+    async asyncData() {
+      let students = await axios.get("/api/students");
+      let users = await axios.get("/api/users");
+      let staff = await axios.get("/api/staffs");
     }
   }
 </script>

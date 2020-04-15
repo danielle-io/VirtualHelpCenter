@@ -1,7 +1,7 @@
 var UserModel = require('../model/users');
 
-const {Router} = require('express')
-const router = Router()
+const {Router} = require('express');
+const router = Router();
 
 //GET User Listing
 router.get('/users',(req,res,next) => {
@@ -25,14 +25,14 @@ router.get('/users',(req,res,next) => {
 //     });
 // })
 
-// //GET user by id
-// router.get('/user/"id', (req, res, next) => {
-//     const id = parseInt(req.params.id)
-//     if (id >= 0 && id < user.length){
-//         res.json(users[id])
-//     } else{
-//         res.sendStatus(404)
-//     }
-// })
+//GET user by id
+router.get('/user/:id', (req, res, next) => {
+    const id = parseInt(req.params.id)
+    if (id >= 0 && id < user.length){
+        res.json(users[id])
+    } else{
+        res.sendStatus(404)
+    }
+})
 
 module.exports = router
