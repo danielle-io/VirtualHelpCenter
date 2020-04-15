@@ -39,10 +39,7 @@ module.exports = {
   },
   serverMiddleware: [
     // API middleware
-<<<<<<< HEAD
-    '~/api/index.js',
-=======
     '~/api/server.js'
->>>>>>> cee29fe2eeac13111eb4d4a574e855c2b1522487
+
   ]
 }

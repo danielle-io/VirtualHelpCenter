@@ -24,7 +24,7 @@
     "express": "^4.16.4",
     "fs": "0.0.1-security",
     "module": "^1.2.5",
-    "mongoose": "^5.9.7",
+    "mongoose": "^5.9.9",
     "morgan": "^1.10.0",
     "multer": "^1.4.2",
     "net": "^1.0.2",
