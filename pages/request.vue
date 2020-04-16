@@ -91,16 +91,14 @@
     },
     //had to rename function created because I couldnt access options property
     async created() {
-      let student = await axios.get("/api/students/", {
-        params: {
-          id: "5e927be91c9d44000027d563"
-        }
-      });
+      var id = "5e927be91c9d44000027d563";
+      let student = await axios.get("/api/students/"+id);
       let users = await axios.get("/api/users");
-      // students.data[0].classes.forEach(element => {
-      //   var value = element.class.dep +" "+ element.class.courseNum.toString()
-      //   this.options.push({value: value, text: value})
-      // });
+      console.log(student.data)
+      student.data.classes.forEach(element => {
+        var value = element.class.dep +" "+ element.class.courseNum.toString()
+        this.options.push({value: value, text: value})
+      });
     }
   }
 </script>
