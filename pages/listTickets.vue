@@ -1,10 +1,14 @@
 <template>
   <section class="ticket-container">
     <div class="topElement">
-      <!-- <h1 class="title">Ticket Display</h1> -->
-      <h4>Total Tickets: {{tickets.length}}</h4>
-      <div v-for="(item, index) in tickets" :key="index" class="tickets">
-        <md-card>
+        <h1 class="title">Ticket Display</h1>
+        <h4>Total Tickets: {{tickets.length}}</h4>
+      <div class = "row justify-content-center">
+        <div class = "col">
+        
+          <h4>Open Tickets</h4>
+        <div v-for="(item, index) in tickets" :key="index" class="tickets" v-if= "item.status === 'Open'">
+          <md-card>
           <md-card-header>
             <div class="md-title">Ticket</div>
           </md-card-header>
@@ -23,18 +27,54 @@
           </div>
 
           <div
-            class="md-card-content"
-            style="margin-left: 25px;"
-            v-for="(question, index) in item.questions"
-            :key="index"
-          >
+            class="md-card-content" style="margin-left: 25px;" v-for="(question, index) in item.questions" :key="index">
             <strong>{{index + 1}}.</strong>
             {{ item.questions[index] }}
           </div>
 
         </md-card>
+        </div>
+        </div>
+        <div class = "col">
+          <h4>In Progress</h4>
+          <div v-for="(item, index) in tickets" :key="index" class="tickets" v-if= "item.status === 'In Progress'">
+          <md-card>
+          <md-card-header>
+            <div class="md-title">Ticket</div>
+          </md-card-header>
 
+          <div class="md-card-content">
+            <strong>Student:</strong>
+            {{ item.owner }}
+          </div>
+
+          <div class="md-card-content">
+            <strong>Status:</strong>
+            {{ item.status }}
+          </div>
+          <div class="md-card-content">
+            <strong>Questions:</strong>
+          </div>
+
+          <div
+            class="md-card-content" style="margin-left: 25px;" v-for="(question, index) in item.questions" :key="index">
+            <strong>{{index + 1}}.</strong>
+            {{ item.questions[index] }}
+          </div>
+
+        </md-card>
+        </div>
+        </div>
+        <div class = "col">
+          <h4>Closed</h4>
+        </div>
+        <div class = "col">
+          <h4>Unresolved</h4>
+        </div>
       </div>
+        
+      
+      
     </div>
   </section>
 </template>
@@ -54,8 +94,10 @@ export default {
   head() {
     return {
       title: "Tickets"
-    };
+    }
   }
+
+
 };
 </script>
 
