@@ -1,16 +1,19 @@
 <template>
   <div class="container">
+    <!-- Select Classes -->
     <div class="row">
       <b-form-select v-model="selected" :options="options" size="sm" class="mt-3"></b-form-select>
       <div class="mt-3">Selected: <strong>{{ selected }}</strong></div>
     </div>
 
+    <!-- One Sentence Summary -->
     <div class="row">
       <label>Brief one-sentence summary of the issue</label>
       <b-form-input v-model="probDes" placeholder="Enter Problem Description" :disabled='isDisabled'></b-form-input>
       <div class="mt-2">Value: {{ probDes }}</div>
     </div>
 
+    <!-- Longer Description -->
     <div class="row">
       <label>Description of the issue</label>
       <b-form-textarea
@@ -24,6 +27,7 @@
       <pre class="mt-3 mb-0">{{ problem }}</pre>
     </div>
 
+    <!-- Addition of Code -->
     <div class="row">
       <label>Paste your code below or attach a file</label>
       <b-form-textarea
@@ -37,16 +41,22 @@
       <pre class="mt-3 mb-0">{{ code }}</pre>
     </div>
 
+    <!-- attatched file -->
     <div class="row">
       <b-form-file v-model="file" class="mt-3" plain :disabled='isDisabled'></b-form-file>
       <div class="mt-3">Selected file: {{ file ? file.name : '' }}</div>
+    </div>
+
+    <!-- submit ticket -->
+    <div class="row">
+      <b-button variant="outline-primary">Submit</b-button>
     </div>
   </div>
 </template>
 
 <script>
   import Vue from "vue";
-  import {BFormSelect, BFormInput, BFormTextarea, BFormFile} from 'bootstrap-vue'
+  import {BFormSelect, BFormInput, BFormTextarea, BFormFile, BButton} from 'bootstrap-vue'
   import axios from "~/plugins/axios"
 
   export default {
@@ -54,7 +64,8 @@
       'b-form-select': BFormSelect,
       'b-form-input' : BFormInput,
       'b-form-textarea' : BFormTextarea,
-      'b-form-file' : BFormFile
+      'b-form-file' : BFormFile,
+      'b-button' : BButton
     },
     head(){
       return{
@@ -80,12 +91,16 @@
     },
     //had to rename function created because I couldnt access options property
     async created() {
-      let students = await axios.get("/api/students");
-      let users = await axios.get("/api/users");
-      students.data[0].classes.forEach(element => {
-        var value = element.class.dep +" "+ element.class.courseNum.toString()
-        this.options.push({value: value, text: value})
+      let student = await axios.get("/api/students/", {
+        params: {
+          id: "5e927be91c9d44000027d563"
+        }
       });
+      let users = await axios.get("/api/users");
+      // students.data[0].classes.forEach(element => {
+      //   var value = element.class.dep +" "+ element.class.courseNum.toString()
+      //   this.options.push({value: value, text: value})
+      // });
     }
   }
 </script>
