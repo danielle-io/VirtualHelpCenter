@@ -7,7 +7,7 @@
 
     <div class="row">
       <label>Brief one-sentence summary of the issue</label>
-      <b-form-input v-model="probDes" placeholder="Enter Problem Description" ></b-form-input>
+      <b-form-input v-model="probDes" placeholder="Enter Problem Description" :disabled='isDisabled'></b-form-input>
       <div class="mt-2">Value: {{ probDes }}</div>
     </div>
 
@@ -19,6 +19,7 @@
         placeholder="Enter something..."
         rows="6"
         max-rows="6"
+        :disabled='isDisabled'
       ></b-form-textarea>
       <pre class="mt-3 mb-0">{{ problem }}</pre>
     </div>
@@ -31,12 +32,13 @@
         placeholder="Enter something..."
         rows="6"
         max-rows="6"
+        :disabled='isDisabled'
       ></b-form-textarea>
       <pre class="mt-3 mb-0">{{ code }}</pre>
     </div>
 
     <div class="row">
-      <b-form-file v-model="file" class="mt-3" plain></b-form-file>
+      <b-form-file v-model="file" class="mt-3" plain :disabled='isDisabled'></b-form-file>
       <div class="mt-3">Selected file: {{ file ? file.name : '' }}</div>
     </div>
   </div>
@@ -71,15 +73,19 @@
         ]
       }
     },
+    computed:{
+      isDisabled: function(){
+        return !this.selected;
+      }
+    },
+    //had to rename function created because I couldnt access options property
     async created() {
       let students = await axios.get("/api/students");
       let users = await axios.get("/api/users");
-      let staff = await axios.get("/api/staffs");
       students.data[0].classes.forEach(element => {
         var value = element.class.dep +" "+ element.class.courseNum.toString()
         this.options.push({value: value, text: value})
       });
-      console.log(this.options);
     }
   }
 </script>
