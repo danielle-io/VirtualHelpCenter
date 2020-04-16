@@ -92,6 +92,7 @@
     //had to rename function created because I couldnt access options property
     async created() {
       var id = "5e927be91c9d44000027d563";
+      // var id = "5e98ac481c9d440000f7acd3";
       let student = await axios.get("/api/students/"+id);
       let users = await axios.get("/api/users");
       console.log(student.data)

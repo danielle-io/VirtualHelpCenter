@@ -13,9 +13,8 @@ router.get('/students',(req,res,next) => {
 
 // GET student by id
 router.get('/students/:id', (req, res, next) => {
-    // const id = parseInt(req.params.id);
-    var id = "5e927be91c9d44000027d563"
-    StudentModel.findById(id, (err, student)=>{
+    const ids = req.params.id;
+    StudentModel.findById(ids, (err, student)=>{
         res.send(student);
     });
 })
