@@ -43,6 +43,7 @@
 </template>
 
 <script>
+  import Vue from "vue";
   import {BFormSelect, BFormInput, BFormTextarea, BFormFile} from 'bootstrap-vue'
   import axios from "~/plugins/axios"
 
@@ -53,9 +54,14 @@
       'b-form-textarea' : BFormTextarea,
       'b-form-file' : BFormFile
     },
+    head(){
+      return{
+        title: 'Ask Question'
+      }
+    },
     data(){
       return {
-        problem: 'example',
+        problem: '',
         probDes: '',
         code: '',
         file: null,
@@ -64,11 +70,16 @@
           { value: null, text: 'Please select a class' },
         ]
       }
-    } ,
-    async asyncData() {
+    },
+    async created() {
       let students = await axios.get("/api/students");
       let users = await axios.get("/api/users");
       let staff = await axios.get("/api/staffs");
+      students.data[0].classes.forEach(element => {
+        var value = element.class.dep +" "+ element.class.courseNum.toString()
+        this.options.push({value: value, text: value})
+      });
+      console.log(this.options);
     }
   }
 </script>
