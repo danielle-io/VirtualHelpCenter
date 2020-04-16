@@ -9,6 +9,7 @@ axios.post('/api/insertTicket',
     attachments: ['attachment1'],
     oneLineOverview: 'im having issues',
     longerDescription: 'seriously j+1 doesnt works',
-    owner: 'Jessica Imthirtyfour',
+    owner: 'Robin Hood',
     acceptedBy: 'General Pattis'
 });
+

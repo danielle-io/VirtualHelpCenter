@@ -36,6 +36,7 @@
 
       </div>
     </div>
+    
   </section>
 </template>
 
@@ -66,9 +67,6 @@ export default {
   margin-top: 30px;
   text-align: center;
   justify-content: center;
-}
-.title {
-  /* margin: 30px 0; */
 }
 .users {
   list-style: none;
