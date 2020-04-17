@@ -87,7 +87,6 @@
     methods: {
       //users classes show up as options
       loadClasses: function (classes){
-        console.log(classes)
         var text = classes.dep +" "+ classes.courseNum
         this.classes.push({value: text, text: text})
       }
