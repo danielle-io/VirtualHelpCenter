@@ -3,7 +3,7 @@
   <md-tabs class="center-tabs" md-sync-route>
     <md-tab id="tab-home" md-label="Home" to="/"></md-tab>
 
-    <md-tab id="tab-request" md-label="Request" to="../request"></md-tab>
+    <md-tab id="tab-request" md-label="Request" :to="'request/'+id"></md-tab>
 
     <md-tab id="tab-help" md-label="Help" to="../help"></md-tab>
   </md-tabs>
@@ -18,7 +18,13 @@ import "vue-material/dist/theme/default.css";
 
 Vue.config.productionTip = false;
 Vue.use(VueMaterial);
-export default {};
+export default {
+  data (){
+    return {
+      id: "5e927be91c9d44000027d563"
+    }
+  }
+};
 </script>
 
 

@@ -8,11 +8,8 @@ mongoose.modelSchemas = {};
 
 const StudentSchema = new Schema({
     classes: [{
-        class: {
-            dep: String,
-            courseNum: Number
-        },
-        section: Number
+        class: {},
+        section: Object
     }]
 },
 {collection: 'Student'});

@@ -13,12 +13,10 @@ router.get('/staffs', (req,res,next) =>{
 
 //GET staff by id
 router.get('/staffs/:id', (req, res, next) => {
-    const id = parseInt(req.params.id);
-    if(id >= 0 && id <staff.length){
-        res.json(staff[id]);
-    } else{
-        res.sendStatus(404);
-    }
+    const ids = req.params.id;
+    StaffModel.findById(ids, (err, staff)=>{
+        res.send(staff);
+    });
 });
 
 module.exports = router;

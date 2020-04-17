@@ -2,7 +2,7 @@
   <div class="container">
     <!-- Select Classes -->
     <div class="row">
-      <b-form-select v-model="selected" :options="options" size="sm" class="mt-3"></b-form-select>
+      <b-form-select v-model="selected" :options="classes" size="sm" class="mt-3"></b-form-select>
       <div class="mt-3">Selected: <strong>{{ selected }}</strong></div>
     </div>
 
@@ -79,9 +79,15 @@
         code: '',
         file: null,
         selected: null,
-        options: [
-          { value: null, text: 'Please select a class' },
+        classes: [
+          { value: null, text: 'Please select a class:' },
         ]
+      }
+    },
+    methods: {
+      //users classes show up as options
+      loadClasses: function (classes){
+        console.log(classes)
       }
     },
     computed:{
@@ -89,17 +95,13 @@
         return !this.selected;
       }
     },
-    //had to rename function created because I couldnt access options property
+
+    //had to rename function "created" because I couldnt access "options" property
     async created() {
-      var id = "5e927be91c9d44000027d563";
-      // var id = "5e98ac481c9d440000f7acd3";
-      let student = await axios.get("/api/students/"+id);
+      console.log(this.$route.params.id);
+      let student = await axios.get("/api/students/"+this.$route.params.id);
       let users = await axios.get("/api/users");
-      console.log(student.data)
-      student.data.classes.forEach(element => {
-        var value = element.class.dep +" "+ element.class.courseNum.toString()
-        this.options.push({value: value, text: value})
-      });
+      console.log(student)
     }
   }
 </script>
@@ -112,8 +114,5 @@
   text-align: center;
 }
 
-.row{
-  border-color: #448aff;
-}
 
 </style>
