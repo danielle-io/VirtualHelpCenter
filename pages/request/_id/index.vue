@@ -88,6 +88,8 @@
       //users classes show up as options
       loadClasses: function (classes){
         console.log(classes)
+        var text = classes.dep +" "+ classes.courseNum
+        this.classes.push({value: text, text: text})
       }
     },
     computed:{
@@ -98,10 +100,11 @@
 
     //had to rename function "created" because I couldnt access "options" property
     async created() {
-      console.log(this.$route.params.id);
       let student = await axios.get("/api/students/"+this.$route.params.id);
       let users = await axios.get("/api/users");
-      console.log(student)
+      student.data.classes.forEach(classes => {
+        this.loadClasses(classes)
+      });
     }
   }
 </script>
