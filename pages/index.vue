@@ -1,21 +1,67 @@
 <template>
-  <div>
+  <div class="nav">
     <section class="container">
       <h1 class="title">Testing Home Page</h1>
     </section>
+    <div class="card-container">
+      <div class="Row card-row">
+        <md-card>
+          <md-card-header>
+            <md-card-header-text>
+              <div class="md-title">User Demo</div>
+              <div class="md-subhead">Click here to go to the previous home page with a user demo</div>
+            </md-card-header-text>
+          </md-card-header>
 
-    <md-card>
-      <md-card-header>
-        <md-card-header-text>
-          <div class="md-title">User Demo</div>
-          <div class="md-subhead">Click here to go to the previous home page with a user demo</div>
-        </md-card-header-text>
-      </md-card-header>
+          <md-card-actions>
+            <nuxt-link to="/testing/user_demo">User Demo</nuxt-link>
+          </md-card-actions>
+        </md-card>
 
-      <md-card-actions>
-        <nuxt-link to="/testing/user_demo">User Demo</nuxt-link>
-      </md-card-actions>
-    </md-card>
+        <md-card>
+          <md-card-header>
+            <md-card-header-text>
+              <div class="md-title">Ticket Insert Demo</div>
+              <div class="md-subhead">Click here to go to the ticket insert demo!</div>
+            </md-card-header-text>
+          </md-card-header>
+
+          <md-card-actions>
+            <nuxt-link to="/ticketUI">Ticket Demo</nuxt-link>
+          </md-card-actions>
+        </md-card>
+      </div>
+
+      <div class="Row card-row">
+        <md-card>
+          <md-card-header>
+            <md-card-header-text>
+              <div class="md-title">Ticket Display</div>
+              <div class="md-subhead">Click here to See a display of the tickets</div>
+            </md-card-header-text>
+          </md-card-header>
+
+          <md-card-actions>
+            <nuxt-link to="/listTickets">Ticket Display</nuxt-link>
+          </md-card-actions>
+        </md-card>
+
+        <div class="Row card-row">
+          <md-card>
+            <md-card-header>
+              <md-card-header-text>
+                <div class="md-title">Database Ticket Content</div>
+                <div class="md-subhead">This isn't working yet nvm</div>
+              </md-card-header-text>
+            </md-card-header>
+
+            <md-card-actions>
+              <nuxt-link to="/api/tickets/">DB Tickets</nuxt-link>
+            </md-card-actions>
+          </md-card>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -36,7 +82,6 @@ import "vue-material/dist/theme/default.css";
 Vue.config.productionTip = false;
 Vue.use(VueMaterial);
 
-
 export default {
   async asyncData() {
     let { data } = await axios.get("/api/users");
@@ -53,13 +98,19 @@ export default {
 
 <style scoped>
 .container {
-  margin: 0;
-  width: 100%;
-  padding: 100px 0;
+  /* width: 100%; */
   text-align: center;
+  padding-top: 20px;
+  margin-top: 80px !important;
+  /* margin-top: 80px; */
+}
+.nav {
+  background-color: white;
+  border-bottom-color: #646060;
 }
 .title {
-  margin: 30px 0;
+  /* margin: 30px 0; */
+  margin-top: 2px;
 }
 .users {
   list-style: none;
@@ -71,9 +122,27 @@ export default {
 }
 
 .md-card {
-  width: 320px;
-  margin: 24px;
+  min-width: 300px;
+  max-width: 300px;
+  /* margin: 14px; */
+  justify-content: space-between;
   display: inline-block;
   vertical-align: top;
+}
+.card-container {
+  margin-left: 10%;
+  margin-right: 10%;
+}
+
+.card-row {
+  display: flex !important;
+  justify-content: space-evenly !important;
+  flex-direction: row !important;
+  align-items: center;
+  margin-top: 20px;
+  margin-bottom: 30px;
+  margin-left: 30px;
+  margin-right: 30px;
+  width: 100%;
 }
 </style>
