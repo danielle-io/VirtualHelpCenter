@@ -5,19 +5,7 @@
     </section>
     <div class="card-container">
       <div class="Row card-row">
-        <md-card>
-          <md-card-header>
-            <md-card-header-text>
-              <div class="md-title">User Demo</div>
-              <div class="md-subhead">Click here to go to the previous home page with a user demo</div>
-            </md-card-header-text>
-          </md-card-header>
-
-          <md-card-actions>
-            <nuxt-link to="/testing/user_demo">User Demo</nuxt-link>
-          </md-card-actions>
-        </md-card>
-
+        <!-- Felt it was time to take out the user demo page -->
         <md-card>
           <md-card-header>
             <md-card-header-text>
