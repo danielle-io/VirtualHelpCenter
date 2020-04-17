@@ -6,8 +6,8 @@
       <div class = "row justify-content-center">
         <div class = "col">
         
-          <h4>Open Tickets</h4>
-        <div v-for="(item, index) in tickets" :key="index" class="tickets" v-if= "item.status === 'Open'">
+        <h4>Open Tickets</h4>
+        <div  v-for="(ticket, index) in filterOpenTickets('Open')" :key="index">
           <md-card>
           <md-card-header>
             <div class="md-title">Ticket</div>
@@ -15,29 +15,29 @@
 
           <div class="md-card-content">
             <strong>Student:</strong>
-            {{ item.owner }}
+            {{ ticket.owner }}
           </div>
 
           <div class="md-card-content">
             <strong>Status:</strong>
-            {{ item.status }}
+            {{ ticket.status }}
           </div>
           <div class="md-card-content">
             <strong>Questions:</strong>
           </div>
 
           <div
-            class="md-card-content" style="margin-left: 25px;" v-for="(question, index) in item.questions" :key="index">
+            class="md-card-content" style="margin-left: 25px;" v-for="(question, index) in ticket.questions" :key="index">
             <strong>{{index + 1}}.</strong>
-            {{ item.questions[index] }}
+            {{ ticket.questions[index] }}
           </div>
 
         </md-card>
         </div>
         </div>
         <div class = "col">
-          <h4>In Progress</h4>
-          <div v-for="(item, index) in tickets" :key="index" class="tickets" v-if= "item.status === 'In Progress'">
+        <h4>In Progress Tickets</h4>
+        <div  v-for="(ticket, index) in filterOpenTickets('In Progress')" :key="index">
           <md-card>
           <md-card-header>
             <div class="md-title">Ticket</div>
@@ -45,21 +45,21 @@
 
           <div class="md-card-content">
             <strong>Student:</strong>
-            {{ item.owner }}
+            {{ ticket.owner }}
           </div>
 
           <div class="md-card-content">
             <strong>Status:</strong>
-            {{ item.status }}
+            {{ ticket.status }}
           </div>
           <div class="md-card-content">
             <strong>Questions:</strong>
           </div>
 
           <div
-            class="md-card-content" style="margin-left: 25px;" v-for="(question, index) in item.questions" :key="index">
+            class="md-card-content" style="margin-left: 25px;" v-for="(question, index) in ticket.questions" :key="index">
             <strong>{{index + 1}}.</strong>
-            {{ item.questions[index] }}
+            {{ ticket.questions[index] }}
           </div>
 
         </md-card>
@@ -77,16 +77,24 @@
       
     </div>
   </section>
+
 </template>
 
 <script>
+
+
 import Vue from "vue";
 import axios from "~/plugins/axios";
 import VueMaterial from "vue-material";
 import "vue-material/dist/vue-material.min.css";
 import "vue-material/dist/theme/default.css";
 
+
+
+ 
 export default {
+
+  
   async asyncData() {
     let { data } = await axios.get("/api/tickets");
     return { tickets: data };
@@ -95,10 +103,17 @@ export default {
     return {
       title: "Tickets"
     }
-  }
+  }, 
+  methods:{
+    filterOpenTickets(status){
+      return this.tickets.filter(ticket =>ticket.status === status);
+      }
+    }
+    }
 
 
-};
+
+
 </script>
 
 <style scoped>
