@@ -32,7 +32,8 @@
     "source-map-support": "^0.4.18",
     "tls": "0.0.1",
     "vue": "^2.6.11",
-    "vue-material": "^1.0.0-beta-11"
+    "vue-material": "^1.0.0-beta-11",
+    "vue-tabs-component": "^1.5.0"
   },
   "devDependencies": {
     "@nuxtjs/dotenv": "^1.4.1",
