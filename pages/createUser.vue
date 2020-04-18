@@ -30,10 +30,16 @@
             <b-form-select v-model="selected" :options="classes" size="sm" class="mt-3"></b-form-select>
             <div class="mt-3">Selected: <strong>{{ selected }}</strong></div>
         </div>
-
+        <div class = "row justify-content-left">
+            <label>All fields must be filled in</label>
+        </div>
+        
         <!-- submit User -->
         <div class="row">
             <b-button v-on:click="submit" variant="outline-primary">Submit</b-button>
+        </div>
+        <div class="row" v-if= "this.shown">
+            <p>User Created</p>
         </div>
     </div>
 </template>
@@ -58,7 +64,8 @@ export default {
             selected: null,
             classes: [
             { value: null, text: 'Please select a class:' },
-            ]
+            ], 
+            shown:false
         }
     },
     methods: {
@@ -70,6 +77,8 @@ export default {
             
             if(this.firstname != '' && this.lastname != '' && this.email != '' && this.ucinetid != '' && this.selected != null){
                 console.log("submitting")
+                this.shown = true;
+
                 axios.post('/api/insertUser',{
                     name: {
                         firstname: this.firstname,
@@ -83,6 +92,7 @@ export default {
                         class: this.selected
                     }
                 })
+             
             }
         }
     },

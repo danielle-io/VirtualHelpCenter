@@ -49,7 +49,7 @@
 
     <!-- submit ticket -->
     <div class="row">
-      <b-button variant="outline-primary">Submit</b-button>
+      <b-button v-on:click="submit" variant="outline-primary">Submit</b-button>
     </div>
   </div>
 </template>
@@ -89,6 +89,20 @@
       loadClasses: function (classes){
         var text = classes.dep +" "+ classes.courseNum
         this.classes.push({value: text, text: text})
+      },
+      submit: function(){
+        if (this.problem != '' && this.probDes != '' && this.code != ''){
+          console.log("Submitting")
+          axios.post('/api/insertTicket',{
+            status : 'Open',
+            codeSnippet : this.code,
+            oneLiveOverview: this.problem,
+            longerDescription: this.probDes
+          })
+        }
+        else{
+          console.log("not submitted")
+        }
       }
     },
     computed:{
