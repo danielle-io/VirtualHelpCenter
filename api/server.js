@@ -35,11 +35,17 @@ app.use(bodyParser.json());
 app.use(morgan("dev"));
 
 // Require API routes
-const users = require('./routes/demo/users');
+const users = require('./controller/users');
+const students = require('./controller/students');
+const staffs = require('./controller/staffs');
+const courses = require('./controller/courses');
 const tickets = require('./controller/tickets');
 
 // Import API Routes
-app.use(users)
+app.use(users);
+app.use(students);
+app.use(courses);
+app.use(staffs);
 app.use(tickets);
 
 // Export the server middleware

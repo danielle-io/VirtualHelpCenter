@@ -4,7 +4,7 @@
       <h1 class="title">User Demo</h1>
       <ul class="users">
         <li v-for="(user, index) in users" :key="index" class="user">
-          <nuxt-link :to="{ name: 'id', params: { id: index }}">{{ user.name }}</nuxt-link>
+          <nuxt-link :to="{ name: 'id', params: { id: index }}">{{ user.firstname }}</nuxt-link>
         </li>
       </ul>
     </div>
