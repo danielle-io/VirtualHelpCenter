@@ -9,16 +9,27 @@ router.get('/students',(req,res,next) => {
         if (err) return console.error(err);
         res.send(students);
     })
-})
+});
 
 // GET student by id
 router.get('/students/:id', (req, res, next) => {
-    const id = parseInt(req.params.id);
-    if (id >= 0 && id < student.length){
-        res.json(student[id]);
-    } else{
-        res.sendStatus(404);
-    }
+    const ids = req.params.id;
+    StudentModel.findById(ids, (err, student)=>{
+        res.send(student);
+    });
+})
+
+router.post('/insertStudent', function(req, res, next) {
+    let studentData = new StudentModel(req.body);
+    console.log('Ticket data before insert');
+    console.log(studentData);
+    console.log('============');
+    studentData.save().then(item => {
+        res.send(item);
+    })
+    .catch(err => {
+        res.status(400).send(err);
+    });
 })
 
 module.exports = router;

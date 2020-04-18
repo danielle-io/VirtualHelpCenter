@@ -3,13 +3,12 @@ import axios from "~/plugins/axios";
 
 axios.post('/api/insertTicket',
 {
-    status: 'In Progress',
-    codeSnippet: '<h1 heAding</h1>',
-    questions: ['what is wrong with my heading'],
+    status: 'Open',
+    codeSnippet: '<h1>its not working</h1>',
+    questions: ['Ive got a question'],
     attachments: ['attachment1'],
     oneLineOverview: 'im having issues',
     longerDescription: 'seriously j+1 doesnt works',
-    owner: 'Apple Kay',
-    acceptedBy: 'Jimmy Lin'
+    owner: 'The Tester',
+    acceptedBy: 'The Lab Tutor'
 });
-
