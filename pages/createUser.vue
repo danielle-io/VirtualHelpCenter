@@ -1,6 +1,6 @@
 <template>
     <div class="container">
-        
+        <!-- Name -->
         <label>Enter your name:</label>
         <div class="row">
             <div class="col">
@@ -12,6 +12,8 @@
                 <div class="mt-2">Value: {{ lastname }}</div>
             </div>
         </div>
+
+        <!-- Email -->
         <label>Enter your email:</label>
         <div class="row">
             <div class="col">
@@ -20,16 +22,20 @@
             </div>
         </div>
 
+        <!-- UCInetID -->
         <label>Enter your ucinetid:</label>
         <div class="row">
             <b-form-input v-model="ucinetid" placeholder="Enter your ucinetID:" ></b-form-input>
             <div class="mt-2">Value: {{ ucinetid }}</div>
         </div>
 
+        <!-- Select Classes -->
         <div class="row">
             <b-form-select v-model="selected" :options="classes" size="sm" class="mt-3"></b-form-select>
             <div class="mt-3">Selected: <strong>{{ selected }}</strong></div>
         </div>
+
+
         <div class = "row justify-content-left">
             <label>All fields must be filled in</label>
         </div>
@@ -47,13 +53,14 @@
 <script>
 import vue from 'vue'
 import axios from '~/plugins/axios'
-import {BFormInput, BFormSelect, BButton} from 'bootstrap-vue'
+import {BFormInput, BFormSelect, BButton, BFormCheckbox} from 'bootstrap-vue'
 
 export default {
     components: {
         'b-form-input': BFormInput,
         'b-form-select': BFormSelect,
-        'b-button' : BButton
+        'b-button' : BButton,
+        'b-form-checkbox': BFormCheckbox
     },
     data(){
         return{
@@ -73,26 +80,28 @@ export default {
             var text = classSelected.dep +" "+ classSelected.courseNum
             this.classes.push({value: classSelected._id, text: text})
         },
-        submit: function(){
+        async submit(){
             
             if(this.firstname != '' && this.lastname != '' && this.email != '' && this.ucinetid != '' && this.selected != null){
                 console.log("submitting")
                 this.shown = true;
-
-                axios.post('/api/insertUser',{
+                let user = await axios.post('/api/insertUser',{
                     name: {
                         firstname: this.firstname,
                         lastname: this.lastname
                     },
                     email: this.email,
                     ucinetid: this.ucinetid
-                });
-                axios.post('/api/insertStudent',{
-                    classes: {
-                        class: this.selected
-                    }
                 })
-             
+                await axios.post('/api/insertStudent',{
+                    _id : user.data,
+                    classes: [{
+                        _id: this.selected,
+                        section: 1
+                    }]
+                })
+                window.location.href = 'request/'+user.data
+                
             }
         }
     },

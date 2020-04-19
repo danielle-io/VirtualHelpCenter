@@ -21,9 +21,6 @@ router.get('/students/:id', (req, res, next) => {
 
 router.post('/insertStudent', function(req, res, next) {
     let studentData = new StudentModel(req.body);
-    console.log('Ticket data before insert');
-    console.log(studentData);
-    console.log('============');
     studentData.save().then(item => {
         res.send(item);
     })
