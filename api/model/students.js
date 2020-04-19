@@ -8,8 +8,11 @@ mongoose.modelSchemas = {};
 
 const StudentSchema = new Schema({
     classes: [{
-        class: {},
-        section: Object
+        section: Number,
+        _id: {
+            type: Schema.Types.ObjectId,
+            ref: 'Course'
+        }
     }]
 },
 {collection: 'Student'});

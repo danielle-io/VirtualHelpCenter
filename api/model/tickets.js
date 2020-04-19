@@ -6,6 +6,12 @@ var ticketSchema = new Schema({
     type: String,
     enum: ['Open', 'Closed', 'In Progress', 'Unresolved']
   },
+  course:{
+    _id: {
+      type: Schema.Types.ObjectId,
+      ref: 'Course'
+    }
+  },
   codeSnippet: String,
   questions:   [String],
   attachments: [String],

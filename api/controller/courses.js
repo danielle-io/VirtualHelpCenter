@@ -21,9 +21,6 @@ router.get('/courses/:id', (req, res, next) => {
 
 router.post('/insertCourse', function(req, res, next) {
     let courseData = new CourseModel(req.body);
-    console.log('Ticket data before insert');
-    console.log(courseData);
-    console.log('============');
     courseData.save().then(item => {
         res.send(item);
     })

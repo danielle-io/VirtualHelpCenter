@@ -2,11 +2,11 @@
 
   <md-tabs class="center-tabs" md-sync-route>
     <md-tab id="tab-home" md-label="Home" to="/"></md-tab>
+    <!-- <md-tab id="tab-request" md-label="Request" to="../request"></md-tab> -->
 
     <md-tab id="tab-request" md-label="Request" :to="'request/'+id"></md-tab>
     <!-- <md-tab id="tab-request" md-label="Request" to="'request/"></md-tab> -->
 
-    <md-tab id="tab-create" md-label="Create User" to="../createUser"></md-tab>
 
     <md-tab id="tab-help" md-label="Help" to="../help"></md-tab>
   </md-tabs>
@@ -24,7 +24,7 @@ Vue.use(VueMaterial);
 export default {
   data (){
     return {
-      id: "5e99fbef1c9d44000013dcb1"
+      id: "5e9bac1429d3735cb4a44d36"
     }
   }
 };

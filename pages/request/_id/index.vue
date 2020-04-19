@@ -86,15 +86,19 @@
     },
     methods: {
       //users classes show up as options
-      loadClasses: function (classes){
-        var text = classes.dep +" "+ classes.courseNum
-        this.classes.push({value: text, text: text})
+      async loadClasses (courses){
+        courses = await axios.get("/api/courses/"+courses._id)
+        let text = courses.data.dep +" "+ courses.data.courseNum
+        this.classes.push({value: courses.data._id, text: text});
       },
       submit: function(){
         if (this.problem != '' && this.probDes != '' && this.code != ''){
           console.log("Submitting")
           axios.post('/api/insertTicket',{
             status : 'Open',
+            course: {
+              _id: this.selected
+            },
             codeSnippet : this.code,
             oneLiveOverview: this.problem,
             longerDescription: this.probDes,
@@ -115,9 +119,9 @@
     //had to rename function "created" because I couldnt access "options" property
     async created() {
       let student = await axios.get("/api/students/"+this.$route.params.id);
-      let users = await axios.get("/api/users");
-      student.data.classes.forEach(classes => {
-        this.loadClasses(classes)
+      // let users = await axios.get("/api/users");
+      student.data.classes.forEach(element => {
+        this.loadClasses(element)
       });
     }
   }
