@@ -4,6 +4,7 @@
     <md-tab id="tab-home" md-label="Home" to="/"></md-tab>
 
     <md-tab id="tab-request" md-label="Request" :to="'request/'+id"></md-tab>
+    <!-- <md-tab id="tab-request" md-label="Request" to="'request/"></md-tab> -->
 
     <md-tab id="tab-create" md-label="Create User" to="../createUser"></md-tab>
 

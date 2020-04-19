@@ -97,7 +97,8 @@
             status : 'Open',
             codeSnippet : this.code,
             oneLiveOverview: this.problem,
-            longerDescription: this.probDes
+            longerDescription: this.probDes,
+            createdAt: new Date().toString()
           })
         }
         else{

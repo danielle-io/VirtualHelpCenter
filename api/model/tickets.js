@@ -14,6 +14,7 @@ var ticketSchema = new Schema({
   owner: String,
   acceptedBy: String,
 },
-{ collection: 'Ticket' });
+{timestamps: true},
+{ collection: 'Ticket' }); 
 
 module.exports = mongoose.model('Ticket', ticketSchema);
