@@ -102,6 +102,7 @@
             oneLineOverview: this.probDes,
             longerDescription: this.problem,
             codeSnippet : this.code,
+            createdAt: new Date().toString()
           })
         }
         else{
