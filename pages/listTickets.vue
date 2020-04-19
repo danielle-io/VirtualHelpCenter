@@ -91,15 +91,23 @@ import VueMaterial from "vue-material";
 import "vue-material/dist/vue-material.min.css";
 import "vue-material/dist/theme/default.css";
 
+import Ticket from '../store/models/Ticket'
+import User from '../store/models/User'
+
 
 
  
 export default {
 
-  
-  async asyncData() {
+  async fetch() {
     let { data } = await axios.get("/api/tickets");
-    return { tickets: data };
+
+    Ticket.insert({data: data});
+  },
+  computed: {
+    tickets() {
+      return Ticket.query().orderBy('owner').get();
+    }
   },
   head() {
     return {
@@ -109,13 +117,12 @@ export default {
   methods:{
     filterOpenTickets(status){
       return this.tickets.filter(ticket =>ticket.status === status);
-      }
+    },
+    created () {
+      //let { data } = await axios.get("/api/tickets");
     }
-    }
-
-
-
-
+  }
+};
 </script>
 
 <style scoped>

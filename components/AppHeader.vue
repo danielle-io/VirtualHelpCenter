@@ -19,6 +19,7 @@
           <account-circle />
         </nuxt-link>
 
+    
     </div>
   </div>
   </div>
