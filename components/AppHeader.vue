@@ -19,7 +19,7 @@
           <account-circle />
         </nuxt-link>
 
-    <md-tab id="tab-request" md-label="Request" to="../request"></md-tab>
+    
     </div>
   </div>
   </div>
