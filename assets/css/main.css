@@ -22,18 +22,4 @@ a, a:hover, a:focus, a:visited
   color: #000;
 }
 
-@font-face {
-  font-family: "Coves";
-  src: url("/assets/fonts/Coves.otf");
-}
-@font-face {
-  font-family: "Manrope";
-  src: url("/assets/fonts/Manrope.ttf");
-}
-
-@font-face {
-  font-family: "Poppins";
-  src: url("/assets/fonts/Poppins/Poppins-Thin.ttf");
-}
-
 @import url("https://fonts.googleapis.com/css?family=Poppins");

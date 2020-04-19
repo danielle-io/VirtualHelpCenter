@@ -1,4 +1,6 @@
+
 <template>
+
   <div class="main-nav">
     <div class="tabs">
       <div class="logo">
@@ -7,11 +9,18 @@
         <span class="help">help</span>
       </div>
       <div class="right-nav">
-        <nuxt-link class="link-styling" to="../landingpage">home</nuxt-link>
+        <nuxt-link class="link-styling" to="../login">home</nuxt-link>
 
         <nuxt-link class="link-styling" to="../help">help</nuxt-link>
 
         <nuxt-link class="link-styling" to="/">testing</nuxt-link>
+
+        <nuxt-link class="link-styling" to="../account">
+        <account-circle />
+
+          <!-- <span class="material-icons">account_circle</span> -->
+          <!-- <span class="material-icons">account_circle</span> -->
+        </nuxt-link>
       </div>
 
       <!-- <md-tabs md-sync-route>
@@ -30,10 +39,12 @@
 
 
 <script>
+
 import Vue from "vue";
 // import VueMaterial from "vue-material";
 // import "vue-material/dist/vue-material.min.css";
 // import "vue-material/dist/theme/default.css";
+
 
 Vue.config.productionTip = false;
 // Vue.use(VueMaterial);
@@ -49,7 +60,6 @@ export default {
 
 
 <style>
-
 .link-styling {
   margin-left: 10px;
   margin-right: 10px;
@@ -58,8 +68,18 @@ export default {
   font-family: "Manrope";
 }
 
-.md-theme-default a:not(.md-button){
-    color: #0090ad !important;
+.md-theme-default a:not(.md-button) {
+  color: #0090ad !important;
+}
+
+.material-design-icon.icon-2x {
+  height: 2em;
+  width: 2em;
+}
+ 
+.material-design-icon.icon-2x > .material-design-icon__svg {
+  height: 2em;
+  width: 2em;
 }
 
 .right-nav {
@@ -94,14 +114,14 @@ export default {
 }
 
 .logo {
-  font-family: "Coves";
+  font-family: "coveslight";
   float: left;
   padding-left: 2px;
   margin-left: 5px;
 }
 
 .line {
-  margin-top:10px;
+  margin-top: 10px;
   padding-top: 20px;
   font-size: 30px;
 }

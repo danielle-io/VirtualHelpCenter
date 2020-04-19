@@ -1,31 +1,34 @@
 <template>
   <div>
+    <div class="welcome">Welcome.</div>
+    <div class="instructions">Please log in or register to continue.</div>
+
     <div class="login-container">
       <div>
         <tabs :options="{ defaultTabHash: 'login-tab'}">
           <tab name="Login">
             <form class="login-form">
-              <input
-                type="text"
-                id="login-tab"
-                class="fadeIn second"
-                name="login"
-                placeholder="email"
-              />
-              <input
-                type="text"
-                id="password"
-                class="fadeIn third"
-                name="login"
-                placeholder="password"
-              />
-              <input type="submit" class="fadeIn fourth" value="Continue" />
+              <input type="text" id="login-tab" name="email" placeholder="email" />
+              <input type="text" id="password" name="password" placeholder="password" />
+               <nuxt-link  to="/landing" value="Continue" >
+                  <input type="submit" class="fadeIn third" value="Continue" />
+              </nuxt-link>
             </form>
           </tab>
-          <tab name="Register">registration</tab>
+          <tab name="Register">
+            <form class="login-form">
+              <input type="text" id="login-tab" class name="email" placeholder="please enter your email" />
+              <input type="text" id="password" class name="password" placeholder="create a password" />
+              <input type="text" id="password" class name="password" placeholder="please re-enter your password" />
+
+              <nuxt-link  to="/createUser"  href="/createUser" value="Continue" >
+                <input type="submit" to="/createUser" tag="button" value="Continue"> 
+              </nuxt-link>
+
+            </form>
+          </tab>
         </tabs>
       </div>
-      <!-- <div class="welcome">Welcome</div> -->
     </div>
   </div>
 </template>
@@ -48,7 +51,6 @@ Vue.component("tab", Tab);
 }
 
 .login-container {
-  margin-top: 30px;
   /* text-align: center;
   justify-content: center; */
   margin-left: 20%;
@@ -60,41 +62,21 @@ Vue.component("tab", Tab);
   border-color: grey;
 }
 
-/* a {
-  color: #92badd;
-  display: inline-block;
-  text-decoration: none;
-  font-weight: 400;
-}
-
-h2 {
-  text-align: center;
-  font-size: 16px;
-  font-weight: 600;
-  text-transform: uppercase;
-  display: inline-block;
-  margin: 40px 8px 10px 8px;
-  color: #cccccc;
-} */
-
-/* STRUCTURE */
-/* 
-.wrapper {
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  justify-content: center;
-  width: 100%;
-  min-height: 100%;
-  padding: 20px;
-} */
-
 .welcome {
+  margin-top: 30px;
   font-size: 30px;
-  text-align: left;
-  font-family: "Poppins";
+  text-align: center;
+  font-family: "Manrope";
   color: #624b77;
 }
+.instructions {
+  margin-top: 15px;
+  font-size: 15px;
+  text-align: center;
+  font-family: "Manrope";
+  color: #624b77;
+}
+
 #formContent {
   -webkit-border-radius: 10px 10px 10px 10px;
   border-radius: 10px 10px 10px 10px;
@@ -131,9 +113,10 @@ h2.active {
 
 /* FORM TYPOGRAPHY*/
 input[type="button"],
-input[type="submit"],
-input[type="reset"] {
-  background-color: #a081f1;
+input[type="submit"]
+/* input[type="reset"]  */
+ {
+  background-color: #806897;
   /* border: none; */
   color: white;
   /* padding: 15px 80px; */
@@ -159,7 +142,7 @@ input[type="reset"] {
 input[type="button"]:hover,
 input[type="submit"]:hover,
 input[type="reset"]:hover {
-  background-color: #39ace7;
+  background-color: #987cb3;
 }
 
 input[type="button"]:active,
@@ -208,8 +191,8 @@ input[type="text"]:placeholder {
 .fadeInDown {
   -webkit-animation-name: fadeInDown;
   animation-name: fadeInDown;
-  -webkit-animation-duration: 0.5s;
-  animation-duration: 0.5s;
+  -webkit-animation-duration: 0.1s;
+  animation-duration: 0.1s;
   -webkit-animation-fill-mode: both;
   animation-fill-mode: both;
 }
@@ -294,15 +277,15 @@ input[type="text"]:placeholder {
 }
 
 .fadeIn.third {
-  -webkit-animation-delay: 0.8s;
-  -moz-animation-delay: 0.8s;
-  animation-delay: 0.8s;
+  -webkit-animation-delay: 0.7;
+  -moz-animation-delay: 0.7s;
+  animation-delay: 0.7s;
 }
 
 .fadeIn.fourth {
-  -webkit-animation-delay: 1s;
-  -moz-animation-delay: 1s;
-  animation-delay: 1s;
+  -webkit-animation-delay: 0.5s;
+  -moz-animation-delay: 0.5s;
+  animation-delay: 0.51s;
 }
 
 /* Simple CSS3 Fade-in Animation */
@@ -402,7 +385,7 @@ input[type="text"]:placeholder {
   }
 
   .tabs-component-tab.is-active {
-    border-bottom: solid 1px #fff;
+    border-bottom: solid 2px #fff;
     z-index: 2;
     transform: translateY(0);
     font-weight: 300 !important;
