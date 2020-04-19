@@ -20,9 +20,11 @@ import AppHeader from '../components/AppHeader';
 import 'vue-material-design-icons/styles.css';
 
 import AccountCircle from 'vue-material-design-icons/AccountCircle.vue';
- 
- 
+import PlusCircle from 'vue-material-design-icons/PlusCircle.vue';
+
 Vue.component('account-circle', AccountCircle);
+Vue.component('plus-circle', PlusCircle);
+
 
 export default {
   name: "TabContent",

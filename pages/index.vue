@@ -43,6 +43,34 @@
           <nuxt-link to="/createUser">Create User</nuxt-link>
         </md-card-actions>
       </md-card>
+
+
+      <md-card>
+        <md-card-header>
+          <md-card-header-text>
+            <div class="md-title">Student Landing</div>
+            <div class="md-subhead">Later student & staff landing will be one page, changed based on user's account</div>
+          </md-card-header-text>
+        </md-card-header>
+
+        <md-card-actions>
+          <nuxt-link to="/landingStudent">Student Landing</nuxt-link>
+        </md-card-actions>
+      </md-card>
+
+
+      <md-card>
+        <md-card-header>
+          <md-card-header-text>
+            <div class="md-title">Staff Landing</div>
+            <div class="md-subhead">Later student & staff landing will be one page, changed based on user's account</div>
+          </md-card-header-text>
+        </md-card-header>
+
+        <md-card-actions>
+          <nuxt-link to="/landingStaff">Staff Landing</nuxt-link>
+        </md-card-actions>
+      </md-card>
     </div>
   </div>
 </template>

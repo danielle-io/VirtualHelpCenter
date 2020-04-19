@@ -19,7 +19,6 @@
           <account-circle />
         </nuxt-link>
 
-    <md-tab id="tab-request" md-label="Request" to="../request"></md-tab>
     </div>
   </div>
   </div>
@@ -149,13 +148,7 @@ html.md-theme-default {
   padding-bottom: 30px !important;
 }
 
-md-tabs {
-  background-color: white;
-}
 
-#tab-request {
-  border-bottom-color: #448aff;
-}
 </style>
 
 

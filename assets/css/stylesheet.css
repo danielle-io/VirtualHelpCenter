@@ -9,3 +9,32 @@
     font-weight: normal;
     font-style: normal;
 }
+
+/* Welcome text, other headings text */
+.heading-text {
+    margin-top: 30px;
+    font-size: 30px;
+    text-align: center;
+    font-family: "Manrope";
+    color: #624b77;
+  }
+
+/* The instructions & details */
+.sub-heading-text{
+    margin-top: 15px;
+    margin-bottom: 15px;
+    font-size: 15px;
+    text-align: center;
+    font-family: "Manrope";
+    color: #624b77;
+}
+
+.heading-two-text{
+    margin-top: 30px;
+    font-size: 25px;
+    text-align: center;
+    font-family: "Manrope";
+    color: #0090ad;
+    margin-bottom: 8px;
+    font-weight: 200;
+}

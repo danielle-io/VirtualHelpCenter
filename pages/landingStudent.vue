@@ -1,80 +1,191 @@
 <template>
   <div>
-    <div class="heading-text">Welcome.</div>
-    <div class="sub-heading-text">Please log in or register to continue.</div>
+    <div class="heading-text">My Requests</div>
 
-    <div class="login-container">
-      <div>
-        <tabs :options="{ defaultTabHash: 'login-tab'}">
-          <tab name="Login">
-            <form class="login-form">
-              <input type="text" id="login-tab" name="email" placeholder="email" />
-              <input type="text" id="password" name="password" placeholder="password" />
-              <nuxt-link to="/landingStudent" value="Continue">
-                <input type="submit" class="fadeIn third" value="Continue" />
-              </nuxt-link>
-            </form>
-          </tab>
-          <tab name="Register">
-            <form class="login-form">
-              <input
-                type="text"
-                id="login-tab"
-                class
-                name="email"
-                placeholder="please enter your email"
-              />
-              <input
-                type="text"
-                id="password"
-                class
-                name="password"
-                placeholder="create a password"
-              />
-              <input
-                type="text"
-                id="password"
-                class
-                name="password"
-                placeholder="please re-enter your password"
-              />
+    <!-- TO DO: make this text dynamic based on user tickets -->
+    <div class="sub-heading-text">You currently have no requests.</div>
 
-              <nuxt-link to="/createUser" href="/createUser" value="Continue">
-                <input type="submit" to="/createUser" tag="button" value="Continue" />
-              </nuxt-link>
-            </form>
-          </tab>
-        </tabs>
+    <div class="request-container">
+      <div class="heading-two-text">Start a Request</div>
+
+      <div id="app">
+        <table class="table request-table">
+          <tbody>
+            <!-- This is where the new questions are inserted -->
+            <div class="top-row" v-for="(row, index) in rows" v-bind:key="row">
+              <tr>
+                <td class="form-column">
+                  <b-form-input
+                    v-model="oneLineOverview"
+                    placeholder="One line description of the issue"
+                  ></b-form-input>
+                </td>
+
+                <td class="remove-column">
+                  <a v-on:click="removeElement(index);" style="cursor: pointer">Remove</a>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+                  <label class="file-container">
+                    {{row.file.name}}
+                    <input
+                      type="file"
+                      @change="setFilename($event, row)"
+                      :id="index"
+                    />
+                  </label>
+                </td>
+              </tr>
+            </div>
+
+          </tbody>
+        </table>
+
+        <span class="add-button" @click="addRow">
+          <plus-circle />
+        </span>
       </div>
     </div>
   </div>
 </template>
-
-
+      
 
 <script>
-import Vue from "vue";
-export default {};
-import { Tabs, Tab } from "vue-tabs-component";
+// var app = new Vue({
+//   el: "#app",
+//   data: {
+//     rows: []
+//   },
 
-Vue.component("tabs", Tabs);
-Vue.component("tab", Tab);
+import vue from "vue";
+import axios from "~/plugins/axios";
+import { BFormInput, BFormSelect, BButton, BFormCheckbox } from "bootstrap-vue";
+
+export default {
+  components: {
+    "b-form-input": BFormInput,
+    "b-form-select": BFormSelect,
+    "b-button": BButton,
+    "b-form-checkbox": BFormCheckbox
+  },
+  data() {
+    return {
+      el: "#app",
+      rows: [],
+      status: "Open",
+      oneLineOverview: "",
+      shown: false
+    };
+  },
+  methods: {
+    addRow: function() {
+      var elem = document.createElement("tr");
+      this.rows.push({
+        title: "",
+        description: "",
+        file: {
+          name: "Choose File"
+        }
+      });
+    },
+    removeElement: function(index) {
+      this.rows.splice(index, 1);
+    },
+    setFilename: function(event, row) {
+      var file = event.target.files[0];
+      row.file = file;
+    },
+    loadClasses: function(classSelected) {
+      var text = classSelected.dep + " " + classSelected.courseNum;
+      this.classes.push({ value: classSelected._id, text: text });
+    }
+  }
+};
 </script>
 
 
 <style>
+/* Styling for adding rows */
+.add-button {
+  font-size: 20px;
+  color: #0090ad;
+  cursor: pointer;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+}
+
+.top-row {
+  border-top: 1px solid #dee2e6;
+}
+
+.form-column {
+  width: 100%;
+}
+
+.remove-column {
+  align-content: flex-end;
+}
+
+table th,
+.table td {
+  border-top: none;
+}
+
+.request-table {
+  margin-top: 10px;
+}
+
+.file-container {
+  /* overflow: hidden; */
+  position: relative;
+}
+
+.file-container [type="file"] {
+  cursor: inherit;
+  display: block;
+  font-size: 999px;
+  filter: alpha(opacity=0);
+  min-height: 21px;
+  min-width: 100%;
+  opacity: 0;
+  position: absolute;
+  right: 0;
+  text-align: right;
+  top: 0;
+}
+
+.file-container {
+  background: #e3e3e3;
+  float: left;
+  padding: 0.5em;
+}
+
+.file-container [type="file"] {
+  cursor: pointer;
+}
+
 .login-form {
   text-align: center;
 }
 
-.login-container {
+.request-container {
   /* text-align: center;
   justify-content: center; */
   margin-left: 20%;
   margin-right: 20%;
+  margin-top: 2%;
+  margin-bottom: 2%;
   /* padding-left: 22%;
   padding-right: 22%; */
   font-family: "Manrope";
+  min-width: 200px;
+  border: solid 1px #ddd;
+  padding-left: 2%;
+  padding-right: 2%;
+  padding-bottom: 10px;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.05);
 }
 
 #formContent {
@@ -159,13 +270,12 @@ input[type="text"] {
   background-color: #f6f6f6;
   border: none;
   color: #0d0d0d;
-  padding: 15px 32px;
   text-align: left;
   text-decoration: none;
   display: inline-block;
   font-size: 16px;
   margin: 5px;
-  width: 85%;
+  width: 100%;
   border: 2px solid #f6f6f6;
   -webkit-transition: all 0.5s ease-in-out;
   -moz-transition: all 0.5s ease-in-out;
@@ -302,9 +412,6 @@ input[type="text"]:placeholder {
   transition: width 0.2s;
 }
 
-.underlineHover:hover {
-}
-
 .underlineHover:hover:after {
   width: 100%;
   font-weight: 300 !important;
@@ -322,100 +429,5 @@ input[type="text"]:placeholder {
 
 * {
   box-sizing: border-box;
-}
-
-/* TABS */
-
-.tabs-component {
-  margin: 4em 0;
-  
-}
-
-.tabs-component-tabs {
-  border: solid 1px #ddd;
-  border-radius: 6px 6px 6px 6px;
-  margin-bottom: 5px;
-}
-
-@media (min-width: 700px) {
-  .tabs-component-tabs {
-    border: 0;
-    align-items: stretch;
-    display: flex;
-    justify-content: flex-start;
-    margin-bottom: 0px;
-    padding-left: 0px;
-
-  }
-}
-
-.tabs-component-tab {
-  color: #999;
-  font-size: 15px;
-  font-weight: 600;
-  /* margin-right: 0 !important; */
-  list-style: none;
-
-}
-
-
-.ul {
-  margin-left: 0px;
-}
-
-.tabs-component-tab:not(:last-child) {
-  /* border-bottom: dotted 1px #ddd; */
-}
-
-.tabs-component-tab:hover {
-  color: #666;
-}
-
-/* .tabs-component-tab.is-active {
-  color: green !important;
-} */
-
-@media (min-width: 700px) {
-  .tabs-component-tab {
-    background-color: #fff;
-    border: solid 1px #ddd;
-    border-radius: 3px 3px 3px 3px;
-    /* margin-right: 0.5em; */
-    width: 100%;
-    font-weight: 100;
-
-    transform: translateY(2px);
-    transition: transform 0.3s ease;
-  }
-
-  .tabs-component-tab.is-active {
-    border-bottom: solid 2px #fff;
-    z-index: 2;
-    /* transform: translateY(0); */
-    font-weight: 300 !important;
-    /* color: green !important; */
-  }
-}
-
-.tabs-component-tab-a {
-  /* color: inherit; */
-  display: flex;
-  padding: 0.65em 1em;
-  text-decoration: none;
-}
-
-.tabs-component-panels {
-  padding: 4em 0;
-}
-
-@media (min-width: 700px) {
-  .tabs-component-panels {
-    border-top-left-radius: 0;
-    background-color: #fff;
-    border: solid 1px #ddd;
-    border-radius: 0 0px 3px 3px;
-    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.05);
-    padding: 2em 2em;
-  }
 }
 </style>
