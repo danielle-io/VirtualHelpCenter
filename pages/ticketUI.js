@@ -1,5 +1,5 @@
 
-import axios from "~/plugins/axios";
+// import axios from "~/plugins/axios";
 
 // axios.post('/api/insertTicket',
 // {

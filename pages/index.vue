@@ -34,19 +34,6 @@
       <md-card>
         <md-card-header>
           <md-card-header-text>
-            <div class="md-title">Landing Page</div>
-            <div class="md-subhead">Click here to go to the landing page</div>
-          </md-card-header-text>
-        </md-card-header>
-
-        <md-card-actions>
-          <nuxt-link to="/landPages">Landing Page</nuxt-link>
-        </md-card-actions>
-      </md-card>
-
-      <md-card>
-        <md-card-header>
-          <md-card-header-text>
             <div class="md-title">Create User</div>
             <div class="md-subhead">Click here to go to the user form</div>
           </md-card-header-text>
@@ -101,7 +88,6 @@ export default {
   margin-top: 20px;
   width: 100%;
   padding: 50px 0;
-  text-align: center;
 }
 
 .md-card {

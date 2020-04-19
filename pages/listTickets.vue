@@ -23,14 +23,15 @@
             {{ ticket.status }}
           </div>
           <div class="md-card-content">
-            <strong>Questions:</strong>
+            <strong>Issue:</strong>
+            {{ticket.oneLineOverview}}
           </div>
-
-          <div
+          
+          <!-- <div
             class="md-card-content" style="margin-left: 25px;" v-for="(question, index) in ticket.questions" :key="index">
             <strong>{{index + 1}}.</strong>
             {{ ticket.questions[index] }}
-          </div>
+          </div> -->
 
         </md-card>
         </div>
