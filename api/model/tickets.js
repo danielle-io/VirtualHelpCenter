@@ -1,16 +1,21 @@
+// 'use strict';
+
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
+
+mongoose.models = {};
+mongoose.modelSchemas = {};
 
 var ticketSchema = new Schema({
   status:  {
     type: String,
     enum: ['Open', 'Closed', 'In Progress', 'Unresolved']
   },
-  course:{
-    _id: {
+  course: {
+    _id:{
       type: Schema.Types.ObjectId,
       ref: 'Course'
-    }
+    },
   },
   codeSnippet: String,
   questions:   [String],
@@ -19,8 +24,9 @@ var ticketSchema = new Schema({
   longerDescription: String,
   owner: String,
   acceptedBy: String,
+  
 },
 {timestamps: true},
-{ collection: 'Ticket' }); 
+{ collection: 'Ticket' });
 
 module.exports = mongoose.model('Ticket', ticketSchema);

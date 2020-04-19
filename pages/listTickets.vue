@@ -24,9 +24,9 @@
           </div>
           <div class="md-card-content">
             <strong>Issue:</strong>
-              {{ ticket.oneLineOverview }}
+            {{ticket.oneLineOverview}}
           </div>
-
+          
           <!-- <div
             class="md-card-content" style="margin-left: 25px;" v-for="(question, index) in ticket.questions" :key="index">
             <strong>{{index + 1}}.</strong>

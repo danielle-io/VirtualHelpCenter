@@ -96,12 +96,12 @@
           console.log("Submitting")
           axios.post('/api/insertTicket',{
             status : 'Open',
-            course: {
-              _id: this.selected
+            course : {
+                _id: this.selected
             },
+            oneLineOverview: this.probDes,
+            longerDescription: this.problem,
             codeSnippet : this.code,
-            oneLiveOverview: this.problem,
-            longerDescription: this.probDes,
             createdAt: new Date().toString()
           })
         }
