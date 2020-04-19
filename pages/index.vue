@@ -73,14 +73,17 @@ import axios from "~/plugins/axios";
 import VueMaterial from "vue-material";
 import "vue-material/dist/vue-material.min.css";
 import "vue-material/dist/theme/default.css";
+import User from '../store/models/User'
 
 Vue.config.productionTip = false;
 Vue.use(VueMaterial);
 
 export default {
-  async asyncData() {
+  async fetch () {
+
     let { data } = await axios.get("/api/users");
-    return { users: data };
+
+    User.insert({data: data})
   },
   head() {
     return {

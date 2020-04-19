@@ -4,7 +4,7 @@
       <h1 class="title">User Demo</h1>
       <ul class="users">
         <li v-for="(user, index) in users" :key="index" class="user">
-          <nuxt-link :to="{ name: 'id', params: { id: index }}">{{ user.firstname }}</nuxt-link>
+          <nuxt-link :to="{ name: 'id', params: { id: index }}">{{ user._id }}</nuxt-link>
         </li>
       </ul>
     </div>
@@ -17,13 +17,20 @@ import axios from "~/plugins/axios";
 import VueMaterial from "vue-material";
 import "vue-material/dist/vue-material.min.css";
 import "vue-material/dist/theme/default.css";
+import User from '../../store/models/User';
 
 Vue.use(VueMaterial);
 
 export default {
+  computed: {
+    users() { 
+      console.log(this.$store.$db().model('users').all())
+      User.query().orderBy('_id').get()
+    }
+  },
   async asyncData() {
-    let { data } = await axios.get("/api/users");
-    return { users: data };
+    // let { data } = await axios.get("/api/users");
+    // return { users: data };
   },
   head() {
     return {
