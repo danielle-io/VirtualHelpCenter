@@ -16,24 +16,12 @@
         <nuxt-link class="link-styling" to="/">testing</nuxt-link>
 
         <nuxt-link class="link-styling" to="../account">
-        <account-circle />
-
-          <!-- <span class="material-icons">account_circle</span> -->
-          <!-- <span class="material-icons">account_circle</span> -->
+          <account-circle />
         </nuxt-link>
-      </div>
 
-      <!-- <md-tabs md-sync-route>
-       
-        <md-tab id="tab-logo" class="left-nav" style="float: left; position: relative; flex: 1;" md-label="Virtual Help Center" to="/"></md-tab>
-
-        <md-tab id="tab-home" class="right-nav"  style="float: right;" md-label="Home" to="/"></md-tab>
-
-        <md-tab id="tab-request" style="float: right;"  md-label="Request" :to="'request/'+id"></md-tab>
-
-        <md-tab id="tab-help"  style="float: right;" md-label="Help" to="../help"></md-tab>
-      </md-tabs>-->
+    <md-tab id="tab-request" md-label="Request" to="../request"></md-tab>
     </div>
+  </div>
   </div>
 </template>
 
@@ -41,22 +29,18 @@
 <script>
 
 import Vue from "vue";
-// import VueMaterial from "vue-material";
-// import "vue-material/dist/vue-material.min.css";
-// import "vue-material/dist/theme/default.css";
 
 
 Vue.config.productionTip = false;
-// Vue.use(VueMaterial);
 export default {
   data() {
     return {
-      id: "5e99fbef1c9d44000013dcb1"
-    };
+      id: "5e9bae3f29d3735cb4a44d3e"
+      //5e9acbc4d629c26348bcc992
+    }
   }
 };
 </script>
-
 
 
 <style>
