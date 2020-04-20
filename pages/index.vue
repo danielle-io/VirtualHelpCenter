@@ -34,19 +34,6 @@
       <md-card>
         <md-card-header>
           <md-card-header-text>
-            <div class="md-title">Landing Page</div>
-            <div class="md-subhead">Click here to go to the landing page</div>
-          </md-card-header-text>
-        </md-card-header>
-
-        <md-card-actions>
-          <nuxt-link to="/landPages">Landing Page</nuxt-link>
-        </md-card-actions>
-      </md-card>
-
-      <md-card>
-        <md-card-header>
-          <md-card-header-text>
             <div class="md-title">Create User</div>
             <div class="md-subhead">Click here to go to the user form</div>
           </md-card-header-text>
@@ -54,6 +41,34 @@
 
         <md-card-actions>
           <nuxt-link to="/createUser">Create User</nuxt-link>
+        </md-card-actions>
+      </md-card>
+
+
+      <md-card>
+        <md-card-header>
+          <md-card-header-text>
+            <div class="md-title">Student Landing</div>
+            <div class="md-subhead">Later student & staff landing will be one page, changed based on user's account</div>
+          </md-card-header-text>
+        </md-card-header>
+
+        <md-card-actions>
+          <nuxt-link to="/landingStudent">Student Landing</nuxt-link>
+        </md-card-actions>
+      </md-card>
+
+
+      <md-card>
+        <md-card-header>
+          <md-card-header-text>
+            <div class="md-title">Staff Landing</div>
+            <div class="md-subhead">Later student & staff landing will be one page, changed based on user's account</div>
+          </md-card-header-text>
+        </md-card-header>
+
+        <md-card-actions>
+          <nuxt-link to="/landingStaff">Staff Landing</nuxt-link>
         </md-card-actions>
       </md-card>
     </div>
@@ -73,14 +88,17 @@ import axios from "~/plugins/axios";
 import VueMaterial from "vue-material";
 import "vue-material/dist/vue-material.min.css";
 import "vue-material/dist/theme/default.css";
+import User from '../store/models/User'
 
 Vue.config.productionTip = false;
 Vue.use(VueMaterial);
 
 export default {
-  async asyncData() {
+  async fetch () {
+
     let { data } = await axios.get("/api/users");
-    return { users: data };
+
+    User.insert({data: data})
   },
   head() {
     return {
@@ -98,7 +116,6 @@ export default {
   margin-top: 20px;
   width: 100%;
   padding: 50px 0;
-  text-align: center;
 }
 
 .md-card {
