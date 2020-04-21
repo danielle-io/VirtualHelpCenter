@@ -2,9 +2,11 @@
 <template>
   <div class="main-nav">
     <div class="squiggle-container">
-    <svg viewBox="-380 60 620 680" preserveAspectRatio="xMinYMin meet" class="squiggle">
-      <path d="M1, 50 C10,200 550, 0 900, 1400 L1300,100 L1200" style />
-    </svg>
+      <svg viewBox="-380 60 620 680" preserveAspectRatio="xMinYMin meet" class="squiggle">
+        <path d="M1, 50 C10,200 550, 0 900, 1400 L1300,00 L100, 0 Z"/>
+  <!--  example: <path d=" M0,100 C150,200 350,0 500,100   L500,00 L0,0 Z" style="stroke: none; fill:red;"></path> -->
+
+      </svg>
     </div>
 
     <div class="green-circle"></div>
@@ -135,6 +137,8 @@ export default {};
 
 .tabs {
   position: absolute;
+  padding-top: 2%;
+  padding-left: 2%;
 
   display: inline-block !important;
   /* align-items: flex-end; */
