@@ -79,10 +79,12 @@
         code: '',
         file: null,
         selected: null,
+        student: null,
         classes: [
           { value: null, text: 'Please select a class:' },
-        ]
+        ],
       }
+    
     },
     methods: {
       //users classes show up as options
@@ -90,12 +92,20 @@
         courses = await axios.get("/api/courses/"+courses._id)
         let text = courses.data.dep +" "+ courses.data.courseNum
         this.classes.push({value: courses.data._id, text: text});
+        console.log("loading classes");
       },
+      async loadUser(user){
+        this.student = user.data._id;
+      },
+
       submit: function(){
         if (this.problem != '' && this.probDes != '' && this.code != ''){
-          console.log("Submitting")
+         
           axios.post('/api/insertTicket',{
             status : 'Open',
+            owner: {
+                _id: this.student
+            },
             course : {
                 _id: this.selected
             },
@@ -119,11 +129,13 @@
     //had to rename function "created" because I couldnt access "options" property
     async created() {
       let student = await axios.get("/api/students/"+this.$route.params.id);
-      // let users = await axios.get("/api/users");
       student.data.classes.forEach(element => {
         this.loadClasses(element)
-      });
+      })
+      this.loadUser(student)
+;
     }
+
   }
 </script>
 

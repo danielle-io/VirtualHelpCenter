@@ -11,6 +11,12 @@ var ticketSchema = new Schema({
     type: String,
     enum: ['Open', 'Closed', 'In Progress', 'Unresolved']
   },
+  owner: {
+    _id:{
+      type: Schema.Types.ObjectId,
+      ref: 'Student'
+    },
+  }, 
   course: {
     _id:{
       type: Schema.Types.ObjectId,
@@ -22,7 +28,6 @@ var ticketSchema = new Schema({
   attachments: [String],
   oneLineOverview: String,
   longerDescription: String,
-  owner: String,
   acceptedBy: String,
   
 },

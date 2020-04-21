@@ -43,6 +43,49 @@
           <nuxt-link to="/createUser">Create User</nuxt-link>
         </md-card-actions>
       </md-card>
+
+
+      <md-card>
+        <md-card-header>
+          <md-card-header-text>
+            <div class="md-title">Student Landing</div>
+            <div class="md-subhead">Later student & staff landing will be one page, changed based on user's account</div>
+          </md-card-header-text>
+        </md-card-header>
+
+        <md-card-actions>
+          <nuxt-link to="/landingStudent">Student Landing</nuxt-link>
+        </md-card-actions>
+      </md-card>
+
+
+      <md-card>
+        <md-card-header>
+          <md-card-header-text>
+            <div class="md-title">Staff Landing</div>
+            <div class="md-subhead">Later student & staff landing will be one page, changed based on user's account</div>
+          </md-card-header-text>
+        </md-card-header>
+
+        <md-card-actions>
+          <nuxt-link to="/landingStaff">Staff Landing</nuxt-link>
+        </md-card-actions>
+      </md-card>
+
+       <md-card>
+        <md-card-header>
+          <md-card-header-text>
+            <div class="md-title">Insert Ticket Request</div>
+            <div class="md-subhead">Click here to go to the ticket request form</div>
+          </md-card-header-text>
+        </md-card-header>
+
+        <md-card-actions>
+          <nuxt-link :to="'/request/'+id">Ticket Request</nuxt-link>
+        </md-card-actions>
+      </md-card>
+
+
     </div>
   </div>
 </template>
@@ -66,6 +109,11 @@ Vue.config.productionTip = false;
 Vue.use(VueMaterial);
 
 export default {
+  data(){
+    return {
+      id: "5e9bc14dba244923803929d6"
+    }
+  },
   async fetch () {
 
     let { data } = await axios.get("/api/users");

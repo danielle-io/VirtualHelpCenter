@@ -1,33 +1,19 @@
 <template>
-  <div>
-    <div class="welcome">Welcome.</div>
-    <div class="instructions">Please log in or register to continue.</div>
+  <div style="margin-top: 5%;" >
+    <div class="heading-text">Welcome.</div>
+    <div class="sub-heading-text">Please log in to continue.</div>
 
     <div class="login-container">
       <div>
-        <tabs :options="{ defaultTabHash: 'login-tab'}">
-          <tab name="Login">
-            <form class="login-form">
-              <input type="text" id="login-tab" name="email" placeholder="email" />
-              <input type="text" id="password" name="password" placeholder="password" />
-               <nuxt-link  to="/landing" value="Continue" >
-                  <input type="submit" class="fadeIn third" value="Continue" />
-              </nuxt-link>
-            </form>
-          </tab>
-          <tab name="Register">
-            <form class="login-form">
-              <input type="text" id="login-tab" class name="email" placeholder="please enter your email" />
-              <input type="text" id="password" class name="password" placeholder="create a password" />
-              <input type="text" id="password" class name="password" placeholder="please re-enter your password" />
-
-              <nuxt-link  to="/createUser"  href="/createUser" value="Continue" >
-                <input type="submit" to="/createUser" tag="button" value="Continue"> 
-              </nuxt-link>
-
-            </form>
-          </tab>
-        </tabs>
+        <form class="login-form">
+          <input type="text" id="login-tab" name="email" placeholder="email" />
+          <input type="text" id="password" name="password" placeholder="password" />
+          <nuxt-link to="/landingStudent" value="Continue">
+            <button type="submit" style="margin-bottom: 20%;" class="fadeIn" value="Continue">
+              <right-circle />Continue
+            </button>
+          </nuxt-link>
+        </form>
       </div>
     </div>
   </div>
@@ -46,6 +32,10 @@ Vue.component("tab", Tab);
 
 
 <style>
+.arrow-right-circle-icon {
+  margin-right: 10px;
+}
+
 .login-form {
   text-align: center;
 }
@@ -58,23 +48,6 @@ Vue.component("tab", Tab);
   /* padding-left: 22%;
   padding-right: 22%; */
   font-family: "Manrope";
-  border: 1px;
-  border-color: grey;
-}
-
-.welcome {
-  margin-top: 30px;
-  font-size: 30px;
-  text-align: center;
-  font-family: "Manrope";
-  color: #624b77;
-}
-.instructions {
-  margin-top: 15px;
-  font-size: 15px;
-  text-align: center;
-  font-family: "Manrope";
-  color: #624b77;
 }
 
 #formContent {
@@ -91,15 +64,6 @@ Vue.component("tab", Tab);
   text-align: center;
 }
 
-#formFooter {
-  background-color: #f6f6f6;
-  border-top: 1px solid #dce8f1;
-  padding: 25px;
-  text-align: center;
-  -webkit-border-radius: 0 0 10px 10px;
-  border-radius: 0 0 10px 10px;
-}
-
 /* TABS */
 
 h2.inactive {
@@ -107,18 +71,26 @@ h2.inactive {
 }
 
 h2.active {
-  color: #0d0d0d;
-  border-bottom: 2px solid #5fbae9;
+  /* color: #0d0d0d; */
+  /* border-bottom: 1px solid #5fbae9; */
 }
 
 /* FORM TYPOGRAPHY*/
-input[type="button"],
-input[type="submit"]
+button[type="button"],
+button[type="submit"]
 /* input[type="reset"]  */
  {
-  background-color: #806897;
-  /* border: none; */
+  background: linear-gradient(
+    333deg,
+    rgba(167, 115, 215, 0.72) 21%,
+    rgba(169, 235, 244, 1) 75%
+  );
+  /* background-color: #806897; */
+  border: none;
   color: white;
+  letter-spacing: 0.5px;
+  font-weight: bolder;
+  font-size: 14px;
   /* padding: 15px 80px; */
   width: 85%;
   height: 50px;
@@ -126,12 +98,11 @@ input[type="submit"]
   text-decoration: none;
   display: inline-block;
   text-transform: uppercase;
-  font-size: 13px;
   -webkit-box-shadow: 0 10px 30px 0 rgba(95, 186, 233, 0.4);
   box-shadow: 0 10px 30px 0 rgba(137, 118, 241, 0.4);
   -webkit-border-radius: 5px 5px 5px 5px;
-  border-radius: 5px 5px 5px 5px;
-  margin: 5px 20px 40px 20px;
+  border-radius: 7px 7px 7px 7px;
+  margin: 30px 20px 40px 20px;
   -webkit-transition: all 0.3s ease-in-out;
   -moz-transition: all 0.3s ease-in-out;
   -ms-transition: all 0.3s ease-in-out;
@@ -139,15 +110,15 @@ input[type="submit"]
   transition: all 0.3s ease-in-out;
 }
 
-input[type="button"]:hover,
-input[type="submit"]:hover,
-input[type="reset"]:hover {
+button[type="button"]:hover,
+button[type="submit"]:hover,
+button[type="reset"]:hover {
   background-color: #987cb3;
 }
 
-input[type="button"]:active,
-input[type="submit"]:active,
-input[type="reset"]:active {
+button[type="button"]:active,
+button[type="submit"]:active,
+button[type="reset"]:active {
   -moz-transform: scale(0.95);
   -webkit-transform: scale(0.95);
   -o-transform: scale(0.95);
@@ -156,33 +127,45 @@ input[type="reset"]:active {
 }
 
 input[type="text"] {
-  background-color: #f6f6f6;
-  border: none;
-  color: #0d0d0d;
-  padding: 15px 32px;
+  /* border-bottom-color: #f6f6f6; */
+  /* border: none; */
+  /* color: #0d0d0d; */
+  border-radius: 0 !important;
+  background: none !important;
+  padding-top: 15px;
+  padding-bottom: 5px;
+  padding-left: 8px;
+  padding-right: 12px;
+  margin-bottom: 20px;
   text-align: left;
   text-decoration: none;
   display: inline-block;
   font-size: 16px;
   margin: 5px;
-  width: 85%;
-  border: 2px solid #f6f6f6;
+  width: 85% !important;
+  border-left: none !important;
+  border-right: none !important;
+  border-top: none !important;
+  border-bottom-color: #eee5e5 !important;
+  /* border-bottom-color: #0d0d0d; */
+
+  /* border: 2px solid #f6f6f6; */
   -webkit-transition: all 0.5s ease-in-out;
   -moz-transition: all 0.5s ease-in-out;
   -ms-transition: all 0.5s ease-in-out;
   -o-transition: all 0.5s ease-in-out;
   transition: all 0.5s ease-in-out;
   -webkit-border-radius: 5px 5px 5px 5px;
-  border-radius: 5px 5px 5px 5px;
+  /* border-radius: 5px 5px 5px 5px; */
 }
 
 input[type="text"]:focus {
   background-color: #fff;
-  border-bottom: 2px solid #5fbae9;
+  border-bottom: 1px solid #5fbae9;
 }
 
 input[type="text"]:placeholder {
-  color: #cccccc;
+  color: #241e1e;
 }
 
 /* ANIMATIONS */
@@ -296,8 +279,7 @@ input[type="text"]:placeholder {
   width: 0;
   height: 2px;
   font-weight: 300 !important;
-
-  background-color: #56baed;
+  /* background-color: #56baed; */
   content: "";
   transition: width 0.2s;
 }
@@ -331,8 +313,8 @@ input[type="text"]:placeholder {
 }
 
 .tabs-component-tabs {
-  border: solid 1px #ddd;
-  border-radius: 6px 6px 0px 0px;
+  border: solid 1px #ececec;
+  border-radius: 6px 6px 6px 6px;
   margin-bottom: 5px;
 }
 
@@ -367,15 +349,15 @@ input[type="text"]:placeholder {
   color: #666;
 }
 
-.tabs-component-tab.is-active {
-  color: #000;
-}
+/* .tabs-component-tab.is-active {
+  color: green !important;
+} */
 
 @media (min-width: 700px) {
   .tabs-component-tab {
     background-color: #fff;
     border: solid 1px #ddd;
-    border-radius: 3px 3px 0 0;
+    border-radius: 7px 7px 0 0;
     /* margin-right: 0.5em; */
     width: 100%;
     font-weight: 100;
@@ -387,18 +369,17 @@ input[type="text"]:placeholder {
   .tabs-component-tab.is-active {
     border-bottom: solid 2px #fff;
     z-index: 2;
-    transform: translateY(0);
+    /* transform: translateY(0); */
     font-weight: 300 !important;
+    /* color: green !important; */
   }
 }
 
 .tabs-component-tab-a {
-  align-items: center;
   /* color: inherit; */
   display: flex;
   padding: 0.65em 1em;
   text-decoration: none;
-  font-weight: 300 !important;
 }
 
 .tabs-component-panels {
@@ -411,8 +392,8 @@ input[type="text"]:placeholder {
     background-color: #fff;
     border: solid 1px #ddd;
     border-radius: 0 0px 6px 6px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
-    padding: 4em 2em;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.05);
+    padding: 2em 2em;
   }
 }
 </style>
