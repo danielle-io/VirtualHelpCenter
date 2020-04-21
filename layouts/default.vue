@@ -20,10 +20,13 @@ import AppHeader from '../components/AppHeader';
 import 'vue-material-design-icons/styles.css';
 
 import AccountCircle from 'vue-material-design-icons/AccountCircle.vue';
+
 import PlusCircle from 'vue-material-design-icons/PlusCircle.vue';
+import RightCircle from 'vue-material-design-icons/ArrowRightCircle.vue';
 
 Vue.component('account-circle', AccountCircle);
 Vue.component('plus-circle', PlusCircle);
+Vue.component('right-circle', RightCircle);
 
 
 export default {
@@ -34,6 +37,7 @@ export default {
     
   }
 };
+
 </script>
 
 <style>

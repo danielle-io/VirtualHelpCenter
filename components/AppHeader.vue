@@ -4,6 +4,7 @@
   <div class="main-nav">
     <div class="tabs">
       <div class="logo">
+        
         <span class="virtual">virtual</span>
         <!-- <span class="line">|</span> -->
         <span class="help">help</span>
@@ -110,10 +111,15 @@ export default {
   font-size: 30px;
 }
 
+.v {
+  font-size: 32px;
+  font-weight: 300;
+  color: #7436ad;
+}
 .virtual {
   font-size: 30px;
   font-weight: 200;
-  color: #01244c;
+  color: #7436ad;
 }
 
 .help {
