@@ -1,9 +1,10 @@
 var mongoose = require('mongoose');
+const User = require('./users');
 var Schema = mongoose.Schema;
 
-const StaffSchema = new Schema({
+const StaffSchema = User.discriminator('Staff', new Schema({
     classes: [{}]
-},
-{collection: 'Staff'})
+}),
+);
 
-module.exports = mongoose.model('Staff', StaffSchema);
+module.exports = mongoose.model('Staff');

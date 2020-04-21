@@ -1,6 +1,11 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
+const userOptions = {
+    discriminatorKey: 'usertype',
+    collection: 'User'
+};
+
 const UserSchema = new Schema({
     name: {
         firstname: String,
@@ -9,6 +14,7 @@ const UserSchema = new Schema({
     email: String,
     ucinetid: String,
 },
-{ collection: 'User' });
+    userOptions
+);
 
 module.exports = mongoose.model('User', UserSchema);
