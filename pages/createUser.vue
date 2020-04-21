@@ -110,6 +110,7 @@ export default {
         classes.data.forEach(classSelected => {
             this.loadClasses(classSelected);
         });
+
         
     }
 }

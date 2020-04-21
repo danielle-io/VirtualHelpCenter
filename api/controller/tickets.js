@@ -16,22 +16,16 @@ router.post('/insertTicket',function(req, res, next) {
     console.log('Ticket data before insert');
     console.log(ticketData);
     console.log('============');
-    ticketData.save().then(item => {
-        res.send(item);
-    })
-    .catch(err => {
-        res.status(400).send(err);
-    });
+    ticketData.save();
 })
 
 /* GET ticket by ID. */
 router.get('/ticket/:id', function (req, res, next) {
-  const id = parseInt(req.params.id)
-  if (id >= 0 && id < users.length) {
-    res.json(users[id])
-  } else {
-    res.sendStatus(404)
-  }
+  const id = req.params.id;
+  Ticket.findById(ids, (err, ticket)=>{
+    res.send(course);
+});
+  
 })
 
 module.exports = router

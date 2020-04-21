@@ -34,12 +34,7 @@ import Vue from "vue";
 
 Vue.config.productionTip = false;
 export default {
-  data() {
-    return {
-      id: "5e9bae3f29d3735cb4a44d3e"
-      //5e9acbc4d629c26348bcc992
-    }
-  }
+  
 };
 </script>
 
