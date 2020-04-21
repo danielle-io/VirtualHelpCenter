@@ -1,12 +1,18 @@
 
 <template>
-
   <div class="main-nav">
+    <div class="squiggle-container">
+    <svg viewBox="-380 60 620 680" preserveAspectRatio="xMinYMin meet" class="squiggle">
+      <path d="M1, 50 C10,200 550, 0 900, 1400 L1300,100 L1200" style />
+    </svg>
+    </div>
+
+    <div class="green-circle"></div>
+
     <div class="tabs">
       <div class="logo">
-        
         <span class="virtual">virtual</span>
-        <!-- <span class="line">|</span> -->
+
         <span class="help">help</span>
       </div>
       <div class="right-nav">
@@ -19,25 +25,23 @@
         <nuxt-link class="link-styling" to="../account">
           <account-circle />
         </nuxt-link>
+      </div>
+      <!-- App background shapes -->
 
-    
+      <div class="purple-circle"></div>
     </div>
-  </div>
   </div>
 </template>
 
 
 <script>
-
 import Vue from "vue";
 
-
 Vue.config.productionTip = false;
-export default {
-  
-};
+export default {};
 </script>
 
+    '~/assets/css/stylesheet.css',
 
 <style>
 .link-styling {
@@ -56,7 +60,7 @@ export default {
   height: 2em;
   width: 2em;
 }
- 
+
 .material-design-icon.icon-2x > .material-design-icon__svg {
   height: 2em;
   width: 2em;
@@ -86,6 +90,7 @@ export default {
 }
 
 .main-nav {
+  z-index: 999 !important;
   font-size: 15px;
   margin-left: 5px;
   margin-right: 5px;
@@ -129,6 +134,8 @@ export default {
 }
 
 .tabs {
+  position: absolute;
+
   display: inline-block !important;
   /* align-items: flex-end; */
   /* border-bottom: rgb(161, 160, 153); */
@@ -149,8 +156,6 @@ html.md-theme-default {
   margin-bottom: 20px !important;
   padding-bottom: 30px !important;
 }
-
-
 </style>
 
 

@@ -1,52 +1,19 @@
 <template>
-  <div>
+  <div style="margin-top: 5%;" >
     <div class="heading-text">Welcome.</div>
-    <div class="sub-heading-text">Please log in or register to continue.</div>
+    <div class="sub-heading-text">Please log in to continue.</div>
 
     <div class="login-container">
       <div>
-        <tabs :options="{ defaultTabHash: 'login-tab'}">
-          <tab name="Login">
-            <form class="login-form">
-              <input type="text" id="login-tab" name="email" placeholder="email" />
-              <input type="text" id="password" name="password" placeholder="password" />
-              <nuxt-link to="/landingStudent" value="Continue">
-                <button type="submit" class="fadeIn" value="Continue">
-                  <right-circle />Continue
-                </button>
-              </nuxt-link>
-            </form>
-          </tab>
-          <tab name="Register">
-            <form class="login-form">
-              <input
-                type="text"
-                id="login-tab"
-                class
-                name="email"
-                placeholder="please enter your email"
-              />
-              <input
-                type="text"
-                id="password"
-                class
-                name="password"
-                placeholder="create a password"
-              />
-              <input
-                type="text"
-                id="password"
-                class
-                name="password"
-                placeholder="please re-enter your password"
-              />
-
-              <nuxt-link to="/createUser" href="/createUser" value="Continue">
-                <input type="submit" to="/createUser" tag="button" value="Continue" />
-              </nuxt-link>
-            </form>
-          </tab>
-        </tabs>
+        <form class="login-form">
+          <input type="text" id="login-tab" name="email" placeholder="email" />
+          <input type="text" id="password" name="password" placeholder="password" />
+          <nuxt-link to="/landingStudent" value="Continue">
+            <button type="submit" style="margin-bottom: 20%;" class="fadeIn" value="Continue">
+              <right-circle />Continue
+            </button>
+          </nuxt-link>
+        </form>
       </div>
     </div>
   </div>

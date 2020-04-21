@@ -17,8 +17,8 @@ module.exports = {
   ** Global CSS
   */
   css: [
-    '~/assets/css/main.css',
-    '~/assets/css/stylesheet.css'
+    '~/assets/css/stylesheet.css',
+    '~/assets/css/background.css',
   ],
   /*
   ** Add axios globally
