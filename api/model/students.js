@@ -1,12 +1,13 @@
 'use strict';
 
-var mongoose = require('mongoose'),
-Schema = mongoose.Schema;
+var mongoose = require('mongoose');
+const User = require('./users');
+var Schema = mongoose.Schema;
 
 mongoose.models = {};
 mongoose.modelSchemas = {};
 
-const StudentSchema = new Schema({
+const StudentSchema = User.discriminator('Student', new Schema({
     classes: [{
         section: Number,
         _id: {
@@ -14,7 +15,7 @@ const StudentSchema = new Schema({
             ref: 'Course'
         }
     }]
-},
-{collection: 'Student'});
+}),
+);
 
-module.exports = mongoose.model('Student', StudentSchema);
+module.exports = mongoose.model('Student');

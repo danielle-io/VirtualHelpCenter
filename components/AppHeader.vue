@@ -28,7 +28,7 @@
       </div>
       <!-- App background shapes -->
 
-      <div class="purple-circle"></div>
+    <md-tab id="tab-request" md-label="Request" to="../request"></md-tab>
     </div>
   </div>
 </template>
