@@ -1,13 +1,28 @@
 <template>
   <div>
-    <div class="heading-text">My Requests</div>
-
-    <!-- TO DO: make this text dynamic based on user tickets -->
-    <div class="sub-heading-text">You currently have no requests.</div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/velocity/1.2.3/velocity.min.js"></script>
 
     <div class="request-container">
-      <div class="heading-two-text">Start a Request</div>
+      <div class="heading-text">My Requests</div>
 
+      <!-- TO DO: make this text dynamic based on user tickets -->
+      <div class="sub-heading-text" style="padding-top:2%;">You currently have no pending requests.</div>
+      <!-- <nuxt-link to="/landingStudent" value="Continue"> -->
+      <!-- <button type="submit" style="margin-bottom: 20%;" class="fadeIn" value="Continue">
+          <right-circle />Request a Session
+      </button>-->
+
+      <!-- <transition name="fade" mode="out-in"> -->
+
+              <button v-if="isEditing" key="save" type="submit" style="margin-bottom: 20%;" class="fadeIn" value="Continue">
+          <right-circle />Request a Session
+      </button>
+
+            <button v-else key="edit" type="submit" style="margin-bottom: 20%;" class="fadeIn" value="Continue">
+          <right-circle />Submit Request
+      </button>
+
+      <!-- </nuxt-link> -->
       <div id="app">
         <table class="table request-table">
           <tbody>
@@ -39,7 +54,6 @@
                 </td>
               </tr>
             </div>
-
           </tbody>
         </table>
 
@@ -53,17 +67,14 @@
       
 
 <script>
-// var app = new Vue({
-//   el: "#app",
-//   data: {
-//     rows: []
-//   },
+import Vue from "vue";
 
 import vue from "vue";
 import axios from "~/plugins/axios";
 import { BFormInput, BFormSelect, BButton, BFormCheckbox } from "bootstrap-vue";
 
 export default {
+
   components: {
     "b-form-input": BFormInput,
     "b-form-select": BFormSelect,
@@ -73,13 +84,27 @@ export default {
   data() {
     return {
       el: "#app",
+      show: true,
       rows: [],
       status: "Open",
       oneLineOverview: "",
-      shown: false
+      shown: false,
+      isEditing: true,
+      docState: null
     };
   },
   methods: {
+      buttonMessage: function() {
+    switch (this.docState) {
+      case "saved":
+        return "Edit";
+      case "edited":
+        return "Save";
+      case "editing":
+        return "Cancel";
+    }
+  },
+    
     addRow: function() {
       var elem = document.createElement("tr");
       this.rows.push({
@@ -87,7 +112,8 @@ export default {
         description: "",
         file: {
           name: "Choose File"
-        }
+        },
+        
       });
     },
     removeElement: function(index) {
@@ -107,6 +133,65 @@ export default {
 
 
 <style>
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
+}
+
+button[type="button"],
+button[type="submit"]
+/* input[type="reset"]  */
+ {
+  background: linear-gradient(
+    333deg,
+    rgba(167, 115, 215, 0.72) 21%,
+    rgba(169, 235, 244, 1) 75%
+  );
+  /* background-color: #806897; */
+  border: none;
+  color: white;
+  letter-spacing: 0.5px;
+  font-weight: bolder;
+  font-size: 14px;
+  /* padding: 15px 80px; */
+  justify-content: center;
+  width: 45%;
+  height: 40px;
+  text-align: center !important;
+  text-decoration: none;
+  display: inline-block;
+  text-transform: uppercase;
+  -webkit-box-shadow: 0 10px 30px 0 rgba(95, 186, 233, 0.4);
+  box-shadow: 0 10px 30px 0 rgba(137, 118, 241, 0.4);
+  -webkit-border-radius: 5px 5px 5px 5px;
+  border-radius: 7px 7px 7px 7px;
+  margin: 30px 20px 40px 20px;
+  -webkit-transition: all 0.3s ease-in-out;
+  -moz-transition: all 0.3s ease-in-out;
+  -ms-transition: all 0.3s ease-in-out;
+  -o-transition: all 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out;
+}
+
+button[type="button"]:hover,
+button[type="submit"]:hover,
+button[type="reset"]:hover {
+  background-color: #987cb3;
+}
+
+button[type="button"]:active,
+button[type="submit"]:active,
+button[type="reset"]:active {
+  -moz-transform: scale(0.95);
+  -webkit-transform: scale(0.95);
+  -o-transform: scale(0.95);
+  -ms-transform: scale(0.95);
+  transform: scale(0.95);
+}
+
 /* Styling for adding rows */
 .add-button {
   font-size: 20px;
@@ -175,7 +260,7 @@ table th,
   justify-content: center; */
   margin-left: 20%;
   margin-right: 20%;
-  margin-top: 2%;
+  margin-top: 4%;
   margin-bottom: 2%;
   /* padding-left: 22%;
   padding-right: 22%; */
@@ -220,50 +305,6 @@ h2.inactive {
 h2.active {
   color: #0d0d0d;
   border-bottom: 2px solid #5fbae9;
-}
-
-/* FORM TYPOGRAPHY*/
-input[type="button"],
-input[type="submit"]
-/* input[type="reset"]  */
- {
-  background-color: #806897;
-  /* border: none; */
-  color: white;
-  /* padding: 15px 80px; */
-  width: 85%;
-  height: 50px;
-  text-align: center !important;
-  text-decoration: none;
-  display: inline-block;
-  text-transform: uppercase;
-  font-size: 13px;
-  -webkit-box-shadow: 0 10px 30px 0 rgba(95, 186, 233, 0.4);
-  box-shadow: 0 10px 30px 0 rgba(137, 118, 241, 0.4);
-  -webkit-border-radius: 5px 5px 5px 5px;
-  border-radius: 5px 5px 5px 5px;
-  margin: 5px 20px 40px 20px;
-  -webkit-transition: all 0.3s ease-in-out;
-  -moz-transition: all 0.3s ease-in-out;
-  -ms-transition: all 0.3s ease-in-out;
-  -o-transition: all 0.3s ease-in-out;
-  transition: all 0.3s ease-in-out;
-}
-
-input[type="button"]:hover,
-input[type="submit"]:hover,
-input[type="reset"]:hover {
-  background-color: #987cb3;
-}
-
-input[type="button"]:active,
-input[type="submit"]:active,
-input[type="reset"]:active {
-  -moz-transform: scale(0.95);
-  -webkit-transform: scale(0.95);
-  -o-transform: scale(0.95);
-  -ms-transform: scale(0.95);
-  transform: scale(0.95);
 }
 
 input[type="text"] {
