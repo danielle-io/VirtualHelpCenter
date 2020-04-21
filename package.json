@@ -27,6 +27,7 @@
     "express": "^4.16.4",
     "fs": "0.0.1-security",
     "material-design-icons": "^3.0.1",
+    "md-tabs": "0.0.1-alpha.1",
     "module": "^1.2.5",
     "mongoose": "^5.9.9",
     "morgan": "^1.10.0",
@@ -39,6 +40,7 @@
     "vue-material": "^1.0.0-beta-11",
     "vue-material-design-icons": "^4.6.0",
     "vue-tabs-component": "^1.5.0",
+    "vueify": "^9.4.1",
     "vuex": "^3.2.0"
   },
   "devDependencies": {
