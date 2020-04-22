@@ -14,7 +14,7 @@
 
       <!-- <transition name="fade" mode="out-in"> -->
 
-              <button v-if="isEditing" key="save" type="submit" style="margin-bottom: 20%;" class="fadeIn" value="Continue">
+         <button v-if="isEditing" key="save" type="submit" style="margin-bottom: 20%;" class="fadeIn" value="Continue">
           <right-circle />Request a Session
       </button>
 
@@ -38,6 +38,7 @@
 
                 <td class="remove-column">
                   <a v-on:click="removeElement(index);" style="cursor: pointer">Remove</a>
+
                 </td>
               </tr>
 
@@ -260,7 +261,7 @@ table th,
   justify-content: center; */
   margin-left: 20%;
   margin-right: 20%;
-  margin-top: 4%;
+  margin-top: 6%;
   margin-bottom: 2%;
   /* padding-left: 22%;
   padding-right: 22%; */
