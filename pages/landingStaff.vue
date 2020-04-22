@@ -2,7 +2,6 @@
   <div>
     <div class="heading-text">Requests</div>
 
-    <!-- <div class="sub-heading-text"></div> -->
 
     <div class="request-container">
       <div class="heading-two-text">Select a Request</div>

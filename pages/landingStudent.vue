@@ -1,31 +1,31 @@
 <template>
   <div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/velocity/1.2.3/velocity.min.js"></script>
+      <div id="requests">
 
-    <div class="request-container">
-      <div class="heading-text">My Requests</div>
+      <transition name="fade" mode="in-out">
+      
+      <div v-bind:key="request" class="request-container">
 
-      <!-- TO DO: make this text dynamic based on user tickets -->
-      <div class="sub-heading-text" style="padding-top:2%;">You currently have no pending requests.</div>
-      <!-- <nuxt-link to="/landingStudent" value="Continue"> -->
-      <!-- <button type="submit" style="margin-bottom: 20%;" class="fadeIn" value="Continue">
-          <right-circle />Request a Session
-      </button>-->
+        <div v-if="this.request === true">
+          <div class="heading-text">My Requests</div>
+          
+          <!-- TO DO: make this text dynamic based on user tickets -->
+          <div class="sub-heading-text" style="padding-top:2%;">You currently have no pending requests.</div>
 
-      <!-- <transition name="fade" mode="out-in"> -->
+          <button v-bind:key="request" @click="changeRequestState" type="submit" style="margin-bottom: 20%;" class="fadeIn">
+            <right-circle />Request a Session
+          </button>
 
-         <button v-if="isEditing" key="save" type="submit" style="margin-bottom: 20%;" class="fadeIn" value="Continue">
-          <right-circle />Request a Session
-      </button>
+        </div>
 
-            <button v-else key="edit" type="submit" style="margin-bottom: 20%;" class="fadeIn" value="Continue">
-          <right-circle />Submit Request
-      </button>
-
-      <!-- </nuxt-link> -->
-      <div id="app">
-        <table class="table request-table">
+      <div v-else-if="this.request === false && this.submit === false">
+          <div class="heading-text">Request a Session</div>
+          <div class="sub-heading-text" style="padding-top:2%;">Complete the form below to request assistance from a lab tutor.</div>
+      <div class="table-and-add-button">
+       <table class="table request-table">
           <tbody>
+
             <!-- This is where the new questions are inserted -->
             <div class="top-row" v-for="(row, index) in rows" v-bind:key="row">
               <tr>
@@ -37,7 +37,7 @@
                 </td>
 
                 <td class="remove-column">
-                  <a v-on:click="removeElement(index);" style="cursor: pointer">Remove</a>
+                  <a v-on:click="removeElement(index);" style="cursor: pointer; z-index: 999;">Remove</a>
 
                 </td>
               </tr>
@@ -61,7 +61,24 @@
         <span class="add-button" @click="addRow">
           <plus-circle />
         </span>
+        </div>
+
+          <!--  On select, the state of request is changed, forcing a transition effect and
+          changing what is rendered on the page -->
+          <button v-bind:key="request" type="submit"
+            style="margin-bottom: 20%; margin-top: 10px;" class="fadeIn"
+            @click="changeRequestState">
+            <right-circle />Submit Request
+          </button>
+
+        </div>
+
+        <div v-else-if="this.request === false && this.submit === true" v-bind:key="request">
+            <div class="heading-text">Request submitted</div>
+            <div class="sub-heading-text" style="padding-top:2%;">The current wait time is approximately 20 minutes.</div>
+        </div>
       </div>
+      </transition>
     </div>
   </div>
 </template>
@@ -69,10 +86,10 @@
 
 <script>
 import Vue from "vue";
-
-import vue from "vue";
 import axios from "~/plugins/axios";
 import { BFormInput, BFormSelect, BButton, BFormCheckbox } from "bootstrap-vue";
+
+
 
 export default {
 
@@ -80,32 +97,36 @@ export default {
     "b-form-input": BFormInput,
     "b-form-select": BFormSelect,
     "b-button": BButton,
-    "b-form-checkbox": BFormCheckbox
+    "b-form-checkbox": BFormCheckbox,
   },
+
   data() {
     return {
-      el: "#app",
+      el: "#requests",
       show: true,
       rows: [],
       status: "Open",
       oneLineOverview: "",
       shown: false,
-      isEditing: true,
-      docState: null
+      docState: 'request',
+      request: true,
+      submit: false,
     };
   },
-  methods: {
-      buttonMessage: function() {
-    switch (this.docState) {
-      case "saved":
-        return "Edit";
-      case "edited":
-        return "Save";
-      case "editing":
-        return "Cancel";
-    }
+  computed:{
+    buttonMessage: function () {
+      switch (this.docState) {
+        case 'request': 
+          this.docState = 'submit';
+          // this.request = false;
+          return 'Request'
+        case 'submit': 
+          this.submit =  true;
+          return 'done'
+      }
+    },
   },
-    
+  methods: {
     addRow: function() {
       var elem = document.createElement("tr");
       this.rows.push({
@@ -113,8 +134,7 @@ export default {
         description: "",
         file: {
           name: "Choose File"
-        },
-        
+        },  
       });
     },
     removeElement: function(index) {
@@ -127,13 +147,42 @@ export default {
     loadClasses: function(classSelected) {
       var text = classSelected.dep + " " + classSelected.courseNum;
       this.classes.push({ value: classSelected._id, text: text });
-    }
-  }
+    },
+    changeRequestState: function () {
+      console.log('old request is below');
+      console.log(this.request);
+      console.log('new request is below');
+      console.log(this.request);
+
+      if (this.request === true){
+        console.log("request is true");
+        this.request = false;
+        return this.request;
+      }
+      else {
+        console.log("request false final button false");
+        this.request = false;
+        this.submit = true;
+        return this.request;
+      }
+    },
+    
+  },
 };
 </script>
 
 
 <style>
+
+.component-fade-enter-active, .component-fade-leave-active {
+  transition: opacity .6s ease;
+}
+.component-fade-enter, .component-fade-leave-to
+/* .component-fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
+}
+
+
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.5s;
@@ -196,10 +245,15 @@ button[type="reset"]:active {
 /* Styling for adding rows */
 .add-button {
   font-size: 20px;
-  color: #0090ad;
+  color: rgb(154, 224, 231);
   cursor: pointer;
   margin-bottom: 10px;
+  margin-left: 10px;
   padding-bottom: 10px;
+}
+
+.table-and-add-button{
+  margin-bottom: 10px;
 }
 
 .top-row {
@@ -221,6 +275,7 @@ table th,
 
 .request-table {
   margin-top: 10px;
+  z-index: 1 !important;
 }
 
 .file-container {
@@ -257,6 +312,7 @@ table th,
 }
 
 .request-container {
+  position: relative;
   /* text-align: center;
   justify-content: center; */
   margin-left: 20%;

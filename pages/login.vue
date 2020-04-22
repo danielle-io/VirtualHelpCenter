@@ -20,14 +20,11 @@
 </template>
 
 
-
 <script>
 import Vue from "vue";
 export default {};
-import { Tabs, Tab } from "vue-tabs-component";
-
-Vue.component("tabs", Tabs);
-Vue.component("tab", Tab);
+// import { Tabs, Tab } from "vue-tabs-component";
+// Vue.component("tabs", Tabs);
 </script>
 
 
