@@ -1,8 +1,6 @@
 <template>
-  <div>
+  <div style="position: relative;">
     <div class="heading-text">Requests</div>
-
-
     <div class="request-container">
       <div class="heading-two-text">Select a Request</div>
 
