@@ -38,13 +38,9 @@ export default {};
 }
 
 .login-container {
-  /* text-align: center;
-  justify-content: center; */
   margin-left: 20%;
   margin-right: 20%;
-  /* padding-left: 22%;
-  padding-right: 22%; */
-  font-family: "Manrope";
+  position: relative;
 }
 
 #formContent {
@@ -139,11 +135,11 @@ input[type="text"] {
   display: inline-block;
   font-size: 16px;
   margin: 5px;
-  width: 85% !important;
-  border-left: none !important;
-  border-right: none !important;
-  border-top: none !important;
-  border-bottom-color: #eee5e5 !important;
+  width: 85%;
+  border-left: none;
+  border-right: none;
+  border-top: none;
+  border-bottom-color: #eee5e5;
   /* border-bottom-color: #0d0d0d; */
 
   /* border: 2px solid #f6f6f6; */

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="position: relative;">
     <section class="header-title-container">
       <h1 class="title">Testing Home Page</h1>
     </section>

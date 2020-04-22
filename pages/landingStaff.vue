@@ -109,7 +109,4 @@ export default {
   margin: 0;
   margin-top: 10px;
 }
-.button {
-  margin-top: 30px;
-}
 </style>
