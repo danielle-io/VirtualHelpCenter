@@ -20,12 +20,19 @@ module.exports = {
     '~/assets/css/stylesheet.css',
     '~/assets/css/background.css',
   ],
+  modules: [
+    '@nuxtjs/axios',
+    '@nuxtjs/dotenv'
+  ],
   /*
   ** Add axios globally
   */
+  axios: {
+    baseURL: process.env.BASE_URL || 'http://localhost:3000/api'
+  },
   build: {
-    vendor: ['axios'],
-    vendor: ['@nuxtjs/dotenv'],
+    // vendor: ['axios'],
+    // vendor: ['@nuxtjs/dotenv'],
     /*
     ** Run ESLINT on save
     */
