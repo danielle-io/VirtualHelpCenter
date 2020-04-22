@@ -1,82 +1,235 @@
 <template>
   <div>
-    <div class="heading-text">My Requests</div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/velocity/1.2.3/velocity.min.js"></script>
 
-    <!-- TO DO: make this text dynamic based on user tickets -->
-    <div class="sub-heading-text">You currently have no requests.</div>
+    <div id="requests">
+      <!-- The transition effects for the containers changing -->
+      <transition name="fade" mode="in-out">
+        <div v-bind:key="request" class="request-container">
 
-    <div class="request-container">
-      <div class="heading-two-text">Start a Request</div>
+          <div v-if="this.submitRequest === true" v-bind:key="submitRequest">
+            <div class="heading-text">Request submitted</div>
+            <div
+              class="sub-heading-text"
+              style="padding-top:2%;"
+            >The current wait time is approximately 20 minutes.</div>
+          </div>
 
-      <div id="app">
-        <table class="table request-table">
-          <tbody>
-            <!-- This is where the new questions are inserted -->
-            <div class="top-row" v-for="(row, index) in rows" v-bind:key="row">
-              <tr>
-                <td class="form-column">
-                  <b-form-input
-                    v-model="oneLineOverview"
-                    placeholder="One line description of the issue"
-                  ></b-form-input>
-                </td>
+          <!--  The first container to show  -->
+          <div v-if="this.request === true">
+            <div class="heading-text">My Requests</div>
 
-                <td class="remove-column">
-                  <a v-on:click="removeElement(index);" style="cursor: pointer">Remove</a>
-                </td>
-              </tr>
-
-              <tr>
-                <td>
-                  <label class="file-container">
-                    {{row.file.name}}
-                    <input
-                      type="file"
-                      @change="setFilename($event, row)"
-                      :id="index"
-                    />
-                  </label>
-                </td>
-              </tr>
+            <!-- TO DO: make this text dynamic based on user tickets -->
+            <div
+              class="sub-heading-text"
+              style="padding-top:2%;"
+            >You currently have no pending requests.</div>
+            
+            <div style="text-align: center;">
+              <button
+                v-bind:key="request"
+                @click="changeRequestState"
+                type="submit"
+                style="margin-bottom: 20%;"
+                class="fadeIn form-buttons"
+              >
+                <right-circle />Request a Session
+              </button>
             </div>
+          </div>
 
-          </tbody>
-        </table>
+          <!-- Container for filling out the request form -->
+          <div v-if="this.request === false && this.submitRequest === false">
+            <div class="heading-text">Request a Session</div>
+            <div
+              class="sub-heading-text-left"
+              style="padding-top:2%;"
+            >Complete the form below to request assistance from a lab tutor.</div>
 
-        <span class="add-button" @click="addRow">
-          <plus-circle />
-        </span>
-      </div>
+              <div class="form-container">
+                <div class="row" style="width: 70%;">
+                  <b-form-select v-model="selected" :options="classes" size="sm" class="mt-3"></b-form-select>
+                </div>
+
+                <div class="row">
+                  <label class="label-format">Please enter a brief one-sentence summary of the issue</label>
+                  <b-form-input v-model="probDes" placeholder class="form-text-areas"></b-form-input>
+                </div>
+
+                <div class="row">
+                  <label class="label-format">Elaborate on the issue, if needed.</label>
+                  <b-form-text-area
+                    id="textarea"
+                    v-model="problem"
+                    placeholder
+                    rows="2"
+                    max-rows="6"
+                  ></b-form-text-area>
+                  <!-- removed for now from above :disabled="isDisabled" -->
+
+                  <pre class="mt-3 mb-0">{{ problem }}</pre>
+                </div>
+
+                <div class="row">
+                  <label class="label-format">Paste a code snippet, if needed</label>
+                   <b-form-text-area
+                    id="textarea"
+                    v-model="code"
+                    placeholder
+                    rows="1"
+                    max-rows="6"
+                  ></b-form-text-area>
+                <!-- removed for now from above :disabled="isDisabled" -->
+                <!-- <pre class="mt-3 mb-0">{{ code }}</pre> -->
+              </div>
+
+              <div class="Row">
+                <label class="label-format">Add a file, if needed</label>
+              </div>
+
+                <table class="table request-table">
+                  <tbody>
+
+                    <!-- This is where the new questions are inserted -->
+                    <div class="top-row" v-for="(row, index) in rows" v-bind:key="row">
+                      <tr>
+                        <td>
+                          <button class="file-container">
+                            {{row.file.name}}
+                            <input
+                              type="file"
+                              @change="setFilename($event, row)"
+                              :id="index"
+                            />
+                          </button>
+                        </td>
+
+                        <td class="remove-column">
+                          <a
+                            v-on:click="removeElement(index);"
+                            style="cursor: pointer; z-index: 999;"
+                          >Remove</a>
+                        </td>
+                      </tr>
+                    </div>
+                  </tbody>
+                </table>
+
+                  <span class="add-button" @click="addRow">
+                    <plus-circle /> 
+                  </span>
+
+                  <div style="text-align: center;">
+                    <!--  On select, the state of request is changed, forcing a transition effect and
+                    changing what is rendered on the page-->
+                    <button
+                      v-bind:key="submitRequest"                
+                      type="submit"
+                      style="margin-bottom: 10px; margin-top: 10px;"
+                      class="fadeIn form-buttons"
+                      @click="changeRequestState"
+                    >
+                      <right-circle />Submit Request
+                    </button>
+
+                    <!-- ADD THIS BACK TO BUTTON ABOVE WHEN READY
+                      v-on:click="submit"  -->
+
+                    
+                  </div>
+              </div>
+          </div>
+        </div>
+      </transition>
     </div>
   </div>
 </template>
       
 
 <script>
-// var app = new Vue({
-//   el: "#app",
-//   data: {
-//     rows: []
-//   },
-
-import vue from "vue";
+import Vue from "vue";
 import axios from "~/plugins/axios";
-import { BFormInput, BFormSelect, BButton, BFormCheckbox } from "bootstrap-vue";
+import {
+  BFormInput,
+  BFormSelect,
+  BFormCheckbox,
+  BFormTextarea
+} from "bootstrap-vue";
 
 export default {
   components: {
     "b-form-input": BFormInput,
     "b-form-select": BFormSelect,
-    "b-button": BButton,
-    "b-form-checkbox": BFormCheckbox
+    "b-form-checkbox": BFormCheckbox,
+    "b-form-text-area": BFormTextarea
   },
+
+  //users classes show up as options
+  async loadClasses(courses) {
+    courses = await axios.get("../api/courses/" + courses._id);
+    let text = courses.data.dep + " " + courses.data.courseNum;
+    this.classes.push({ value: courses.data._id, text: text });
+    console.log("loading classes");
+  },
+  async loadUser(user) {
+    this.student = user.data._id;
+  },
+
+  // COMMENTED OUT FOR NOW BC ITS GIVING SOME ISSUES
+  // submit: function() {
+  //   if (this.problem != "" && this.probDes != "" && this.code != "") {
+  //     axios.post("/api/insertTicket", {
+  //       status: "Open",
+  //       owner: {
+  //         _id: this.student
+  //       },
+  //       course: {
+  //         _id: this.selected
+  //       },
+  //       oneLineOverview: this.probDes,
+  //       longerDescription: this.problem,
+  //       codeSnippet: this.code,
+  //       createdAt: new Date().toString()
+  //     });
+  //   } else {
+  //     console.log("not submitted");
+  //   }
+  // },
+  computed: {
+    isDisabled: function() {
+      return !this.selected;
+    }
+  },
+
+  // COMMENTED OUT BC THERE'S AN ERROR RN
+  //had to rename function "created" because I couldnt access "options" property
+  async created() {
+    // let student = await axios.get("/api/students/" + this.$route.params.id);
+    // student.data.classes.forEach(element => {
+    //   this.loadClasses(element);
+    // });
+    // this.loadUser(student);
+  },
+
   data() {
     return {
-      el: "#app",
+      el: "#requests",
+      show: true,
       rows: [],
       status: "Open",
       oneLineOverview: "",
-      shown: false
+      shown: false,
+      request: true,
+      submitRequest: false,
+      problem: "",
+      probDes: "",
+      code: "",
+      file: null,
+      selected: null,
+      student: null,
+      classes: [
+        { value: null, text: "Please select the class you need help with:" }
+      ]
     };
   },
   methods: {
@@ -100,6 +253,18 @@ export default {
     loadClasses: function(classSelected) {
       var text = classSelected.dep + " " + classSelected.courseNum;
       this.classes.push({ value: classSelected._id, text: text });
+    },
+    changeRequestState: function() {
+      if (this.request === true && this.submitRequest === false) {
+        this.request = false;
+        return this.request;
+      } else {
+        console.log('here');
+        this.submitRequest = true;
+                console.log(this.submitRequest);
+
+        return this.request;
+      }
     }
   }
 };
@@ -107,21 +272,42 @@ export default {
 
 
 <style>
+.form-buttons {
+  width: 60% !important;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s;
+}
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.form-text-areas {
+  border-style: solid;
+  border: 1px !important;
+  /* border-color: rgb(180, 175, 175) !important; */
+  border: 2px solid #dfdada !important;
+}
+
 /* Styling for adding rows */
 .add-button {
-  font-size: 20px;
-  color: #0090ad;
+  align-items: left;
+  font-size: 30px;
+  color: rgb(154, 224, 231);
   cursor: pointer;
-  margin-bottom: 10px;
-  padding-bottom: 10px;
+  padding-top: 15px !important;
+}
+
+.row {
+  margin-top: 5px;
+  margin-bottom: 5px;
 }
 
 .top-row {
   border-top: 1px solid #dee2e6;
-}
-
-.form-column {
-  width: 100%;
 }
 
 .remove-column {
@@ -135,17 +321,13 @@ table th,
 
 .request-table {
   margin-top: 10px;
-}
-
-.file-container {
-  /* overflow: hidden; */
-  position: relative;
+  z-index: 1 !important;
 }
 
 .file-container [type="file"] {
   cursor: inherit;
   display: block;
-  font-size: 999px;
+  /* font-size: 999px; */
   filter: alpha(opacity=0);
   min-height: 21px;
   min-width: 100%;
@@ -154,16 +336,18 @@ table th,
   right: 0;
   text-align: right;
   top: 0;
+  cursor: pointer;
 }
 
 .file-container {
   background: #e3e3e3;
   float: left;
   padding: 0.5em;
+  position: relative;
 }
 
-.file-container [type="file"] {
-  cursor: pointer;
+.file-container:hover {
+  background: #e3e3e3 !important;
 }
 
 .login-form {
@@ -171,15 +355,14 @@ table th,
 }
 
 .request-container {
-  /* text-align: center;
-  justify-content: center; */
-  margin-left: 20%;
-  margin-right: 20%;
-  margin-top: 2%;
+  position: relative;
+  padding-left: 10px;
+  padding-right: 10px;
+  margin-left: 15%;
+  margin-right: 15%;
+  margin-top: 6%;
   margin-bottom: 2%;
-  /* padding-left: 22%;
-  padding-right: 22%; */
-  font-family: "Manrope";
+  font-family: "Poppins";
   min-width: 200px;
   border: solid 1px #ddd;
   padding-left: 2%;
@@ -188,27 +371,23 @@ table th,
   box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.05);
 }
 
+.form-container {
+  position: relative;
+  padding-top: 2px;
+  padding-left: 12px;
+  padding-right: 12px;
+  padding-bottom: 2px;
+  font-family: "Poppins";
+}
+
 #formContent {
   -webkit-border-radius: 10px 10px 10px 10px;
   border-radius: 10px 10px 10px 10px;
   background: #fff;
   padding: 30px;
-  /* width: 90%; */
-  max-width: px;
-  /* position: relative; */
-  /* padding: 0px; */
   -webkit-box-shadow: 0 30px 60px 0 rgba(0, 0, 0, 0.3);
   box-shadow: 0 30px 60px 0 rgba(0, 0, 0, 0.3);
   text-align: center;
-}
-
-#formFooter {
-  background-color: #f6f6f6;
-  border-top: 1px solid #dce8f1;
-  padding: 25px;
-  text-align: center;
-  -webkit-border-radius: 0 0 10px 10px;
-  border-radius: 0 0 10px 10px;
 }
 
 /* TABS */
@@ -222,61 +401,14 @@ h2.active {
   border-bottom: 2px solid #5fbae9;
 }
 
-/* FORM TYPOGRAPHY*/
-input[type="button"],
-input[type="submit"]
-/* input[type="reset"]  */
- {
-  background-color: #806897;
-  /* border: none; */
-  color: white;
-  /* padding: 15px 80px; */
-  width: 85%;
-  height: 50px;
-  text-align: center !important;
-  text-decoration: none;
-  display: inline-block;
-  text-transform: uppercase;
-  font-size: 13px;
-  -webkit-box-shadow: 0 10px 30px 0 rgba(95, 186, 233, 0.4);
-  box-shadow: 0 10px 30px 0 rgba(137, 118, 241, 0.4);
-  -webkit-border-radius: 5px 5px 5px 5px;
-  border-radius: 5px 5px 5px 5px;
-  margin: 5px 20px 40px 20px;
-  -webkit-transition: all 0.3s ease-in-out;
-  -moz-transition: all 0.3s ease-in-out;
-  -ms-transition: all 0.3s ease-in-out;
-  -o-transition: all 0.3s ease-in-out;
-  transition: all 0.3s ease-in-out;
-}
-
-input[type="button"]:hover,
-input[type="submit"]:hover,
-input[type="reset"]:hover {
-  background-color: #987cb3;
-}
-
-input[type="button"]:active,
-input[type="submit"]:active,
-input[type="reset"]:active {
-  -moz-transform: scale(0.95);
-  -webkit-transform: scale(0.95);
-  -o-transform: scale(0.95);
-  -ms-transform: scale(0.95);
-  transform: scale(0.95);
-}
-
 input[type="text"] {
-  background-color: #f6f6f6;
-  border: none;
   color: #0d0d0d;
   text-align: left;
-  text-decoration: none;
   display: inline-block;
   font-size: 16px;
   margin: 5px;
   width: 100%;
-  border: 2px solid #f6f6f6;
+  /* border: 2px solid #f6f6f6; */
   -webkit-transition: all 0.5s ease-in-out;
   -moz-transition: all 0.5s ease-in-out;
   -ms-transition: all 0.5s ease-in-out;
@@ -287,7 +419,6 @@ input[type="text"] {
 }
 
 input[type="text"]:focus {
-  background-color: #fff;
   border-bottom: 2px solid #5fbae9;
 }
 
@@ -296,7 +427,6 @@ input[type="text"]:placeholder {
 }
 
 /* ANIMATIONS */
-
 /* Simple CSS3 Fade-in-down Animation */
 .fadeInDown {
   -webkit-animation-name: fadeInDown;
@@ -308,19 +438,6 @@ input[type="text"]:placeholder {
 }
 
 @-webkit-keyframes fadeInDown {
-  0% {
-    opacity: 0;
-    -webkit-transform: translate3d(0, -100%, 0);
-    transform: translate3d(0, -100%, 0);
-  }
-  100% {
-    opacity: 1;
-    -webkit-transform: none;
-    transform: none;
-  }
-}
-
-@keyframes fadeInDown {
   0% {
     opacity: 0;
     -webkit-transform: translate3d(0, -100%, 0);
@@ -374,31 +491,6 @@ input[type="text"]:placeholder {
   animation-duration: 1s;
 }
 
-.fadeIn.first {
-  -webkit-animation-delay: 0.4s;
-  -moz-animation-delay: 0.4s;
-  animation-delay: 0.4s;
-}
-
-.fadeIn.second {
-  -webkit-animation-delay: 0.6s;
-  -moz-animation-delay: 0.6s;
-  animation-delay: 0.6s;
-}
-
-.fadeIn.third {
-  -webkit-animation-delay: 0.7;
-  -moz-animation-delay: 0.7s;
-  animation-delay: 0.7s;
-}
-
-.fadeIn.fourth {
-  -webkit-animation-delay: 0.5s;
-  -moz-animation-delay: 0.5s;
-  animation-delay: 0.51s;
-}
-
-/* Simple CSS3 Fade-in Animation */
 .underlineHover:after {
   display: block;
   left: 0;
@@ -406,7 +498,6 @@ input[type="text"]:placeholder {
   width: 0;
   height: 2px;
   font-weight: 300 !important;
-
   background-color: #56baed;
   content: "";
   transition: width 0.2s;
@@ -415,19 +506,5 @@ input[type="text"]:placeholder {
 .underlineHover:hover:after {
   width: 100%;
   font-weight: 300 !important;
-}
-
-/* OTHERS */
-
-/* *:focus {
-  outline: none;
-} */
-
-#icon {
-  width: 60%;
-}
-
-* {
-  box-sizing: border-box;
 }
 </style>

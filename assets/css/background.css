@@ -6,16 +6,17 @@ svg {
   }
 
   .squiggle-container {
-    height: 20%;
-    max-height: 2%;
+    height: 20px;
   }
 
 .squiggle{
-    z-index: 0 !important;
+  /* width: 100px;
+  height: 500px; */
+    z-index: 0;
     opacity: .7;
     position: absolute;
     fill: #D7F0F3;
-	box-shadow: 0px 5px 90px rgba(99, 96, 96, 0.3);
+	  /* box-shadow: 0px 5px 90px rgba(99, 96, 96, 0.3); */
 }
 
 .green-circle {
@@ -29,25 +30,20 @@ svg {
     left: 93%;
     top: 28%;
     transform: translate3d(-50%, 0, 0);
-	box-shadow: 0px 5px 40px rgba(0, 0, 0, 0.3);
+	/* box-shadow: 0px 5px 40px rgba(0, 0, 0, 0.3); */
 }
 
 .purple-circle {
     z-index: 4 !important;
-    opacity: .7;
+    opacity: .6;
     width: 28%;
     height: 40vh;
+    position: absolute;
     border-radius: 50%;
     background: #C4BDE0;
-    position: absolute;
     left: 105%;
-    top: 12vh;
-	transform: translate3d(-50%, 0, 0);
+    top: 16vh;
+    transform: translate3d(-50%, 0, 0);
+    border: none;
 }
 
-  .blue-squiggle:after {
-    background: #D7F0F3;
-    display: block;
-    position: absolute;
-    border-radius: 100% 50%;
-  } 

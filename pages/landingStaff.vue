@@ -1,9 +1,6 @@
 <template>
-  <div>
+  <div style="position: relative;">
     <div class="heading-text">Requests</div>
-
-    <!-- <div class="sub-heading-text"></div> -->
-
     <div class="request-container">
       <div class="heading-two-text">Select a Request</div>
 
@@ -109,8 +106,5 @@ export default {
   color: #9aabb1;
   margin: 0;
   margin-top: 10px;
-}
-.button {
-  margin-top: 30px;
 }
 </style>

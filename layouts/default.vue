@@ -32,7 +32,8 @@ export default {
   name: "TabContent",
   components: {
     AppHeader,
-    AppFooter
+    AppFooter,
+    
   }
 };
 </script>
