@@ -85,32 +85,30 @@ export default {
             if(this.firstname != '' && this.lastname != '' && this.email != '' && this.ucinetid != '' && this.selected != null){
                 console.log("submitting")
                 this.shown = true;
-                let user = await axios.post('/api/insertUser',{
+                let student = await axios.post('/api/insertStudent',{
                     name: {
                         firstname: this.firstname,
                         lastname: this.lastname
                     },
                     email: this.email,
-                    ucinetid: this.ucinetid
-                })
-                await axios.post('/api/insertStudent',{
-                    _id : user.data,
+                    ucinetid: this.ucinetid,
                     classes: [{
                         _id: this.selected,
                         section: 1
                     }]
                 })
-                window.location.href = 'request/'+user.data
-                
+                window.location.href = 'request/'+student.data._id
             }
         }
     },
     async created(){
+        
         let classes = await axios.get("/api/courses");
+        let students = await axios.get("/api/students");
         classes.data.forEach(classSelected => {
             this.loadClasses(classSelected);
         });
-
+        console.log(students)
         
     }
 }

@@ -3,7 +3,12 @@ const User = require('./users');
 var Schema = mongoose.Schema;
 
 const StaffSchema = User.discriminator('Staff', new Schema({
-    classes: [{}]
+    classes: [{
+        _id: {
+            type: Schema.Types.ObjectId,
+            ref: 'Course'
+        }
+    }]
 }),
 );
 

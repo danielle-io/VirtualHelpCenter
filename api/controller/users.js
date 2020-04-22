@@ -22,12 +22,7 @@ router.get('/users/:id', (req, res, next) => {
 // POST user
 router.post('/insertUser', function(req, res, next) {
     let userData = new UserModel(req.body);
-    userData.save().then(item => {
-        res.send(item._id);
-    })
-    .catch(err => {
-        res.status(400).send(err)
-    });
+    userData.save();
 })
 
 module.exports = router
