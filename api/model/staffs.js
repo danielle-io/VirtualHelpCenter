@@ -7,7 +7,8 @@ const StaffSchema = User.discriminator('Staff', new Schema({
         _id: {
             type: Schema.Types.ObjectId,
             ref: 'Course'
-        }
+        },
+        section: Number
     }]
 }),
 );

@@ -29,6 +29,17 @@
             <div class="mt-2">Value: {{ ucinetid }}</div>
         </div>
 
+        <!-- Staff Student or Both -->
+        <div class="row">
+            <b-form-checkbox-group
+            v-model="users"
+            :options="options"
+            :state="state"
+            name="checkbox-validation"
+            >
+            </b-form-checkbox-group>
+        </div>
+
         <!-- Select Classes -->
         <div class="row">
             <b-form-select v-model="selected" :options="classes" size="sm" class="mt-3"></b-form-select>
@@ -53,14 +64,14 @@
 <script>
 import vue from 'vue'
 import axios from '~/plugins/axios'
-import {BFormInput, BFormSelect, BButton, BFormCheckbox} from 'bootstrap-vue'
+import {BFormInput, BFormSelect, BButton, BFormCheckboxGroup, } from 'bootstrap-vue'
 
 export default {
     components: {
         'b-form-input': BFormInput,
         'b-form-select': BFormSelect,
         'b-button' : BButton,
-        'b-form-checkbox': BFormCheckbox
+        'b-form-checkbox-group': BFormCheckboxGroup
     },
     data(){
         return{
@@ -69,10 +80,17 @@ export default {
             email:'',
             ucinetid: '',
             selected: null,
+            staff: 'false',
+            student: 'false',
             classes: [
             { value: null, text: 'Please select a class:' },
             ], 
-            shown:false
+            shown:false,
+            users: [],
+            options: [
+                { text: 'Staff', value: 'first' },
+                { text: 'Student', value: 'second' }
+            ]
         }
     },
     methods: {
@@ -99,6 +117,9 @@ export default {
                 })
                 window.location.href = 'request/'+student.data._id
             }
+        },
+        state(){
+            return this.users.length === 2;
         }
     },
     async created(){
@@ -108,7 +129,6 @@ export default {
         classes.data.forEach(classSelected => {
             this.loadClasses(classSelected);
         });
-        console.log(students)
         
     }
 }

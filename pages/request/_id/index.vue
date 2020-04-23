@@ -81,8 +81,7 @@
         selected: 'true',
         student: null,
         classes: [
-          { value: null, text: 'Please select a class:' },
-          { value: null, text: 'f'}
+          { value: null, text: 'Please select a class:' }
         ],
       }
     
