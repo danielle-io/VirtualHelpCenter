@@ -1,6 +1,8 @@
 import { Model } from '@vuex-orm/core'
 import User from './User'
 
+
+
 export default class Ticket extends Model {
   static entity = 'tickets'
   

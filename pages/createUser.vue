@@ -52,7 +52,7 @@
 
 <script>
 import vue from 'vue'
-import axios from '~/plugins/axios'
+//import axios from '~/plugins/axios'
 import {BFormInput, BFormSelect, BButton, BFormCheckbox} from 'bootstrap-vue'
 
 export default {
@@ -85,7 +85,7 @@ export default {
             if(this.firstname != '' && this.lastname != '' && this.email != '' && this.ucinetid != '' && this.selected != null){
                 console.log("submitting")
                 this.shown = true;
-                let user = await axios.post('/api/insertUser',{
+                let user = await this.$axios.post('/insertUser',{
                     name: {
                         firstname: this.firstname,
                         lastname: this.lastname
@@ -106,7 +106,7 @@ export default {
         }
     },
     async created(){
-        let classes = await axios.get("/api/courses");
+        let classes = await this.$axios.get("/courses");
         classes.data.forEach(classSelected => {
             this.loadClasses(classSelected);
         });

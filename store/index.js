@@ -7,7 +7,7 @@ import Ticket from './models/Ticket'
 import Account from './models/Account'
 
 
-//VuexORM.use(VuexORMAxios) // <- No axios option.
+VuexORM.use(VuexORMAxios) // <- No axios option.
 
 const database = new VuexORM.Database()
 

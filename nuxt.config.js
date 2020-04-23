@@ -24,11 +24,19 @@ module.exports = {
     '@nuxtjs/axios',
     '@nuxtjs/dotenv'
   ],
+  plugins: ['@/plugins/vuex-orm-axios'],
   /*
   ** Add axios globally
   */
   axios: {
     baseURL: process.env.BASE_URL || 'http://localhost:3000/api'
+  },
+  render: {
+    // working:
+    injectScripts: process.env.NODE_ENV === 'development'
+
+    // HMR not working:
+    // injectScripts: false,
   },
   build: {
     // vendor: ['axios'],
