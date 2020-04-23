@@ -22,7 +22,8 @@ module.exports = {
   ],
   modules: [
     '@nuxtjs/axios',
-    '@nuxtjs/dotenv'
+    '@nuxtjs/dotenv',
+    '@nuxtjs/auth'
   ],
   plugins: ['@/plugins/vuex-orm-axios'],
   /*
