@@ -1,0 +1,15 @@
+{
+    "vhc": {
+        "awscloudformation": {
+            "AuthRoleName": "amplify-virtualhelpcentermas-vhc-123826-authRole",
+            "UnauthRoleArn": "arn:aws:iam::569948028373:role/amplify-virtualhelpcentermas-vhc-123826-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::569948028373:role/amplify-virtualhelpcentermas-vhc-123826-authRole",
+            "Region": "us-west-2",
+            "DeploymentBucketName": "amplify-virtualhelpcentermas-vhc-123826-deployment",
+            "UnauthRoleName": "amplify-virtualhelpcentermas-vhc-123826-unauthRole",
+            "StackName": "amplify-virtualhelpcentermas-vhc-123826",
+            "StackId": "arn:aws:cloudformation:us-west-2:569948028373:stack/amplify-virtualhelpcentermas-vhc-123826/ad5a5f80-8407-11ea-808f-0a78727c3cd0",
+            "AmplifyAppId": "d12ce2lasl86bw"
+        }
+    }
+}

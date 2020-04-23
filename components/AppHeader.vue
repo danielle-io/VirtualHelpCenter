@@ -26,6 +26,12 @@
           <account-circle />
         </nuxt-link>
       </div>
+      <div v-if="$auth.loggedIn">
+      <v-btn text @click="$auth.logout()">Logout</v-btn>
+      </div>
+      <div v-else>
+      You are not logged in.
+      </div>
       <!-- App background shapes -->
 
     <md-tab id="tab-request" md-label="Request" to="../request"></md-tab>
@@ -36,6 +42,7 @@
 
 <script>
 import Vue from "vue";
+import auth from '@nuxtjs/auth';
 
 Vue.config.productionTip = false;
 export default {};

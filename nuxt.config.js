@@ -20,18 +20,24 @@ module.exports = {
     '~/assets/css/stylesheet.css',
     '~/assets/css/background.css',
   ],
+  buildModules: [
+  	'@nuxtjs/vuetify',
+  ],
+  modules: [
+    '@nuxtjs/auth',
+  ],
   /*
   ** Add axios globally
   */
   build: {
-    vendor: ['axios'],
-    vendor: ['@nuxtjs/dotenv'],
+    vendor: ['axios', '@nuxtjs/dotenv'],
     /*
     ** Run ESLINT on save
     */
     extend (config, ctx) {
       if (ctx.isDev && process.isClient) {
         config.module.rules.push({
+          fs: 'empty',
           enforce: 'pre',
           test: /\.(js|vue)$/,
           loader: 'eslint-loader',
@@ -43,6 +49,24 @@ module.exports = {
   serverMiddleware: [
     // API middleware
     '~/api/server.js'
+  ],
 
-  ]
+  auth: {
+    strategies: {
+      local: {
+        endpoints: {
+          login: { url: '/api/sessions', method: 'post', propertyName: 'token' },
+          logout: false,
+          user: { url: '/api/sessions/user', method: 'get', propertyName: 'data.attributes' }
+        },
+        // tokenRequired: true,
+        tokenType: '',
+      },
+    },
+    redirect: {
+      home: false,
+      callback: false,
+      logout: false
+    }
+  },
 }

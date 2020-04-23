@@ -1,5 +1,5 @@
 <template>
-  <form>
+  <v-form v-model="valid">
     <v-text-field v-model="userInfo.name" 
                   label="Name" 
                   color="green"
@@ -39,7 +39,7 @@
     </div>
 
     <v-btn @click="submitForm(userInfo)" :disabled="!valid" color="green accent-3">{{ buttonText }}</v-btn>
-  </form>
+  </v-form>
 </template>
 
 <script>
@@ -54,9 +54,6 @@
           name: '',
           email: '',
           password: '',
-          agreeToTerms: false,
-          email_daily: true,
-          email_weekly: true
         },
         ...validations
       }

@@ -1,7 +1,7 @@
 <template>
   <v-container>
-    <h1>Login</h1>
-    <UserAuthForm buttonText="Login" :submitForm="loginUser" />
+    <h1>Register</h1>
+    <UserAuthForm buttonText="Register" :submitForm="registerUser" hasName ="true"/>
   </v-container>
 </template>
 
@@ -10,14 +10,17 @@
 <script>
 import UserAuthForm from '@/components/UserAuthForm';
 import Vue from "vue";
+import axios from 'axios';
+
 export default {
   components : {
     UserAuthForm
   },
   methods: {
-    loginUser(loginInfo){
+    async registerUser(registrationInfo){
+      await this.$axios.post('/users', registrationInfo)
       this.$auth.loginWith('local', { //We can change local to facebook or oauth or whatever later
-        data: loginInfo
+        data: registrationInfo
       })
     }
   }
