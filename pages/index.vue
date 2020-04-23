@@ -100,7 +100,7 @@ export default {
 
 <script>
 import Vue from "vue";
-import axios from "~/plugins/axios";
+//import axios from "~/plugins/axios";
 import VueMaterial from "vue-material";
 import "vue-material/dist/vue-material.min.css";
 import "vue-material/dist/theme/default.css";
@@ -117,7 +117,7 @@ export default {
   },
   async fetch () {
 
-    let { data } = await axios.get("/api/users");
+    let { data } = await this.$axios.get("/users");
 
     User.insert({data: data})
   },
