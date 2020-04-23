@@ -118,7 +118,7 @@
         else{
           console.log("not submitted")
         }
-      }
+      },
     },
     computed:{
       isDisabled: function(){
@@ -128,7 +128,7 @@
 
     //had to rename function "created" because I couldnt access "options" property
     async created() {
-      let student = await axios.get("/api/students/"+this.$route.params.id);
+      let student = await axios.get("/api/users/"+this.$route.params.id);
       student.data.classes.forEach(element => {
         this.loadClasses(element)
       })

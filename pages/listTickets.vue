@@ -26,6 +26,9 @@
             <strong>Issue:</strong>
             {{ticket.oneLineOverview}}
           </div>
+          <div class="md-card-content">
+            <button type="button" v-on:click="deleteData(ticket, ticket._id)">Delete</button>
+          </div>
           
           <!-- <div
             class="md-card-content" style="margin-left: 25px;" v-for="(question, index) in ticket.questions" :key="index">
@@ -120,7 +123,19 @@ export default {
     },
     created () {
       //let { data } = await axios.get("/api/tickets");
-    }
+    },
+
+    deleteData(ticket, id){
+      console.log(id)
+          axios.delete("/api/deleteTicket/"+ id )
+
+        .then(function(response ){
+          console.log(response)
+        })
+      window.location.reload();
+      console.log("delete function")
+
+     } 
   }
 };
 </script>

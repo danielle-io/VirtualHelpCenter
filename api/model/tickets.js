@@ -28,7 +28,12 @@ var ticketSchema = new Schema({
   attachments: [String],
   oneLineOverview: String,
   longerDescription: String,
-  acceptedBy: String,
+  acceptedBy: {
+    _id:{
+      type: Schema.Types.ObjectId,
+      ref: 'Staff'
+    },
+  }, 
   
 },
 {timestamps: true},
