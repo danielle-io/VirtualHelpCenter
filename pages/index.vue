@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="position: relative;">
     <section class="header-title-container">
       <h1 class="title">Testing Home Page</h1>
     </section>
@@ -35,12 +35,13 @@
         <md-card-header>
           <md-card-header-text>
             <div class="md-title">Create User</div>
-            <div class="md-subhead">Click here to go to the user form</div>
+            <div class="md-subhead">Note: This page seems to fail sometimes rn but shows up if you refresh</div>
           </md-card-header-text>
         </md-card-header>
 
         <md-card-actions>
           <nuxt-link to="/createUser">Create User</nuxt-link>
+
         </md-card-actions>
       </md-card>
 

@@ -6,10 +6,12 @@ svg {
   }
 
   .squiggle-container {
-
+    height: 20px;
   }
 
 .squiggle{
+  /* width: 100px;
+  height: 500px; */
     z-index: 0;
     opacity: .7;
     position: absolute;

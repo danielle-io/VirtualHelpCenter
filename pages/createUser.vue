@@ -136,6 +136,7 @@ export default {
 
 <style>
 .container {
+    position: relative;
   width: 100%;
   padding: 100px 0;
   text-align: center;
