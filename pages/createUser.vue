@@ -31,20 +31,51 @@
 
         <!-- Staff Student or Both -->
         <div class="row">
-            <b-form-checkbox-group
-            v-model="users"
-            :options="options"
-            :state="state"
-            name="checkbox-validation"
+            <p>Staff:</p>
+            <b-form-checkbox
+            id="checkbox-1"
+            v-model="staff"
+            name="checkbox-1"
+            value="true"
+            unchecked-value="false"
+            style="margin-left: 10px"
             >
-            </b-form-checkbox-group>
+            </b-form-checkbox>
+        </div>
+        <div class="row">
+            <p>Student:</p>
+            <b-form-checkbox
+            id="checkbox-2"
+            v-model="student"
+            name="checkbox-2"
+            value="true"
+            unchecked-value="false"
+            style="margin-left: 10px"
+            >
+            </b-form-checkbox>
         </div>
 
         <!-- Select Classes -->
-        <div class="row">
-            <b-form-select v-model="selected" :options="classes" size="sm" class="mt-3"></b-form-select>
-            <div class="mt-3">Selected: <strong>{{ selected }}</strong></div>
+        <div :hidden='studentCheck()'>
+            <div class="row" >
+                <div class="col-6">
+                    <label>Select your class:</label>
+                    <b-form-select v-model="addClass" :options="availableClasses" size="sm" class="mt-3" ></b-form-select>
+                    <div class="mt-3">Selected: <strong>{{ addClass }}</strong></div>
+                    <b-button v-on:click="addClasses" size="sm">Add Class</b-button>
+                </div>
+                <div class="col-6">
+                    <label>Selected classes:</label>
+                    <b-form-select v-model="removeClass" :options="pickedClasses" size="sm" class="mt-3" :select-size="4"></b-form-select>
+                    <div class="mt-3">Selected: <strong>{{ removeClass }}</strong></div>
+                    <b-button v-on:click="removeClasses" size="sm">Remove Class</b-button>
+                </div>
+                <div class="col">
+
+                </div>
+            </div>
         </div>
+        
 
 
         <div class = "row justify-content-left">
@@ -64,44 +95,63 @@
 <script>
 import vue from 'vue'
 import axios from '~/plugins/axios'
-import {BFormInput, BFormSelect, BButton, BFormCheckboxGroup, } from 'bootstrap-vue'
+import {BFormInput, BFormSelect, BButton, BFormCheckbox, } from 'bootstrap-vue'
 
 export default {
     components: {
         'b-form-input': BFormInput,
         'b-form-select': BFormSelect,
         'b-button' : BButton,
-        'b-form-checkbox-group': BFormCheckboxGroup
+        'b-form-checkbox': BFormCheckbox
     },
     data(){
         return{
+            // User input
             firstname: '',
             lastname: '',
             email:'',
             ucinetid: '',
-            selected: null,
-            staff: 'false',
-            student: 'false',
-            classes: [
-            { value: null, text: 'Please select a class:' },
+            addClass: null,
+            removeClass: null,
+
+            pickedClasses: [
+            ],
+
+            //available classes
+            availableClasses: [
+            { value: null, text: 'Please select a class:'},
             ], 
             shown:false,
-            users: [],
-            options: [
-                { text: 'Staff', value: 'first' },
-                { text: 'Student', value: 'second' }
-            ]
+
+            // Staff/Student checkboxes
+            staff: 'false',
+            student: 'false'
         }
     },
     methods: {
         loadClasses: function(classSelected){
             var text = classSelected.dep +" "+ classSelected.courseNum
-            this.classes.push({value: classSelected._id, text: text})
+            this.availableClasses.push({value: classSelected._id, text: text})
+        },
+        addClasses(){
+            let classes = this.availableClasses.filter(classes => classes.value == this.addClass);
+            this.pickedClasses.push({value : classes[0].value, text: classes[0].text})
+        },
+        removeClasses(){
+            if(this.removeClass != null){
+                this.pickedClasses = this.pickedClasses.filter(classes => classes.value != this.removeClass)
+                this.removeClass = null;
+            }
+            
         },
         async submit(){
             
-            if(this.firstname != '' && this.lastname != '' && this.email != '' && this.ucinetid != '' && this.selected != null){
-                console.log("submitting")
+            if(this.firstname != '' && this.lastname != '' && this.email != '' && this.ucinetid != '' && this.pickedClasses){
+                let classes = [];
+                this.pickedClasses.forEach((element)=>{
+                    classes.push({_id: element.value, section: 1});
+                });
+                console.log(classes)
                 this.shown = true;
                 let student = await axios.post('/api/insertStudent',{
                     name: {
@@ -110,16 +160,16 @@ export default {
                     },
                     email: this.email,
                     ucinetid: this.ucinetid,
-                    classes: [{
-                        _id: this.selected,
-                        section: 1
-                    }]
+                    classes: classes
                 })
                 window.location.href = 'request/'+student.data._id
             }
         },
-        state(){
-            return this.users.length === 2;
+        studentCheck: function(){
+            if(this.student == 'false'){
+                return true;
+            }
+            return false;
         }
     },
     async created(){
