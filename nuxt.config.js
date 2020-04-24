@@ -20,12 +20,28 @@ module.exports = {
     '~/assets/css/stylesheet.css',
     '~/assets/css/background.css',
   ],
+  modules: [
+    '@nuxtjs/axios',
+    '@nuxtjs/dotenv',
+    '@nuxtjs/auth'
+  ],
+  plugins: ['@/plugins/vuex-orm-axios'],
   /*
   ** Add axios globally
   */
+  axios: {
+    baseURL: process.env.BASE_URL || 'http://localhost:3000/api'
+  },
+  render: {
+    // working:
+    injectScripts: process.env.NODE_ENV === 'development'
+
+    // HMR not working:
+    // injectScripts: false,
+  },
   build: {
-    vendor: ['axios'],
-    vendor: ['@nuxtjs/dotenv'],
+    // vendor: ['axios'],
+    // vendor: ['@nuxtjs/dotenv'],
     /*
     ** Run ESLINT on save
     */
