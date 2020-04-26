@@ -42,7 +42,6 @@
 
 <script>
 import Vue from "vue";
-import auth from '@nuxtjs/auth';
 
 Vue.config.productionTip = false;
 export default {};
