@@ -1,32 +1,25 @@
 <template>
     <div class="container">
         <!-- Name -->
-        <label>Enter your name:</label>
         <div class="row">
             <div class="col">
                 <b-form-input v-model="firstname" placeholder="First name" ></b-form-input>
-                <div class="mt-2">Value: {{ firstname }}</div>
             </div>
             <div class="col">
                 <b-form-input v-model="lastname" placeholder="Last name" ></b-form-input>
-                <div class="mt-2">Value: {{ lastname }}</div>
             </div>
         </div>
 
         <!-- Email -->
-        <label>Enter your email:</label>
         <div class="row">
             <div class="col">
-                <b-form-input v-model="email" placeholder="Enter your Email:" ></b-form-input>
-                <div class="mt-2">Value: {{ email }}</div>
+                <b-form-input v-model="email" placeholder="UCI Email" ></b-form-input>
             </div>
         </div>
 
         <!-- UCInetID -->
-        <label>Enter your ucinetid:</label>
         <div class="row">
-            <b-form-input v-model="ucinetid" placeholder="Enter your ucinetID:" ></b-form-input>
-            <div class="mt-2">Value: {{ ucinetid }}</div>
+            <b-form-input v-model="ucinetid" placeholder="UCInetID" ></b-form-input>
         </div>
 
         <!-- Staff Student or Both -->
@@ -42,6 +35,23 @@
             >
             </b-form-checkbox>
         </div>
+
+        <!-- Select Staff Classes -->
+        <div :hidden='studentCheck(staff)'>
+            <div class="row" >
+                <div class="col-6">
+                    <label>Select your class:</label>
+                    <b-form-select v-model="addClassStaff" :options="availableClassesStaff" size="sm" class="mt-3" ></b-form-select>
+                    <b-button v-on:click="addClasses()" size="sm">Add Class</b-button>
+                </div>
+                <div class="col-6">
+                    <label>Selected classes:</label>
+                    <b-form-select v-model="removeClass" :options="pickedClassesStaff" size="sm" class="mt-3" :select-size="getSize(pickedClassesStaff)"></b-form-select>
+                    <b-button v-on:click="removeClasses" size="sm">Remove Class</b-button>
+                </div>
+            </div>
+        </div>
+
         <div class="row">
             <p>Student:</p>
             <b-form-checkbox
@@ -55,23 +65,18 @@
             </b-form-checkbox>
         </div>
 
-        <!-- Select Classes -->
-        <div :hidden='studentCheck()'>
+        <!-- Select Student Classes -->
+        <div :hidden='studentCheck(student)'>
             <div class="row" >
                 <div class="col-6">
                     <label>Select your class:</label>
                     <b-form-select v-model="addClass" :options="availableClasses" size="sm" class="mt-3" ></b-form-select>
-                    <div class="mt-3">Selected: <strong>{{ addClass }}</strong></div>
-                    <b-button v-on:click="addClasses" size="sm">Add Class</b-button>
+                    <b-button v-on:click="addClasses()" size="sm">Add Class</b-button>
                 </div>
                 <div class="col-6">
                     <label>Selected classes:</label>
-                    <b-form-select v-model="removeClass" :options="pickedClasses" size="sm" class="mt-3" :select-size="4"></b-form-select>
-                    <div class="mt-3">Selected: <strong>{{ removeClass }}</strong></div>
+                    <b-form-select v-model="removeClass" :options="pickedClasses" size="sm" class="mt-3" :select-size="getSize(pickedClasses)"></b-form-select>
                     <b-button v-on:click="removeClasses" size="sm">Remove Class</b-button>
-                </div>
-                <div class="col">
-
                 </div>
             </div>
         </div>
@@ -94,6 +99,7 @@
 
 <script>
 import vue from 'vue'
+import Course from '../store/models/Course'
 import axios from '~/plugins/axios'
 import {BFormInput, BFormSelect, BButton, BFormCheckbox, } from 'bootstrap-vue'
 
@@ -111,16 +117,27 @@ export default {
             lastname: '',
             email:'',
             ucinetid: '',
+
+            // Student
             addClass: null,
             removeClass: null,
+            
+            // Staff
+            addClassStaff: null,
+            removeClassStaff: null,
 
             pickedClasses: [
             ],
+            pickedClassesStaff: [
+            ],
 
-            //available classes
+            //available classes for Student
             availableClasses: [
-            { value: null, text: 'Please select a class:'},
             ], 
+            availableClassesStaff: [
+            ], 
+
+
             shown:false,
 
             // Staff/Student checkboxes
@@ -130,16 +147,21 @@ export default {
     },
     methods: {
         loadClasses: function(classSelected){
-            var text = classSelected.dep +" "+ classSelected.courseNum
+            var text = classSelected.dep +" "+ classSelected.courseNum;
             this.availableClasses.push({value: classSelected._id, text: text})
         },
-        addClasses(){
+        addClasses: function(){
+            
             let classes = this.availableClasses.filter(classes => classes.value == this.addClass);
-            this.pickedClasses.push({value : classes[0].value, text: classes[0].text})
+            console.log(classes)
+            this.availableClasses = this.availableClasses.filter(classes => classes.value != this.addClass);
+            this.pickedClasses.push({value : classes[0].value, text: classes[0].text});
+            this.addClass = null;
+            
         },
-        removeClasses(){
+        removeClasses(user){
             if(this.removeClass != null){
-                this.pickedClasses = this.pickedClasses.filter(classes => classes.value != this.removeClass)
+                this.pickedClasses = this.pickedClasses.filter(classes => classes.value != this.removeClass);
                 this.removeClass = null;
             }
             
@@ -151,7 +173,6 @@ export default {
                 this.pickedClasses.forEach((element)=>{
                     classes.push({_id: element.value, section: 1});
                 });
-                console.log(classes)
                 this.shown = true;
                 let student = await axios.post('/api/insertStudent',{
                     name: {
@@ -165,11 +186,21 @@ export default {
                 window.location.href = 'request/'+student.data._id
             }
         },
-        studentCheck: function(){
-            if(this.student == 'false'){
+        studentCheck: function(check){
+            if(check == 'false'){
                 return true;
             }
             return false;
+        },
+        getSize: function(array){
+            if(array.length === 0){
+                console.log("here")
+                return 1;
+            }
+            else if (array.length <=4){
+                return array.length;
+            }
+            return 4;
         }
     },
     async created(){
@@ -179,6 +210,7 @@ export default {
         classes.data.forEach(classSelected => {
             this.loadClasses(classSelected);
         });
+        this.availableClassesStaff = this.availableClasses;
         
     }
 }
