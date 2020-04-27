@@ -6,15 +6,6 @@
       <!-- The transition effects for the containers changing -->
       <transition name="fade" mode="in-out">
         <div v-bind:key="request" class="request-container">
-
-          <div v-if="this.submitRequest === true" v-bind:key="submitRequest">
-            <div class="heading-text">Request submitted</div>
-            <div
-              class="sub-heading-text"
-              style="padding-top:2%;"
-            >The current wait time is approximately 20 minutes.</div>
-          </div>
-
           <!--  The first container to show  -->
           <div v-if="this.request === true">
             <div class="heading-text">My Requests</div>
@@ -24,7 +15,7 @@
               class="sub-heading-text"
               style="padding-top:2%;"
             >You currently have no pending requests.</div>
-            
+
             <div style="text-align: center;">
               <button
                 v-bind:key="request"
@@ -46,39 +37,27 @@
               style="padding-top:2%;"
             >Complete the form below to request assistance from a lab tutor.</div>
 
-              <div class="form-container">
-                <div class="row" style="width: 70%;">
-                  <b-form-select v-model="selected" :options="classes" size="sm" class="mt-3"></b-form-select>
-                </div>
+            <div class="form-container">
+              <div class="row" style="width: 70%;">
+                <b-form-select v-model="selected" :options="classes" size="sm" class="mt-3"></b-form-select>
+              </div>
 
-                <div class="row">
-                  <label class="label-format">Please enter a brief one-sentence summary of the issue</label>
-                  <b-form-input v-model="probDes" placeholder class="form-text-areas"></b-form-input>
-                </div>
+              <div class="row">
+                <label class="label-format">Please enter a brief one-sentence summary of the issue</label>
+                <b-form-input v-model="probDes" placeholder class="form-text-areas"></b-form-input>
+              </div>
 
-                <div class="row">
-                  <label class="label-format">Elaborate on the issue, if needed.</label>
-                  <b-form-text-area
-                    id="textarea"
-                    v-model="problem"
-                    placeholder
-                    rows="2"
-                    max-rows="6"
-                  ></b-form-text-area>
-                  <!-- removed for now from above :disabled="isDisabled" -->
+              <div class="row">
+                <label class="label-format">Elaborate on the issue, if needed.</label>
+                <b-form-text-area id="textarea" v-model="problem" placeholder rows="2" max-rows="6"></b-form-text-area>
+                <!-- removed for now from above :disabled="isDisabled" -->
 
-                  <pre class="mt-3 mb-0">{{ problem }}</pre>
-                </div>
+                <pre class="mt-3 mb-0">{{ problem }}</pre>
+              </div>
 
-                <div class="row">
-                  <label class="label-format">Paste a code snippet, if needed</label>
-                   <b-form-text-area
-                    id="textarea"
-                    v-model="code"
-                    placeholder
-                    rows="1"
-                    max-rows="6"
-                  ></b-form-text-area>
+              <div class="row">
+                <label class="label-format">Paste a code snippet, if needed</label>
+                <b-form-text-area id="textarea" v-model="code" placeholder rows="1" max-rows="6"></b-form-text-area>
                 <!-- removed for now from above :disabled="isDisabled" -->
                 <!-- <pre class="mt-3 mb-0">{{ code }}</pre> -->
               </div>
@@ -87,57 +66,62 @@
                 <label class="label-format">Add a file, if needed</label>
               </div>
 
-                <table class="table request-table">
-                  <tbody>
+              <table class="table request-table">
+                <tbody>
+                  <!-- This is where the new questions are inserted -->
+                  <div class="top-row" v-for="(row, index) in rows" v-bind:key="row">
+                    <tr>
+                      <td>
+                        <button class="file-container">
+                          {{row.file.name}}
+                          <input
+                            type="file"
+                            @change="setFilename($event, row)"
+                            :id="index"
+                          />
+                        </button>
+                      </td>
 
-                    <!-- This is where the new questions are inserted -->
-                    <div class="top-row" v-for="(row, index) in rows" v-bind:key="row">
-                      <tr>
-                        <td>
-                          <button class="file-container">
-                            {{row.file.name}}
-                            <input
-                              type="file"
-                              @change="setFilename($event, row)"
-                              :id="index"
-                            />
-                          </button>
-                        </td>
-
-                        <td class="remove-column">
-                          <a
-                            v-on:click="removeElement(index);"
-                            style="cursor: pointer; z-index: 999;"
-                          >Remove</a>
-                        </td>
-                      </tr>
-                    </div>
-                  </tbody>
-                </table>
-
-                  <span class="add-button" @click="addRow">
-                    <plus-circle /> 
-                  </span>
-
-                  <div style="text-align: center;">
-                    <!--  On select, the state of request is changed, forcing a transition effect and
-                    changing what is rendered on the page-->
-                    <button
-                      v-bind:key="submitRequest"                
-                      type="submit"
-                      style="margin-bottom: 10px; margin-top: 10px;"
-                      class="fadeIn form-buttons"
-                      @click="changeRequestState"
-                    >
-                      <right-circle />Submit Request
-                    </button>
-
-                    <!-- ADD THIS BACK TO BUTTON ABOVE WHEN READY
-                      v-on:click="submit"  -->
-
-                    
+                      <td class="remove-column">
+                        <a
+                          v-on:click="removeElement(index);"
+                          style="cursor: pointer; z-index: 999;"
+                        >Remove</a>
+                      </td>
+                    </tr>
                   </div>
+                </tbody>
+              </table>
+
+              <span class="add-button" @click="addRow">
+                <plus-circle />
+              </span>
+
+              <div style="text-align: center;">
+                <!--  On select, the state of request is changed, forcing a transition effect and
+                changing what is rendered on the page-->
+                <button
+                  v-bind:key="submitRequest"
+                  type="submit"
+                  style="margin-bottom: 10px; margin-top: 10px;"
+                  class="fadeIn form-buttons"
+                  @click="changeRequestState"
+                >
+                  <right-circle />Submit Request
+                </button>
+
+                <!-- ADD THIS BACK TO BUTTON ABOVE WHEN READY
+                v-on:click="submit"-->
               </div>
+            </div>
+          </div>
+
+          <div v-if="this.submitRequest === true" v-bind:key="submitRequest">
+            <div class="heading-text">Request submitted</div>
+            <div
+              class="sub-heading-text"
+              style="padding-top:2%;"
+            >The current wait time is approximately 20 minutes.</div>
           </div>
         </div>
       </transition>
@@ -233,6 +217,9 @@ export default {
     };
   },
   methods: {
+    scrollToTop(){
+        document.getElementById('tabs').scrollIntoView();
+    },
     addRow: function() {
       var elem = document.createElement("tr");
       this.rows.push({
@@ -259,14 +246,15 @@ export default {
         this.request = false;
         return this.request;
       } else {
-        console.log('here');
         this.submitRequest = true;
-                console.log(this.submitRequest);
-
+        this.scrollToTop();
         return this.request;
       }
     }
-  }
+  },
+  beforeMount(){
+    this.scrollToTop();
+  },
 };
 </script>
 
