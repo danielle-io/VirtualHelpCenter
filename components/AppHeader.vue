@@ -10,8 +10,8 @@
 
     <div class="green-circle"></div>
 
-    <div class="tabs">
-      <div class="logo">
+    <div class="tabs" id="tabs">
+      <div id="logo" class="logo">
         <span class="virtual">virtual</span>
 
         <span class="help">help</span>
@@ -26,6 +26,9 @@
         <nuxt-link class="link-styling" to="../account">
           <account-circle />
         </nuxt-link>
+      </div>
+      <div v-if="$auth.loggedIn">
+          <v-btn text @click="$auth.logout()">Logout</v-btn>
       </div>
       <!-- App background shapes -->
 

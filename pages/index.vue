@@ -86,7 +86,6 @@
         </md-card-actions>
       </md-card>
 
-
     </div>
   </div>
 </template>
@@ -138,6 +137,10 @@ export default {
   width: 100%;
   padding: 50px 0;
 }
+
+/* .md-card:hover{
+  opacity: .2;
+} */
 
 .md-card {
   min-width: 300px;
