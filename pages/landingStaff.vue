@@ -62,14 +62,33 @@
                     >
                       <collapse-arrow />
                     </div>
+
+                    <div
+                      v-bind:class="{ 'show-extra-content': collapseChevron, 'hide-extra-content': expandChevron }"
+                    >
+                      <div class="md-card-content">
+                        <div>Extra info</div>
+                      </div>
+                      <div class="md-card-content">
+                        <div>More extra info</div>
+                      </div>
+
+                      <div class="md-card-content">
+                        <div>Extra info</div>
+                      </div>
+
+                      <div class="md-card-content">
+                        <div>More extra info</div>
+                      </div>
+                    </div>
                   </md-card>
                 </a>
               </div>
             </div>
-            <button v-if="this.selectedCard" type="submit" class="form-buttons">
-              <right-circle />Begin Session
-            </button>
           </div>
+          <button v-if="this.selectedCard" type="submit" class="form-buttons">
+            <right-circle />Begin Session
+          </button>
         </div>
       </div>
 
@@ -197,7 +216,7 @@ export default {
   margin-left: 4%;
   margin-right: 4%;
   display: inline-block;
-  font-size: 17px;
+  font-size: 18px;
   cursor: pointer;
   font-weight: 400 !important;
   text-decoration: underline;
@@ -205,6 +224,7 @@ export default {
 
 .form-buttons {
   width: 40% !important;
+  opacity: 0.9;
 }
 
 .request-tabs {
@@ -297,5 +317,14 @@ export default {
   opacity: 0;
   display: none !important;
   float: left !important;
+}
+
+.show-extra-content {
+  display: show;
+}
+
+.hide-extra-content {
+  height: 0px;
+  display: none;
 }
 </style>
