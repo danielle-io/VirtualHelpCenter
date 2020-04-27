@@ -10,8 +10,8 @@
 
     <div class="green-circle"></div>
 
-    <div class="tabs">
-      <div class="logo">
+    <div class="tabs" id="tabs">
+      <div id="logo" class="logo">
         <span class="virtual">virtual</span>
 
         <span class="help">help</span>

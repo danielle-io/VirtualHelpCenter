@@ -23,10 +23,23 @@ import "vue-material-design-icons/styles.css";
 import AccountCircle from "vue-material-design-icons/AccountCircle.vue";
 import PlusCircle from "vue-material-design-icons/PlusCircle.vue";
 import RightCircle from "vue-material-design-icons/ArrowRightCircle.vue";
+import ChevronDown from "vue-material-design-icons/ChevronDown.vue";
+import ChevronUp from "vue-material-design-icons/ChevronUp.vue";
+import BeatLoader from 'vue-spinner/src/BeatLoader.vue';
+
+
 
 Vue.component("account-circle", AccountCircle);
 Vue.component("plus-circle", PlusCircle);
 Vue.component("right-circle", RightCircle);
+Vue.component("expand-arrow", ChevronDown);
+Vue.component("collapse-arrow", ChevronUp);
+Vue.component('beat-loader', BeatLoader);
+
+
+
+
+
 
 export default {
   name: "TabContent",
