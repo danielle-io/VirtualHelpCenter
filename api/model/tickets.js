@@ -24,10 +24,10 @@ var ticketSchema = new Schema({
     },
   },
   codeSnippet: String,
-  questions:   [String],
-  attachments: [String],
   oneLineOverview: String,
   longerDescription: String,
+  questions:   [String],
+  attachments: [String],
   acceptedBy: {
     _id:{
       type: Schema.Types.ObjectId,

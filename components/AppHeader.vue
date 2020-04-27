@@ -2,7 +2,7 @@
 <template>
   <div class="main-nav">
     <div class="squiggle-container">
-      <svg viewBox="-380 60 620 190" preserveAspectRatio="xMinYMin meet" class="squiggle">
+      <svg viewBox="-380 60 620 680" preserveAspectRatio="xMinYMin meet" class="squiggle">
         <path d="M1, 50 C10,200 550, 0 900, 1400 L1300,00 L100, 0 Z" />
         <!--  example: <path d=" M0,100 C150,200 350,0 500,100   L500,00 L0,0 Z" style="stroke: none; fill:red;"></path> -->
       </svg>
@@ -28,9 +28,8 @@
         </nuxt-link>
       </div>
       <!-- App background shapes -->
-      <div class="purple-circle"></div>
 
-      <!-- <md-tab id="tab-request" md-label="Request" to="../request"></md-tab> -->
+      <div class="purple-circle"></div>
     </div>
   </div>
 </template>
@@ -71,24 +70,6 @@ export default {};
 .right-nav {
   float: right;
   margin-right: 15px;
-}
-
-.button,
-.button:visited {
-  display: inline-block;
-  color: rgb(36, 35, 35);
-  letter-spacing: 1px;
-  background-color: #fff;
-  border: 2px solid #000;
-  text-decoration: none;
-  text-transform: uppercase;
-  padding: 15px 45px;
-}
-
-.button:hover,
-.button:focus {
-  color: #fff;
-  background-color: #000;
 }
 
 .main-nav {

@@ -1,6 +1,8 @@
 import { Model } from '@vuex-orm/core'
 import User from './User'
 
+
+
 export default class Ticket extends Model {
   static entity = 'tickets'
   
@@ -10,14 +12,15 @@ export default class Ticket extends Model {
     return {
       _id: this.string(''),
       status: this.string(''),
-      owner: this.string(''),
       codeSnippet: this.string(''),
       questions: this.attr([]),
+      oneLineOverview: this.string(''),
+      longerDescription: this.string(''),
       attachments: this.attr([]),
-      //owner: this.belongsTo(User, '_id'),
+      owner: this.belongsTo(User, '_id'),
       user_id: this.string(null).nullable(),
       title: this.string(''),
-      //acceptedBy: this.belongsTo(User, 'user_id')
+      // acceptedBy: this.belongsTo(User, 'user_id')
     }
   }
 }

@@ -146,6 +146,4 @@
   padding: 100px 0;
   text-align: center;
 }
-
-
 </style>

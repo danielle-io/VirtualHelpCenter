@@ -13,6 +13,7 @@ export default class User extends Model {
     return {
       _id: this.attr(null),
       name: this.attr(''),
+      email: this.attr(''),
       ucinetid: this.attr(''),
 
     }
