@@ -86,36 +86,6 @@
         </md-card-actions>
       </md-card>
 
-       <md-card>
-        <md-card-header>
-          <md-card-header-text>
-            <div class="md-title">Student Landing</div>
-            <div class="md-subhead">Click here to go to the student landing page (after login)</div>
-          </md-card-header-text>
-        </md-card-header>
-
-        <md-card-actions>
-          <nuxt-link to="/landingStudent">Student Landing</nuxt-link>
-        </md-card-actions>
-      </md-card>
-
-
-
-       <md-card>
-        <md-card-header>
-          <md-card-header-text>
-            <div class="md-title">Staff Landing</div>
-            <div class="md-subhead">Click here to go to the staff landing page (after login)</div>
-          </md-card-header-text>
-        </md-card-header>
-
-        <md-card-actions>
-          <nuxt-link to="/landingStaff">Staff Landing</nuxt-link>
-        </md-card-actions>
-      </md-card>
-
-
-
     </div>
   </div>
 </template>
@@ -167,6 +137,10 @@ export default {
   width: 100%;
   padding: 50px 0;
 }
+
+/* .md-card:hover{
+  opacity: .2;
+} */
 
 .md-card {
   min-width: 300px;

@@ -3,58 +3,72 @@
     <div class="staff-container">
       <!-- <div class="heading-two-text">Select a Request</div> -->
       <div class="request-tabs">
-          <!-- TO DO: make the class returned by a function so theres only 1 of each -->
-          <a
-            v-if="this.requestHistoryTab"
-            class="tab-links"
-            @click="switchToOpenRequestTab"
-          >Open Requests</a>
+        <a
+          @click="switchToOpenRequestTab"
+          v-bind:class="{ 'tab-links-active': openRequestTab, 'tab-links': !openRequestTab }"
+        >Open Requests</a>
 
-          <a
-            v-if="this.openRequestTab"
-            class="tab-links-active"
-            @click="switchToOpenRequestTab"
-          >Open Requests</a>
-
-          <a
-            v-if="this.openRequestTab"
-            class="tab-links"
-            @click="switchToRequestHistoryTab"
-          >Request History</a>
-
-          <a
-            v-if="this.requestHistoryTab"
-            class="tab-links-active"
-            @click="switchToRequestHistoryTab"
-          >Request History</a>
-        </div>
+        <a
+          v-bind:class="{ 'tab-links-active': requestHistoryTab, 'tab-links': !requestHistoryTab }"
+          @click="switchToRequestHistoryTab"
+        >Request History</a>
+      </div>
 
       <div v-if="this.openRequestTab">
         <div class="ticket-container">
+          <div
+            v-if="!this.selectedCard"
+            class="sub-heading-text"
+            style="padding-top:2%;"
+          >Select a request to continue.</div>
+
           <div class="row justify-content-center">
             <div class="col">
               <div v-for="(ticket, index) in filterOpenTickets('Open')" :key="index">
-                <md-card>
-                  <!-- <md-card-header>
+                <a @click="clickCard">
+                  <md-card
+                    v-bind:class="{ 'selected-card': selectedCard, 'md-card': !selectedCard }"
+                  >
+                    <div>
+                      <!-- <md-card-header>
                     <div class="md-title">Open Request</div>
-                  </md-card-header>-->
+                      </md-card-header>-->
 
-                  <!-- <div class="md-card-content">
+                      <!-- <div class="md-card-content">
                     <strong>Student:</strong>
                     <div class="card-text">{{ ticket.owner }}</div>
-                  </div>-->
+                      </div>-->
 
-                  <div class="md-card-content">
-                    <strong>Status:</strong>
-                    {{ ticket.status }}
-                  </div>
-                  <div class="md-card-content">
-                    <strong>Issue:</strong>
-                    {{ticket.oneLineOverview}}
-                  </div>
-                </md-card>
+                      <div class="md-card-content">
+                        <strong>Status:</strong>
+                        {{ ticket.status }}
+                      </div>
+
+                      <div class="md-card-content">
+                        <strong>Issue:</strong>
+                        {{ticket.oneLineOverview}}
+                      </div>
+
+                      <div
+                        v-bind:class="{ 'chevron': expandChevron, 'hidden': !expandChevron }"
+                        @click="changeChevronClass"
+                      >
+                        <expand-arrow />
+                      </div>
+                    </div>
+                    <div
+                      @click="changeChevronClass"
+                      v-bind:class="{ 'chevron': collapseChevron, 'hidden': !collapseChevron }"
+                    >
+                      <collapse-arrow />
+                    </div>
+                  </md-card>
+                </a>
               </div>
             </div>
+            <button v-if="this.selectedCard" type="submit" class="form-buttons">
+              <right-circle />Begin Session
+            </button>
           </div>
         </div>
       </div>
@@ -69,10 +83,6 @@
               <div v-for="(ticket, index) in filterOpenTickets('Closed')" :key="index">
                 <md-card>
                   <div class="md-card-content">
-                    <!-- <span class="add-button" @click="expandCard">
-                    <plus-circle />
-                    </span>-->
-
                     <!-- <div class="md-card-content">
                     <strong>Student:</strong>
                     {{ ticket.owner }}
@@ -117,7 +127,10 @@ export default {
       el: "#requests",
       openRequestTab: true,
       requestHistoryTab: false,
-      selectedTicket: false
+      selectedTicket: false,
+      expandChevron: true,
+      collapseChevron: false,
+      selectedCard: false
     };
   },
   methods: {
@@ -139,6 +152,21 @@ export default {
       this.scrollToTop();
       return this.requestHistoryTab;
     },
+    changeChevronClass: function() {
+      if (this.expandChevron) {
+        this.collapseChevron = true;
+        this.expandChevron = false;
+      } else {
+        this.expandChevron = true;
+        this.collapseChevron = false;
+      }
+      this.selectedCard = !this.selectedCard;
+    },
+    clickCard: function() {
+      this.selectedCard = !this.selectedCard;
+      console.log(this.selectedCard);
+      console.log("alex is my bb bish bash bosh bingo bango bongo");
+    },
     expandCard: function() {
       console.log(this.requestHistoryTab);
     }
@@ -158,23 +186,30 @@ export default {
   display: inline-block;
   margin-left: 4%;
   margin-right: 4%;
-  font-size: 16px;
+  font-size: 17px;
   /* margin-left: 15px;
   margin-right: 15px; */
   cursor: pointer;
   opacity: 0.8;
+  font-weight: 200;
 }
 .tab-links-active {
   margin-left: 4%;
   margin-right: 4%;
   display: inline-block;
-  font-size: 16px;
+  font-size: 17px;
   cursor: pointer;
   font-weight: 400 !important;
   text-decoration: underline;
 }
 
+.form-buttons {
+  width: 40% !important;
+}
+
 .request-tabs {
+  margin-top: 10px;
+  margin-bottom: 6px;
   width: 100%;
   display: inline-block;
   text-align: center;
@@ -196,10 +231,9 @@ export default {
   box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.05);
 }
 .ticket-container {
-  cursor: pointer;
   text-align: center;
   justify-content: center;
-  height: 400px;
+  height: 300px;
   overflow-y: scroll;
 }
 .users {
@@ -225,6 +259,16 @@ export default {
   margin: 14px;
   display: inline-block;
   vertical-align: top;
+  cursor: pointer;
+}
+.selected-card {
+  border-width: 1px !important;
+  border-style: solid;
+  border-color: rgb(151, 223, 233) !important;
+  width: 250px;
+  margin: 14px;
+  display: inline-block;
+  cursor: pointer;
 }
 
 .card-row {
@@ -238,5 +282,20 @@ export default {
   color: #9aabb1;
   margin: 0;
   margin-top: 10px;
+}
+
+.chevron {
+  opacity: 1;
+  float: right;
+  align-items: left;
+  font-size: 30px;
+  cursor: pointer;
+  padding-top: 15px !important;
+}
+
+.hidden {
+  opacity: 0;
+  display: none !important;
+  float: left !important;
 }
 </style>

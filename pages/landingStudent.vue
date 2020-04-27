@@ -72,7 +72,7 @@
                   <div class="top-row" v-for="(row, index) in rows" v-bind:key="row">
                     <tr>
                       <td>
-                        <button class="file-container">
+                        <button class="file-container file-button">
                           {{row.file.name}}
                           <input
                             type="file"
@@ -83,7 +83,7 @@
                       </td>
 
                       <td class="remove-column">
-                        <a
+                        <a 
                           v-on:click="removeElement(index);"
                           style="cursor: pointer; z-index: 999;"
                         >Remove</a>
@@ -317,25 +317,35 @@ table th,
   display: block;
   /* font-size: 999px; */
   filter: alpha(opacity=0);
-  min-height: 21px;
-  min-width: 100%;
+  min-height: 18px;
+  min-width: 85%;
   opacity: 0;
   position: absolute;
   right: 0;
   text-align: right;
   top: 0;
   cursor: pointer;
+  background-color: #abd5ff;
+  margin: 0;  
 }
 
 .file-container {
-  background: #e3e3e3;
+  border-width: 1px;
+  border-color:rgb(154, 224, 231);
+  background-color: rgb(223, 219, 219);
+  margin: 0;
   float: left;
-  padding: 0.5em;
+  padding: 0.4em;
   position: relative;
+  border-radius: 10px 10px 10px 10px;
+}
+
+.file-button{
+ 
 }
 
 .file-container:hover {
-  background: #e3e3e3 !important;
+  opacity: .8;
 }
 
 .login-form {
