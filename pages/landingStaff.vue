@@ -2,120 +2,137 @@
   <div id="requests" style="position: relative;">
     <div class="staff-container">
       <!-- <div class="heading-two-text">Select a Request</div> -->
-      <div class="request-tabs">
-        <a
-          @click="switchToOpenRequestTab"
-          v-bind:class="{ 'tab-links-active': openRequestTab, 'tab-links': !openRequestTab }"
-        >Open Requests</a>
+      <div v-if="!this.connecting">
+        <div class="request-tabs">
+          <a
+            @click="switchToOpenRequestTab"
+            v-bind:class="{ 'tab-links-active': openRequestTab, 'tab-links': !openRequestTab }"
+          >Open Requests</a>
 
-        <a
-          v-bind:class="{ 'tab-links-active': requestHistoryTab, 'tab-links': !requestHistoryTab }"
-          @click="switchToRequestHistoryTab"
-        >Request History</a>
-      </div>
+          <a
+            v-bind:class="{ 'tab-links-active': requestHistoryTab, 'tab-links': !requestHistoryTab }"
+            @click="switchToRequestHistoryTab"
+          >Request History</a>
+        </div>
 
-      <div v-if="this.openRequestTab">
-        <div class="ticket-container">
-          <div
-            v-if="!this.selectedCard"
-            class="sub-heading-text"
-            style="padding-top:2%;"
-          >Select a request to continue.</div>
+        <div v-if="this.openRequestTab">
+          <div class="ticket-container">
+            <div
+              v-if="!this.selectedCard"
+              class="sub-heading-text"
+              style="padding-top:2%;"
+            >Select a request to continue.</div>
 
-          <div class="row justify-content-center">
-            <div class="col">
-              <div v-for="(ticket, index) in filterOpenTickets('Open')" :key="index">
-                <a @click="clickCard">
-                  <md-card
-                    v-bind:class="{ 'selected-card': selectedCard, 'md-card': !selectedCard }"
-                  >
-                    <div>
-                      <!-- <md-card-header>
+            <div class="row justify-content-center">
+              <div class="col">
+                <div v-for="(ticket, index) in filterOpenTickets('Open')" :key="index">
+                  <a @click="clickCard">
+                    <md-card
+                      v-bind:class="{ 'selected-card': selectedCard, 'md-card': !selectedCard }"
+                    >
+                      <div>
+                        <!-- <md-card-header>
                     <div class="md-title">Open Request</div>
-                      </md-card-header>-->
+                        </md-card-header>-->
 
-                      <!-- <div class="md-card-content">
+                        <!-- <div class="md-card-content">
                     <strong>Student:</strong>
                     <div class="card-text">{{ ticket.owner }}</div>
-                      </div>-->
+                        </div>-->
 
-                      <div class="md-card-content">
-                        <strong>Status:</strong>
-                        {{ ticket.status }}
+                        <div class="md-card-content">
+                          <strong>Status:</strong>
+                          {{ ticket.status }}
+                        </div>
+
+                        <div class="md-card-content">
+                          <strong>Issue:</strong>
+                          {{ticket.oneLineOverview}}
+                        </div>
+
+                        <div
+                          v-bind:class="{ 'chevron': expandChevron, 'hidden': !expandChevron }"
+                          @click="changeChevronClass"
+                        >
+                          <expand-arrow />
+                        </div>
                       </div>
-
-                      <div class="md-card-content">
-                        <strong>Issue:</strong>
-                        {{ticket.oneLineOverview}}
+                      <div
+                        @click="changeChevronClass"
+                        v-bind:class="{ 'chevron': collapseChevron, 'hidden': !collapseChevron }"
+                      >
+                        <collapse-arrow />
                       </div>
 
                       <div
-                        v-bind:class="{ 'chevron': expandChevron, 'hidden': !expandChevron }"
-                        @click="changeChevronClass"
+                        v-bind:class="{ 'show-extra-content': collapseChevron, 'hide-extra-content': expandChevron }"
                       >
-                        <expand-arrow />
-                      </div>
-                    </div>
-                    <div
-                      @click="changeChevronClass"
-                      v-bind:class="{ 'chevron': collapseChevron, 'hidden': !collapseChevron }"
-                    >
-                      <collapse-arrow />
-                    </div>
+                        <div class="md-card-content">
+                          <div>Extra info</div>
+                        </div>
+                        <div class="md-card-content">
+                          <div>More extra info</div>
+                        </div>
 
-                    <div
-                      v-bind:class="{ 'show-extra-content': collapseChevron, 'hide-extra-content': expandChevron }"
-                    >
-                      <div class="md-card-content">
-                        <div>Extra info</div>
-                      </div>
-                      <div class="md-card-content">
-                        <div>More extra info</div>
-                      </div>
+                        <div class="md-card-content">
+                          <div>Extra info</div>
+                        </div>
 
-                      <div class="md-card-content">
-                        <div>Extra info</div>
+                        <div class="md-card-content">
+                          <div>More extra info</div>
+                        </div>
                       </div>
+                    </md-card>
+                  </a>
+                </div>
+              </div>
+            </div>
+            <button
+              v-if="this.selectedCard"
+              type="submit"
+              class="request-staff-buttons"
+              @click="startConnecting"
+            >
+              <right-circle />Begin Session
+            </button>
+          </div>
+        </div>
 
-                      <div class="md-card-content">
-                        <div>More extra info</div>
-                      </div>
+        <div v-if="this.requestHistoryTab">
+          <!-- TO DO: Make this message dynamic -->
+          <div
+            class="sub-heading-text"
+            style="padding-top:2%;"
+          >You currently have no request history.</div>
+
+          <div class="ticket-container">
+            <div class="row justify-content-center">
+              <div class="col">
+                <div v-for="(ticket, index) in filterOpenTickets('Closed')" :key="index">
+                  <md-card>
+                    <div class="md-card-content">
+                      <!-- <div class="md-card-content">
+                    <strong>Student:</strong>
+                    {{ ticket.owner }}
+                      </div>-->
+
+                      <strong>Status:</strong>
+                      {{ ticket.status }}
+                      <strong>Issue:</strong>
+                      {{ticket.oneLineOverview}}
                     </div>
                   </md-card>
-                </a>
+                </div>
               </div>
             </div>
           </div>
-          <button v-if="this.selectedCard" type="submit" class="form-buttons">
-            <right-circle />Begin Session
-          </button>
         </div>
       </div>
 
-      <div v-if="this.requestHistoryTab">
-        <!-- TO DO: Make this message dynamic -->
-        <div class="sub-heading-text" style="padding-top:2%;">You currently have no request history.</div>
-
-        <div class="ticket-container">
-          <div class="row justify-content-center">
-            <div class="col">
-              <div v-for="(ticket, index) in filterOpenTickets('Closed')" :key="index">
-                <md-card>
-                  <div class="md-card-content">
-                    <!-- <div class="md-card-content">
-                    <strong>Student:</strong>
-                    {{ ticket.owner }}
-                    </div>-->
-
-                    <strong>Status:</strong>
-                    {{ ticket.status }}
-                    <strong>Issue:</strong>
-                    {{ticket.oneLineOverview}}
-                  </div>
-                </md-card>
-              </div>
-            </div>
-          </div>
+      <div v-if="this.connecting">
+        <div class="heading-two-text">Connecting</div>
+        <div class="loading-dots">
+          <beat-loader :loading="loading" :color="color" :size="size"></beat-loader>
         </div>
       </div>
     </div>
@@ -144,12 +161,14 @@ export default {
   data() {
     return {
       el: "#requests",
+      connecting: false,
       openRequestTab: true,
       requestHistoryTab: false,
       selectedTicket: false,
       expandChevron: true,
       collapseChevron: false,
-      selectedCard: false
+      selectedCard: false,
+      color: "#7e6694",
     };
   },
   methods: {
@@ -183,8 +202,9 @@ export default {
     },
     clickCard: function() {
       this.selectedCard = !this.selectedCard;
-      console.log(this.selectedCard);
-      console.log("alex is my bb bish bash bosh bingo bango bongo");
+    },
+    startConnecting: function() {
+      this.connecting = true;
     },
     expandCard: function() {
       console.log(this.requestHistoryTab);
@@ -220,9 +240,16 @@ export default {
   cursor: pointer;
   font-weight: 400 !important;
   text-decoration: underline;
+  color: #0286a0 !important;
 }
 
-.form-buttons {
+.loading-dots{
+  margin-top: 15px;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.request-staff-buttons {
   width: 40% !important;
   opacity: 0.9;
 }
