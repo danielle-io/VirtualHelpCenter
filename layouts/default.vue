@@ -28,16 +28,12 @@ import ChevronUp from "vue-material-design-icons/ChevronUp.vue";
 import BeatLoader from 'vue-spinner/src/BeatLoader.vue';
 
 
-
 Vue.component("account-circle", AccountCircle);
 Vue.component("plus-circle", PlusCircle);
 Vue.component("right-circle", RightCircle);
 Vue.component("expand-arrow", ChevronDown);
 Vue.component("collapse-arrow", ChevronUp);
 Vue.component('beat-loader', BeatLoader);
-
-
-
 
 
 
