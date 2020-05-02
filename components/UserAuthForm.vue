@@ -1,9 +1,13 @@
 <template>
   <v-form v-model="valid">
-    <v-text-field v-model="userInfo.name" 
-                  label="Name" 
-                  color="green"
-                  :rules="[required('name')]"
+    <v-text-field v-model="userInfo.firstName" 
+                  label="First Name" 
+                  :rules="[required('firstName')]"
+                  v-if="hasName" />
+
+    <v-text-field v-model="userInfo.lastName"
+                  label="Last Name" 
+                  :rules="[required('lastName')]"
                   v-if="hasName" />
 
     <v-text-field v-model="userInfo.email" 
@@ -11,32 +15,21 @@
                   color="green" 
                   :rules="[required('email'), emailFormat()]"/>
 
+    <v-container fluid>
+	    <v-row align="center">
+	        <v-select
+	          v-model="e6"
+	          :items="classes"
+	          :menu-props="{ maxHeight: '400' }"
+	          label="Classes"
+	          multiple
+	          hint="Choose your enrolled classes"
+	          persistent-hint>
+	        </v-select>
+	    </v-row>
+	</v-container>
+
     <UserAuthPassword v-model="userInfo.password" label="Password" />
-
-    <div v-if="registrationCheckboxes">
-      <!-- v-model connects it with the userInfo hash, value makes the :rules work -->
-      <v-checkbox v-model="userInfo.agreeToTerms"
-                  value="userInfo.agreeToTerms"
-                  class="mr-0"
-                  color="green"
-                  :rules="[required('agreeToTerms', 'You must agree to the terms and conditions and privacy policy')]">
-        <template #label @click.stop>
-          <span>
-            I have read and agree to the 
-            <a href="/policies/terms-and-conditions" target="_blank" @click.stop>Terms and Conditions</a>
-            and 
-            <a href="/policies/privacy-policy" target="_blank" @click.stop>Privacy Policy</a>
-          </span>
-        </template>
-      </v-checkbox>
-
-      <v-checkbox v-model="userInfo.email_weekly"
-                  color="green"
-                  label="I would like to join the VIP list and get a weekly newsletter." />
-      <v-checkbox v-model="userInfo.email_daily"
-                  color="green"
-                  label="I would like to get an email notification whenever new videos or courses are released." />
-    </div>
 
     <v-btn @click="submitForm(userInfo)" :disabled="!valid" color="green accent-3">{{ buttonText }}</v-btn>
   </v-form>
@@ -49,6 +42,12 @@
   export default {
     data() {
       return {
+      	classes: [
+      		'ICS33',
+      		'ICS45J',
+      		'ICS45C',
+      		],
+      	e6: [],
         valid: false,
         userInfo: {
           name: '',
