@@ -14,6 +14,13 @@
             </button>
           </nuxt-link>
         </form>
+         <b-col md="4" class="text-center">
+        <b-card title="Social Login" bg-variant="light">
+          <div v-for="s in strategies" :key="s.key" class="mb-2">
+          <v-btn @click="$auth.loginWith(s.key)" block :style="{background: s.color}" class="login-button">Login with {{ s.name }}</v-btn>
+          </div>
+        </b-card>
+    </b-col>
       </div>
     </div>
   </div>
@@ -22,7 +29,24 @@
 
 <script>
 import Vue from "vue";
-export default {};
+export default {
+  middleware: ['auth'],
+  computed: {
+    strategies: () => ([
+     { key: 'oauth2', name: 'Zoom', color: '#ec5425' },
+     { key: 'google', name: 'Google', color: '#4284f4' },
+    ]),
+    redirect() {
+      return (
+        this.$route.query.redirect &&
+        decodeURIComponent(this.$route.query.redirect)
+      )
+    },
+    isCallback() {
+      return Boolean(this.$route.query.callback)
+    }
+  },
+};
 // import { Tabs, Tab } from "vue-tabs-component";
 // Vue.component("tabs", Tabs);
 </script>

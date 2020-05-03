@@ -86,6 +86,19 @@
         </md-card-actions>
       </md-card>
 
+      <md-card>
+        <md-card-header>
+          <md-card-header-text>
+            <div class="md-title">Zoom</div>
+            <div class="md-subhead">Click here to See a display of zoom</div>
+          </md-card-header-text>
+        </md-card-header>
+
+        <md-card-actions>
+          <nuxt-link to="/zoom">Zoom Display</nuxt-link>
+        </md-card-actions>
+      </md-card>
+
     </div>
   </div>
 </template>

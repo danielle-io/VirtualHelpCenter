@@ -22,4 +22,6 @@ export default class Ticket extends Model {
       //acceptedBy: this.belongsTo(User, 'user_id')
     }
   }
+
+  
 }

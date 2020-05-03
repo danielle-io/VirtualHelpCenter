@@ -26,9 +26,12 @@
         <nuxt-link class="link-styling" to="../account">
           <account-circle />
         </nuxt-link>
+        <div v-if="this.$auth.loggedIn">
+          <v-btn text @click="this.$auth.logout()">Logout</v-btn>
       </div>
-      <div v-if="$auth.loggedIn">
-          <v-btn text @click="$auth.logout()">Logout</v-btn>
+      <div v-else>
+          <v-btn text>LogIn</v-btn>
+      </div>
       </div>
       <!-- App background shapes -->
 

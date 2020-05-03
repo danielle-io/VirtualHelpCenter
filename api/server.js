@@ -5,7 +5,7 @@
 require('dotenv').config()
 
 const express = require('express');
-const morgan = require("morgan");
+//const morgan = require("morgan");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
@@ -32,7 +32,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 // Configure morgan
-app.use(morgan("dev"));
+//app.use(morgan("dev"));
 
 // Require API routes
 const users = require('./controller/users');

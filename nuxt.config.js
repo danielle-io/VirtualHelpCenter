@@ -60,5 +60,27 @@ module.exports = {
     // API middleware
     '~/api/server.js'
 
-  ]
+  ],
+  auth: {
+    strategies: {
+      social: {
+        _scheme: 'oauth2',
+        authorization_endpoint: 'https://zoom.us/oauth/authorize',
+        userinfo_endpoint: 'https://www.googleapis.com/oauth2/v3/userinfo',
+        scope: ['openid', 'profile', 'email'],
+        access_type: undefined,
+        access_token_endpoint: undefined,
+        response_type: 'token',
+        token_type: 'Bearer',
+        redirect_uri: undefined,
+        client_id: 'l3Z72uLFSgu6qM2dZbmsHg',
+        token_key: 'XFihIkVNtyjBOauY2BZR4m8VktswyHQq',
+        state: 'UNIQUE_AND_NON_GUESSABLE'
+      },
+      google: {
+        client_id:
+          '396523054692-rir1711ti5ev95spurdru2buahnqq532.apps.googleusercontent.com'
+      },
+    }
+  }
 }

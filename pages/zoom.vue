@@ -38,33 +38,7 @@
         </div>
         <div class = "col">
         <h4>In Progress Tickets</h4>
-        <div  v-for="(ticket, index) in filterOpenTickets('In Progress')" :key="index">
-          <md-card>
-          <md-card-header>
-            <div class="md-title">Ticket</div>
-          </md-card-header>
-
-          <div class="md-card-content">
-            <strong>Student:</strong>
-            {{ ticket.owner }}
-          </div>
-
-          <div class="md-card-content">
-            <strong>Status:</strong>
-            {{ ticket.status }}
-          </div>
-          <div class="md-card-content">
-            <strong>Questions:</strong>
-          </div>
-
-          <div
-            class="md-card-content" style="margin-left: 25px;" v-for="(question, index) in ticket.questions" :key="index">
-            <strong>{{index + 1}}.</strong>
-            {{ ticket.questions[index] }}
-          </div>
-
-        </md-card>
-        </div>
+        
         </div>
         <div class = "col">
           <h4>Closed</h4>
@@ -95,29 +69,16 @@ import User from '../store/models/User'
 import Account from '../store/models/Account'
 
 Vue.use(VueMaterial)
-
  
 export default {
 
   //middleware: 'auth',
 
   async fetch() {
-    // let { data } = await this.$axios.get("/tickets");
-
-    // Ticket.insert({data: data});
-    Account.insert({
-      data: { $id: 1, isLoggedIn: true}
-    })
-    const result = await Ticket.api().get('/tickets')
-    console.log(result.response.status)
+ 
   },
   computed: {
-    tickets() {
-      //console.log(this.$store.$db().model('account').all())
-      console.log(this.$auth.user)
-      //console.log(Account.query().first().isLoggedIn)
-      return Ticket.query().orderBy('owner').get();
-    }
+
   },
   head() {
     return {
@@ -126,11 +87,10 @@ export default {
   }, 
   methods:{
     filterOpenTickets(status){
-      return this.tickets.filter(ticket =>ticket.status === status);
+      //return this.tickets.filter(ticket =>ticket.status === status);
     },
     created () {
-      //let { data } = await axios.get("/api/tickets");
-      //Ticket.getAll()
+      
     }
   }
 };
