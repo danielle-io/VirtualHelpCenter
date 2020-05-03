@@ -259,6 +259,8 @@ export default {
     }
   },
   beforeMount(){
+            console.log("hi");
+
     this.scrollToTop();
   },
 };

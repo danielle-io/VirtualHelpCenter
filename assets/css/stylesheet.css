@@ -45,6 +45,15 @@ footer {
     color: #624b77;
 }
 
+.sub-heading-text-larger {
+    margin-top: 18px;
+    margin-bottom: 15px;
+    font-size: 15px;
+    text-align: center;
+    font-family: "Poppins";
+    color: #624b77;
+}
+
 .heading-two-text {
     margin-top: 30px;
     font-size: 25px;
