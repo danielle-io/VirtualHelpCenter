@@ -39,7 +39,7 @@
 
             <div class="form-container">
               <div class="row" style="width: 70%;">
-                <b-form-select v-model="selected" :options="classes" size="sm" class="mt-3"></b-form-select>
+                <b-form-select v-model="selected" :options="classes" size="sm" class="mt-3" placeholder="Please select the class you need help with"></b-form-select>
               </div>
 
               <div class="row">
@@ -211,9 +211,15 @@ export default {
       file: null,
       selected: null,
       student: null,
-      classes: [
-        { value: null, text: "Please select the class you need help with:" }
+          classes: [
+        { value: null, text: "Please select the class you need help with:"},
+         {value: "ICS32", text: "ICS32" }
       ]
+
+      // TODO: replace hardcoded classes with dynamic below
+      // classes: [
+      //   { value: null, text: "Please select the class you need help with:" }
+      // ]
     };
   },
   methods: {
@@ -253,6 +259,8 @@ export default {
     }
   },
   beforeMount(){
+            console.log("hi");
+
     this.scrollToTop();
   },
 };

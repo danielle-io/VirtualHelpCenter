@@ -40,6 +40,8 @@ const students = require('./controller/students');
 const staffs = require('./controller/staffs');
 const courses = require('./controller/courses');
 const tickets = require('./controller/tickets');
+const tutors = require('./controller/tutors');
+
 
 // Import API Routes
 app.use(users);
@@ -47,6 +49,8 @@ app.use(students);
 app.use(courses);
 app.use(staffs);
 app.use(tickets);
+app.use(tutors);
+
 
 // Export the server middleware
 module.exports = {
