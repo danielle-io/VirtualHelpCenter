@@ -42,7 +42,6 @@
                       ref="tutorEmails"
                       type="text"
                       class="email-input"
-                      name="email"
                       placeholder="Enter a new tutor's email"
                     />
                   </td>
