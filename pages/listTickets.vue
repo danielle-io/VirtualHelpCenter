@@ -24,7 +24,15 @@
           </div>
           <div class="md-card-content">
             <strong>Issue:</strong>
-            {{ticket.oneLineOverview}}
+            <!-- {{ ticket.oneLineOverview }} -->
+            {{ ticket.oneLineOverview }}
+            
+          </div>
+          <!-- <div class="md-card-content">
+            <button type="button" v-on:click="deleteData(ticket, ticket._id)">Delete</button>
+          </div> -->
+          <div class="md-card-content">
+            <button type="button" v-on:click="acceptTicket(ticket, ticket._id)">Accept</button>
           </div>
           
           <!-- <div
@@ -37,8 +45,9 @@
         </div>
         </div>
         <div class = "col">
-        <h4>In Progress Tickets</h4>
-        <div  v-for="(ticket, index) in filterOpenTickets('In Progress')" :key="index">
+        
+        <h4>Open Tickets</h4>
+        <div  v-for="(ticket, index) in filterOpenTickets('Open')" :key="index">
           <md-card>
           <md-card-header>
             <div class="md-title">Ticket</div>
@@ -54,14 +63,21 @@
             {{ ticket.status }}
           </div>
           <div class="md-card-content">
-            <strong>Questions:</strong>
+            <strong>Issue:</strong>
+            {{ticket.oneLineOverview}}
           </div>
-
-          <div
+          <!-- <div class="md-card-content">
+            <button type="button" v-on:click="deleteData(ticket, ticket._id)">Delete</button>
+          </div> -->
+          <div class="md-card-content">
+            <button type="button" v-on:click="acceptTicket(ticket, ticket._id)">Accept</button>
+          </div>
+          
+          <!-- <div
             class="md-card-content" style="margin-left: 25px;" v-for="(question, index) in ticket.questions" :key="index">
             <strong>{{index + 1}}.</strong>
             {{ ticket.questions[index] }}
-          </div>
+          </div> -->
 
         </md-card>
         </div>
@@ -89,6 +105,7 @@ import Vue from "vue";
 import VueMaterial from "vue-material";
 import "vue-material/dist/vue-material.min.css";
 import "vue-material/dist/theme/default.css";
+import axios from "~/plugins/axios"
 
 import Ticket from '../store/models/Ticket'
 import User from '../store/models/User'
@@ -121,10 +138,32 @@ export default {
     },
     created () {
       //let { data } = await axios.get("/api/tickets");
+    },
+
+    deleteData(ticket, id){
+      console.log(id)
+          axios.delete("/api/deleteTicket/"+ id )
+
+        .then(function(response ){
+          console.log(response)
+        })
+      window.location.reload();
+      console.log("delete function")
+
+     },
+    acceptTicket(ticket, id){
+      console.log(ticket.status)
+      ticket.status = 'In Progress'
+      console.log(ticket.codeSnippet)
+      console.log(ticket.user_id)
+      // console.log(ticket.owner.data._id)
+      // window.location.reload();
+
+
+    }
       //Ticket.getAll()
     }
   }
-};
 </script>
 
 <style scoped>

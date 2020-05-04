@@ -175,9 +175,17 @@ export default {
         var email = this.$refs.tutorEmails[i].value;
 
         this.emailsToSubmit.push(this.$refs.tutorEmails[i].value);
+        axios.post('/api/insertTutor',{
+          email: this.$refs.tutorEmails[i].value
+        })
       }
-
+      
       console.log(this.emailsToSubmit);
+      // for (var i in this.emailsToSubmit){
+      //   axios.post('/api/insertTutor',{
+      //     email: emailsToSubmit[i]
+      //   })
+      // }
 
       for (var i = rowCount - 1; i > -1; i--) {
         this.removeElement(i);
