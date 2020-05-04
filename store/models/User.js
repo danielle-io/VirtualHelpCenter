@@ -14,7 +14,7 @@ export default class User extends Model {
       _id: this.attr(null),
       name: this.attr(''),
       ucinetid: this.attr(''),
-
+      
     }
   }
 }

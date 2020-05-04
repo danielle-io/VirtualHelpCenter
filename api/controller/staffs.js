@@ -1,7 +1,7 @@
 const {Router} = require('express');
 const router = Router()
 
-var StaffModel = require('../model/students')
+var StaffModel = require('../model/staffs')
 
 //GET Staff Listing
 router.get('/staffs', (req,res,next) =>{
@@ -18,5 +18,15 @@ router.get('/staffs/:id', (req, res, next) => {
         res.send(staff);
     });
 });
+
+router.post('/insertStaff', function(req, res, next) {
+    let staffData = new StaffModel(req.body);
+    staffData.save().then(item => {
+        res.send(item);
+    })
+    .catch(err => {
+        res.status(400).send(err);
+    });
+})
 
 module.exports = router;
