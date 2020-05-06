@@ -7,7 +7,7 @@
         <div class = "col">
         
         <h4>Open Tickets</h4>
-        <div  v-for="(ticket, index) in filterOpenTickets('Open')" :key="index">
+        <div  v-for="(ticket, index) in filterOpenTickets('Open')" v-if="index <= 2" :key="index">
           <md-card>
           <md-card-header>
             <div class="md-title">Ticket</div>
@@ -86,7 +86,6 @@
 
 
 import Vue from "vue";
-import axios from "~/plugins/axios";
 import VueMaterial from "vue-material";
 import "vue-material/dist/vue-material.min.css";
 import "vue-material/dist/theme/default.css";
@@ -94,15 +93,17 @@ import "vue-material/dist/theme/default.css";
 import Ticket from '../store/models/Ticket'
 import User from '../store/models/User'
 
-
+Vue.use(VueMaterial)
 
  
 export default {
 
   async fetch() {
-    let { data } = await axios.get("/api/tickets");
+    // let { data } = await this.$axios.get("/tickets");
 
-    Ticket.insert({data: data});
+    // Ticket.insert({data: data});
+    const result = await Ticket.api().get('/tickets')
+    console.log(result.response.status)
   },
   computed: {
     tickets() {
@@ -120,6 +121,7 @@ export default {
     },
     created () {
       //let { data } = await axios.get("/api/tickets");
+      //Ticket.getAll()
     }
   }
 };
