@@ -129,6 +129,7 @@
     //had to rename function "created" because I couldnt access "options" property
     async created() {
       let student = await axios.get("/api/users/"+this.$route.params.id);
+      console.log(student);
       student.data.classes.forEach(element => {
         this.loadClasses(element)
       })

@@ -46,8 +46,8 @@
         </div>
         <div class = "col">
         
-        <h4>Open Tickets</h4>
-        <div  v-for="(ticket, index) in filterOpenTickets('Open')" :key="index">
+        <h4>In Progess Tickets</h4>
+        <div  v-for="(ticket, index) in filterOpenTickets('In Progress')" :key="index">
           <md-card>
           <md-card-header>
             <div class="md-title">Ticket</div>
@@ -70,7 +70,7 @@
             <button type="button" v-on:click="deleteData(ticket, ticket._id)">Delete</button>
           </div> -->
           <div class="md-card-content">
-            <button type="button" v-on:click="acceptTicket(ticket, ticket._id)">Accept</button>
+            <button type="button" v-on:click="openTicket(ticket, ticket._id)">Not in Progress</button>
           </div>
           
           <!-- <div
@@ -151,19 +151,38 @@ export default {
       console.log("delete function")
 
      },
-    acceptTicket(ticket, id){
-      console.log(ticket.status)
-      ticket.status = 'In Progress'
-      console.log(ticket.codeSnippet)
-      console.log(ticket.user_id)
-      // console.log(ticket.owner.data._id)
-      // window.location.reload();
 
+    async acceptTicket(ticket, id){
+      //update ticket withing db
+      axios.put('/api/updateTicket/'+id, {
+        status: 'In Progress'
+      });
 
-    }
-      //Ticket.getAll()
+      //read updated time
+      let tickets = await axios.get('/api/ticket/'+id);
+
+      //create a timer for 1 minute
+      let timer = new Date();
+      timer.setMinutes(timer.getMinutes()+1);
+
+      //run timer
+      let x = setInterval(function(){
+        let current = new Date();
+        if (current> timer){
+          console.log("Time is up");
+          clearInterval(x);
+        }
+      }, 1000)
+
+    },
+
+    async openTicket(ticket, id){
+      axios.put('/api/updateTicket/'+id, {
+        status: 'Open'
+      });
     }
   }
+}
 </script>
 
 <style scoped>

@@ -17,6 +17,7 @@
     "@nuxtjs/axios": "^5.10.0",
     "@vuex-orm/core": "^0.36.3",
     "@vuex-orm/plugin-axios": "^0.9.2",
+    "@zoomus/websdk": "^1.7.7",
     "agenda": "^3.1.0",
     "axios": "^0.19.2",
     "body-parser": "^1.19.0",
