@@ -1,3 +1,4 @@
+
 <template>
   <div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/velocity/1.2.3/velocity.min.js"></script>
@@ -7,6 +8,7 @@
         <div class="heading-text" style="margin-bottom: 10px;">Administrative Actions</div>
 
         <div class="request-tabs">
+         
           <a
             @click="switchToAddTutorTab"
             v-bind:class="{ 'tab-links-active': addTutorTab, 'tab-links': !addTutorTab }"
@@ -22,6 +24,7 @@
           <div class="top-row"></div>
 
           <!-- TODO: make sure an email was actually typed and valid before displaying this message -->
+          <!-- TDO:  -->
           <div
             v-if="!this.addRowClickedAfterSubmit && this.submitClicked"
             id="emailsSubmitted"
@@ -37,17 +40,34 @@
                   v-bind:key="index"
                 >
                   <td width="80%">
+                     <input
+                      width="100%"
+                      type="text"
+                      placeholder="Enter their First Name"
+                    />
+                     <input
+                      width="100%"
+                      type="text"
+                      placeholder="Enter their Last Name"
+                    />
                     <input
                       width="100%"
                       ref="tutorEmails"
                       type="text"
                       class="email-input"
-                      name="email"
-                      placeholder="Enter a new tutor's email"
+                      placeholder="Enter their email"
                     />
+                    <div class="row" style="margin-left: 10px; width: 70%;">
+                      <b-form-select
+                        :options="roles"
+                        size="sm"
+                        class="mt-3"
+                        placeholder="Select their role"
+                      ></b-form-select>
+                    </div>
                   </td>
                   <td sm="auto">
-                    <a v-on:click="removeElement(index);" class="remove-button">Remove Row</a>
+                    <a v-on:click="removeElement(index);" class="remove-button">Remove Addition</a>
                   </td>
                 </div>
               </tr>
@@ -121,7 +141,12 @@ export default {
       submitClicked: false,
       addRowClickedAfterSubmit: false,
       numberOfRows: 0,
-      emailsToSubmit: []
+      emailsToSubmit: [],
+       roles: [
+        { value: null, text: "Select their role"},
+         {value: "TA", text: "TA" },
+         {value: "Reader", text: "Reader"}
+      ]
     };
   },
   methods: {
@@ -168,7 +193,7 @@ export default {
 
       var rowCount = this.numberOfRows;
       for (var i in this.$refs.tutorEmails) {
-        if (this.$refs.tutorEmails[i].value === ""){
+        if (this.$refs.tutorEmails[i].value === "") {
           continue;
         }
         // TO DO: this is where you can add each email to the
@@ -176,11 +201,11 @@ export default {
         var email = this.$refs.tutorEmails[i].value;
 
         this.emailsToSubmit.push(this.$refs.tutorEmails[i].value);
-        axios.post('/api/insertTutor',{
+        axios.post("/api/insertTutor", {
           email: this.$refs.tutorEmails[i].value
-        })
+        });
       }
-      
+
       console.log(this.emailsToSubmit);
       // for (var i in this.emailsToSubmit){
       //   axios.post('/api/insertTutor',{
@@ -209,7 +234,7 @@ export default {
   /* float: left !important; */
 }
 
-.small-column{
+.small-column {
   margin-left: 4%;
 }
 
