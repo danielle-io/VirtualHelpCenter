@@ -35,22 +35,24 @@
         <md-card-header>
           <md-card-header-text>
             <div class="md-title">Create User</div>
-            <div class="md-subhead">Note: This page seems to fail sometimes rn but shows up if you refresh</div>
+            <div
+              class="md-subhead"
+            >Note: This page seems to fail sometimes rn but shows up if you refresh</div>
           </md-card-header-text>
         </md-card-header>
 
         <md-card-actions>
           <nuxt-link to="/createUser">Create User</nuxt-link>
-
         </md-card-actions>
       </md-card>
-
 
       <md-card>
         <md-card-header>
           <md-card-header-text>
             <div class="md-title">Student Landing</div>
-            <div class="md-subhead">Later student & staff landing will be one page, changed based on user's account</div>
+            <div
+              class="md-subhead"
+            >Later student & staff landing will be one page, changed based on user's account</div>
           </md-card-header-text>
         </md-card-header>
 
@@ -59,12 +61,13 @@
         </md-card-actions>
       </md-card>
 
-
       <md-card>
         <md-card-header>
           <md-card-header-text>
             <div class="md-title">Staff Landing</div>
-            <div class="md-subhead">Later student & staff landing will be one page, changed based on user's account</div>
+            <div
+              class="md-subhead"
+            >Later student & staff landing will be one page, changed based on user's account</div>
           </md-card-header-text>
         </md-card-header>
 
@@ -73,7 +76,20 @@
         </md-card-actions>
       </md-card>
 
-       <md-card>
+      <md-card>
+        <md-card-header>
+          <md-card-header-text>
+            <div class="md-title">Admin Landing</div>
+            <div class="md-subhead">Admin users can specify TAs</div>
+          </md-card-header-text>
+        </md-card-header>
+
+        <md-card-actions>
+          <nuxt-link to="/landingAdmin">Admin Landing</nuxt-link>
+        </md-card-actions>
+      </md-card>
+
+      <md-card>
         <md-card-header>
           <md-card-header-text>
             <div class="md-title">Insert Ticket Request</div>
@@ -116,22 +132,21 @@ import Vue from "vue";
 import VueMaterial from "vue-material";
 import "vue-material/dist/vue-material.min.css";
 import "vue-material/dist/theme/default.css";
-import User from '../store/models/User'
+import User from "../store/models/User";
 
 Vue.config.productionTip = false;
 Vue.use(VueMaterial);
 
 export default {
-  data(){
+  data() {
     return {
       id: "5e9bc14dba244923803929d6"
-    }
+    };
   },
-  async fetch () {
-
+  async fetch() {
     let { data } = await this.$axios.get("/users");
 
-    User.insert({data: data})
+    User.insert({ data: data });
   },
   head() {
     return {

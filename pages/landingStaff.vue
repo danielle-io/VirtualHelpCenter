@@ -31,15 +31,15 @@
                       v-bind:class="{ 'selected-card': selectedCard, 'md-card': !selectedCard }"
                     >
                       <div>
-                        <!-- <md-card-header>
-                    <div class="md-title">Open Request</div>
-                        </md-card-header>-->
+                        <md-card-header>
+                    <div class="md-title">CS 32</div>
+                        </md-card-header>
 
                         <!-- <div class="md-card-content">
                     <strong>Student:</strong>
                     <div class="card-text">{{ ticket.owner }}</div>
                         </div>-->
-
+              
                         <div class="md-card-content">
                           <strong>Status:</strong>
                           {{ ticket.status }}
@@ -47,7 +47,8 @@
 
                         <div class="md-card-content">
                           <strong>Issue:</strong>
-                          {{ticket.oneLineOverview}}
+                          I can't reference a class.
+                          <!-- {{ticket.oneLineOverview}} -->
                         </div>
 
                         <div
@@ -68,18 +69,16 @@
                         v-bind:class="{ 'show-extra-content': collapseChevron, 'hide-extra-content': expandChevron }"
                       >
                         <div class="md-card-content">
-                          <div>Extra info</div>
+                          <strong>Longer Description:</strong>
+                          I am trying to call a function from a class but importing gives an undefined error.
                         </div>
                         <div class="md-card-content">
-                          <div>More extra info</div>
-                        </div>
-
-                        <div class="md-card-content">
-                          <div>Extra info</div>
+                          <strong>Attached Files:</strong>
                         </div>
 
                         <div class="md-card-content">
-                          <div>More extra info</div>
+                          <strong>Student:</strong>
+                          Alex Lang
                         </div>
                       </div>
                     </md-card>
@@ -169,7 +168,7 @@ export default {
       expandChevron: true,
       collapseChevron: false,
       selectedCard: false,
-      color: "#7e6694",
+      color: "#7e6694"
     };
   },
   methods: {
@@ -244,7 +243,7 @@ export default {
   color: #0286a0 !important;
 }
 
-.loading-dots{
+.loading-dots {
   margin-top: 15px;
   margin-bottom: 15px;
   text-align: center;
@@ -300,7 +299,6 @@ export default {
   word-wrap: break-word;
   flex-wrap: wrap;
   text-align: left;
-  line-height: 2px;
 }
 .md-card {
   width: 250px;

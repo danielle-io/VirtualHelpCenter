@@ -24,11 +24,16 @@ var ticketSchema = new Schema({
     },
   },
   codeSnippet: String,
-  questions:   [String],
-  attachments: [String],
   oneLineOverview: String,
   longerDescription: String,
-  acceptedBy: String,
+  questions:   [String],
+  attachments: [String],
+  acceptedBy: {
+    _id:{
+      type: Schema.Types.ObjectId,
+      ref: 'Staff'
+    },
+  }, 
   
 },
 {timestamps: true},

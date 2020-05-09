@@ -3,127 +3,161 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/velocity/1.2.3/velocity.min.js"></script>
 
     <div id="requests">
+     
       <!-- The transition effects for the containers changing -->
       <transition name="fade" mode="in-out">
+       
         <div v-bind:key="request" class="request-container">
-          <!--  The first container to show  -->
-          <div v-if="this.request === true">
-            <div class="heading-text">My Requests</div>
+         
+          <div class="request-tabs">
+            <a
+              @click="switchToCurrentRequestsTab"
+              v-bind:class="{ 'tab-links-active': currentRequestsTab, 'tab-links': !currentRequestsTab }"
+            >Current Requests</a>
 
-            <!-- TO DO: make this text dynamic based on user tickets -->
-            <div
-              class="sub-heading-text"
-              style="padding-top:2%;"
-            >You currently have no pending requests.</div>
-
-            <div style="text-align: center;">
-              <button
-                v-bind:key="request"
-                @click="changeRequestState"
-                type="submit"
-                style="margin-bottom: 20%;"
-                class="fadeIn form-buttons"
-              >
-                <right-circle />Request a Session
-              </button>
-            </div>
+            <a
+              v-bind:class="{ 'tab-links-active': requestHistoryTab, 'tab-links': !requestHistoryTab }"
+              @click="switchToRequestHistoryTab"
+            >Request History</a>
           </div>
 
-          <!-- Container for filling out the request form -->
-          <div v-if="this.request === false && this.submitRequest === false">
-            <div class="heading-text">Request a Session</div>
-            <div
-              class="sub-heading-text-left"
-              style="padding-top:2%;"
-            >Complete the form below to request assistance from a lab tutor.</div>
+          <!--  The first container to show  -->
+          <div v-if="this.currentRequestsTab">
+            <div v-if="this.request === true">
+              <div class="heading-text">My Requests</div>
 
-            <div class="form-container">
-              <div class="row" style="width: 70%;">
-                <b-form-select v-model="selected" :options="classes" size="sm" class="mt-3"></b-form-select>
-              </div>
-
-              <div class="row">
-                <label class="label-format">Please enter a brief one-sentence summary of the issue</label>
-                <b-form-input v-model="probDes" placeholder class="form-text-areas"></b-form-input>
-              </div>
-
-              <div class="row">
-                <label class="label-format">Elaborate on the issue, if needed.</label>
-                <b-form-text-area id="textarea" v-model="problem" placeholder rows="2" max-rows="6"></b-form-text-area>
-                <!-- removed for now from above :disabled="isDisabled" -->
-
-                <pre class="mt-3 mb-0">{{ problem }}</pre>
-              </div>
-
-              <div class="row">
-                <label class="label-format">Paste a code snippet, if needed</label>
-                <b-form-text-area id="textarea" v-model="code" placeholder rows="1" max-rows="6"></b-form-text-area>
-                <!-- removed for now from above :disabled="isDisabled" -->
-                <!-- <pre class="mt-3 mb-0">{{ code }}</pre> -->
-              </div>
-
-              <div class="Row">
-                <label class="label-format">Add a file, if needed</label>
-              </div>
-
-              <table class="table request-table">
-                <tbody>
-                  <!-- This is where the new questions are inserted -->
-                  <div class="top-row" v-for="(row, index) in rows" v-bind:key="row">
-                    <tr>
-                      <td>
-                        <button class="file-container file-button">
-                          {{row.file.name}}
-                          <input
-                            type="file"
-                            @change="setFilename($event, row)"
-                            :id="index"
-                          />
-                        </button>
-                      </td>
-
-                      <td class="remove-column">
-                        <a 
-                          v-on:click="removeElement(index);"
-                          style="cursor: pointer; z-index: 999;"
-                        >Remove</a>
-                      </td>
-                    </tr>
-                  </div>
-                </tbody>
-              </table>
-
-              <span class="add-button" @click="addRow">
-                <plus-circle />
-              </span>
+              <!-- TO DO: make this text dynamic based on user tickets -->
+              <div
+                class="sub-heading-text"
+                style="padding-top:2%;"
+              >You currently have no pending requests.</div>
 
               <div style="text-align: center;">
-                <!--  On select, the state of request is changed, forcing a transition effect and
-                changing what is rendered on the page-->
                 <button
-                  v-bind:key="submitRequest"
-                  type="submit"
-                  style="margin-bottom: 10px; margin-top: 10px;"
-                  class="fadeIn form-buttons"
+                  v-bind:key="request"
                   @click="changeRequestState"
+                  type="submit"
+                  style="margin-bottom: 20%;"
+                  class="fadeIn form-buttons"
                 >
-                  <right-circle />Submit Request
+                  <right-circle />Request a Session
                 </button>
-
-                <!-- ADD THIS BACK TO BUTTON ABOVE WHEN READY
-                v-on:click="submit"-->
               </div>
             </div>
-          </div>
 
-          <div v-if="this.submitRequest === true" v-bind:key="submitRequest">
-            <div class="heading-text">Request submitted</div>
-            <div
-              class="sub-heading-text"
-              style="padding-top:2%;"
-            >The current wait time is approximately 20 minutes.</div>
+            <!-- Container for filling out the request form -->
+            <div v-if="this.request === false && this.submitRequest === false">
+              <div class="heading-text">Request a Session</div>
+              <div
+                class="sub-heading-text-left"
+                style="padding-top:2%;"
+              >Complete the form below to request assistance from a lab tutor.</div>
+
+              <div class="form-container">
+                <div class="row" style="width: 70%;">
+                  <b-form-select
+                    :options="classes"
+                    size="sm"
+                    class="mt-3"
+                    placeholder="Please select the class you need help with"
+                  ></b-form-select>
+                </div>
+
+                <div class="row">
+                  <label class="label-format">Please enter a brief one-sentence summary of the issue</label>
+                  <b-form-input v-model="probDes" placeholder class="form-text-areas"></b-form-input>
+                </div>
+
+                <div class="row">
+                  <label class="label-format">Elaborate on the issue, if needed.</label>
+                  <b-form-text-area
+                    id="textarea"
+                    v-model="problem"
+                    placeholder
+                    rows="2"
+                    max-rows="6"
+                  ></b-form-text-area>
+                  <!-- removed for now from above :disabled="isDisabled" -->
+
+                  <pre class="mt-3 mb-0">{{ problem }}</pre>
+                </div>
+
+                <div class="row">
+                  <label class="label-format">Paste a code snippet, if needed</label>
+                  <b-form-text-area id="textarea" v-model="code" placeholder rows="1" max-rows="6"></b-form-text-area>
+                  <!-- removed for now from above :disabled="isDisabled" -->
+                  <!-- <pre class="mt-3 mb-0">{{ code }}</pre> -->
+                </div>
+
+                <div class="Row">
+                  <label class="label-format">Add a file, if needed</label>
+                </div>
+
+                <table class="table request-table">
+                  <tbody>
+                    <!-- This is where the new questions are inserted -->
+                    <div class="top-row" v-for="(row, index) in rows" v-bind:key="row">
+                      <tr>
+                        <td>
+                          <button class="file-container file-button">
+                            {{row.file.name}}
+                            <input
+                              type="file"
+                              @change="setFilename($event, row)"
+                              :id="index"
+                            />
+                          </button>
+                        </td>
+
+                        <td class="remove-column">
+                          <a
+                            v-on:click="removeElement(index);"
+                            style="cursor: pointer; z-index: 999;"
+                          >Remove</a>
+                        </td>
+                      </tr>
+                    </div>
+                  </tbody>
+                </table>
+
+                <span class="add-button" @click="addRow">
+                  <plus-circle />
+                </span>
+
+                <div style="text-align: center;">
+                  <!--  On select, the state of request is changed, forcing a transition effect and
+                  changing what is rendered on the page-->
+                  <button
+                    v-bind:key="submitRequest"
+                    type="submit"
+                    style="margin-bottom: 10px; margin-top: 10px;"
+                    class="fadeIn form-buttons"
+                    @click="changeRequestState"
+                  >
+                    <right-circle />Submit Request
+                  </button>
+
+                  <!-- ADD THIS BACK TO BUTTON ABOVE WHEN READY
+                  v-on:click="submit"-->
+                </div>
+              </div>
+            </div>
+
+            <div v-if="this.submitRequest === true" v-bind:key="submitRequest">
+              <div class="heading-text">Request submitted</div>
+              <div
+                class="sub-heading-text"
+                style="padding-top:2%;"
+              >The current wait time is approximately 20 minutes.</div>
+            </div>
+
           </div>
         </div>
+
+                  <div v-if="this.requestHistoryTab">
+                    hi
+                    </div>
+
       </transition>
     </div>
   </div>
@@ -198,6 +232,8 @@ export default {
   data() {
     return {
       el: "#requests",
+      currentRequestsTab: true,
+      requestHistoryTab: false,
       show: true,
       rows: [],
       status: "Open",
@@ -212,13 +248,19 @@ export default {
       selected: null,
       student: null,
       classes: [
-        { value: null, text: "Please select the class you need help with:" }
+        { value: null, text: "Please select the class you need help with:" },
+        { value: "ICS32", text: "ICS32" }
       ]
+
+      // TODO: replace hardcoded classes with dynamic below
+      // classes: [
+      //   { value: null, text: "Please select the class you need help with:" }
+      // ]
     };
   },
   methods: {
-    scrollToTop(){
-        document.getElementById('tabs').scrollIntoView();
+    scrollToTop() {
+      document.getElementById("tabs").scrollIntoView();
     },
     addRow: function() {
       var elem = document.createElement("tr");
@@ -229,6 +271,18 @@ export default {
           name: "Choose File"
         }
       });
+    },
+    switchToCurrentRequestsTab: function() {
+      this.currentRequestsTab = true;
+      this.requestHistoryTab = false;
+      this.scrollToTop();
+      return this.currentRequestsTab;
+    },
+    switchToRequestHistoryTab: function() {
+      this.currentRequestsTab = false;
+      this.requestHistoryTab = true;
+      this.scrollToTop();
+      return this.requestHistoryTab;
     },
     removeElement: function(index) {
       this.rows.splice(index, 1);
@@ -252,9 +306,11 @@ export default {
       }
     }
   },
-  beforeMount(){
+  beforeMount() {
+    console.log("hi");
+
     this.scrollToTop();
-  },
+  }
 };
 </script>
 
@@ -326,12 +382,12 @@ table th,
   top: 0;
   cursor: pointer;
   background-color: #abd5ff;
-  margin: 0;  
+  margin: 0;
 }
 
 .file-container {
   border-width: 1px;
-  border-color:rgb(154, 224, 231);
+  border-color: rgb(154, 224, 231);
   background-color: rgb(223, 219, 219);
   margin: 0;
   float: left;
@@ -339,13 +395,19 @@ table th,
   position: relative;
   border-radius: 10px 10px 10px 10px;
 }
+.request-tabs {
+  margin-top: 10px;
+  margin-bottom: 6px;
+  width: 100%;
+  display: inline-block;
+  text-align: center;
+}
 
-.file-button{
- 
+.file-button {
 }
 
 .file-container:hover {
-  opacity: .8;
+  opacity: 0.8;
 }
 
 .login-form {
