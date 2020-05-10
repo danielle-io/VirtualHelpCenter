@@ -47,8 +47,8 @@
 
                         <div class="md-card-content">
                           <strong>Issue:</strong>
-                          I can't reference a class.
-                          <!-- {{ticket.oneLineOverview}} -->
+                          <!-- I can't reference a class. -->
+                          {{ticket.oneLineOverview}}
                         </div>
 
                         <div
@@ -70,7 +70,8 @@
                       >
                         <div class="md-card-content">
                           <strong>Longer Description:</strong>
-                          I am trying to call a function from a class but importing gives an undefined error.
+                          <!-- I am trying to call a function from a class but importing gives an undefined error. -->
+                        {{ticket.longerDescription}}
                         </div>
                         <div class="md-card-content">
                           <strong>Attached Files:</strong>
@@ -78,7 +79,8 @@
 
                         <div class="md-card-content">
                           <strong>Student:</strong>
-                          Alex Lang
+                          <!-- Alex Lang -->
+                          {{ticket.owner._id}}
                         </div>
                       </div>
                     </md-card>
@@ -149,7 +151,7 @@ import "vue-material/dist/theme/default.css";
 
 export default {
   async asyncData() {
-    let { data } = await axios.get("/api/tickets");
+    let { data } = await axios.get("../api/tickets");
     return { tickets: data };
   },
   head() {
@@ -167,17 +169,12 @@ export default {
       expandChevron: true,
       collapseChevron: false,
       selectedCard: false,
-      color: "#7e6694",
-      course: null,
-      staff: null
+      color: "#7e6694"
     };
   },
   methods: {
     filterOpenTickets(status) {
       return this.tickets.filter(ticket => ticket.status === status);
-    },
-    filterCourseTickets(course) {
-      return this.tickets.filter(ticket => ticket.data._id === course);
     },
     scrollToTop() {
       document.getElementById("tabs").scrollIntoView();
@@ -216,24 +213,7 @@ export default {
   },
   beforeMount() {
     this.scrollToTop();
-  },
-  async loadUser(user) {
-     this.staff = user.data._id
-    },
-
-   async loadClass(classSelected) {
-      let course = await axios.get('/api/courses/' + classSelected._id)
-      this.course = course
-    },
-
-  // async created(){
-  //   let staff = await axios.get('/api/users/' + this.$route.params.id)
-  //   staff.data.classes.forEach(element => {
-  //     this.loadClass(element);
-  //   })
-  //   this.loadUser(staff);
-
-  // }
+  }
 };
 </script>
 

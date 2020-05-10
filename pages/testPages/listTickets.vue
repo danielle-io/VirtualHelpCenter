@@ -47,7 +47,7 @@
         <div class = "col">
         
         <h4>In Progess Tickets</h4>
-        <div  v-for="(ticket, index) in filterOpenTickets('In Progress')" :key="index">
+        <div  v-for="(ticket, index) in filterTickets('In Progress')" :key="index">
           <md-card>
           <md-card-header>
             <div class="md-title">Ticket</div>
