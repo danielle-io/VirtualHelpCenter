@@ -27,6 +27,8 @@ import ChevronDown from "vue-material-design-icons/ChevronDown.vue";
 import ChevronUp from "vue-material-design-icons/ChevronUp.vue";
 import BeatLoader from 'vue-spinner/src/BeatLoader.vue';
 
+import CircularCountDownTimer from "vue-circular-count-down-timer";
+Vue.use(CircularCountDownTimer);
 
 Vue.component("account-circle", AccountCircle);
 Vue.component("plus-circle", PlusCircle);

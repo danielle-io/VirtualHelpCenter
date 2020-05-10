@@ -64,6 +64,20 @@
         </md-card-actions>
       </md-card>
 
+        <md-card>
+        <md-card-header>
+          <md-card-header-text>
+            <div class="md-title">Student Countdown</div>
+            <div class="md-subhead">The countdown that displays when student is paired with a TA</div>
+          </md-card-header-text>
+        </md-card-header>
+
+        <md-card-actions>
+          <nuxt-link to="/students/studentCountdown">Student Countdown</nuxt-link>
+        </md-card-actions>
+      </md-card>
+
+
       <md-card>
         <md-card-header>
           <md-card-header-text>
