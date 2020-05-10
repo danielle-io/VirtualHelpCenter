@@ -17,7 +17,7 @@ export default class Ticket extends Model {
       oneLineOverview: this.string(''),
       longerDescription: this.string(''),
       attachments: this.attr([]),
-      owner: this.belongsTo(User, '_id'),
+      owner: this.string(''),
       user_id: this.string(null).nullable(),
       title: this.string(''),
       // acceptedBy: this.belongsTo(User, 'user_id')

@@ -2,9 +2,9 @@
 import Vuex from 'vuex'
 import VuexORM from '@vuex-orm/core'
 import VuexORMAxios from '@vuex-orm/plugin-axios'
-import User from './models/User'
-import Ticket from './models/Ticket'
-import Account from './models/Account'
+import User from '../ui/models/User'
+import Ticket from '../ui/models/Ticket'
+import Account from '../ui/models/Account'
 
 
 VuexORM.use(VuexORMAxios) // <- No axios option.

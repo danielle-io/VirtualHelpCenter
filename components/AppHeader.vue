@@ -27,7 +27,7 @@
           <account-circle />
         </nuxt-link>
         <div v-if="this.$auth.loggedIn">
-          <v-btn text @click="this.$auth.logout()">Logout</v-btn>
+          <v-btn text @click="logout()">Logout</v-btn>
       </div>
       <div v-else>
           <v-btn text>LogIn</v-btn>
@@ -45,7 +45,13 @@
 import Vue from "vue";
 
 Vue.config.productionTip = false;
-export default {};
+export default {
+  methods: {
+    logout(){
+      this.$auth.logout();
+    }
+  }
+};
 </script>
 
     '~/assets/css/stylesheet.css',

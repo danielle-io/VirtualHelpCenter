@@ -64,9 +64,9 @@ import VueMaterial from "vue-material";
 import "vue-material/dist/vue-material.min.css";
 import "vue-material/dist/theme/default.css";
 
-import Ticket from '../store/models/Ticket'
-import User from '../store/models/User'
-import Account from '../store/models/Account'
+import Ticket from '../ui/models/Ticket'
+import User from '../ui/models/User'
+import Account from '../ui/models/Account'
 
 Vue.use(VueMaterial)
  

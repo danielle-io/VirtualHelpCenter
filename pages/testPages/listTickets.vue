@@ -107,8 +107,8 @@ import "vue-material/dist/vue-material.min.css";
 import "vue-material/dist/theme/default.css";
 import axios from "~/plugins/axios"
 
-import Ticket from '../../store/models/Ticket'
-import User from '../../store/models/User'
+import Ticket from '../../ui/models/Ticket'
+import User from '../../ui/models/User'
 
 Vue.use(VueMaterial)
 

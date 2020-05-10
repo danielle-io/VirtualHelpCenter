@@ -1,4 +1,4 @@
-import Account from '../store/models/Account'
+import Account from '../ui/models/Account'
 
 export default function ({ store, redirect }) {
     const user = Account.query().first()

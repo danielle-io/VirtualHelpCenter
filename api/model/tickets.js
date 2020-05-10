@@ -12,10 +12,8 @@ var ticketSchema = new Schema({
     enum: ['Open', 'Closed', 'In Progress', 'Unresolved']
   },
   owner: {
-    _id:{
       type: Schema.Types.ObjectId,
       ref: 'Student'
-    },
   }, 
   course: {
     _id:{

@@ -12,6 +12,7 @@ export default class User extends Model {
   static fields () {
     return {
       _id: this.attr(null),
+      usertype: this.attr(''),
       name: this.attr(''),
       email: this.attr(''),
       ucinetid: this.attr(''),

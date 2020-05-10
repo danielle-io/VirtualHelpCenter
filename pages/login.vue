@@ -32,7 +32,6 @@ export default {
   middleware: ['auth'],
   computed: {
     strategies: () => ([
-     { key: 'oauth2', name: 'Zoom', color: '#ec5425' },
      { key: 'google', name: 'Google', color: '#4284f4' },
     ]),
     redirect() {

@@ -1,11 +1,16 @@
 <template>
   <div style="position: relative;">
-    <section class="header-title-container">
-      <h1 class="title">Welcome {{this.$auth.user.given_name.split(' ')[0]}}</h1>
+    <div v-if="this.$auth.loggedIn">
+       <section class="header-title-container">
+      <h1 class="title">Welcome {{user.name.firstname}}</h1>
     </section>
-    <div >
-      <TicketRequestForm />
-    </div>
+      <div v-if="user.usertype == 'Student'">
+        <TicketRequestForm />
+      </div>
+      <div v-else-if="user.usertype == 'Staff'">
+        <StaffDashboard />
+      </div>
+      </div>
   </div>
     
 </template>
@@ -18,24 +23,32 @@ export default {
 
 
 <script>
-import Vue from "vue";
-import TickeRequestForm from "~/components/TicketRequestForm";
-import axios from "~/plugins/axios";
+//Base vue imports
+import Vue from "vue"
+import axios from "~/plugins/axios"
 
+//Component Imports
+import TickeRequestForm from "~/components/TicketRequestForm"
+import StaffDashboard from "~/components/StaffDashboard"
 
-import VueMaterial from "vue-material";
-import "vue-material/dist/vue-material.min.css";
-import "vue-material/dist/theme/default.css";
+//Vuex ORM model imports
+import User from "../ui/models/User"
+import Tutor from "../ui/models/Tutor"
+import Ticket from "../ui/models/Ticket"
 
+//CSS imports
+import VueMaterial from "vue-material"
+import "vue-material/dist/vue-material.min.css"
+import "vue-material/dist/theme/default.css"
 
-import User from "../store/models/User";
 
 Vue.config.productionTip = false;
 Vue.use(VueMaterial);
 
 export default {
   components: {
-    'TicketRequestForm': TickeRequestForm
+    'TicketRequestForm': TickeRequestForm,
+    'StaffDashboard': StaffDashboard
   },
   data() {
     return {
@@ -44,32 +57,47 @@ export default {
   },
   async fetch() {
     const user = this.$auth.user
-    console.log(user.email)
-    let { data } = await this.$axios.get("/users");
-    console.log(data)
-    User.insert({ data: data });
+    // let { data } = await this.$axios.get("/users");
+    // User.insert({ data: data });
+    const users = await User.api().get('/users');
+    const tutors = await Tutors.api().get('/tutors');
 
-    let tutors = await this.$axios.get("/tutors");
-    console.log(tutors.data);
+    console.log(tickets)
 
-    const userExists = User.query().where('email', this.$auth.user.email).exists()
+
+    const userExists = User.query().where('email', user.email).exists()
+    const tutorExists = Tutor.query().where('email', user.email).exists()
+
     if(this.$auth.loggedIn && !userExists){
-       console.log("wow")
-      await axios.post('/api/insertStudent',{
-          name: {
-              firstname: user.given_name.split(' ')[0],
-              lastname: user.family_name
-          },
-          email: user.email,
-          ucinetid: user.email.split('@')[0],
-          classes: null
-      })
-      // console.log(user)
-      // await this.$axios.post('/api/insertStudent',{
-      //     _id : user.data,
-      
-      // })
 
+      if(tutorExists) {
+        let tutor = await axios.post('/api/insertStaff',{
+            name: {
+                firstname: user.given_name.split(' ')[0],
+                lastname: user.family_name
+            },
+            email: user.email,
+            ucinetid: user.email.split('@')[0],
+            classes: []
+        })
+      }
+      else {
+        let student = await axios.post('/api/insertStudent',{
+            name: {
+                firstname: user.given_name.split(' ')[0],
+                lastname: user.family_name
+            },
+            email: user.email,
+            ucinetid: user.email.split('@')[0],
+            classes: []
+        })
+      }
+    }
+  },
+  computed: {
+    user() {
+        let user = User.query().where('email', this.$auth.user.email).get()
+        return user[0]
     }
   },
   head() {

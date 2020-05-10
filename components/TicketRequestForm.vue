@@ -5,7 +5,7 @@
     <div id="requests">
      
       <!-- The transition effects for the containers changing -->
-      <transition name="fade" mode="in-out">
+      <transition-group name="fade" mode="in-out">
        
         <div v-bind:key="request" class="request-container">
          
@@ -129,6 +129,7 @@
                   changing what is rendered on the page-->
                   <button
                     v-bind:key="submitRequest"
+                    v-on:click="submit"
                     type="submit"
                     style="margin-bottom: 10px; margin-top: 10px;"
                     class="fadeIn form-buttons"
@@ -148,17 +149,48 @@
               <div
                 class="sub-heading-text"
                 style="padding-top:2%;"
-              >The current wait time is approximately 20 minutes.</div>
+              >Thank you {{user.name.firstname}}. The current wait time is approximately 20 minutes.</div>
             </div>
 
           </div>
+            <div v-bind:key="history" v-else-if="this.requestHistoryTab">
+                <div v-for="(ticket, index) in this.tickets" :key="index">
+                    <md-card>
+          <md-card-header>
+            <div class="md-title">Ticket</div>
+          </md-card-header>
+
+          <div class="md-card-content">
+            <strong>Student:</strong>
+            {{ ticket.owner }}
+          </div>
+
+          <div class="md-card-content">
+            <strong>Status:</strong>
+            {{ ticket.status }}
+          </div>
+          <div class="md-card-content">
+            <strong>Issue:</strong>
+            {{ticket.oneLineOverview}}
+          </div>
+          <!-- <div class="md-card-content">
+            <button type="button" v-on:click="deleteData(ticket, ticket._id)">Delete</button>
+          </div> -->
+          <div class="md-card-content">
+            <button type="button" v-on:click="openTicket(ticket, ticket._id)">Not in Progress</button>
+          </div>
+          
+          <!-- <div
+            class="md-card-content" style="margin-left: 25px;" v-for="(question, index) in ticket.questions" :key="index">
+            <strong>{{index + 1}}.</strong>
+            {{ ticket.questions[index] }}
+          </div> -->
+
+        </md-card>
+                </div>
+            </div>
         </div>
-
-                  <div v-if="this.requestHistoryTab">
-                    hi
-                    </div>
-
-      </transition>
+      </transition-group>
     </div>
   </div>
 </template>
@@ -167,6 +199,10 @@
 <script>
 import Vue from "vue";
 import axios from "~/plugins/axios";
+
+import User from "../ui/models/User"
+import Ticket from "../ui/models/Ticket"
+
 import {
   BFormInput,
   BFormSelect,
@@ -181,7 +217,10 @@ export default {
     "b-form-checkbox": BFormCheckbox,
     "b-form-text-area": BFormTextarea
   },
-
+  async fetch() {
+    const tickets = await Ticket.api().get('/tickets');
+    console.log(tickets)
+  },
   //users classes show up as options
   async loadClasses(courses) {
     courses = await axios.get("../api/courses/" + courses._id);
@@ -194,25 +233,6 @@ export default {
   },
 
   // COMMENTED OUT FOR NOW BC ITS GIVING SOME ISSUES
-  // submit: function() {
-  //   if (this.problem != "" && this.probDes != "" && this.code != "") {
-  //     axios.post("/api/insertTicket", {
-  //       status: "Open",
-  //       owner: {
-  //         _id: this.student
-  //       },
-  //       course: {
-  //         _id: this.selected
-  //       },
-  //       oneLineOverview: this.probDes,
-  //       longerDescription: this.problem,
-  //       codeSnippet: this.code,
-  //       createdAt: new Date().toString()
-  //     });
-  //   } else {
-  //     console.log("not submitted");
-  //   }
-  // },
   computed: {
     isDisabled: function() {
       return !this.selected;
@@ -259,6 +279,25 @@ export default {
     };
   },
   methods: {
+    async submit() {
+    if (this.problem != "" && this.probDes != "" && this.code != "") {
+      await axios.post("/api/insertTicket", {
+        status: "Open",
+        owner: {
+          _id: this.user._id
+        },
+        course: {
+          _id: this.selected
+        },
+        oneLineOverview: this.probDes,
+        longerDescription: this.problem,
+        codeSnippet: this.code,
+        createdAt: new Date().toString()
+      });
+    } else {
+      console.log("not submitted");
+    }
+  },
     scrollToTop() {
       document.getElementById("tabs").scrollIntoView();
     },
@@ -295,7 +334,7 @@ export default {
       var text = classSelected.dep + " " + classSelected.courseNum;
       this.classes.push({ value: classSelected._id, text: text });
     },
-    changeRequestState: function() {
+    changeRequestState: async function() {
       if (this.request === true && this.submitRequest === false) {
         this.request = false;
         return this.request;
@@ -304,12 +343,24 @@ export default {
         this.scrollToTop();
         return this.request;
       }
-    }
+    },
   },
   beforeMount() {
     //console.log("hi");
 
     this.scrollToTop();
+  },
+  computed: {
+      user() {
+        let user = User.query().where('email', this.$auth.user.email).get()
+        return user[0]
+      },
+      tickets() {
+          console.log(this.user._id)
+          let tickets = Ticket.query().where('owner', this.user._id).get()
+          console.log(tickets)
+          return tickets
+      }
   }
 };
 </script>
