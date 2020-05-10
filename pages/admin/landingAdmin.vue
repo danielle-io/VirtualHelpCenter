@@ -22,6 +22,13 @@
             v-bind:class="{ 'tab-links-active': removeStaffTab, 'tab-links': !removeStaffTab }"
             @click="switchToRemoveStaffTab"
           >Remove a Tutor</a>
+
+           <!-- <a
+            v-bind:class="{ 'tab-links-active': addCourseTab, 'tab-links': !addCourseTab }"
+            @click="switchToAddCourseTab"
+          >Add a Course</a> -->
+
+          
         </div>
 
         <!-- THE ADD TUTOR TAB -->

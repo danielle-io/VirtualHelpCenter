@@ -8,7 +8,6 @@
 </template>
 
 
-
 <script>
 import vue from 'vue'
 import axios from "~/plugins/axios"
