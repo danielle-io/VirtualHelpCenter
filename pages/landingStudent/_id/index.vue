@@ -308,8 +308,8 @@ export default {
     });
 
     // let ticket = await axios.get('/api/ticket', {
-    //   owner: {
-    //     _id : this.$route.params.id
+    //   params: {
+    //     owner: this.$route.params.id
     //   }
     // })
     // console.log(ticket)

@@ -36,8 +36,8 @@ router.post('/insertTicket',function(req, res, next) {
 // })
 
 router.get('/ticket/', function (req, res, next) {
-    console.log(req.body);
-    Ticket.find(req.body, (err, ticket)=>{
+    console.log(req);
+    Ticket.find(req.query, (err, ticket)=>{
       res.send(ticket);
   });
   })
