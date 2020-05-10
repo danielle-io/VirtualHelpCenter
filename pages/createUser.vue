@@ -1,39 +1,86 @@
 <template>
     <div class="container">
         <!-- Name -->
-        <label>Enter your name:</label>
         <div class="row">
             <div class="col">
                 <b-form-input v-model="firstname" placeholder="First name" ></b-form-input>
-                <div class="mt-2">Value: {{ firstname }}</div>
             </div>
             <div class="col">
                 <b-form-input v-model="lastname" placeholder="Last name" ></b-form-input>
-                <div class="mt-2">Value: {{ lastname }}</div>
             </div>
         </div>
 
         <!-- Email -->
-        <label>Enter your email:</label>
         <div class="row">
             <div class="col">
-                <b-form-input v-model="email" placeholder="Enter your Email:" ></b-form-input>
-                <div class="mt-2">Value: {{ email }}</div>
+                <b-form-input v-model="email" placeholder="UCI Email" ></b-form-input>
             </div>
         </div>
 
         <!-- UCInetID -->
-        <label>Enter your ucinetid:</label>
         <div class="row">
-            <b-form-input v-model="ucinetid" placeholder="Enter your ucinetID:" ></b-form-input>
-            <div class="mt-2">Value: {{ ucinetid }}</div>
+            <b-form-input v-model="ucinetid" placeholder="UCInetID" ></b-form-input>
         </div>
 
-        <!-- Select Classes -->
+        <!-- Staff Student or Both -->
         <div class="row">
-            <b-form-select v-model="selected" :options="classes" size="sm" class="mt-3"></b-form-select>
-            <div class="mt-3">Selected: <strong>{{ selected }}</strong></div>
+            <p>Staff:</p>
+            <b-form-checkbox
+            id="checkbox-1"
+            v-model="staff"
+            name="checkbox-1"
+            value="true"
+            unchecked-value="false"
+            style="margin-left: 10px"
+            >
+            </b-form-checkbox>
         </div>
+
+        <!-- Select Staff Classes -->
+        <div :hidden='studentCheck(staff)'>
+            <div class="row" >
+                <div class="col-6">
+                    <label>Select your class:</label>
+                    <b-form-select v-model="addClassStaff" :options="availableClassesStaff" size="sm" class="mt-3" :select-size="getSize(availableClassesStaff)"></b-form-select>
+                    <b-button v-on:click="staffAdd" size="sm">Add Class</b-button>
+                </div>
+                <div class="col-6">
+                    <label>Selected classes:</label>
+                    <b-form-select v-model="removeClassStaff" :options="pickedClassesStaff" size="sm" class="mt-3" :select-size="getSize(pickedClassesStaff)"></b-form-select>
+                    <b-button v-on:click="removeClass" size="sm">Remove Class</b-button>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <p>Student:</p>
+            <b-form-checkbox
+            id="checkbox-2"
+            v-model="student"
+            name="checkbox-2"
+            value="true"
+            unchecked-value="false"
+            style="margin-left: 10px"
+            >
+            </b-form-checkbox>
+        </div>
+
+        <!-- Select Student Classes -->
+        <div :hidden='studentCheck(student)'>
+            <div class="row" >
+                <div class="col-6">
+                    <label>Select your class:</label>
+                    <b-form-select v-model="addClass" :options="availableClasses" size="sm" class="mt-3" :select-size="getSize(availableClasses)"></b-form-select>
+                    <b-button v-on:click="studentAdd" size="sm">Add Class</b-button>
+                </div>
+                <div class="col-6">
+                    <label>Selected classes:</label>
+                    <b-form-select v-model="removeClass" :options="pickedClasses" size="sm" class="mt-3" :select-size="getSize(pickedClasses)"></b-form-select>
+                    <b-button v-on:click="removeClasses" size="sm">Remove Class</b-button>
+                </div>
+            </div>
+        </div>
+        
 
 
         <div class = "row justify-content-left">
@@ -52,8 +99,9 @@
 
 <script>
 import vue from 'vue'
-//import axios from '~/plugins/axios'
-import {BFormInput, BFormSelect, BButton, BFormCheckbox} from 'bootstrap-vue'
+import Course from '../store/models/Course'
+import axios from '~/plugins/axios'
+import {BFormInput, BFormSelect, BButton, BFormCheckbox, } from 'bootstrap-vue'
 
 export default {
     components: {
@@ -64,54 +112,174 @@ export default {
     },
     data(){
         return{
+            // User input
             firstname: '',
             lastname: '',
             email:'',
             ucinetid: '',
-            selected: null,
-            classes: [
-            { value: null, text: 'Please select a class:' },
+
+            // Student
+            addClass: null,
+            removeClass: null,
+            
+            // Staff
+            addClassStaff: null,
+            removeClassStaff: null,
+
+            pickedClasses: [
+            ],
+            pickedClassesStaff: [
+            ],
+
+            //available classes for Student
+            availableClasses: [
             ], 
-            shown:false
+            availableClassesStaff: [
+            ],
+
+            shown:false,
+
+            // Staff/Student checkboxes
+            staff: 'false',
+            student: 'false'
         }
     },
     methods: {
         loadClasses: function(classSelected){
-            var text = classSelected.dep +" "+ classSelected.courseNum
-            this.classes.push({value: classSelected._id, text: text})
+            var text = classSelected.dep +" "+ classSelected.courseNum;
+            this.availableClasses.push({value: classSelected._id, text: text})
+            this.availableClassesStaff.push({value: classSelected._id, text: text})
+        },
+        addClasses: function(currArray, otherArray, selected, notSelected){
+            if(selected != null){
+                let index;
+                
+                //find index
+                for(let i=0;i<currArray.length;i++){
+                    if(currArray[i].value == selected){
+                        index = i;
+                    }
+                }
+
+                let classes = currArray[index];
+
+                //remove picked class
+                currArray.splice(index,1);
+
+                //add picked class to selected
+                otherArray.push({value: selected, text: classes.text});
+            }
+        },
+        removeClasses: function(){
+            if(this.removeClass != null){
+                let classes = this.pickedClasses.filter(classes => classes.value == this.removeClass);
+
+                //move removed class back to avaialble class
+                this.availableClasses.push({value: classes[0].value, text: classes[0].text})
+
+                //remove class from current list
+                this.pickedClasses = this.pickedClasses.filter(classes => classes.value != this.removeClass);
+
+                //select field becomes blank where there is only one object in the list whos value isnt null
+                if(this.pickedClasses.length === 1){
+                    this.removeClass = this.pickedClasses[0].value;
+                }
+                else{
+                    this.removeClass = null;
+                }
+
+                //if there is one object in the classes available select that value
+                if(this.availableClasses.length === 1){
+                    this.addClass = this.availableClasses[0].value;
+                }
+            }
         },
         async submit(){
-            
-            if(this.firstname != '' && this.lastname != '' && this.email != '' && this.ucinetid != '' && this.selected != null){
-                console.log("submitting")
+            if(this.firstname != '' && this.lastname != '' && this.email != '' && this.ucinetid != '' && this.pickedClasses){
+                let classesStudent = [];
+                let classesStaff = [];
+                this.pickedClasses.forEach((element)=>{
+                    classesStudent.push({_id: element.value, section: 1});
+                });
+                this.pickedClassesStaff.forEach((element)=>{
+                    classesStaff.push({_id: element.value, section: 1});
+                });
                 this.shown = true;
-                let user = await this.$axios.post('/insertUser',{
-                    name: {
-                        firstname: this.firstname,
-                        lastname: this.lastname
-                    },
-                    email: this.email,
-                    ucinetid: this.ucinetid
-                })
-                await axios.post('/api/insertStudent',{
-                    _id : user.data,
-                    classes: [{
-                        _id: this.selected,
-                        section: 1
-                    }]
-                })
-                window.location.href = 'request/'+user.data
-                
+                let user;
+                if(this.staff === 'true'){
+                    user = await axios.post('/api/insertStaff',{
+                        name: {
+                            firstname: this.firstname,
+                            lastname: this.lastname
+                        },
+                        email: this.email,
+                        ucinetid: this.ucinetid,
+                        classes: classesStaff
+                    })
+                    window.location.href = 'zoom/'+user.data._id
+                }
+                if(this.student === 'true'){
+                    user = await axios.post('/api/insertStudent',{
+                        name: {
+                            firstname: this.firstname,
+                            lastname: this.lastname
+                        },
+                        email: this.email,
+                        ucinetid: this.ucinetid,
+                        classes: classesStudent
+                    })
+                    window.location.href = 'request/'+user.data._id
+                }
+            }
+        },
+        studentCheck: function(check){
+            if(check == 'false'){
+                return true;
+            }
+            return false;
+        },
+        getSize: function(array){
+            if(array.length === 1 && array[0].value != null){
+                return 1;
+            }
+            if (array.length <=4){
+                return array.length;
+            }
+            return 4;
+        },
+        staffAdd: function(){
+            this.addClasses(this.availableClassesStaff, this.pickedClassesStaff, this.addClassStaff, this.removeClassStaff);
+            if(this.pickedClassesStaff.length === 1){
+                this.removeClassStaff = this.pickedClassesStaff[0].value;
+                console.log([this.pickedClassesStaff[0].value, this.removeClassStaff]);
+            }
+            if(this.availableClassesStaff.length === 1){
+                this.addClassStaff = this.availableClassesStaff[0].value;
+            }
+            else{
+                this.addClassStaff = null;
+            }
+        },
+        studentAdd: function(){
+            this.addClasses(this.availableClasses, this.pickedClasses, this.addClass, this.removeClass);
+            if(this.pickedClasses.length === 1){
+                this.removeClass = this.pickedClasses[0].value;
+                console.log([this.pickedClasses[0].value, this.removeClass]);
+            }
+            if(this.availableClasses.length === 1){
+                this.addClass = this.availableClasses[0].value;
+            }
+            else{
+                this.addClass = null;
             }
         }
     },
     async created(){
-        let classes = await this.$axios.get("/courses");
-        classes.data.forEach(classSelected => {
-            this.loadClasses(classSelected);
-        });
-
-        
+        // let classes = await axios.get("/api/courses");
+        // let students = await axios.get("/api/students");
+        // classes.data.forEach(classSelected => {
+        //     this.loadClasses(classSelected);
+        // });
     }
 }
 </script>
