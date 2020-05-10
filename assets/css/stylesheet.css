@@ -73,6 +73,17 @@ footer {
     color: #624b77;
 }
 
+.sub-heading-text-left-italic {
+    margin-top: 12px;
+    margin-bottom: 15px;
+    font-size: 15px;
+    text-align: left;
+    font-family: "Poppins";
+    color: #624b77;
+    font-style: italic;
+}
+
+
 .label-format {
     margin-top: 12px;
     margin-bottom: 15px;
