@@ -18,28 +18,38 @@
         <div v-if="this.openRequestTab">
           <div class="ticket-container">
             <div
-              v-if="!this.selectedCard"
+              v-if="!this.selectedCard && !this.zoomLinkForm && this.tickets"
               class="sub-heading-text"
               style="padding-top:2%;"
             >Select a request to continue.</div>
 
-            <div class="row justify-content-center">
+            <div
+              v-if="!this.selectedCard && !this.zoomLinkForm && !this.tickets"
+              class="sub-heading-text"
+              style="padding-top:2%;"
+            >There are currently no open tickets</div>
+
+            <!-- Populate tickets -->
+            <div v-if="!this.zoomLinkForm" class="row justify-content-center">
               <div class="col">
-                <div v-for="(ticket, index) in filterOpenTickets('Open')" :key="index">
-                  <a @click="clickCard">
-                    <md-card
-                      v-bind:class="{ 'selected-card': selectedCard, 'md-card': !selectedCard }"
-                    >
+                <div
+                  v-for="(ticket, index) in (filterOpenTickets('Open').slice(this.startingIndex, this.endingIndex))"
+                  :key="ticket._id"
+                >
+                  <a @click="clickCard(ticket, index)">
+                    <md-card v-bind:class="{ 'selected-card': selectedTicketIndex === index }">
                       <div>
                         <md-card-header>
-                    <div class="md-title">CS 32</div>
+                          <!-- TODO: put course title from db here -->
+                          <div class="md-title">ICS 32</div>
                         </md-card-header>
 
+                        <!-- TODO: add student's name -->
                         <!-- <div class="md-card-content">
-                    <strong>Student:</strong>
-                    <div class="card-text">{{ ticket.owner }}</div>
+                        <strong>Student:</strong>
+                        <div class="card-text">{{ ticket.owner }}</div>
                         </div>-->
-              
+
                         <div class="md-card-content">
                           <strong>Status:</strong>
                           {{ ticket.status }}
@@ -76,6 +86,7 @@
                           <strong>Attached Files:</strong>
                         </div>
 
+                        <!-- TODO: add student's name from DB -->
                         <div class="md-card-content">
                           <strong>Student:</strong>
                           Alex Lang
@@ -86,14 +97,31 @@
                 </div>
               </div>
             </div>
+
             <button
-              v-if="this.selectedCard"
+              v-if="this.selectedCard && !this.zoomLinkForm"
               type="submit"
               class="request-staff-buttons"
-              @click="startConnecting"
+              @click="getZoomLink"
             >
               <right-circle />Begin Session
             </button>
+
+            <div style="margin-top: 30px;" v-if="this.zoomLinkForm">
+              <input
+                width="90%"
+                type="text"
+                v-bind:value="zoomLink"
+                v-on:input="zoomLink = $event.target.value"
+                placeholder="Enter your Zoom Session link here"
+              />
+
+              <div v-if="this.zoomLink">
+                <button type="submit" class="request-staff-buttons" @click="goToCountdownPage">
+                  <right-circle />Send Link
+                </button>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -161,18 +189,28 @@ export default {
     return {
       el: "#requests",
       connecting: false,
+      zoomLinkForm: false,
+      redirectToCountdown: false,
       openRequestTab: true,
       requestHistoryTab: false,
       selectedTicket: false,
       expandChevron: true,
       collapseChevron: false,
       selectedCard: false,
-      color: "#7e6694"
+      color: "#7e6694",
+      zoomLink: null,
+      selectedTicketIndex: -1,
+      startingIndex: 0,
+      endingIndex: 3
     };
   },
   methods: {
     filterOpenTickets(status) {
-      return this.tickets.filter(ticket => ticket.status === status);
+      if (this.tickets) {
+        return this.tickets.filter(ticket => ticket.status === status);
+      } else {
+        return;
+      }
     },
     scrollToTop() {
       document.getElementById("tabs").scrollIntoView();
@@ -199,11 +237,30 @@ export default {
       }
       this.selectedCard = !this.selectedCard;
     },
-    clickCard: function() {
+    clickCard: function(ticket, index) {
       this.selectedCard = !this.selectedCard;
+      if (this.selectedTicketIndex === index) {
+        this.selectedTicketIndex = -1;
+        this.startingIndex = 0;
+        this.endingIndex = 3;
+      } else {
+        this.selectedTicketIndex = index;
+        this.startingIndex = index;
+        this.endingIndex = index + 1;
+      }
     },
+    getZoomLink: function() {
+      this.zoomLinkForm = true;
+    },
+
     startConnecting: function() {
       this.connecting = true;
+    },
+
+    // This is where the link is stored
+    goToCountdownPage: function() {
+      console.log(this.zoomLink);
+      window.location.href = "staffCountdown";
     },
     expandCard: function() {
       console.log(this.requestHistoryTab);
