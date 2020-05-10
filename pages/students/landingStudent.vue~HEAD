@@ -14,8 +14,6 @@
               v-bind:class="{ 'tab-links-active': currentRequestsTab, 'tab-links': !currentRequestsTab }"
             >Current Requests</a>
 
-
-            <!-- (this.$route.query.tab   == 'requestHistory')-->
             <a
               v-bind:class="{ 'tab-links-active': requestHistoryTab, 'tab-links': !requestHistoryTab }"
               @click="switchToRequestHistoryTab"
@@ -229,6 +227,9 @@ export default {
   data() {
     return {
       el: "#requests",
+
+      // Hard coded user
+      currentUserId: "5eb75ab2779eb66e27e4fad0",
       currentRequestsTab: true,
       requestHistoryTab: false,
       show: true,
@@ -244,7 +245,8 @@ export default {
       file: null,
       student: null,
       classes: [
-        { value: null, text: "Please select the class you need help with:" }
+        { value: null, text: "Please select the class you need help with:" },
+        { value: "5eadfd7f4f7f4d3d68a666f5", text: "ICS32" }
       ]
     };
   },
@@ -281,9 +283,9 @@ export default {
     },
 
     // Not yet working
-    async loadClasses(classSelected) {
-      let classes = await axios.get('/api/courses/' + classSelected._id)
-      this.classes.push({value: classes.data._id, text: classes.data.dep + classes.data.courseNum})
+    loadClasses: function(classSelected) {
+      // var text = classSelected.dep + " " + classSelected.courseNum;
+      // this.classes.push({ value: classSelected._id, text: text });
     },
      getSelectedCourse: function(course) { 
        this.selectedCourse = course;
@@ -300,19 +302,9 @@ export default {
       }
     }
   },
-  async created() {
+  beforeMount() {
     this.scrollToTop();
-    let student = await axios.get('/api/users/' + this.$route.params.id)
-    student.data.classes.forEach(element => {
-      this.loadClasses(element);
-    });
-
-    // let ticket = await axios.get('/api/ticket', {
-    //   owner: {
-    //     _id : this.$route.params.id
-    //   }
-    // })
-    // console.log(ticket)
+    this.loadClasses();
   },
   mounted(){
 
@@ -408,7 +400,6 @@ table th,
   display: inline-block;
   text-align: center;
 }
-
 
 .file-button {
 }

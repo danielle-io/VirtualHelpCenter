@@ -227,6 +227,7 @@ export default {
                         ucinetid: this.ucinetid,
                         classes: classesStudent
                     })
+                    window.location.href = 'landingStudent/' + user.data._id;
                 }
             }
         },

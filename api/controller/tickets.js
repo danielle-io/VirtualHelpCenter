@@ -28,12 +28,12 @@ router.post('/insertTicket',function(req, res, next) {
 })
 
 /* GET ticket by ID. */
-router.get('/ticket/:id', function (req, res, next) {
-  const id = req.params.id;
-  Ticket.findById(id, (err, ticket)=>{
-    res.send(ticket);
-});
-})
+// router.get('/ticket/:id', function (req, res, next) {
+//   const id = req.params.id;
+//   Ticket.findById(id, (err, ticket)=>{
+//     res.send(ticket);
+// });
+// })
 
 router.get('/ticket/', function (req, res, next) {
     console.log(req.body);
