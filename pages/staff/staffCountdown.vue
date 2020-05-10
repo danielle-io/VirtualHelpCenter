@@ -1,47 +1,24 @@
 <template>
   <div id="accept">
-    <transition name="fade" mode="in-out">
-      <div v-if="this.countdownShowing === true">
-        <div class="request-container">
-          <div class="heading-text">Accept your session</div>
+    <div>
+      <div class="request-container">
+        <div class="heading-text">Awaiting Student Acceptance</div>
 
-          <div class="sub-heading-text-left" style="padding-top:2%;">
-            A TA is available.
-            <strong>Please accept the session before the timer runs out to continue.</strong>
-          </div>
-          <div
-            class="sub-heading-text-left-italic"
-          >If you do not accept in time, your request will be removed, and placed in your request history for resubmission.</div>
+        <div
+          class="sub-heading-text-left"
+          style="padding-top:2%;"
+        >Please wait while the student is given one minute to accept the session.</div>
 
-          <div style="text-align: center;">
-            <circular-count-down-timer
-              :initial-value="5"
-              :steps="60"
-              :seconds-stroke-color="'#7fe3d4'"
-              :second-label="''"
-              @finish="finished"
-            ></circular-count-down-timer>
-            <button
-              v-bind:key="accept"
-              @click="sendZoomLink"
-              type="submit"
-              style="margin-bottom: 20%;"
-              class="fadeIn form-buttons"
-            >
-              <right-circle />Accept the Session
-            </button>
-          </div>
-        </div>
+        <circular-count-down-timer
+          style="text-align: center;"
+          :initial-value="60"
+          :steps="60"
+          :seconds-stroke-color="'#7fe3d4'"
+          :second-label="''"
+          @finish="finished"
+        ></circular-count-down-timer>
       </div>
-
-      <div v-if="!this.countdownShowing">
-        <div v-bind:key="session" class="request-container">
-          <div class="heading-text">Begin your session</div>
-
-          <div class="sub-heading-text-left-italic">Click the link to open your Zoom session</div>
-        </div>
-      </div>
-    </transition>
+    </div>
   </div>
 </template>
 
@@ -79,10 +56,7 @@ export default {
       el: "#accept",
 
       // Hard coded user
-      currentUserId: "5eb75ab2779eb66e27e4fad0",
-      countdownShowing: true,
-      submitClicked: false,
-      showLink: false
+    //   currentUserId: "5eb75ab2779eb66e27e4fad0"
     };
   },
   methods: {
@@ -90,10 +64,10 @@ export default {
       document.getElementById("tabs").scrollIntoView();
     },
     finished: () => {
-      console.log("in finished");
-      window.location.href = 'landingStudent/?tab=requestHistory'
-    },
+    window.location.href = 'landingStaff';
 
+    //   window.location.href = "/staff/landingStaff";
+    },
     sendZoomLink: function() {
       this.scrollToTop();
       this.countdownShowing = false;

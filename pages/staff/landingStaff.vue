@@ -149,7 +149,7 @@ import "vue-material/dist/theme/default.css";
 
 export default {
   async asyncData() {
-    let { data } = await axios.get("/api/tickets");
+    let { data } = await axios.get("../api/tickets");
     return { tickets: data };
   },
   head() {

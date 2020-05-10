@@ -78,6 +78,20 @@
       </md-card>
 
 
+
+        <md-card>
+        <md-card-header>
+          <md-card-header-text>
+            <div class="md-title">Staff Countdown</div>
+            <div class="md-subhead">The countdown that displays when a staff member selects a requested session.</div>
+          </md-card-header-text>
+        </md-card-header>
+
+        <md-card-actions>
+          <nuxt-link to="/staff/staffCountdown">Staff Countdown</nuxt-link>
+        </md-card-actions>
+      </md-card>
+
       <md-card>
         <md-card-header>
           <md-card-header-text>
