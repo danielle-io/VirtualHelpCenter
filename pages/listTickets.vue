@@ -24,7 +24,6 @@
           </div>
           <div class="md-card-content">
             <strong>Issue:</strong>
-            <!-- {{ ticket.oneLineOverview }} -->
             {{ ticket.oneLineOverview }}
             
           </div>
@@ -46,8 +45,8 @@
         </div>
         <div class = "col">
         
-        <h4>Open Tickets</h4>
-        <div  v-for="(ticket, index) in filterOpenTickets('Open')" :key="index">
+        <h4>In Progress Tickets</h4>
+        <div  v-for="(ticket, index) in filterOpenTickets('In Progress')" :key="index">
           <md-card>
           <md-card-header>
             <div class="md-title">Ticket</div>
@@ -150,17 +149,22 @@ export default {
       window.location.reload();
       console.log("delete function")
 
-     },
-    acceptTicket(ticket, id){
-      console.log(ticket.status)
-      ticket.status = 'In Progress'
-      console.log(ticket.codeSnippet)
-      console.log(ticket.user_id)
-      // console.log(ticket.owner.data._id)
-      // window.location.reload();
+     }
+    // acceptTicket(ticket, id){
+    //   console.log(ticket.status)
 
 
-    }
+    //   // ticket.status = 'In Progress'
+    //   axios.update('/updateTicket/'+id,{
+    //     status: 'In Progress'
+    //   })
+    //   console.log(ticket.codeSnippet)
+    //   console.log(ticket.user_id)
+    //   // console.log(ticket.owner.data._id)
+    //   // window.location.reload();
+
+
+    // }
       //Ticket.getAll()
     }
   }

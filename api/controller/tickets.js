@@ -37,15 +37,22 @@ router.get('/ticket/:id', function (req, res, next) {
 })
 
 
+//Deleting Ticket
 router.delete('/deleteTicket/:id', function(req, res, next) {
     const id = req.params.id;
     console.log("deleting")
     Ticket.findByIdAndDelete(id,function(err, res){
         console.log(res)
-    }
-
-);
+    });
 })
+
+//Updating Ticket
+// router.put('/updateTicket/:id', function(req, res, next){
+//     let ticketData = new Ticket(req.body)
+//     const id = req.params.id;
+//     console.log([ticketData, id]);
+//     Ticket.update({_id : id}, {$set: ticketData});
+// })
 
 
 module.exports = router
