@@ -14,6 +14,8 @@
               v-bind:class="{ 'tab-links-active': currentRequestsTab, 'tab-links': !currentRequestsTab }"
             >Current Requests</a>
 
+
+            <!-- (this.$route.query.tab   == 'requestHistory')-->
             <a
               v-bind:class="{ 'tab-links-active': requestHistoryTab, 'tab-links': !requestHistoryTab }"
               @click="switchToRequestHistoryTab"
@@ -400,6 +402,7 @@ table th,
   display: inline-block;
   text-align: center;
 }
+
 
 .file-button {
 }
