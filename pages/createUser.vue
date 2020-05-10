@@ -248,6 +248,8 @@ export default {
             return 4;
         },
         staffAdd: function(){
+            console.log("in staff add ");
+
             this.addClasses(this.availableClassesStaff, this.pickedClassesStaff, this.addClassStaff, this.removeClassStaff);
             if(this.pickedClassesStaff.length === 1){
                 this.removeClassStaff = this.pickedClassesStaff[0].value;
@@ -261,6 +263,8 @@ export default {
             }
         },
         studentAdd: function(){
+            console.log("in student add ");
+
             this.addClasses(this.availableClasses, this.pickedClasses, this.addClass, this.removeClass);
             if(this.pickedClasses.length === 1){
                 this.removeClass = this.pickedClasses[0].value;
