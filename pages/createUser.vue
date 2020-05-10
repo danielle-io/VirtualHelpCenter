@@ -216,7 +216,6 @@ export default {
                         ucinetid: this.ucinetid,
                         classes: classesStaff
                     })
-                    window.location.href = 'zoom/'+user.data._id
                 }
                 if(this.student === 'true'){
                     user = await axios.post('/api/insertStudent',{
@@ -228,7 +227,7 @@ export default {
                         ucinetid: this.ucinetid,
                         classes: classesStudent
                     })
-                    window.location.href = 'request/'+user.data._id
+                    window.location.href = 'landingStudent/' + user.data._id;
                 }
             }
         },
@@ -279,11 +278,11 @@ export default {
         }
     },
     async created(){
-        // let classes = await axios.get("/api/courses");
-        // let students = await axios.get("/api/students");
-        // classes.data.forEach(classSelected => {
-        //     this.loadClasses(classSelected);
-        // });
+        let classes = await axios.get("/api/courses");
+        let students = await axios.get("/api/students");
+        classes.data.forEach(classSelected => {
+            this.loadClasses(classSelected);
+        });
     }
 }
 </script>
