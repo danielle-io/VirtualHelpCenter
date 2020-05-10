@@ -20,7 +20,7 @@ export default {
 <script>
 import Vue from "vue";
 import TickeRequestForm from "~/components/TicketRequestForm";
-//import axios from "~/plugins/axios";
+import axios from "~/plugins/axios";
 
 
 import VueMaterial from "vue-material";
@@ -55,19 +55,20 @@ export default {
     const userExists = User.query().where('email', this.$auth.user.email).exists()
     if(this.$auth.loggedIn && !userExists){
        console.log("wow")
-      let user = await this.$axios.post('/insertUser',{
+      await axios.post('/api/insertStudent',{
           name: {
               firstname: user.given_name.split(' ')[0],
               lastname: user.family_name
           },
           email: user.email,
-          ucinetid: user.email.split('@')[0]
+          ucinetid: user.email.split('@')[0],
+          classes: null
       })
-    //   console.log(user)
-    //   await this.$axios.post('/insertStudent',{
-    //       _id : user.data,
+      // console.log(user)
+      // await this.$axios.post('/api/insertStudent',{
+      //     _id : user.data,
       
-    //   })
+      // })
 
     }
   },
