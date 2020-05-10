@@ -7,7 +7,7 @@
         <div class = "col">
         
         <h4>Open Tickets</h4>
-        <div  v-for="(ticket, index) in filterOpenTickets('Open')" :key="index">
+        <div id="open"  v-for="(ticket) in filterTickets('Open')" :key="ticket._id">
           <md-card>
           <md-card-header>
             <div class="md-title">Ticket</div>
@@ -46,44 +46,78 @@
         </div>
         <div class = "col">
         
-        <h4>In Progess Tickets</h4>
-        <div  v-for="(ticket, index) in filterOpenTickets('In Progress')" :key="index">
-          <md-card>
-          <md-card-header>
-            <div class="md-title">Ticket</div>
-          </md-card-header>
+          <h4>In Progess Tickets</h4>
+          <div  v-for="(ticket) in filterTickets('In Progress')" :key="ticket._id">
+            <md-card>
+              <md-card-header>
+                <div class="md-title">Ticket</div>
+              </md-card-header>
 
-          <div class="md-card-content">
-            <strong>Student:</strong>
-            {{ ticket.owner }}
-          </div>
+              <div class="md-card-content">
+                <strong>Student:</strong>
+                {{ ticket.owner }}
+              </div>
 
-          <div class="md-card-content">
-            <strong>Status:</strong>
-            {{ ticket.status }}
-          </div>
-          <div class="md-card-content">
-            <strong>Issue:</strong>
-            {{ticket.oneLineOverview}}
-          </div>
-          <!-- <div class="md-card-content">
-            <button type="button" v-on:click="deleteData(ticket, ticket._id)">Delete</button>
-          </div> -->
-          <div class="md-card-content">
-            <button type="button" v-on:click="openTicket(ticket, ticket._id)">Not in Progress</button>
-          </div>
-          
-          <!-- <div
-            class="md-card-content" style="margin-left: 25px;" v-for="(question, index) in ticket.questions" :key="index">
-            <strong>{{index + 1}}.</strong>
-            {{ ticket.questions[index] }}
-          </div> -->
+              <div class="md-card-content">
+                <strong>Status:</strong>
+                {{ ticket.status }}
+              </div>
+              <div class="md-card-content">
+                <strong>Issue:</strong>
+                {{ticket.oneLineOverview}}
+              </div>
+              <!-- <div class="md-card-content">
+                <button type="button" v-on:click="deleteData(ticket, ticket._id)">Delete</button>
+              </div> -->
+              <div class="md-card-content">
+                <button type="button" v-on:click="openTicket(ticket, ticket._id)">Not in Progress</button>
+              </div>
+              
+              <!-- <div
+                class="md-card-content" style="margin-left: 25px;" v-for="(question, index) in ticket.questions" :key="index">
+                <strong>{{index + 1}}.</strong>
+                {{ ticket.questions[index] }}
+              </div> -->
 
-        </md-card>
-        </div>
+            </md-card>
+          </div>
         </div>
         <div class = "col">
           <h4>Closed</h4>
+          <div  v-for="(ticket) in filterTickets('Closed')" :key="ticket._id">
+            <md-card>
+              <md-card-header>
+                <div class="md-title">Ticket</div>
+              </md-card-header>
+
+              <div class="md-card-content">
+                <strong>Student:</strong>
+                {{ ticket.owner }}
+              </div>
+
+              <div class="md-card-content">
+                <strong>Status:</strong>
+                {{ ticket.status }}
+              </div>
+              <div class="md-card-content">
+                <strong>Issue:</strong>
+                {{ticket.oneLineOverview}}
+              </div>
+              <!-- <div class="md-card-content">
+                <button type="button" v-on:click="deleteData(ticket, ticket._id)">Delete</button>
+              </div> -->
+              <div class="md-card-content">
+                <button type="button" v-on:click="openTicket(ticket, ticket._id)">Not in Progress</button>
+              </div>
+              
+              <!-- <div
+                class="md-card-content" style="margin-left: 25px;" v-for="(question, index) in ticket.questions" :key="index">
+                <strong>{{index + 1}}.</strong>
+                {{ ticket.questions[index] }}
+              </div> -->
+
+            </md-card>
+          </div>
         </div>
         <div class = "col">
           <h4>Unresolved</h4>
@@ -107,25 +141,24 @@ import "vue-material/dist/vue-material.min.css";
 import "vue-material/dist/theme/default.css";
 import axios from "~/plugins/axios"
 
-import Ticket from '../store/models/Ticket'
-import User from '../store/models/User'
+import Ticket from '../../store/models/Ticket'
+import User from '../../store/models/User'
 
 Vue.use(VueMaterial)
 
  
 export default {
-
   async fetch() {
     // let { data } = await this.$axios.get("/tickets");
 
     // Ticket.insert({data: data});
-    const result = await Ticket.api().get('/tickets')
-    console.log(result.response.status)
+    const result = await Ticket.api().get('/tickets');
   },
   computed: {
     tickets() {
       return Ticket.query().orderBy('owner').get();
     }
+    //can you see this 
   },
   head() {
     return {
@@ -133,7 +166,7 @@ export default {
     }
   }, 
   methods:{
-    filterOpenTickets(status){
+    filterTickets(status){
       return this.tickets.filter(ticket =>ticket.status === status);
     },
     created () {
@@ -166,11 +199,15 @@ export default {
       timer.setMinutes(timer.getMinutes()+1);
 
       //run timer
-      let x = setInterval(function(){
+      let x = setInterval( async function(){
         let current = new Date();
         if (current> timer){
           console.log("Time is up");
           clearInterval(x);
+          await axios.put('/api/updateTicket/'+id, {
+            status: 'Closed'
+          });
+          
         }
       }, 1000)
 
@@ -180,6 +217,7 @@ export default {
       axios.put('/api/updateTicket/'+id, {
         status: 'Open'
       });
+      window.location.reload();
     }
   }
 }

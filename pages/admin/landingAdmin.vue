@@ -1,4 +1,9 @@
 
+<!-- TODO: make sure an email was actually typed before allowing additions to be added or save button to be clicked-->
+<!-- TODO:  Check that email doesnt already exist in system -->
+<!-- TODO:  Save information for staff name, role, classes -->
+<!-- TODO: Check and process removed emails -->
+
 <template>
   <div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/velocity/1.2.3/velocity.min.js"></script>
@@ -8,25 +13,30 @@
         <div class="heading-text" style="margin-bottom: 10px;">Administrative Actions</div>
 
         <div class="request-tabs">
-         
           <a
-            @click="switchToAddTutorTab"
-            v-bind:class="{ 'tab-links-active': addTutorTab, 'tab-links': !addTutorTab }"
+            @click="switchToAddStaffTab"
+            v-bind:class="{ 'tab-links-active': addStaffTab, 'tab-links': !addStaffTab }"
           >Add a Tutor</a>
 
           <a
-            v-bind:class="{ 'tab-links-active': removeTutorTab, 'tab-links': !removeTutorTab }"
-            @click="switchToRemoveTutorTab"
+            v-bind:class="{ 'tab-links-active': removeStaffTab, 'tab-links': !removeStaffTab }"
+            @click="switchToRemoveStaffTab"
           >Remove a Tutor</a>
+
+           <!-- <a
+            v-bind:class="{ 'tab-links-active': addCourseTab, 'tab-links': !addCourseTab }"
+            @click="switchToAddCourseTab"
+          >Add a Course</a> -->
+
+          
         </div>
 
-        <div v-if="this.addTutorTab">
+        <!-- THE ADD TUTOR TAB -->
+        <div v-if="this.addStaffTab">
           <div class="top-row"></div>
 
-          <!-- TODO: make sure an email was actually typed and valid before displaying this message -->
-          <!-- TDO:  -->
           <div
-            v-if="!this.addRowClickedAfterSubmit && this.submitClicked"
+            v-if="!this.addAdditionRowClickedAfterSubmit && this.submitAdditionClicked"
             id="emailsSubmitted"
             class="sub-heading-text-larger"
           >Emails Submitted!</div>
@@ -36,28 +46,20 @@
               <tr>
                 <div
                   class="input-and-add-button"
-                  v-for="(rowKey, index) in taEmails"
+                  v-for="(rowKey, index) in newStaffEmails"
                   v-bind:key="index"
                 >
                   <td width="80%">
-                     <input
-                      width="100%"
-                      type="text"
-                      placeholder="Enter their First Name"
-                    />
-                     <input
-                      width="100%"
-                      type="text"
-                      placeholder="Enter their Last Name"
-                    />
+                    <input width="100%" type="text" placeholder="Enter their First Name" />
+                    <input width="100%" type="text" placeholder="Enter their Last Name" />
                     <input
                       width="100%"
-                      ref="tutorEmails"
+                      ref="newStaffEmails"
                       type="text"
                       class="email-input"
                       placeholder="Enter their email"
                     />
-                    <div class="row" style="margin-left: 10px; width: 70%;">
+                    <div class="row" style="margin-left: 10px; margin-top: 0px; width: 70%;">
                       <b-form-select
                         :options="roles"
                         size="sm"
@@ -67,7 +69,7 @@
                     </div>
                   </td>
                   <td sm="auto">
-                    <a v-on:click="removeElement(index);" class="remove-button">Remove Addition</a>
+                    <a v-on:click="removeAddStaffRow(index);" class="remove-button">Remove Addition</a>
                   </td>
                 </div>
               </tr>
@@ -75,19 +77,82 @@
           </table>
 
           <!-- TODO: disable button unless a valid email is typed in current rows -->
-          <span ref="rowButton" class="add-button" @click="addRow">
+          <span ref="newStaffRowButton" class="add-button" @click="addAdditionRow">
             <plus-circle />
           </span>
 
           <div style="text-align: center;">
             <!-- TODO: disable submit button until an email is entered -->
             <button
-              @click="submitEmails"
+              @click="submitNewStaff"
               type="submit"
               style="margin-bottom: 10px; margin-top: 10px;"
               class="fadeIn request-staff-buttons"
             >
               <right-circle />Submit
+            </button>
+          </div>
+        </div>
+
+        <!-- THE REMOVE STAFF TAB -->
+        <div v-if="this.removeStaffTab">
+          <div class="top-row"></div>
+
+          <div
+            v-if="!this.addRemovalRowClickedAfterSubmit && this.submitForRemovalClicked"
+            id="emailsSubmitted"
+            class="sub-heading-text-larger"
+          >Accounts Removed</div>
+
+          <table class="table">
+            <tbody>
+              <tr>
+                <div
+                  class="input-and-add-button"
+                  v-for="(rowKey, index) in removeStaffEmails"
+                  v-bind:key="index"
+                >
+                  <td width="80%">
+                    <div class="row" style="margin-left: 10px; width: 70%;">
+                      <!-- TODO: have value selected save -->
+                      <div class="row" style="margin-left: 10px; width: 70%;">
+                        <b-form-select
+                          :options="currentStaff"
+                          ref="removeStaffEmails"
+                          size="sm"
+                          class="mt-3"
+                          placeholder="Select their role"
+                        ></b-form-select>
+                      </div>
+                    </div>
+                  </td>
+                  <td sm="auto">
+                    <a
+                      v-on:click="removeDeleteStaffRow(index);"
+                      class="remove-button"
+                    >Remove Addition</a>
+                  </td>
+                </div>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- Only allows a new addition if there was one submitted -->
+          <div v-if="this.numberOfRemovalRows === 0">
+            <span ref="addRowOnRemovalTab" class="add-button" @click="addRemovalRow">
+              <plus-circle />
+            </span>
+          </div>
+
+          <!-- TODO: disable submit button until an email is selected -->
+          <div style="text-align: center;">
+            <button
+              @click="removeStaffByEmails"
+              type="submit"
+              style="margin-bottom: 10px; margin-top: 10px;"
+              class="fadeIn request-staff-buttons"
+            >
+              <right-circle />Submit Removal
             </button>
           </div>
         </div>
@@ -134,18 +199,29 @@ export default {
   data() {
     return {
       el: "#admin",
-      taEmails: [],
-      addTutorTab: true,
-      removeTutorTab: false,
+      newStaffEmails: [],
+      removeStaffEmails: [],
+      addStaffTab: true,
+      removeStaffTab: false,
       color: "#7e6694",
-      submitClicked: false,
-      addRowClickedAfterSubmit: false,
-      numberOfRows: 0,
+      submitAdditionClicked: false,
+      submitForRemovalClicked: false,
+      addAdditionRowClickedAfterSubmit: false,
+      addRemovalRowClickedAfterSubmit: false,
+      numberOfAdditionRows: 0,
+      numberOfRemovalRows: 0,
       emailsToSubmit: [],
-       roles: [
-        { value: null, text: "Select their role"},
-         {value: "TA", text: "TA" },
-         {value: "Reader", text: "Reader"}
+      roles: [
+        { value: null, text: "Select their role" },
+        { value: "TA", text: "TA" },
+        { value: "Reader", text: "Reader" }
+      ],
+      removenewStaffEmails: [],
+      // TODO: replace with empty array
+      currentStaff: [
+        { value: null, text: "Select the email to remove" },
+        { value: "jham@uci.edu", text: "jham@uci.edu" },
+        { value: "riley2@uci.edu", text: "riley2@uci.edu" }
       ]
     };
   },
@@ -153,73 +229,112 @@ export default {
     scrollToTop() {
       document.getElementById("tabs").scrollIntoView();
     },
-    switchToAddTutorTab: function() {
-      this.addTutorTab = true;
-      this.removeTutorTab = false;
+    switchToAddStaffTab: function() {
+      this.addStaffTab = true;
+      this.removeStaffTab = false;
       this.scrollToTop();
-      return this.addTutorTab;
+      return this.addStaffTab;
     },
-    switchToRemoveTutorTab: function() {
-      this.addTutorTab = false;
-      this.removeTutorTab = true;
+    switchToRemoveStaffTab: function() {
+      if (this.numberOfRemovalRows === 0) {
+        this.addRemovalRow();
+      }
+      this.addStaffTab = false;
+      this.removeStaffTab = true;
       this.scrollToTop();
-      return this.removeTutorTab;
+      return this.removeStaffTab;
     },
-    addRow: function() {
-      this.numberOfRows += 1;
-      console.log(this.numberOfRows);
-      this.addRowClickedAfterSubmit = true;
-      this.submitClicked = false;
+    addAdditionRow: function() {
+      this.numberOfAdditionRows += 1;
+      this.addAdditionRowClickedAfterSubmit = true;
+      this.submitAdditionClicked = false;
 
       var elem = document.createElement("tr");
       // It breaks without this line idk why rn
-      this.taEmails.push({});
+      this.newStaffEmails.push({});
+    },
+    addRemovalRow: function() {
+      this.numberOfRemovalRows += 1;
+
+      this.addRemovalRowClickedAfterSubmit = true;
+      this.submitForRemovalClicked = false;
+
+      var elem = document.createElement("tr");
+      // It breaks without this line idk why rn
+      this.removeStaffEmails.push({});
     },
     // This is to make sure one row is input on load
     clickRowOnLoad() {
-      this.$refs.rowButton.click();
+      this.$refs.newStaffRowButton.click();
     },
-    removeElement: function(index) {
-      this.numberOfRows -= 1;
-      console.log(this.numberOfRows);
-      this.taEmails.splice(index, 1);
+    removeAddStaffRow: function(index) {
+      this.numberOfAdditionRows -= 1;
+      this.newStaffEmails.splice(index, 1);
+    },
+    removeDeleteStaffRow: function(index) {
+      this.numberOfRemovalRows -= 1;
+      this.removeStaffEmails.splice(index, 1);
+    },
+    // TODO: this will populate this.currentStaff with the current
+    // staff emails an admin can select from
+    getCurrentStaff() {
+      console.log("getting current staff");
     },
 
-    // TODO: Make sure none of the emails are already in the db
     // TODO: Make sure none of the emails are duplicates
-    submitEmails() {
-      this.addRowClickedAfterSubmit = false;
-      this.submitClicked = true;
+    submitNewStaff() {
+      this.addAdditionRowClickedAfterSubmit = false;
+      this.submitAdditionClicked = true;
 
-      var rowCount = this.numberOfRows;
-      for (var i in this.$refs.tutorEmails) {
-        if (this.$refs.tutorEmails[i].value === "") {
+      var rowCount = this.numberOfAdditionRows;
+      for (var i in this.$refs.newStaffEmails) {
+        if (this.$refs.newStaffEmails[i].value === "") {
           continue;
         }
-        // TO DO: this is where you can add each email to the
-        // db. The email is in var email below!
-        var email = this.$refs.tutorEmails[i].value;
+        var email = this.$refs.newStaffEmails[i].value;
 
-        this.emailsToSubmit.push(this.$refs.tutorEmails[i].value);
+        this.emailsToSubmit.push(this.$refs.newStaffEmails[i].value);
         axios.post("/api/insertTutor", {
-          email: this.$refs.tutorEmails[i].value
+          email: this.$refs.newStaffEmails[i].value
         });
       }
 
-      console.log(this.emailsToSubmit);
-      // for (var i in this.emailsToSubmit){
-      //   axios.post('/api/insertTutor',{
-      //     email: emailsToSubmit[i]
-      //   })
-      // }
-
+      // Get rid of populated rows
       for (var i = rowCount - 1; i > -1; i--) {
-        this.removeElement(i);
+        this.removeAddStaffRow(i);
       }
+      this.scrollToTop();
+    },
+
+    // TODO: this post request should be changing delete column
+    // of that email to 1
+    // TODO: make sure it runs only if email selected from dropdown
+    removeStaffByEmails() {
+      this.submitForRemovalClicked = true;
+      this.addRemovalRowClickedAfterSubmit = false;
+
+      var rowCount = this.numberOfRemovalRows;
+
+      for (var i in this.$refs.removeStaffEmails) {
+        if (this.$refs.removeStaffEmails[i].value === "") {
+          continue;
+        }
+        //   // TO DO: this is where you can add each email to the
+        //   // db. The email is in var email below!
+        var email = this.$refs.removeStaffEmails[i].value;
+      }
+
+      // Get rid of populated rows
+      for (var i = rowCount - 1; i > -1; i--) {
+        this.removeDeleteStaffRow(i);
+      }
+      this.scrollToTop();
     }
   },
+  // Runs first
   beforeMount() {
     this.scrollToTop();
+    this.getCurrentStaff();
   },
   mounted() {
     this.clickRowOnLoad();
@@ -259,7 +374,7 @@ export default {
   opacity: 0;
 }
 
-/* Styling for adding taEmails */
+/* Styling for adding newStaffEmails */
 .add-button {
   align-items: left;
   font-size: 30px;

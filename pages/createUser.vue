@@ -216,7 +216,6 @@ export default {
                         ucinetid: this.ucinetid,
                         classes: classesStaff
                     })
-                    window.location.href = 'zoom/'+user.data._id
                 }
                 if(this.student === 'true'){
                     user = await axios.post('/api/insertStudent',{
@@ -228,7 +227,6 @@ export default {
                         ucinetid: this.ucinetid,
                         classes: classesStudent
                     })
-                    window.location.href = 'request/'+user.data._id
                 }
             }
         },
@@ -248,6 +246,8 @@ export default {
             return 4;
         },
         staffAdd: function(){
+            console.log("in staff add ");
+
             this.addClasses(this.availableClassesStaff, this.pickedClassesStaff, this.addClassStaff, this.removeClassStaff);
             if(this.pickedClassesStaff.length === 1){
                 this.removeClassStaff = this.pickedClassesStaff[0].value;
@@ -261,6 +261,8 @@ export default {
             }
         },
         studentAdd: function(){
+            console.log("in student add ");
+
             this.addClasses(this.availableClasses, this.pickedClasses, this.addClass, this.removeClass);
             if(this.pickedClasses.length === 1){
                 this.removeClass = this.pickedClasses[0].value;
@@ -275,11 +277,11 @@ export default {
         }
     },
     async created(){
-        // let classes = await axios.get("/api/courses");
-        // let students = await axios.get("/api/students");
-        // classes.data.forEach(classSelected => {
-        //     this.loadClasses(classSelected);
-        // });
+        let classes = await axios.get("/api/courses");
+        let students = await axios.get("/api/students");
+        classes.data.forEach(classSelected => {
+            this.loadClasses(classSelected);
+        });
     }
 }
 </script>

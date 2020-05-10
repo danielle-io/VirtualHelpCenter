@@ -11,13 +11,13 @@ router.get('/tickets', function (req, res, next) {
     })
 })
 
-/* GET tickets listing. */
-router.get('/Ticket', function (req, res, next) {
-    Ticket.find(function (err, Ticket) {
-        if (err) return console.error(err);
-        res.send(Ticket);
-    })
-})
+// /* GET tickets listing. */
+// router.get('/Ticket', function (req, res, next) {
+//     Ticket.find(function (err, Ticket) {
+//         if (err) return console.error(err);
+//         res.send(Ticket);
+//     })
+// })
 
 router.post('/insertTicket',function(req, res, next) {
     let ticketData = new Ticket(req.body);
@@ -33,9 +33,14 @@ router.get('/ticket/:id', function (req, res, next) {
   Ticket.findById(id, (err, ticket)=>{
     res.send(ticket);
 });
-  
 })
 
+router.get('/ticket/', function (req, res, next) {
+    console.log(req.body);
+    Ticket.find(req.body, (err, ticket)=>{
+      res.send(ticket);
+  });
+  })
 
 router.delete('/deleteTicket/:id', function(req, res, next) {
     const id = req.params.id;
