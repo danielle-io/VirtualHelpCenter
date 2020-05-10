@@ -78,10 +78,10 @@
         probDes: '',
         code: '',
         file: null,
-        selected: null,
+        selected: 'true',
         student: null,
         classes: [
-          { value: null, text: 'Please select a class:' },
+          { value: null, text: 'Please select a class:' }
         ],
       }
     
@@ -129,6 +129,7 @@
     //had to rename function "created" because I couldnt access "options" property
     async created() {
       let student = await axios.get("/api/users/"+this.$route.params.id);
+      console.log(student);
       student.data.classes.forEach(element => {
         this.loadClasses(element)
       })

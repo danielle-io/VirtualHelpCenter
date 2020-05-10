@@ -1,14 +1,13 @@
+<!-- TO DO: populate classes from course list -->
+
 <template>
   <div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/velocity/1.2.3/velocity.min.js"></script>
 
     <div id="requests">
-     
       <!-- The transition effects for the containers changing -->
       <transition name="fade" mode="in-out">
-       
         <div v-bind:key="request" class="request-container">
-         
           <div class="request-tabs">
             <a
               @click="switchToCurrentRequestsTab"
@@ -53,10 +52,12 @@
                 style="padding-top:2%;"
               >Complete the form below to request assistance from a lab tutor.</div>
 
+
               <div class="form-container">
                 <div class="row" style="width: 70%;">
                   <b-form-select
                     :options="classes"
+                    v-on:change="getSelectedCourse"
                     size="sm"
                     class="mt-3"
                     placeholder="Please select the class you need help with"
@@ -136,9 +137,6 @@
                   >
                     <right-circle />Submit Request
                   </button>
-
-                  <!-- ADD THIS BACK TO BUTTON ABOVE WHEN READY
-                  v-on:click="submit"-->
                 </div>
               </div>
             </div>
@@ -150,14 +148,10 @@
                 style="padding-top:2%;"
               >The current wait time is approximately 20 minutes.</div>
             </div>
-
           </div>
         </div>
 
-                  <div v-if="this.requestHistoryTab">
-                    hi
-                    </div>
-
+        <div v-if="this.requestHistoryTab">hi</div>
       </transition>
     </div>
   </div>
@@ -182,47 +176,48 @@ export default {
     "b-form-text-area": BFormTextarea
   },
 
-  //users classes show up as options
+  // Not working currently
   async loadClasses(courses) {
-    courses = await axios.get("../api/courses/" + courses._id);
-    let text = courses.data.dep + " " + courses.data.courseNum;
-    this.classes.push({ value: courses.data._id, text: text });
+    // courses = await axios.get("../api/controller/courses/" + courses._id);
+    // let text = courses.data.dep + " " + courses.data.courseNum;
+    // this.classes.push({ value: courses.data._id, text: text });
     console.log("loading classes");
   },
-  async loadUser(user) {
-    this.student = user.data._id;
-  },
 
-  // COMMENTED OUT FOR NOW BC ITS GIVING SOME ISSUES
-  // submit: function() {
-  //   if (this.problem != "" && this.probDes != "" && this.code != "") {
-  //     axios.post("/api/insertTicket", {
-  //       status: "Open",
-  //       owner: {
-  //         _id: this.student
-  //       },
-  //       course: {
-  //         _id: this.selected
-  //       },
-  //       oneLineOverview: this.probDes,
-  //       longerDescription: this.problem,
-  //       codeSnippet: this.code,
-  //       createdAt: new Date().toString()
-  //     });
-  //   } else {
-  //     console.log("not submitted");
-  //   }
+  // async loadUser(user) {
+  //   this.student = user.data._id;
   // },
+
+  // NOT INSERTED YET: file
+  submit: function() {
+    if (this.problem != "" && this.probDes != "") {
+      console.log("Submitting");
+      // axios.post("../api/controller/insertTicket", {
+      //   status: "Open",
+      //   owner: {
+      //     _id: this.currentUserId,
+      //   },
+      //   course: {
+      //     _id: this.selectedCourse
+      //   },
+      //   oneLineOverview: this.probDes,
+      //   longerDescription: this.problem,
+      //   codeSnippet: this.code,
+      //   createdAt: new Date().toString()
+      // });
+    } else {
+      // TODO: Tell the student they need to fill this out
+      console.log("not submitted");
+    }
+  },
   computed: {
     isDisabled: function() {
       return !this.selected;
     }
   },
 
-  // COMMENTED OUT BC THERE'S AN ERROR RN
-  //had to rename function "created" because I couldnt access "options" property
   async created() {
-    // let student = await axios.get("/api/students/" + this.$route.params.id);
+    // let student = await axios.get("../api/controller/students/" + this.$route.params.id);
     // student.data.classes.forEach(element => {
     //   this.loadClasses(element);
     // });
@@ -232,6 +227,9 @@ export default {
   data() {
     return {
       el: "#requests",
+
+      // Hard coded user
+      currentUserId: "5eb75ab2779eb66e27e4fad0",
       currentRequestsTab: true,
       requestHistoryTab: false,
       show: true,
@@ -245,17 +243,11 @@ export default {
       probDes: "",
       code: "",
       file: null,
-      selected: null,
       student: null,
       classes: [
         { value: null, text: "Please select the class you need help with:" },
-        { value: "ICS32", text: "ICS32" }
+        { value: "5eadfd7f4f7f4d3d68a666f5", text: "ICS32" }
       ]
-
-      // TODO: replace hardcoded classes with dynamic below
-      // classes: [
-      //   { value: null, text: "Please select the class you need help with:" }
-      // ]
     };
   },
   methods: {
@@ -265,8 +257,6 @@ export default {
     addRow: function() {
       var elem = document.createElement("tr");
       this.rows.push({
-        title: "",
-        description: "",
         file: {
           name: "Choose File"
         }
@@ -291,9 +281,15 @@ export default {
       var file = event.target.files[0];
       row.file = file;
     },
+
+    // Not yet working
     loadClasses: function(classSelected) {
-      var text = classSelected.dep + " " + classSelected.courseNum;
-      this.classes.push({ value: classSelected._id, text: text });
+      // var text = classSelected.dep + " " + classSelected.courseNum;
+      // this.classes.push({ value: classSelected._id, text: text });
+    },
+     getSelectedCourse: function(course) { 
+       this.selectedCourse = course;
+        console.log(course);
     },
     changeRequestState: function() {
       if (this.request === true && this.submitRequest === false) {
@@ -307,10 +303,12 @@ export default {
     }
   },
   beforeMount() {
-    console.log("hi");
-
     this.scrollToTop();
-  }
+    this.loadClasses();
+  },
+  mounted(){
+
+  },
 };
 </script>
 

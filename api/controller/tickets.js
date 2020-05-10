@@ -30,7 +30,7 @@ router.post('/insertTicket',function(req, res, next) {
 /* GET ticket by ID. */
 router.get('/ticket/:id', function (req, res, next) {
   const id = req.params.id;
-  Ticket.findById(ids, (err, ticket)=>{
+  Ticket.findById(id, (err, ticket)=>{
     res.send(ticket);
 });
   
@@ -42,11 +42,13 @@ router.delete('/deleteTicket/:id', function(req, res, next) {
     console.log("deleting")
     Ticket.findByIdAndDelete(id,function(err, res){
         console.log(res)
-    }
-
-);
+    });
 })
 
+router.put('/updateTicket/:id', function(req, res, next) {
+    const id = req.params.id;
+    Ticket.updateOne({_id: id}, {$set: req.body,}, function(err, ticket){});
+})
 
 module.exports = router
 
