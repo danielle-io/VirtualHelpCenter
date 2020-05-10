@@ -24,15 +24,7 @@
           </div>
           <div class="md-card-content">
             <strong>Issue:</strong>
-            <!-- {{ ticket.oneLineOverview }} -->
-            {{ ticket.oneLineOverview }}
-            
-          </div>
-          <!-- <div class="md-card-content">
-            <button type="button" v-on:click="deleteData(ticket, ticket._id)">Delete</button>
-          </div> -->
-          <div class="md-card-content">
-            <button type="button" v-on:click="acceptTicket(ticket, ticket._id)">Accept</button>
+            {{ticket.oneLineOverview}}
           </div>
           
           <!-- <div
@@ -45,8 +37,7 @@
         </div>
         </div>
         <div class = "col">
-        
-        <h4>In Progess Tickets</h4>
+        <h4>In Progress Tickets</h4>
         <div  v-for="(ticket, index) in filterOpenTickets('In Progress')" :key="index">
           <md-card>
           <md-card-header>
@@ -63,21 +54,14 @@
             {{ ticket.status }}
           </div>
           <div class="md-card-content">
-            <strong>Issue:</strong>
-            {{ticket.oneLineOverview}}
+            <strong>Questions:</strong>
           </div>
-          <!-- <div class="md-card-content">
-            <button type="button" v-on:click="deleteData(ticket, ticket._id)">Delete</button>
-          </div> -->
-          <div class="md-card-content">
-            <button type="button" v-on:click="openTicket(ticket, ticket._id)">Not in Progress</button>
-          </div>
-          
-          <!-- <div
+
+          <div
             class="md-card-content" style="margin-left: 25px;" v-for="(question, index) in ticket.questions" :key="index">
             <strong>{{index + 1}}.</strong>
             {{ ticket.questions[index] }}
-          </div> -->
+          </div>
 
         </md-card>
         </div>
@@ -105,10 +89,9 @@ import Vue from "vue";
 import VueMaterial from "vue-material";
 import "vue-material/dist/vue-material.min.css";
 import "vue-material/dist/theme/default.css";
-import axios from "~/plugins/axios"
 
-import Ticket from '../store/models/Ticket'
-import User from '../store/models/User'
+import Ticket from '../../../store/models/Ticket'
+import User from '../../../store/models/User'
 
 Vue.use(VueMaterial)
 
@@ -138,51 +121,10 @@ export default {
     },
     created () {
       //let { data } = await axios.get("/api/tickets");
-    },
-
-    deleteData(ticket, id){
-      console.log(id)
-          axios.delete("/api/deleteTicket/"+ id )
-
-        .then(function(response ){
-          console.log(response)
-        })
-      window.location.reload();
-      console.log("delete function")
-
-     },
-
-    async acceptTicket(ticket, id){
-      //update ticket withing db
-      axios.put('/api/updateTicket/'+id, {
-        status: 'In Progress'
-      });
-
-      //read updated time
-      let tickets = await axios.get('/api/ticket/'+id);
-
-      //create a timer for 1 minute
-      let timer = new Date();
-      timer.setMinutes(timer.getMinutes()+1);
-
-      //run timer
-      let x = setInterval(function(){
-        let current = new Date();
-        if (current> timer){
-          console.log("Time is up");
-          clearInterval(x);
-        }
-      }, 1000)
-
-    },
-
-    async openTicket(ticket, id){
-      axios.put('/api/updateTicket/'+id, {
-        status: 'Open'
-      });
+      //Ticket.getAll()
     }
   }
-}
+};
 </script>
 
 <style scoped>
