@@ -3,6 +3,7 @@
     <div class="topElement">
         <h1 class="title">Ticket Display</h1>
         <h4>Total Tickets: {{tickets.length}}</h4>
+    </div>
       <div class = "row justify-content-center">
         <div class = "col">
         
@@ -24,7 +25,6 @@
           </div>
           <div class="md-card-content">
             <strong>Issue:</strong>
-            <!-- {{ ticket.oneLineOverview }} -->
             {{ ticket.oneLineOverview }}
             
           </div>
@@ -46,6 +46,13 @@
         </div>
         <div class = "col">
         
+        <h4>In Progess Tickets</h4>
+        <div  v-for="(ticket, index) in filterOpenTickets('In Progress')" :key="index">
+          <md-card>
+          <md-card-header>
+            <div class="md-title">Ticket</div>
+          </md-card-header>
+          </md-card>
           <h4>In Progess Tickets</h4>
           <div  v-for="(ticket) in filterTickets('In Progress')" :key="ticket._id">
             <md-card>
@@ -183,6 +190,9 @@ export default {
       window.location.reload();
       console.log("delete function")
 
+     }
+    // acceptTicket(ticket, id){
+    //   console.log(ticket.status)
      },
 
     async acceptTicket(ticket, id){
@@ -191,6 +201,18 @@ export default {
         status: 'In Progress'
       });
 
+    //   // ticket.status = 'In Progress'
+    //   axios.update('/updateTicket/'+id,{
+    //     status: 'In Progress'
+    //   })
+    //   console.log(ticket.codeSnippet)
+    //   console.log(ticket.user_id)
+    //   // console.log(ticket.owner.data._id)
+    //   // window.location.reload();
+
+
+    // }
+      //Ticket.getAll()
       //read updated time
       let tickets = await axios.get('/api/ticket/'+id);
 
@@ -218,12 +240,11 @@ export default {
         status: 'Open'
       });
       window.location.reload();
-    }
-  },
+    },
   async created () {
     let tickets = await axios.get('/api/tickets')
-    console.log(tickets)
-  },
+    console.log(tickets);
+  }
 }
 </script>
 

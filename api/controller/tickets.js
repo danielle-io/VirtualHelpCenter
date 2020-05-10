@@ -42,6 +42,7 @@ router.get('/ticket/', function (req, res, next) {
   });
   })
 
+//Deleting Ticket
 router.delete('/deleteTicket/:id', function(req, res, next) {
     const id = req.params.id;
     console.log("deleting")
@@ -49,6 +50,14 @@ router.delete('/deleteTicket/:id', function(req, res, next) {
         console.log(res)
     });
 })
+
+//Updating Ticket
+// router.put('/updateTicket/:id', function(req, res, next){
+//     let ticketData = new Ticket(req.body)
+//     const id = req.params.id;
+//     console.log([ticketData, id]);
+//     Ticket.update({_id : id}, {$set: ticketData});
+// })
 
 router.put('/updateTicket/:id', function(req, res, next) {
     const id = req.params.id;

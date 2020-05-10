@@ -69,7 +69,6 @@
 
                 </md-card>
               </div>
-              
             </div>
 
             <!-- Container for filling out the request form -->
@@ -157,6 +156,7 @@
                   <!--  On select, the state of request is changed, forcing a transition effect and
                   changing what is rendered on the page-->
                   <button
+                    v-on:click="submit"
                     v-bind:key="submitRequest"
                     type="submit"
                     style="margin-bottom: 10px; margin-top: 10px;"
@@ -175,6 +175,29 @@
                 class="sub-heading-text"
                 style="padding-top:2%;"
               >The current wait time is approximately 20 minutes.</div>
+              <div style="text-align: center;" :hidden='ticket.owner === null'>
+                <md-card>
+                  <md-card-header>
+                    <div class="md-title">Ticket</div>
+                  </md-card-header>
+
+                  <div class="md-card-content">
+                    <strong>Student:</strong>
+                    {{ticket.owner}}
+                  </div>
+
+                  <div class="md-card-content">
+                    <strong>Status:</strong>
+                    {{ ticket.status }}
+                  </div>
+                  <div class="md-card-content">
+                    <strong>Issue:</strong>
+                    {{ ticket.oneLineOverview }}
+                    
+                  </div>
+
+                </md-card>
+              </div>
             </div>
           </div>
         </div>
@@ -209,33 +232,16 @@ export default {
     "b-form-text-area": BFormTextarea
   },
 
-  // NOT INSERTED YET: file
-  submit: function() {
-    if (this.problem != "" && this.probDes != "") {
-      console.log("Submitting");
-      // axios.post("../api/controller/insertTicket", {
-      //   status: "Open",
-      //   owner: {
-      //     _id: this.currentUserId,
-      //   },
-      //   course: {
-      //     _id: this.selectedCourse
-      //   },
-      //   oneLineOverview: this.probDes,
-      //   longerDescription: this.problem,
-      //   codeSnippet: this.code,
-      //   createdAt: new Date().toString()
-      // });
-    } else {
-      // TODO: Tell the student they need to fill this out
-      console.log("not submitted");
-    }
-  },
+ 
+
+
   computed: {
     isDisabled: function() {
       return !this.selected;
     }
   },
+
+ 
 
   data() {
     return {
@@ -282,6 +288,7 @@ export default {
       this.scrollToTop();
       return this.currentRequestsTab;
     },
+
     switchToRequestHistoryTab: function() {
       this.currentRequestsTab = false;
       this.requestHistoryTab = true;
@@ -300,11 +307,39 @@ export default {
       let classes = await axios.get('/api/courses/' + classSelected._id)
       this.classes.push({value: classes.data._id, text: classes.data.dep + classes.data.courseNum})
     },
+
+    async loadUser(user) {
+     this.student = user.data._id
+    },
      getSelectedCourse: function(course) { 
        this.selectedCourse = course;
         console.log(course);
     },
+
+    async submit() {
+      if (this.problem != "" && this.probDes != "") {
+        console.log("Submitting");
+        let ticket = axios.post("../api/insertTicket", {
+          status: "Open",
+          owner: {
+            _id: this.student,
+          },
+          course: {
+            _id: this.selectedCourse
+          },
+          oneLineOverview: this.probDes,
+          longerDescription: this.problem,
+          codeSnippet: this.code,
+          createdAt: new Date().toString()
+        });
+        console.log(ticket);
+      } else {
+        // TODO: Tell the student they need to fill this out
+        console.log("not submitted");
+      }
+    },
     changeRequestState: function() {
+      console.log("changing")
       if (this.request === true && this.submitRequest === false) {
         this.request = false;
         return this.request;
@@ -315,7 +350,7 @@ export default {
       }
     },
     ticketNum: function(){
-      if (this.ticket != {}){
+      if (this.ticket.owner != null){
         return 'one'
       }
       return 'no'
@@ -326,7 +361,8 @@ export default {
     let student = await axios.get('/api/users/' + this.$route.params.id)
     student.data.classes.forEach(element => {
       this.loadClasses(element);
-    });
+    })
+    this.loadUser(student);
 
     let tickets = await axios.get('/api/tickets');
     
