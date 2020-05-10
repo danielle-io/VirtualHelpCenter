@@ -31,7 +31,7 @@
               <div
                 class="sub-heading-text"
                 style="padding-top:2%;"
-              >You currently have no pending requests.</div>
+              >You currently have {{ticketNum()}} pending requests.</div>
 
               <div style="text-align: center;">
                 <button
@@ -40,10 +40,36 @@
                   type="submit"
                   style="margin-bottom: 20%;"
                   class="fadeIn form-buttons"
+                  :hidden='ticket.owner != null'
                 >
                   <right-circle />Request a Session
                 </button>
               </div>
+
+              <div style="text-align: center;" :hidden='ticket.owner === null'>
+                <md-card>
+                  <md-card-header>
+                    <div class="md-title">Ticket</div>
+                  </md-card-header>
+
+                  <div class="md-card-content">
+                    <strong>Student:</strong>
+                    {{ticket.owner}}
+                  </div>
+
+                  <div class="md-card-content">
+                    <strong>Status:</strong>
+                    {{ ticket.status }}
+                  </div>
+                  <div class="md-card-content">
+                    <strong>Issue:</strong>
+                    {{ ticket.oneLineOverview }}
+                    
+                  </div>
+
+                </md-card>
+              </div>
+              
             </div>
 
             <!-- Container for filling out the request form -->
@@ -163,12 +189,17 @@
 <script>
 import Vue from "vue";
 import axios from "~/plugins/axios";
+import VueMaterial from "vue-material";
+import "vue-material/dist/vue-material.min.css";
+import "vue-material/dist/theme/default.css";
 import {
   BFormInput,
   BFormSelect,
   BFormCheckbox,
   BFormTextarea
 } from "bootstrap-vue";
+
+Vue.use(VueMaterial)
 
 export default {
   components: {
@@ -177,18 +208,6 @@ export default {
     "b-form-checkbox": BFormCheckbox,
     "b-form-text-area": BFormTextarea
   },
-
-  // Not working currently
-  async loadClasses(courses) {
-    // courses = await axios.get("../api/controller/courses/" + courses._id);
-    // let text = courses.data.dep + " " + courses.data.courseNum;
-    // this.classes.push({ value: courses.data._id, text: text });
-    console.log("loading classes");
-  },
-
-  // async loadUser(user) {
-  //   this.student = user.data._id;
-  // },
 
   // NOT INSERTED YET: file
   submit: function() {
@@ -218,14 +237,6 @@ export default {
     }
   },
 
-  async created() {
-    // let student = await axios.get("../api/controller/students/" + this.$route.params.id);
-    // student.data.classes.forEach(element => {
-    //   this.loadClasses(element);
-    // });
-    // this.loadUser(student);
-  },
-
   data() {
     return {
       el: "#requests",
@@ -245,7 +256,12 @@ export default {
       student: null,
       classes: [
         { value: null, text: "Please select the class you need help with:" }
-      ]
+      ],
+      ticket : {
+        owner: null,
+        status: null,
+        oneLineOverview: null
+      }
     };
   },
   methods: {
@@ -280,7 +296,6 @@ export default {
       row.file = file;
     },
 
-    // Not yet working
     async loadClasses(classSelected) {
       let classes = await axios.get('/api/courses/' + classSelected._id)
       this.classes.push({value: classes.data._id, text: classes.data.dep + classes.data.courseNum})
@@ -298,6 +313,12 @@ export default {
         this.scrollToTop();
         return this.request;
       }
+    },
+    ticketNum: function(){
+      if (this.ticket != {}){
+        return 'one'
+      }
+      return 'no'
     }
   },
   async created() {
@@ -307,15 +328,12 @@ export default {
       this.loadClasses(element);
     });
 
-    // let ticket = await axios.get('/api/ticket', {
-    //   params: {
-    //     owner: this.$route.params.id
-    //   }
-    // })
-    // console.log(ticket)
-  },
-  mounted(){
-
+    let tickets = await axios.get('/api/tickets');
+    
+    tickets = tickets.data.filter(ticket => (ticket.owner._id === this.$route.params.id) && (ticket.status === 'Open'));
+    if (tickets.length != 0){
+      this.ticket = tickets[0];
+    }
   },
 };
 </script>
@@ -573,5 +591,20 @@ input[type="text"]:placeholder {
 .underlineHover:hover:after {
   width: 100%;
   font-weight: 300 !important;
+}
+
+.md-subhead {
+  justify-content: left;
+}
+
+.md-card-content {
+  text-align: left;
+  line-height: 2px;
+}
+.md-card {
+  width: 250px;
+  margin: 14px;
+  display: inline-block;
+  vertical-align: top;
 }
 </style>
