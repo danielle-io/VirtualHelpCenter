@@ -155,6 +155,15 @@ Vue.use(VueMaterial)
 
  
 export default {
+  data(){
+    return{
+      open: [],
+      inprogress: [],
+      closed: [],
+      unresolved: []
+    }
+  },
+
   async fetch() {
     // let { data } = await this.$axios.get("/tickets");
 
@@ -240,9 +249,12 @@ export default {
         status: 'Open'
       });
       window.location.reload();
-    }
+    },
+  async created () {
+    let tickets = await axios.get('/api/tickets')
+    console.log(tickets);
   }
-
+}
 </script>
 
 <style scoped>

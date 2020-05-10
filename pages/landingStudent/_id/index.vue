@@ -131,6 +131,7 @@
                   <!--  On select, the state of request is changed, forcing a transition effect and
                   changing what is rendered on the page-->
                   <button
+                    v-on:click="submit"
                     v-bind:key="submitRequest"
                     type="submit"
                     style="margin-bottom: 10px; margin-top: 10px;"
@@ -178,53 +179,16 @@ export default {
     "b-form-text-area": BFormTextarea
   },
 
-  // Not working currently
-  async loadClasses(courses) {
-    // courses = await axios.get("../api/controller/courses/" + courses._id);
-    // let text = courses.data.dep + " " + courses.data.courseNum;
-    // this.classes.push({ value: courses.data._id, text: text });
-    console.log("loading classes");
-  },
+ 
 
-  // async loadUser(user) {
-  //   this.student = user.data._id;
-  // },
 
-  // NOT INSERTED YET: file
-  submit: function() {
-    if (this.problem != "" && this.probDes != "") {
-      console.log("Submitting");
-      // axios.post("../api/controller/insertTicket", {
-      //   status: "Open",
-      //   owner: {
-      //     _id: this.currentUserId,
-      //   },
-      //   course: {
-      //     _id: this.selectedCourse
-      //   },
-      //   oneLineOverview: this.probDes,
-      //   longerDescription: this.problem,
-      //   codeSnippet: this.code,
-      //   createdAt: new Date().toString()
-      // });
-    } else {
-      // TODO: Tell the student they need to fill this out
-      console.log("not submitted");
-    }
-  },
   computed: {
     isDisabled: function() {
       return !this.selected;
     }
   },
 
-  async created() {
-    // let student = await axios.get("../api/controller/students/" + this.$route.params.id);
-    // student.data.classes.forEach(element => {
-    //   this.loadClasses(element);
-    // });
-    // this.loadUser(student);
-  },
+ 
 
   data() {
     return {
@@ -245,7 +209,8 @@ export default {
       student: null,
       classes: [
         { value: null, text: "Please select the class you need help with:" }
-      ]
+      ],
+      student: null
     };
   },
   methods: {
@@ -285,11 +250,38 @@ export default {
       let classes = await axios.get('/api/courses/' + classSelected._id)
       this.classes.push({value: classes.data._id, text: classes.data.dep + classes.data.courseNum})
     },
+
+    async loadUser(user) {
+     this.student = user.data._id
+    },
      getSelectedCourse: function(course) { 
        this.selectedCourse = course;
         console.log(course);
     },
+
+    submit() {
+    if (this.problem != "" && this.probDes != "") {
+      console.log("Submitting");
+      axios.post("../api/insertTicket", {
+        status: "Open",
+        owner: {
+          _id: this.student,
+        },
+        course: {
+          _id: this.selectedCourse
+        },
+        oneLineOverview: this.probDes,
+        longerDescription: this.problem,
+        codeSnippet: this.code,
+        createdAt: new Date().toString()
+      });
+    } else {
+      // TODO: Tell the student they need to fill this out
+      console.log("not submitted");
+    }
+  },
     changeRequestState: function() {
+      console.log("changing")
       if (this.request === true && this.submitRequest === false) {
         this.request = false;
         return this.request;
@@ -305,11 +297,12 @@ export default {
     let student = await axios.get('/api/users/' + this.$route.params.id)
     student.data.classes.forEach(element => {
       this.loadClasses(element);
-    });
+    })
+    this.loadUser(student);
 
     // let ticket = await axios.get('/api/ticket', {
-    //   owner: {
-    //     _id : this.$route.params.id
+    //   params: {
+    //     owner: this.$route.params.id
     //   }
     // })
     // console.log(ticket)
