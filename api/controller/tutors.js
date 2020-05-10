@@ -5,7 +5,7 @@ const router = Router();
 
 //GET Tutor Listing
 router.get('/tutors', (req,res,next) =>{
-    CourseModel.find({}, (err, tutors) => {
+    TutorModel.find({}, (err, tutors) => {
         if(err) return console.error(err);
         res.send(tutors);
     })

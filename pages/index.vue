@@ -1,122 +1,13 @@
 <template>
   <div style="position: relative;">
     <section class="header-title-container">
-      <h1 class="title">Testing Home Page</h1>
+      <h1 class="title">Welcome {{this.$auth.user.given_name.split(' ')[0]}}</h1>
     </section>
-
-    <div class="Row card-row">
-      <md-card>
-        <md-card-header>
-          <md-card-header-text>
-            <div class="md-title">Ticket Insert Demo</div>
-            <div class="md-subhead">Click here to go to the ticket insert demo!</div>
-          </md-card-header-text>
-        </md-card-header>
-
-        <md-card-actions>
-          <nuxt-link to="/ticketUI">Ticket Demo</nuxt-link>
-        </md-card-actions>
-      </md-card>
-
-      <md-card>
-        <md-card-header>
-          <md-card-header-text>
-            <div class="md-title">Ticket Display</div>
-            <div class="md-subhead">Click here to See a display of the tickets</div>
-          </md-card-header-text>
-        </md-card-header>
-
-        <md-card-actions>
-          <nuxt-link to="/listTickets">Ticket Display</nuxt-link>
-        </md-card-actions>
-      </md-card>
-
-      <md-card>
-        <md-card-header>
-          <md-card-header-text>
-            <div class="md-title">Create User</div>
-            <div
-              class="md-subhead"
-            >Note: This page seems to fail sometimes rn but shows up if you refresh</div>
-          </md-card-header-text>
-        </md-card-header>
-
-        <md-card-actions>
-          <nuxt-link to="/createUser">Create User</nuxt-link>
-        </md-card-actions>
-      </md-card>
-
-      <md-card>
-        <md-card-header>
-          <md-card-header-text>
-            <div class="md-title">Student Landing</div>
-            <div
-              class="md-subhead"
-            >Later student & staff landing will be one page, changed based on user's account</div>
-          </md-card-header-text>
-        </md-card-header>
-
-        <md-card-actions>
-          <nuxt-link to="/landingStudent">Student Landing</nuxt-link>
-        </md-card-actions>
-      </md-card>
-
-      <md-card>
-        <md-card-header>
-          <md-card-header-text>
-            <div class="md-title">Staff Landing</div>
-            <div
-              class="md-subhead"
-            >Later student & staff landing will be one page, changed based on user's account</div>
-          </md-card-header-text>
-        </md-card-header>
-
-        <md-card-actions>
-          <nuxt-link to="/landingStaff">Staff Landing</nuxt-link>
-        </md-card-actions>
-      </md-card>
-
-      <md-card>
-        <md-card-header>
-          <md-card-header-text>
-            <div class="md-title">Admin Landing</div>
-            <div class="md-subhead">Admin users can specify TAs</div>
-          </md-card-header-text>
-        </md-card-header>
-
-        <md-card-actions>
-          <nuxt-link to="/landingAdmin">Admin Landing</nuxt-link>
-        </md-card-actions>
-      </md-card>
-
-      <md-card>
-        <md-card-header>
-          <md-card-header-text>
-            <div class="md-title">Insert Ticket Request</div>
-            <div class="md-subhead">Click here to go to the ticket request form</div>
-          </md-card-header-text>
-        </md-card-header>
-
-        <md-card-actions>
-          <nuxt-link :to="'/request/'+id">Ticket Request</nuxt-link>
-        </md-card-actions>
-      </md-card>
-
-      <md-card>
-        <md-card-header>
-          <md-card-header-text>
-            <div class="md-title">Zoom</div>
-            <div class="md-subhead">Click here to See a display of zoom</div>
-          </md-card-header-text>
-        </md-card-header>
-
-        <md-card-actions>
-          <nuxt-link to="/zoom">Zoom Display</nuxt-link>
-        </md-card-actions>
-      </md-card>
-
+    <div >
+      <TicketRequestForm />
     </div>
   </div>
+    
 </template>
 
 <script>
@@ -128,25 +19,57 @@ export default {
 
 <script>
 import Vue from "vue";
+import TickeRequestForm from "~/components/TicketRequestForm";
 //import axios from "~/plugins/axios";
+
+
 import VueMaterial from "vue-material";
 import "vue-material/dist/vue-material.min.css";
 import "vue-material/dist/theme/default.css";
+
+
 import User from "../store/models/User";
 
 Vue.config.productionTip = false;
 Vue.use(VueMaterial);
 
 export default {
+  components: {
+    'TicketRequestForm': TickeRequestForm
+  },
   data() {
     return {
       id: "5e9bc14dba244923803929d6"
     };
   },
   async fetch() {
+    const user = this.$auth.user
+    console.log(user.email)
     let { data } = await this.$axios.get("/users");
-
+    console.log(data)
     User.insert({ data: data });
+
+    let tutors = await this.$axios.get("/tutors");
+    console.log(tutors.data);
+
+    const userExists = User.query().where('email', this.$auth.user.email).exists()
+    if(this.$auth.loggedIn && !userExists){
+       console.log("wow")
+      let user = await this.$axios.post('/insertUser',{
+          name: {
+              firstname: user.given_name.split(' ')[0],
+              lastname: user.family_name
+          },
+          email: user.email,
+          ucinetid: user.email.split('@')[0]
+      })
+    //   console.log(user)
+    //   await this.$axios.post('/insertStudent',{
+    //       _id : user.data,
+      
+    //   })
+
+    }
   },
   head() {
     return {

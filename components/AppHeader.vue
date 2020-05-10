@@ -21,7 +21,7 @@
 
         <nuxt-link class="link-styling" to="../help">help</nuxt-link>
 
-        <nuxt-link class="link-styling" to="/">testing</nuxt-link>
+        <nuxt-link class="link-styling" to="/test">testing</nuxt-link>
 
         <nuxt-link class="link-styling" to="../account">
           <account-circle />
