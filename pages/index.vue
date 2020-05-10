@@ -57,7 +57,7 @@
         </md-card-header>
 
         <md-card-actions>
-          <nuxt-link to="/landingStudent">Student Landing</nuxt-link>
+          <nuxt-link to="/students/landingStudent">Student Landing</nuxt-link>
         </md-card-actions>
       </md-card>
 
@@ -72,7 +72,7 @@
         </md-card-header>
 
         <md-card-actions>
-          <nuxt-link to="/landingStaff">Staff Landing</nuxt-link>
+          <nuxt-link to="/staff/landingStaff">Staff Landing</nuxt-link>
         </md-card-actions>
       </md-card>
 
@@ -85,7 +85,7 @@
         </md-card-header>
 
         <md-card-actions>
-          <nuxt-link to="/landingAdmin">Admin Landing</nuxt-link>
+          <nuxt-link to="/admin/landingAdmin">Admin Landing</nuxt-link>
         </md-card-actions>
       </md-card>
 
