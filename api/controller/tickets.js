@@ -25,22 +25,16 @@ router.post('/insertTicket',function(req, res, next) {
     console.log(ticketData);
     console.log('============');
     ticketData.save();
+    
 })
 
 /* GET ticket by ID. */
-// router.get('/ticket/:id', function (req, res, next) {
-//   const id = req.params.id;
-//   Ticket.findById(id, (err, ticket)=>{
-//     res.send(ticket);
-// });
-// })
-
-router.get('/ticket/', function (req, res, next) {
-    console.log(req);
-    Ticket.find(req.query, (err, ticket)=>{
-      res.send(ticket);
+router.get('/ticket/:id', function (req, res, next) {
+  const id = req.params.id;
+  Ticket.findById(id, (err, ticket)=>{
+    res.send(ticket);
   });
-  })
+})
 
 //Deleting Ticket
 router.delete('/deleteTicket/:id', function(req, res, next) {

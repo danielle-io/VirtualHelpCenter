@@ -31,7 +31,7 @@
               <div
                 class="sub-heading-text"
                 style="padding-top:2%;"
-              >You currently have no pending requests.</div>
+              >You currently have {{ticketNum()}} pending requests.</div>
 
               <div style="text-align: center;">
                 <button
@@ -40,9 +40,34 @@
                   type="submit"
                   style="margin-bottom: 20%;"
                   class="fadeIn form-buttons"
+                  :hidden='ticket.owner != null'
                 >
                   <right-circle />Request a Session
                 </button>
+              </div>
+
+              <div style="text-align: center;" :hidden='ticket.owner === null'>
+                <md-card>
+                  <md-card-header>
+                    <div class="md-title">Ticket</div>
+                  </md-card-header>
+
+                  <div class="md-card-content">
+                    <strong>Student:</strong>
+                    {{ticket.owner}}
+                  </div>
+
+                  <div class="md-card-content">
+                    <strong>Status:</strong>
+                    {{ ticket.status }}
+                  </div>
+                  <div class="md-card-content">
+                    <strong>Issue:</strong>
+                    {{ ticket.oneLineOverview }}
+                    
+                  </div>
+
+                </md-card>
               </div>
             </div>
 
@@ -150,6 +175,29 @@
                 class="sub-heading-text"
                 style="padding-top:2%;"
               >The current wait time is approximately 20 minutes.</div>
+              <div style="text-align: center;" :hidden='ticket.owner === null'>
+                <md-card>
+                  <md-card-header>
+                    <div class="md-title">Ticket</div>
+                  </md-card-header>
+
+                  <div class="md-card-content">
+                    <strong>Student:</strong>
+                    {{ticket.owner}}
+                  </div>
+
+                  <div class="md-card-content">
+                    <strong>Status:</strong>
+                    {{ ticket.status }}
+                  </div>
+                  <div class="md-card-content">
+                    <strong>Issue:</strong>
+                    {{ ticket.oneLineOverview }}
+                    
+                  </div>
+
+                </md-card>
+              </div>
             </div>
           </div>
         </div>
@@ -164,12 +212,17 @@
 <script>
 import Vue from "vue";
 import axios from "~/plugins/axios";
+import VueMaterial from "vue-material";
+import "vue-material/dist/vue-material.min.css";
+import "vue-material/dist/theme/default.css";
 import {
   BFormInput,
   BFormSelect,
   BFormCheckbox,
   BFormTextarea
 } from "bootstrap-vue";
+
+Vue.use(VueMaterial)
 
 export default {
   components: {
@@ -210,7 +263,11 @@ export default {
       classes: [
         { value: null, text: "Please select the class you need help with:" }
       ],
-      student: null
+      ticket : {
+        owner: null,
+        status: null,
+        oneLineOverview: null
+      }
     };
   },
   methods: {
@@ -231,6 +288,7 @@ export default {
       this.scrollToTop();
       return this.currentRequestsTab;
     },
+
     switchToRequestHistoryTab: function() {
       this.currentRequestsTab = false;
       this.requestHistoryTab = true;
@@ -245,7 +303,6 @@ export default {
       row.file = file;
     },
 
-    // Not yet working
     async loadClasses(classSelected) {
       let classes = await axios.get('/api/courses/' + classSelected._id)
       this.classes.push({value: classes.data._id, text: classes.data.dep + classes.data.courseNum})
@@ -259,27 +316,28 @@ export default {
         console.log(course);
     },
 
-    submit() {
-    if (this.problem != "" && this.probDes != "") {
-      console.log("Submitting");
-      axios.post("../api/insertTicket", {
-        status: "Open",
-        owner: {
-          _id: this.student,
-        },
-        course: {
-          _id: this.selectedCourse
-        },
-        oneLineOverview: this.probDes,
-        longerDescription: this.problem,
-        codeSnippet: this.code,
-        createdAt: new Date().toString()
-      });
-    } else {
-      // TODO: Tell the student they need to fill this out
-      console.log("not submitted");
-    }
-  },
+    async submit() {
+      if (this.problem != "" && this.probDes != "") {
+        console.log("Submitting");
+        let ticket = axios.post("../api/insertTicket", {
+          status: "Open",
+          owner: {
+            _id: this.student,
+          },
+          course: {
+            _id: this.selectedCourse
+          },
+          oneLineOverview: this.probDes,
+          longerDescription: this.problem,
+          codeSnippet: this.code,
+          createdAt: new Date().toString()
+        });
+        console.log(ticket);
+      } else {
+        // TODO: Tell the student they need to fill this out
+        console.log("not submitted");
+      }
+    },
     changeRequestState: function() {
       console.log("changing")
       if (this.request === true && this.submitRequest === false) {
@@ -290,6 +348,12 @@ export default {
         this.scrollToTop();
         return this.request;
       }
+    },
+    ticketNum: function(){
+      if (this.ticket.owner != null){
+        return 'one'
+      }
+      return 'no'
     }
   },
   async created() {
@@ -300,15 +364,12 @@ export default {
     })
     this.loadUser(student);
 
-    // let ticket = await axios.get('/api/ticket', {
-    //   params: {
-    //     owner: this.$route.params.id
-    //   }
-    // })
-    // console.log(ticket)
-  },
-  mounted(){
-
+    let tickets = await axios.get('/api/tickets');
+    
+    tickets = tickets.data.filter(ticket => (ticket.owner._id === this.$route.params.id) && (ticket.status === 'Open'));
+    if (tickets.length != 0){
+      this.ticket = tickets[0];
+    }
   },
 };
 </script>
@@ -566,5 +627,20 @@ input[type="text"]:placeholder {
 .underlineHover:hover:after {
   width: 100%;
   font-weight: 300 !important;
+}
+
+.md-subhead {
+  justify-content: left;
+}
+
+.md-card-content {
+  text-align: left;
+  line-height: 2px;
+}
+.md-card {
+  width: 250px;
+  margin: 14px;
+  display: inline-block;
+  vertical-align: top;
 }
 </style>

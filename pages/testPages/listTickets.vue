@@ -155,15 +155,6 @@ Vue.use(VueMaterial)
 
  
 export default {
-  data(){
-    return{
-      open: [],
-      inprogress: [],
-      closed: [],
-      unresolved: []
-    }
-  },
-
   async fetch() {
     // let { data } = await this.$axios.get("/tickets");
 
