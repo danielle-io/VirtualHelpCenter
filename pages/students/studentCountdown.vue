@@ -15,7 +15,7 @@
 
           <div style="text-align: center;">
             <circular-count-down-timer
-              :initial-value="5"
+              :initial-value="60"
               :steps="60"
               :seconds-stroke-color="'#7fe3d4'"
               :second-label="''"
