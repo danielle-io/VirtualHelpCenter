@@ -46,29 +46,7 @@
                 </button>
               </div>
 
-              <div style="text-align: center;" :hidden='ticket.owner === null'>
-                <md-card>
-                  <md-card-header>
-                    <div class="md-title">Ticket</div>
-                  </md-card-header>
-
-                  <div class="md-card-content">
-                    <strong>Student:</strong>
-                    {{ticket.owner}}
-                  </div>
-
-                  <div class="md-card-content">
-                    <strong>Status:</strong>
-                    {{ ticket.status }}
-                  </div>
-                  <div class="md-card-content">
-                    <strong>Issue:</strong>
-                    {{ ticket.oneLineOverview }}
-                    
-                  </div>
-
-                </md-card>
-              </div>
+              
             </div>
 
             <!-- Container for filling out the request form -->
@@ -175,33 +153,32 @@
                 class="sub-heading-text"
                 style="padding-top:2%;"
               >The current wait time is approximately 20 minutes.</div>
-              <div style="text-align: center;" :hidden='ticket.owner === null'>
-                <md-card>
-                  <md-card-header>
-                    <div class="md-title">Ticket</div>
-                  </md-card-header>
-
-                  <div class="md-card-content">
-                    <strong>Student:</strong>
-                    {{ticket.owner}}
-                  </div>
-
-                  <div class="md-card-content">
-                    <strong>Status:</strong>
-                    {{ ticket.status }}
-                  </div>
-                  <div class="md-card-content">
-                    <strong>Issue:</strong>
-                    {{ ticket.oneLineOverview }}
-                    
-                  </div>
-
-                </md-card>
-              </div>
             </div>
+            <div style="text-align: center;" :hidden='ticket.owner === null'>
+              <md-card>
+                <md-card-header>
+                  <div class="md-title">Ticket</div>
+                </md-card-header>
+
+                <div class="md-card-content">
+                  <strong>Student:</strong>
+                  {{ticket.owner}}
+                </div>
+
+                <div class="md-card-content">
+                  <strong>Status:</strong>
+                  {{ ticket.status }}
+                </div>
+                <div class="md-card-content">
+                  <strong>Issue:</strong>
+                  {{ ticket.oneLineOverview }}
+                  
+                </div>
+
+              </md-card>
+              </div>
           </div>
         </div>
-
         <div v-if="this.requestHistoryTab">hi</div>
       </transition>
     </div>
@@ -319,7 +296,7 @@ export default {
     async submit() {
       if (this.problem != "" && this.probDes != "") {
         console.log("Submitting");
-        let ticket = axios.post("../api/insertTicket", {
+        let ticket = await axios.post("../api/insertTicket", {
           status: "Open",
           owner: {
             _id: this.student,
@@ -332,7 +309,8 @@ export default {
           codeSnippet: this.code,
           createdAt: new Date().toString()
         });
-        console.log(ticket);
+        this.ticket = ticket.data
+        this.waitforStaff(this.ticket._id);
       } else {
         // TODO: Tell the student they need to fill this out
         console.log("not submitted");
@@ -354,6 +332,17 @@ export default {
         return 'one'
       }
       return 'no'
+    },
+    async waitforStaff(id){
+      let x = setInterval( async function(){
+        let ticket = await axios.get('/api/ticket/'+id)
+        if (ticket.data.status === 'In Progress'){
+          clearInterval(x);
+          window.location.href = '/students/studentCountdown'
+        }
+        console.log(ticket.data.status)
+        
+      }, 10000)
     }
   },
   async created() {
@@ -369,7 +358,9 @@ export default {
     tickets = tickets.data.filter(ticket => (ticket.owner._id === this.$route.params.id) && (ticket.status === 'Open'));
     if (tickets.length != 0){
       this.ticket = tickets[0];
+      this.waitforStaff(this.ticket._id);
     }
+    
   },
 };
 </script>

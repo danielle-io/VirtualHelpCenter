@@ -24,7 +24,9 @@ router.post('/insertTicket',function(req, res, next) {
     console.log('Ticket data before insert');
     console.log(ticketData);
     console.log('============');
-    ticketData.save();
+    ticketData.save((err, ticket)=>{
+        res.send(ticket);
+    });
     
 })
 
