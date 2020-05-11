@@ -161,11 +161,6 @@
                 </md-card-header>
 
                 <div class="md-card-content">
-                  <strong>Student:</strong>
-                  {{openTicket.owner}}
-                </div>
-
-                <div class="md-card-content">
                   <strong>Status:</strong>
                   {{ openTicket.status }}
                 </div>
@@ -173,6 +168,9 @@
                   <strong>Issue:</strong>
                   {{ openTicket.oneLineOverview }}
                   
+                </div>
+                <div class="md-card-content">
+                  <button type="button" v-on:click="closeTicket(openTicket)">Close Request</button>
                 </div>
 
               </md-card>
@@ -304,19 +302,42 @@ export default {
       row.file = file;
     },
 
+    getSelectedCourse: function(course) { 
+       this.selectedCourse = course;
+        console.log(course);
+    },
+    changeRequestState: function() {
+      console.log("changing")
+      if (this.request === true && this.submitRequest === false) {
+        this.request = false;
+        return this.request;
+      } else {
+        this.submitRequest = true;
+        this.scrollToTop();
+        return this.request;
+      }
+    },
+    ticketNum: function(){
+      if (this.openTicket.owner != null){
+        return 'one'
+      }
+      return 'no'
+    },
+    clearForm: function(){
+      this.problem = "";
+      this.probDes= "";
+      this.code= "";
+      this.file= null;
+      this.submitRequest = false;
+      this.request = true;
+    },
     async loadClasses(classSelected) {
       let classes = await axios.get('/api/courses/' + classSelected._id)
       this.classes.push({value: classes.data._id, text: classes.data.dep + classes.data.courseNum})
     },
-
     async loadUser(user) {
      this.student = user.data._id
     },
-     getSelectedCourse: function(course) { 
-       this.selectedCourse = course;
-        console.log(course);
-    },
-
     async submit() {
       if (this.problem != "" && this.probDes != "") {
         console.log("Submitting");
@@ -340,23 +361,6 @@ export default {
         console.log("not submitted");
       }
     },
-    changeRequestState: function() {
-      console.log("changing")
-      if (this.request === true && this.submitRequest === false) {
-        this.request = false;
-        return this.request;
-      } else {
-        this.submitRequest = true;
-        this.scrollToTop();
-        return this.request;
-      }
-    },
-    ticketNum: function(){
-      if (this.openTicket.owner != null){
-        return 'one'
-      }
-      return 'no'
-    },
     async waitforStaff(id){
       let x = setInterval( async function(){
         let ticket = await axios.get('/api/ticket/'+id)
@@ -364,9 +368,24 @@ export default {
           clearInterval(x);
           window.location.href = '/students/studentCountdown'
         }
-        console.log(ticket.data.status)
-        
+        if (ticket.data.status === 'Closed'){
+          clearInterval(x);
+        }
       }, 10000)
+    },
+    async closeTicket(ticket){
+      this.openTicket.status = 'Closed';
+      this.otherTickets.push(this.openTicket)
+      this.openTicket = {
+        owner: null,
+        status: null,
+        oneLineOverview: null
+      };
+      this.clearForm();
+      await axios.put('/api/updateTicket/'+ticket._id, {
+        status: 'Closed'
+      });
+      
     }
   },
   async created() {
@@ -385,7 +404,6 @@ export default {
       this.openTicket = tickets[0];
       this.waitforStaff(this.openTicket._id);
     }
-    console.log(this.otherTickets)
   },
 };
 </script>
