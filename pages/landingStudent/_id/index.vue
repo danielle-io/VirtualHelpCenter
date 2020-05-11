@@ -6,7 +6,7 @@
 
     <div id="requests">
       <!-- The transition effects for the containers changing -->
-      <transition name="fade" mode="in-out">
+      <transition-group name="fade" mode="in-out">
         <div v-bind:key="request" class="request-container">
           <div class="request-tabs">
             <a
@@ -40,7 +40,7 @@
                   type="submit"
                   style="margin-bottom: 20%;"
                   class="fadeIn form-buttons"
-                  :hidden='ticket.owner != null'
+                  :hidden='openTicket.owner != null'
                 >
                   <right-circle />Request a Session
                 </button>
@@ -154,7 +154,7 @@
                 style="padding-top:2%;"
               >The current wait time is approximately 20 minutes.</div>
             </div>
-            <div style="text-align: center;" :hidden='ticket.owner === null'>
+            <div style="text-align: center;" :hidden='openTicket.owner === null'>
               <md-card>
                 <md-card-header>
                   <div class="md-title">Ticket</div>
@@ -162,25 +162,46 @@
 
                 <div class="md-card-content">
                   <strong>Student:</strong>
-                  {{ticket.owner}}
+                  {{openTicket.owner}}
                 </div>
 
                 <div class="md-card-content">
                   <strong>Status:</strong>
-                  {{ ticket.status }}
+                  {{ openTicket.status }}
                 </div>
                 <div class="md-card-content">
                   <strong>Issue:</strong>
-                  {{ ticket.oneLineOverview }}
+                  {{ openTicket.oneLineOverview }}
                   
                 </div>
 
               </md-card>
               </div>
           </div>
+
+          <div v-if="this.requestHistoryTab">
+            <div  v-for="(ticket) in otherTickets" style="text-align: center;" :key="ticket._id">
+              <md-card>
+                <md-card-header>
+                  <div class="md-title">Ticket</div>
+                </md-card-header>
+
+                <div class="md-card-content">
+                  <strong>Status:</strong>
+                  {{ ticket.status }}
+                </div>
+
+                <div class="md-card-content">
+                  <strong>Short Description:</strong>
+                  {{ ticket.oneLineOverview }}
+                </div>
+
+              </md-card>
+            </div>
+          </div>
         </div>
-        <div v-if="this.requestHistoryTab">hi</div>
-      </transition>
+        
+      </transition-group>
     </div>
   </div>
 </template>
@@ -240,11 +261,14 @@ export default {
       classes: [
         { value: null, text: "Please select the class you need help with:" }
       ],
-      ticket : {
+      openTicket : {
         owner: null,
         status: null,
         oneLineOverview: null
-      }
+      },
+      otherTickets: [{owner: null,
+        status: null,
+        oneLineOverview: null}]
     };
   },
   methods: {
@@ -309,8 +333,8 @@ export default {
           codeSnippet: this.code,
           createdAt: new Date().toString()
         });
-        this.ticket = ticket.data
-        this.waitforStaff(this.ticket._id);
+        this.openTicket = ticket.data
+        this.waitforStaff(this.openTicket._id);
       } else {
         // TODO: Tell the student they need to fill this out
         console.log("not submitted");
@@ -328,7 +352,7 @@ export default {
       }
     },
     ticketNum: function(){
-      if (this.ticket.owner != null){
+      if (this.openTicket.owner != null){
         return 'one'
       }
       return 'no'
@@ -354,13 +378,14 @@ export default {
     this.loadUser(student);
 
     let tickets = await axios.get('/api/tickets');
-    
+    this.otherTickets = tickets.data.filter(ticket => (ticket.owner._id === this.$route.params.id) )
     tickets = tickets.data.filter(ticket => (ticket.owner._id === this.$route.params.id) && (ticket.status === 'Open'));
-    if (tickets.length != 0){
-      this.ticket = tickets[0];
-      this.waitforStaff(this.ticket._id);
-    }
     
+    if (tickets.length != 0){
+      this.openTicket = tickets[0];
+      this.waitforStaff(this.openTicket._id);
+    }
+    console.log(this.otherTickets)
   },
 };
 </script>
