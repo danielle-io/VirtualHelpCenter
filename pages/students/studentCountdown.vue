@@ -120,7 +120,6 @@ button[type="button"], button[type="submit"] input[type="reset"] {
 }
 </style>
 
-
 <template>
   <div id="accept">
     <transition name="fade" mode="in-out">
@@ -206,7 +205,6 @@ export default {
   data() {
     return {
       el: "#accept",
-
       // Hard coded user
       currentUserId: "5eb75ab2779eb66e27e4fad0",
       countdownShowing: true,

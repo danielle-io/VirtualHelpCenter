@@ -109,7 +109,7 @@
 
           <circular-count-down-timer
             style="text-align: center;"
-            :initial-value="60"
+            :initial-value="10"
             :steps="60"
             :seconds-stroke-color="'#7fe3d4'"
             :second-label="''"
@@ -174,11 +174,11 @@ export default {
     },
     updating: function(status) {
       this.currentNum += 1;
-      console.log(this.currentNum);
-      if (this.currentNum === 8) {
-        this.scrollToTop();
-        this.notAccepted = false;
-      }
+      // console.log(this.currentNum);
+      // if (this.currentNum === 8) {
+      //   this.scrollToTop();
+      //   this.notAccepted = false;
+      // }
     },
   },
   beforeMount() {
