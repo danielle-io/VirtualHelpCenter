@@ -1,3 +1,123 @@
+<style scoped>
+  .card-text {
+    word-wrap: break-word;
+    word-break: break-all;
+  }
+  .tab-links {
+    display: inline-block;
+    margin-left: 4%;
+    margin-right: 4%;
+    font-size: 17px;
+    /* margin-left: 15px;
+    margin-right: 15px; */
+    cursor: pointer;
+    opacity: 0.8;
+    font-weight: 200;
+  }
+  .tab-links-active {
+    margin-left: 4%;
+    margin-right: 4%;
+    display: inline-block;
+    font-size: 18px;
+    cursor: pointer;
+    font-weight: 400 !important;
+    text-decoration: underline;
+    color: #0286a0 !important;
+  }
+
+  .loading-dots {
+    margin-top: 15px;
+    margin-bottom: 15px;
+    text-align: center;
+  }
+
+  .request-staff-buttons {
+    width: 40% !important;
+    opacity: 0.9;
+  }
+
+  .request-tabs {
+    margin-top: 10px;
+    margin-bottom: 6px;
+    width: 100%;
+    display: inline-block;
+    text-align: center;
+  }
+  .staff-container {
+    position: relative;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin-left: 15%;
+    margin-right: 15%;
+    margin-top: 6%;
+    margin-bottom: 2%;
+    font-family: "Poppins";
+    min-width: 200px;
+    border: solid 1px #ddd;
+    padding-left: 2%;
+    padding-right: 2%;
+    padding-bottom: 10px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.05);
+  }
+  .ticket-container {
+    text-align: center;
+    justify-content: center;
+    height: 300px;
+    overflow-y: scroll;
+  }
+
+  .md-card-content {
+    word-wrap: break-word;
+    flex-wrap: wrap;
+    text-align: left;
+  }
+  .md-card {
+    width: 250px;
+    margin: 14px;
+    display: inline-block;
+    vertical-align: top;
+    cursor: pointer;
+  }
+  .selected-card {
+    border-width: 1px !important;
+    border-style: solid;
+    border-color: rgb(151, 223, 233) !important;
+    width: 250px;
+    margin: 14px;
+    display: inline-block;
+    cursor: pointer;
+  }
+
+  .title {
+    margin-top: 30px;
+  }
+
+  .chevron {
+    opacity: 1;
+    float: right;
+    align-items: left;
+    font-size: 30px;
+    cursor: pointer;
+    padding-top: 15px !important;
+  }
+
+  .hidden {
+    opacity: 0;
+    display: none !important;
+    float: left !important;
+  }
+
+  .show-extra-content {
+    display: show;
+  }
+
+  .hide-extra-content {
+    height: 0px;
+    display: none;
+  }
+</style>
+
+
 <template>
   <div id="requests" style="position: relative;">
     <div class="staff-container">
@@ -271,142 +391,3 @@ export default {
   }
 };
 </script>
-
-<style scoped>
-.card-text {
-  word-wrap: break-word;
-  word-break: break-all;
-}
-.tab-links {
-  display: inline-block;
-  margin-left: 4%;
-  margin-right: 4%;
-  font-size: 17px;
-  /* margin-left: 15px;
-  margin-right: 15px; */
-  cursor: pointer;
-  opacity: 0.8;
-  font-weight: 200;
-}
-.tab-links-active {
-  margin-left: 4%;
-  margin-right: 4%;
-  display: inline-block;
-  font-size: 18px;
-  cursor: pointer;
-  font-weight: 400 !important;
-  text-decoration: underline;
-  color: #0286a0 !important;
-}
-
-.loading-dots {
-  margin-top: 15px;
-  margin-bottom: 15px;
-  text-align: center;
-}
-
-.request-staff-buttons {
-  width: 40% !important;
-  opacity: 0.9;
-}
-
-.request-tabs {
-  margin-top: 10px;
-  margin-bottom: 6px;
-  width: 100%;
-  display: inline-block;
-  text-align: center;
-}
-.staff-container {
-  position: relative;
-  padding-left: 10px;
-  padding-right: 10px;
-  margin-left: 15%;
-  margin-right: 15%;
-  margin-top: 6%;
-  margin-bottom: 2%;
-  font-family: "Poppins";
-  min-width: 200px;
-  border: solid 1px #ddd;
-  padding-left: 2%;
-  padding-right: 2%;
-  padding-bottom: 10px;
-  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.05);
-}
-.ticket-container {
-  text-align: center;
-  justify-content: center;
-  height: 300px;
-  overflow-y: scroll;
-}
-.users {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-.user {
-  margin: 10px 0;
-}
-.md-subhead {
-  justify-content: left;
-}
-
-.md-card-content {
-  word-wrap: break-word;
-  flex-wrap: wrap;
-  text-align: left;
-}
-.md-card {
-  width: 250px;
-  margin: 14px;
-  display: inline-block;
-  vertical-align: top;
-  cursor: pointer;
-}
-.selected-card {
-  border-width: 1px !important;
-  border-style: solid;
-  border-color: rgb(151, 223, 233) !important;
-  width: 250px;
-  margin: 14px;
-  display: inline-block;
-  cursor: pointer;
-}
-
-.card-row {
-  display: inline-block;
-}
-.title {
-  margin-top: 30px;
-}
-.info {
-  font-weight: 300;
-  color: #9aabb1;
-  margin: 0;
-  margin-top: 10px;
-}
-
-.chevron {
-  opacity: 1;
-  float: right;
-  align-items: left;
-  font-size: 30px;
-  cursor: pointer;
-  padding-top: 15px !important;
-}
-
-.hidden {
-  opacity: 0;
-  display: none !important;
-  float: left !important;
-}
-
-.show-extra-content {
-  display: show;
-}
-
-.hide-extra-content {
-  height: 0px;
-  display: none;
-}
-</style>

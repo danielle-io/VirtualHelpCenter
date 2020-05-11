@@ -78,6 +78,33 @@
       </md-card>
 
 
+        <md-card>
+        <md-card-header>
+          <md-card-header-text>
+            <div class="md-title">Staff Login</div>
+            <div class="md-subhead">Temp page</div>
+          </md-card-header-text>
+        </md-card-header>
+
+        <md-card-actions>
+          <nuxt-link to="/testPages/loginStaff">Staff Login</nuxt-link>
+        </md-card-actions>
+      </md-card>
+
+              <md-card>
+        <md-card-header>
+          <md-card-header-text>
+            <div class="md-title">Student Login</div>
+            <div class="md-subhead">Temp page</div>
+          </md-card-header-text>
+        </md-card-header>
+
+        <md-card-actions>
+          <nuxt-link to="/testPages/loginStudent">Student Login</nuxt-link>
+        </md-card-actions>
+      </md-card>
+
+
 
         <md-card>
         <md-card-header>
@@ -91,6 +118,7 @@
           <nuxt-link to="/staff/staffCountdown">Staff Countdown</nuxt-link>
         </md-card-actions>
       </md-card>
+
 
       <md-card>
         <md-card-header>
