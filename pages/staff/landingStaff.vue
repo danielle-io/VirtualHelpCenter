@@ -62,7 +62,7 @@
   .ticket-container {
     text-align: center;
     justify-content: center;
-    height: 300px;
+    height: 400px;
     overflow-y: scroll;
   }
 
@@ -287,13 +287,14 @@
 </template>
       
 
- 
+<script lang="text/javascript" src="https://cdn.ably.io/lib/ably.min-1.js"></script>
 <script>
 import Vue from "vue";
 import axios from "~/plugins/axios";
 import VueMaterial from "vue-material";
 import "vue-material/dist/vue-material.min.css";
 import "vue-material/dist/theme/default.css";
+import * as Ably from "ably";
 
 export default {
   async asyncData() {
@@ -387,6 +388,13 @@ export default {
     }
   },
   beforeMount() {
+    // ABLY KEY HERE
+    var channel = client.channels.get('staff');
+    channel.subscribe('ticketUpdate', function(message) {
+      console.log('hello world');
+      console.log(message);
+      window.location.reload();
+    });
     this.scrollToTop();
   }
 };

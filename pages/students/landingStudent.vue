@@ -387,10 +387,11 @@ input[type="text"]:placeholder {
   </div>
 </template>
       
-
+<script src="https://cdn.ably.io/lib/ably.min-1.js"></script>
 <script>
 import Vue from "vue";
 import axios from "~/plugins/axios";
+import * as Ably from "ably";
 import {
   BFormInput,
   BFormSelect,
@@ -526,6 +527,11 @@ export default {
         this.request = false;
         return this.request;
       } else {
+        // ABLY KEY HERE
+        var channel = ably.channels.get('staff');
+
+        // Publish a message to the test channel
+        channel.publish('ticketUpdate', 'ticket updated');
         this.submitRequest = true;
         this.scrollToTop();
         // HARD CODING A REDIRECT TEMPORARILY
