@@ -229,6 +229,7 @@ export default {
     scrollToTop() {
       document.getElementById("tabs").scrollIntoView();
     },
+    
     switchToAddStaffTab: function() {
       this.addStaffTab = true;
       this.removeStaffTab = false;

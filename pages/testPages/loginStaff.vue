@@ -18,7 +18,7 @@
     letter-spacing: 0.5px;
     font-weight: bolder;
     font-size: 14px;
-    width: 85%;
+    width: 85% !important;
     height: 50px;
     text-align: center !important;
     text-decoration: none;
@@ -65,7 +65,7 @@
     display: inline-block;
     font-size: 16px;
     margin: 5px;
-    width: 85% !important;
+    width: 85%;
     border-left: none;
     border-right: none;
     border-top: none;
@@ -187,7 +187,7 @@
 </style>
 
 <template>
-  <div style="margin-top: 5%;">
+  <div style="margin-top: 5%;" >
     <div class="heading-text">Welcome.</div>
     <div class="sub-heading-text">Please log in to continue.</div>
 
@@ -196,7 +196,7 @@
         <form class="login-form">
           <input type="text" id="login-tab" name="email" placeholder="email" />
           <input type="password" id="password" name="password" placeholder="password" />
-          <nuxt-link to="students/landingStudent" value="Continue">
+          <nuxt-link to="../staff/landingStaff" value="Continue">
             <button type="submit" style="margin-bottom: 20%;" class="fadeIn" value="Continue">
               <right-circle />Continue
             </button>
@@ -213,12 +213,13 @@ import axios from "~/plugins/axios";
 
 export default {
   data() {
-    return {};
+    return {
+    };
   },
   methods: {
     scrollToTop() {
       document.getElementById("tabs").scrollIntoView();
-    }
+    },
   },
   beforeMount() {
     this.scrollToTop();
@@ -226,6 +227,3 @@ export default {
   mounted() {}
 };
 </script>
-
-
-
