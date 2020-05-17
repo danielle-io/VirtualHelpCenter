@@ -527,7 +527,7 @@ export default {
         this.request = false;
         return this.request;
       } else {
-        // ABLY KEY HERE
+        var ably = new Ably.Realtime('vh5NDg.1jd6aw:MJ2_0CWNwz7KlzKr');
         var channel = ably.channels.get('staff');
 
         // Publish a message to the test channel

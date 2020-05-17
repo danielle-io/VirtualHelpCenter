@@ -388,7 +388,7 @@ export default {
     }
   },
   beforeMount() {
-    // ABLY KEY HERE
+    var client = new Ably.Realtime('vh5NDg.1jd6aw:MJ2_0CWNwz7KlzKr');
     var channel = client.channels.get('staff');
     channel.subscribe('ticketUpdate', function(message) {
       console.log('hello world');
