@@ -14,6 +14,13 @@
             @click="switchToRequestHistoryTab"
           >Request History</a>
         </div>
+         <div class="row" >
+                <div class="col-6">
+                    <label>Select your class:</label>
+                    <b-form-select v-model="course" :options="staffCourses" size="sm" v-on:change="setClass" ></b-form-select>
+                    
+                </div>
+        </div>
 
         <div v-if="this.openRequestTab">
           <div class="ticket-container">
@@ -32,16 +39,19 @@
             <!-- Populate tickets -->
             <div v-if="!this.zoomLinkForm" class="row justify-content-center">
               <div class="col">
+               
                 <div
-                  v-for="(ticket, index) in (filterOpenTickets('Open').slice(this.startingIndex, this.endingIndex))"
+                  v-for="(ticket, index) in (filterCourseTickets('Open', this.course).slice(this.startingIndex, this.endingIndex))"
                   :key="ticket._id"
                 >
+                
                   <a @click="clickCard(ticket, index)">
                     <md-card v-bind:class="{ 'selected-card': selectedTicketIndex === index }">
                       <div>
                         <md-card-header>
                           <!-- TODO: put course title from db here -->
-                          <div class="md-title">ICS 32</div>
+                          <div class="md-title"></div>
+
                         </md-card-header>
 
                         <!-- TODO: add student's name -->
@@ -178,17 +188,22 @@ import axios from "~/plugins/axios";
 import VueMaterial from "vue-material";
 import "vue-material/dist/vue-material.min.css";
 import "vue-material/dist/theme/default.css";
+import {BFormInput, BFormSelect, BButton, BFormCheckbox, } from 'bootstrap-vue'
+
 
 export default {
-  async asyncData() {
-    let { data } = await axios.get('/api/tickets');
-    return { tickets: data };
-  },
+  
   head() {
     return {
       title: "Tickets"
     };
   },
+  components: {
+        'b-form-input': BFormInput,
+        'b-form-select': BFormSelect,
+        'b-button' : BButton,
+        'b-form-checkbox': BFormCheckbox
+    },
   data() {
     return {
       el: "#requests",
@@ -202,12 +217,16 @@ export default {
       collapseChevron: false,
       selectedCard: false,
       color: "#7e6694",
-      course: null,
-      staff: null,
+      course: {},
+      selected: "",
+      staffClass: "none",
+      staff: "5eade62b47da2706382d53e8",
       zoomLink: null,
       selectedTicketIndex: -1,
       startingIndex: 0,
-      endingIndex: 3
+      endingIndex: 3,
+      tickets: [],
+      staffCourses: [],
     };
   },
   methods: {
@@ -218,8 +237,13 @@ export default {
         return;
       }
     },
-    filterCourseTickets(course) {
-      return this.tickets.filter(ticket => ticket.data._id === course);
+    filterCourseTickets(status, course) {
+     
+      if (this.tickets){
+      return this.tickets.filter(ticket => (ticket.course._id === course) && (ticket.status === status));
+      }else{
+        return;
+      }
     },
     scrollToTop() {
       document.getElementById("tabs").scrollIntoView();
@@ -279,29 +303,60 @@ export default {
     this.scrollToTop();
   },
   async acceptTicket(ticket, id){
-      //update ticket withing db
+      //update ticket within db
       axios.put('/api/updateTicket/'+id, {
         status: 'In Progress'
       })
   },
- }
-  // async loadUser(user) {
-  //    this.staff = user.data._id
-  //   },
 
-  //  async loadClass(classSelected) {
-  //     let course = await axios.get('/api/courses/' + classSelected._id)
-  //     this.course = course
-  //   },
+  getSize: function(array){
+      if(array.length === 1 && array[0].value != null){
+          return 1;
+      }
+      if (array.length <=4){
+          return array.length;
+      }
+      return 4;
+  },
+ 
+  async loadUser(user) {
+     this.staff = user.data._id
+    },
+   
+  async setClass(course){
+    // console.log(course)
+    let chosenCourse = await axios.get('/api/courses/' + course)
+    this.course = chosenCourse.data._id;
+    console.log(this.course)
+   
 
-  // async created(){
-  //   let staff = await axios.get('/api/users/' + this.$route.params.id)
-  //   staff.data.classes.forEach(element => {
-  //     this.loadClass(element);
-  //   })
-  //   this.loadUser(staff);
 
-  // }
+  },
+   async loadClasses(classSelected) {
+
+      let course = await axios.get('/api/courses/' + classSelected._id)
+     
+      var text = course.data.dep +" "+ course.data.courseNum;
+      this.staffCourses.push({value: classSelected._id, text: text})
+    },
+  },
+  async created(){
+
+    let tickets = await axios.get('/api/tickets');
+
+    this.tickets = tickets.data
+    let staff = await axios.get('/api/users/' + this.staff)
+    staff.data.classes.forEach(element => {
+      this.loadClasses(element);
+    })
+    console.log("Created")
+    let course = staff.data.classes[0];
+    let staffcourse = course._id
+    this.course = staffcourse;
+
+    this.loadUser(staff);
+  }
+  
 };
 </script>
 
