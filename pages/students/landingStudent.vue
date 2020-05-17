@@ -1,5 +1,238 @@
 <!-- TO DO: populate classes from course list -->
 
+<style>
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s;
+}
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.form-text-areas {
+  border-style: solid;
+  border: 1px !important;
+  /* border-color: rgb(180, 175, 175) !important; */
+  border: 2px solid #dfdada !important;
+}
+
+/* Styling for adding rows */
+.add-button {
+  align-items: left;
+  font-size: 30px;
+  color: rgb(154, 224, 231);
+  cursor: pointer;
+  padding-top: 15px !important;
+}
+
+.row {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.remove-column {
+  align-content: flex-end;
+}
+
+table th,
+.table td {
+  border-top: none;
+}
+
+.request-table {
+  margin-top: 10px;
+  z-index: 1 !important;
+}
+
+.file-container [type="file"] {
+  cursor: inherit;
+  display: block;
+  /* font-size: 999px; */
+  filter: alpha(opacity=0);
+  min-height: 18px;
+  min-width: 85%;
+  opacity: 0;
+  position: absolute;
+  right: 0;
+  text-align: right;
+  top: 0;
+  cursor: pointer;
+  background-color: #abd5ff;
+  margin: 0;
+}
+
+.file-container {
+  border-width: 1px;
+  border-color: rgb(154, 224, 231);
+  background-color: rgb(223, 219, 219);
+  margin: 0;
+  float: left;
+  padding: 0.4em;
+  position: relative;
+  border-radius: 10px 10px 10px 10px;
+}
+
+.tab-links-active {
+  margin-left: 4%;
+  margin-right: 4%;
+  display: inline-block;
+  font-size: 18px;
+  cursor: pointer;
+  font-weight: 400 !important;
+  text-decoration: underline !important;
+  color: #0286a0 !important;
+}
+
+.tab-links {
+  display: inline-block;
+  margin-left: 4%;
+  margin-right: 4%;
+  font-size: 17px;
+  cursor: pointer;
+  opacity: 0.8;
+  font-weight: 200;
+}
+
+.request-tabs {
+  margin-top: 10px;
+  margin-bottom: 6px;
+  width: 100%;
+  display: inline-block;
+  text-align: center;
+}
+
+.file-container:hover {
+  opacity: 0.8;
+}
+
+.request-container {
+  position: relative;
+  padding-left: 10px;
+  padding-right: 10px;
+  margin-left: 15%;
+  margin-right: 15%;
+  margin-top: 6%;
+  margin-bottom: 2%;
+  font-family: "Poppins";
+  min-width: 200px;
+  border: solid 1px #ddd;
+  padding-left: 2%;
+  padding-right: 2%;
+  padding-bottom: 10px;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.form-container {
+  position: relative;
+  padding-top: 2px;
+  padding-left: 12px;
+  padding-right: 12px;
+  padding-bottom: 2px;
+  font-family: "Poppins";
+}
+
+#formContent {
+  -webkit-border-radius: 10px 10px 10px 10px;
+  border-radius: 10px 10px 10px 10px;
+  background: #fff;
+  padding: 30px;
+  -webkit-box-shadow: 0 30px 60px 0 rgba(0, 0, 0, 0.3);
+  box-shadow: 0 30px 60px 0 rgba(0, 0, 0, 0.3);
+  text-align: center;
+}
+
+input[type="text"] {
+  color: #0d0d0d;
+  text-align: left;
+  display: inline-block;
+  font-size: 16px;
+  margin: 5px;
+  width: 100%;
+  /* border: 2px solid #f6f6f6; */
+  -webkit-transition: all 0.5s ease-in-out;
+  -moz-transition: all 0.5s ease-in-out;
+  -ms-transition: all 0.5s ease-in-out;
+  -o-transition: all 0.5s ease-in-out;
+  transition: all 0.5s ease-in-out;
+  -webkit-border-radius: 5px 5px 5px 5px;
+  border-radius: 5px 5px 5px 5px;
+}
+
+input[type="text"]:focus {
+  border-bottom: 2px solid #5fbae9;
+}
+
+input[type="text"]:placeholder {
+  color: #cccccc;
+}
+
+/* ANIMATIONS */
+.fadeInDown {
+  -webkit-animation-name: fadeInDown;
+  animation-name: fadeInDown;
+  -webkit-animation-duration: 0.1s;
+  animation-duration: 0.1s;
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
+}
+
+@-webkit-keyframes fadeInDown {
+  0% {
+    opacity: 0;
+    -webkit-transform: translate3d(0, -100%, 0);
+    transform: translate3d(0, -100%, 0);
+  }
+  100% {
+    opacity: 1;
+    -webkit-transform: none;
+    transform: none;
+  }
+}
+
+/* Simple CSS3 Fade-in Animation */
+@-webkit-keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@-moz-keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.fadeIn {
+  opacity: 0;
+  -webkit-animation: fadeIn ease-in 1;
+  -moz-animation: fadeIn ease-in 1;
+  animation: fadeIn ease-in 1;
+
+  -webkit-animation-fill-mode: forwards;
+  -moz-animation-fill-mode: forwards;
+  animation-fill-mode: forwards;
+
+  -webkit-animation-duration: 1s;
+  -moz-animation-duration: 1s;
+  animation-duration: 1s;
+}
+</style>
+
+
 <template>
   <div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/velocity/1.2.3/velocity.min.js"></script>
@@ -13,7 +246,6 @@
               @click="switchToCurrentRequestsTab"
               v-bind:class="{ 'tab-links-active': currentRequestsTab, 'tab-links': !currentRequestsTab }"
             >Current Requests</a>
-
 
             <!-- (this.$route.query.tab   == 'requestHistory')-->
             <a
@@ -54,7 +286,6 @@
                 style="padding-top:2%;"
               >Complete the form below to request assistance from a lab tutor.</div>
 
-
               <div class="form-container">
                 <div class="row" style="width: 70%;">
                   <b-form-select
@@ -80,9 +311,6 @@
                     rows="2"
                     max-rows="6"
                   ></b-form-text-area>
-                  <!-- removed for now from above :disabled="isDisabled" -->
-
-                  <pre class="mt-3 mb-0">{{ problem }}</pre>
                 </div>
 
                 <div class="row">
@@ -148,7 +376,7 @@
               <div
                 class="sub-heading-text"
                 style="padding-top:2%;"
-              >The current wait time is approximately 20 minutes.</div>
+              >The current wait time is approximately 1 minute.</div>
             </div>
           </div>
         </div>
@@ -159,10 +387,11 @@
   </div>
 </template>
       
-
+<script src="https://cdn.ably.io/lib/ably.min-1.js"></script>
 <script>
 import Vue from "vue";
 import axios from "~/plugins/axios";
+import * as Ably from "ably";
 import {
   BFormInput,
   BFormSelect,
@@ -289,17 +518,26 @@ export default {
       // var text = classSelected.dep + " " + classSelected.courseNum;
       // this.classes.push({ value: classSelected._id, text: text });
     },
-     getSelectedCourse: function(course) { 
-       this.selectedCourse = course;
-        console.log(course);
+    getSelectedCourse: function(course) {
+      this.selectedCourse = course;
+      console.log(course);
     },
     changeRequestState: function() {
       if (this.request === true && this.submitRequest === false) {
         this.request = false;
         return this.request;
       } else {
+        // ABLY KEY HERE
+        var channel = ably.channels.get('staff');
+
+        // Publish a message to the test channel
+        channel.publish('ticketUpdate', 'ticket updated');
         this.submitRequest = true;
         this.scrollToTop();
+        // HARD CODING A REDIRECT TEMPORARILY
+        setTimeout(function() {
+          window.location.href = "studentCountdown";
+        }, 8000);
         return this.request;
       }
     }
@@ -308,264 +546,6 @@ export default {
     this.scrollToTop();
     this.loadClasses();
   },
-  mounted(){
-
-  },
+  mounted() {}
 };
 </script>
-
-
-<style>
-.form-buttons {
-  width: 60% !important;
-}
-
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.5s;
-}
-.fade-enter,
-.fade-leave-to {
-  opacity: 0;
-}
-
-.form-text-areas {
-  border-style: solid;
-  border: 1px !important;
-  /* border-color: rgb(180, 175, 175) !important; */
-  border: 2px solid #dfdada !important;
-}
-
-/* Styling for adding rows */
-.add-button {
-  align-items: left;
-  font-size: 30px;
-  color: rgb(154, 224, 231);
-  cursor: pointer;
-  padding-top: 15px !important;
-}
-
-.row {
-  margin-top: 5px;
-  margin-bottom: 5px;
-}
-
-.top-row {
-  border-top: 1px solid #dee2e6;
-}
-
-.remove-column {
-  align-content: flex-end;
-}
-
-table th,
-.table td {
-  border-top: none;
-}
-
-.request-table {
-  margin-top: 10px;
-  z-index: 1 !important;
-}
-
-.file-container [type="file"] {
-  cursor: inherit;
-  display: block;
-  /* font-size: 999px; */
-  filter: alpha(opacity=0);
-  min-height: 18px;
-  min-width: 85%;
-  opacity: 0;
-  position: absolute;
-  right: 0;
-  text-align: right;
-  top: 0;
-  cursor: pointer;
-  background-color: #abd5ff;
-  margin: 0;
-}
-
-.file-container {
-  border-width: 1px;
-  border-color: rgb(154, 224, 231);
-  background-color: rgb(223, 219, 219);
-  margin: 0;
-  float: left;
-  padding: 0.4em;
-  position: relative;
-  border-radius: 10px 10px 10px 10px;
-}
-.request-tabs {
-  margin-top: 10px;
-  margin-bottom: 6px;
-  width: 100%;
-  display: inline-block;
-  text-align: center;
-}
-
-
-.file-button {
-}
-
-.file-container:hover {
-  opacity: 0.8;
-}
-
-.login-form {
-  text-align: center;
-}
-
-.request-container {
-  position: relative;
-  padding-left: 10px;
-  padding-right: 10px;
-  margin-left: 15%;
-  margin-right: 15%;
-  margin-top: 6%;
-  margin-bottom: 2%;
-  font-family: "Poppins";
-  min-width: 200px;
-  border: solid 1px #ddd;
-  padding-left: 2%;
-  padding-right: 2%;
-  padding-bottom: 10px;
-  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.05);
-}
-
-.form-container {
-  position: relative;
-  padding-top: 2px;
-  padding-left: 12px;
-  padding-right: 12px;
-  padding-bottom: 2px;
-  font-family: "Poppins";
-}
-
-#formContent {
-  -webkit-border-radius: 10px 10px 10px 10px;
-  border-radius: 10px 10px 10px 10px;
-  background: #fff;
-  padding: 30px;
-  -webkit-box-shadow: 0 30px 60px 0 rgba(0, 0, 0, 0.3);
-  box-shadow: 0 30px 60px 0 rgba(0, 0, 0, 0.3);
-  text-align: center;
-}
-
-/* TABS */
-
-h2.inactive {
-  color: #cccccc;
-}
-
-h2.active {
-  color: #0d0d0d;
-  border-bottom: 2px solid #5fbae9;
-}
-
-input[type="text"] {
-  color: #0d0d0d;
-  text-align: left;
-  display: inline-block;
-  font-size: 16px;
-  margin: 5px;
-  width: 100%;
-  /* border: 2px solid #f6f6f6; */
-  -webkit-transition: all 0.5s ease-in-out;
-  -moz-transition: all 0.5s ease-in-out;
-  -ms-transition: all 0.5s ease-in-out;
-  -o-transition: all 0.5s ease-in-out;
-  transition: all 0.5s ease-in-out;
-  -webkit-border-radius: 5px 5px 5px 5px;
-  border-radius: 5px 5px 5px 5px;
-}
-
-input[type="text"]:focus {
-  border-bottom: 2px solid #5fbae9;
-}
-
-input[type="text"]:placeholder {
-  color: #cccccc;
-}
-
-/* ANIMATIONS */
-/* Simple CSS3 Fade-in-down Animation */
-.fadeInDown {
-  -webkit-animation-name: fadeInDown;
-  animation-name: fadeInDown;
-  -webkit-animation-duration: 0.1s;
-  animation-duration: 0.1s;
-  -webkit-animation-fill-mode: both;
-  animation-fill-mode: both;
-}
-
-@-webkit-keyframes fadeInDown {
-  0% {
-    opacity: 0;
-    -webkit-transform: translate3d(0, -100%, 0);
-    transform: translate3d(0, -100%, 0);
-  }
-  100% {
-    opacity: 1;
-    -webkit-transform: none;
-    transform: none;
-  }
-}
-
-/* Simple CSS3 Fade-in Animation */
-@-webkit-keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-@-moz-keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-.fadeIn {
-  opacity: 0;
-  -webkit-animation: fadeIn ease-in 1;
-  -moz-animation: fadeIn ease-in 1;
-  animation: fadeIn ease-in 1;
-
-  -webkit-animation-fill-mode: forwards;
-  -moz-animation-fill-mode: forwards;
-  animation-fill-mode: forwards;
-
-  -webkit-animation-duration: 1s;
-  -moz-animation-duration: 1s;
-  animation-duration: 1s;
-}
-
-.underlineHover:after {
-  display: block;
-  left: 0;
-  bottom: -10px;
-  width: 0;
-  height: 2px;
-  font-weight: 300 !important;
-  background-color: #56baed;
-  content: "";
-  transition: width 0.2s;
-}
-
-.underlineHover:hover:after {
-  width: 100%;
-  font-weight: 300 !important;
-}
-</style>

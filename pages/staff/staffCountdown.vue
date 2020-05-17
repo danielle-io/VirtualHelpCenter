@@ -1,85 +1,3 @@
-<template>
-  <div id="accept">
-    <div>
-      <div class="request-container">
-        <div class="heading-text">Awaiting Student Acceptance</div>
-
-        <div
-          class="sub-heading-text-left"
-          style="padding-top:2%;"
-        >Please wait while the student is given one minute to accept the session.</div>
-
-        <circular-count-down-timer
-          style="text-align: center;"
-          :initial-value="60"
-          :steps="60"
-          :seconds-stroke-color="'#7fe3d4'"
-          :second-label="''"
-          @finish="finished"
-        ></circular-count-down-timer>
-      </div>
-    </div>
-  </div>
-</template>
-
-
-<script>
-import Vue from "vue";
-import axios from "~/plugins/axios";
-import {
-  BFormInput,
-  BFormSelect,
-  BFormCheckbox,
-  BFormTextarea
-} from "bootstrap-vue";
-
-export default {
-  components: {
-    "b-form-input": BFormInput,
-    "b-form-select": BFormSelect,
-    "b-form-checkbox": BFormCheckbox,
-    "b-form-text-area": BFormTextarea
-  },
-
-  // async loadUser(user) {
-  //   this.student = user.data._id;
-  // },
-
-  computed: {
-    isDisabled: function() {
-      return !this.selected;
-    }
-  },
-
-  data() {
-    return {
-      el: "#accept",
-
-      // Hard coded user
-    //   currentUserId: "5eb75ab2779eb66e27e4fad0"
-    };
-  },
-  methods: {
-    scrollToTop() {
-      document.getElementById("tabs").scrollIntoView();
-    },
-    finished: () => {
-    window.location.href = 'landingStaff';
-
-    //   window.location.href = "/staff/landingStaff";
-    },
-    sendZoomLink: function() {
-      this.scrollToTop();
-      this.countdownShowing = false;
-    }
-  },
-  beforeMount() {
-    this.scrollToTop();
-  },
-  mounted() {}
-};
-</script>
-
 <style>
 .form-buttons {
   width: 60% !important;
@@ -176,4 +94,98 @@ export default {
   animation-duration: 1s;
 }
 </style>
+
+<template>
+  <div id="accept">
+    <div>
+      <div class="request-container">
+        <div v-if="this.notAccepted">
+          <div class="heading-text">Awaiting Student Acceptance</div>
+
+          <div
+            class="sub-heading-text-left"
+            style="padding-top:2%;"
+          >Please wait while the student is given one minute to accept the session.</div>
+
+          <circular-count-down-timer
+            style="text-align: center;"
+            :initial-value="10"
+            :steps="60"
+            :seconds-stroke-color="'#7fe3d4'"
+            :second-label="''"
+            @finish="finished"
+            @update="updating()"
+            
+            ref="notAccepted"
+          ></circular-count-down-timer>
+        </div>
+
+        <div v-if="!this.notAccepted">
+          <div class="heading-text">Student Accepted</div>
+
+          <div
+            class="sub-heading-text"
+            style="padding-top:2%;"
+          >Please go to Zoom to begin your session.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+
+<script>
+import Vue from "vue";
+import axios from "~/plugins/axios";
+import {
+  BFormInput,
+  BFormSelect,
+  BFormCheckbox,
+  BFormTextarea
+} from "bootstrap-vue";
+
+export default {
+  components: {
+    "b-form-input": BFormInput,
+    "b-form-select": BFormSelect,
+    "b-form-checkbox": BFormCheckbox,
+    "b-form-text-area": BFormTextarea
+  },
+  data() {
+    return {
+      el: "#accept",
+      notAccepted: true,
+      currentNum: 0,
+      // Hard coded user
+      //   currentUserId: "5eb75ab2779eb66e27e4fad0"
+    };
+  },
+  methods: {
+    scrollToTop() {
+      document.getElementById("tabs").scrollIntoView();
+    },
+    finished: () => {
+      window.location.href = "landingStaff";
+      //   window.location.href = "/staff/landingStaff";
+    },
+    sendZoomLink: function() {
+      this.scrollToTop();
+      this.countdownShowing = false;
+    },
+    updating: function(status) {
+      this.currentNum += 1;
+      // console.log(this.currentNum);
+      // if (this.currentNum === 8) {
+      //   this.scrollToTop();
+      //   this.notAccepted = false;
+      // }
+    },
+  },
+  beforeMount() {
+    this.scrollToTop();
+  },
+  mounted() {}
+};
+</script>
+
 

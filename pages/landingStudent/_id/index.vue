@@ -6,7 +6,7 @@
 
     <div id="requests">
       <!-- The transition effects for the containers changing -->
-      <transition name="fade" mode="in-out">
+      <transition-group name="fade" mode="in-out">
         <div v-bind:key="request" class="request-container">
           <div class="request-tabs">
             <a
@@ -40,35 +40,13 @@
                   type="submit"
                   style="margin-bottom: 20%;"
                   class="fadeIn form-buttons"
-                  :hidden='ticket.owner != null'
+                  :hidden='openTicket.owner != null'
                 >
                   <right-circle />Request a Session
                 </button>
               </div>
 
-              <div style="text-align: center;" :hidden='ticket.owner === null'>
-                <md-card>
-                  <md-card-header>
-                    <div class="md-title">Ticket</div>
-                  </md-card-header>
-
-                  <div class="md-card-content">
-                    <strong>Student:</strong>
-                    {{ticket.owner}}
-                  </div>
-
-                  <div class="md-card-content">
-                    <strong>Status:</strong>
-                    {{ ticket.status }}
-                  </div>
-                  <div class="md-card-content">
-                    <strong>Issue:</strong>
-                    {{ ticket.oneLineOverview }}
-                    
-                  </div>
-
-                </md-card>
-              </div>
+              
             </div>
 
             <!-- Container for filling out the request form -->
@@ -175,35 +153,53 @@
                 class="sub-heading-text"
                 style="padding-top:2%;"
               >The current wait time is approximately 20 minutes.</div>
-              <div style="text-align: center;" :hidden='ticket.owner === null'>
-                <md-card>
-                  <md-card-header>
-                    <div class="md-title">Ticket</div>
-                  </md-card-header>
+            </div>
+            <div style="text-align: center;" :hidden='openTicket.owner === null'>
+              <md-card>
+                <md-card-header>
+                  <div class="md-title">Ticket</div>
+                </md-card-header>
 
-                  <div class="md-card-content">
-                    <strong>Student:</strong>
-                    {{ticket.owner}}
-                  </div>
+                <div class="md-card-content">
+                  <strong>Status:</strong>
+                  {{ openTicket.status }}
+                </div>
+                <div class="md-card-content">
+                  <strong>Issue:</strong>
+                  {{ openTicket.oneLineOverview }}
+                  
+                </div>
+                <div class="md-card-content">
+                  <button type="button" v-on:click="closeTicket(openTicket)">Close Request</button>
+                </div>
 
-                  <div class="md-card-content">
-                    <strong>Status:</strong>
-                    {{ ticket.status }}
-                  </div>
-                  <div class="md-card-content">
-                    <strong>Issue:</strong>
-                    {{ ticket.oneLineOverview }}
-                    
-                  </div>
-
-                </md-card>
+              </md-card>
               </div>
+          </div>
+
+          <div v-if="this.requestHistoryTab">
+            <div  v-for="(ticket) in otherTickets" style="text-align: center;" :key="ticket._id">
+              <md-card>
+                <md-card-header>
+                  <div class="md-title">Ticket</div>
+                </md-card-header>
+
+                <div class="md-card-content">
+                  <strong>Status:</strong>
+                  {{ ticket.status }}
+                </div>
+
+                <div class="md-card-content">
+                  <strong>Short Description:</strong>
+                  {{ ticket.oneLineOverview }}
+                </div>
+
+              </md-card>
             </div>
           </div>
         </div>
-
-        <div v-if="this.requestHistoryTab">hi</div>
-      </transition>
+        
+      </transition-group>
     </div>
   </div>
 </template>
@@ -263,11 +259,14 @@ export default {
       classes: [
         { value: null, text: "Please select the class you need help with:" }
       ],
-      ticket : {
+      openTicket : {
         owner: null,
         status: null,
         oneLineOverview: null
-      }
+      },
+      otherTickets: [{owner: null,
+        status: null,
+        oneLineOverview: null}]
     };
   },
   methods: {
@@ -303,40 +302,9 @@ export default {
       row.file = file;
     },
 
-    async loadClasses(classSelected) {
-      let classes = await axios.get('/api/courses/' + classSelected._id)
-      this.classes.push({value: classes.data._id, text: classes.data.dep + classes.data.courseNum})
-    },
-
-    async loadUser(user) {
-     this.student = user.data._id
-    },
-     getSelectedCourse: function(course) { 
+    getSelectedCourse: function(course) { 
        this.selectedCourse = course;
         console.log(course);
-    },
-
-    async submit() {
-      if (this.problem != "" && this.probDes != "") {
-        console.log("Submitting");
-        let ticket = axios.post("../api/insertTicket", {
-          status: "Open",
-          owner: {
-            _id: this.student,
-          },
-          course: {
-            _id: this.selectedCourse
-          },
-          oneLineOverview: this.probDes,
-          longerDescription: this.problem,
-          codeSnippet: this.code,
-          createdAt: new Date().toString()
-        });
-        console.log(ticket);
-      } else {
-        // TODO: Tell the student they need to fill this out
-        console.log("not submitted");
-      }
     },
     changeRequestState: function() {
       console.log("changing")
@@ -350,10 +318,74 @@ export default {
       }
     },
     ticketNum: function(){
-      if (this.ticket.owner != null){
+      if (this.openTicket.owner != null){
         return 'one'
       }
       return 'no'
+    },
+    clearForm: function(){
+      this.problem = "";
+      this.probDes= "";
+      this.code= "";
+      this.file= null;
+      this.submitRequest = false;
+      this.request = true;
+    },
+    async loadClasses(classSelected) {
+      let classes = await axios.get('/api/courses/' + classSelected._id)
+      this.classes.push({value: classes.data._id, text: classes.data.dep + classes.data.courseNum})
+    },
+    async loadUser(user) {
+     this.student = user.data._id
+    },
+    async submit() {
+      if (this.problem != "" && this.probDes != "") {
+        console.log("Submitting");
+        let ticket = await axios.post("../api/insertTicket", {
+          status: "Open",
+          owner: {
+            _id: this.student,
+          },
+          course: {
+            _id: this.selectedCourse
+          },
+          oneLineOverview: this.probDes,
+          longerDescription: this.problem,
+          codeSnippet: this.code,
+          createdAt: new Date().toString()
+        });
+        this.openTicket = ticket.data
+        this.waitforStaff(this.openTicket._id);
+      } else {
+        // TODO: Tell the student they need to fill this out
+        console.log("not submitted");
+      }
+    },
+    async waitforStaff(id){
+      let x = setInterval( async function(){
+        let ticket = await axios.get('/api/ticket/'+id)
+        if (ticket.data.status === 'In Progress'){
+          clearInterval(x);
+          window.location.href = '/students/studentCountdown'
+        }
+        if (ticket.data.status === 'Closed'){
+          clearInterval(x);
+        }
+      }, 10000)
+    },
+    async closeTicket(ticket){
+      this.openTicket.status = 'Closed';
+      this.otherTickets.push(this.openTicket)
+      this.openTicket = {
+        owner: null,
+        status: null,
+        oneLineOverview: null
+      };
+      this.clearForm();
+      await axios.put('/api/updateTicket/'+ticket._id, {
+        status: 'Closed'
+      });
+      
     }
   },
   async created() {
@@ -365,10 +397,12 @@ export default {
     this.loadUser(student);
 
     let tickets = await axios.get('/api/tickets');
-    
+    this.otherTickets = tickets.data.filter(ticket => (ticket.owner._id === this.$route.params.id) )
     tickets = tickets.data.filter(ticket => (ticket.owner._id === this.$route.params.id) && (ticket.status === 'Open'));
+    
     if (tickets.length != 0){
-      this.ticket = tickets[0];
+      this.openTicket = tickets[0];
+      this.waitforStaff(this.openTicket._id);
     }
   },
 };

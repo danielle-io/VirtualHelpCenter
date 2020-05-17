@@ -196,7 +196,7 @@
         <form class="login-form">
           <input type="text" id="login-tab" name="email" placeholder="email" />
           <input type="password" id="password" name="password" placeholder="password" />
-          <nuxt-link to="students/landingStudent" value="Continue">
+          <nuxt-link to="../students/landingStudent" value="Continue">
             <button type="submit" style="margin-bottom: 20%;" class="fadeIn" value="Continue">
               <right-circle />Continue
             </button>
@@ -226,6 +226,3 @@ export default {
   mounted() {}
 };
 </script>
-
-
-
