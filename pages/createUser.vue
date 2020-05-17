@@ -216,6 +216,7 @@ export default {
                         ucinetid: this.ucinetid,
                         classes: classesStaff
                     })
+                    window.location.href = 'landingStaff/' + user.data._id;
                 }
                 if(this.student === 'true'){
                     user = await axios.post('/api/insertStudent',{
