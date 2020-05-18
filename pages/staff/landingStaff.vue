@@ -25,7 +25,7 @@
 
             <div class="row justify-content-center">
               <div class="col">
-                <div v-for="(ticket, index) in filterOpenTickets('Open')" :key="index">
+                <div v-for="(ticket, index) in this.openTickets" :key="index">
                   <a @click="clickCard">
                     <md-card
                       v-bind:class="{ 'selected-card': selectedCard, 'md-card': !selectedCard }"
@@ -107,7 +107,7 @@
           <div class="ticket-container">
             <div class="row justify-content-center">
               <div class="col">
-                <div v-for="(ticket, index) in filterOpenTickets('Closed')" :key="index">
+                <div v-for="(ticket, index) in this.closedTickets" :key="index">
                   <md-card>
                     <div class="md-card-content">
                       <!-- <div class="md-card-content">
@@ -144,14 +144,15 @@
 import Vue from "vue";
 import axios from "~/plugins/axios";
 import VueMaterial from "vue-material";
+import Ticket from "../../ui/models/Ticket"
 import "vue-material/dist/vue-material.min.css";
 import "vue-material/dist/theme/default.css";
 
 export default {
   middleware: 'auth',
-  async asyncData() {
-    let { data } = await axios.get("../api/tickets");
-    return { tickets: data };
+  async fetch() {
+    const tickets = await Ticket.api().get('/tickets');
+    console.log(tickets.entities);
   },
   head() {
     return {
@@ -173,7 +174,7 @@ export default {
   },
   methods: {
     filterOpenTickets(status) {
-      return this.tickets.filter(ticket => ticket.status === status);
+      //return this.tickets.filter(ticket => ticket.status === status);
     },
     scrollToTop() {
       document.getElementById("tabs").scrollIntoView();
@@ -212,6 +213,19 @@ export default {
   },
   beforeMount() {
     this.scrollToTop();
+  },
+  computed: {
+    openTickets() {
+        //console.log(this.user._id)
+        let tickets = Ticket.query().where('status', 'Open').get()
+        console.log(tickets)
+        return tickets
+      },
+    closedTickets() {
+        let tickets = Ticket.query().where('status', 'Closed').get()
+          console.log(tickets)
+          return tickets
+    }
   }
 };
 </script>
