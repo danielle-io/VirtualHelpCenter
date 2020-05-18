@@ -3,6 +3,11 @@
     word-wrap: break-word;
     word-break: break-all;
   }
+  .material-design-icon {
+    margin-right: 10px !important;
+    margin-top: 3px;
+}
+
   .tab-links {
     display: inline-block;
     margin-left: 4%;
@@ -261,14 +266,15 @@
 
         <div v-if="this.requestHistoryTab">
           <!-- TO DO: Make this message dynamic -->
-          <div
+          <!-- <div
             class="sub-heading-text"
             style="padding-top:2%;"
-          >You currently have no request history.</div>
+          >You currently have no request history.</div> -->
 
           <div class="ticket-container">
             <div class="row justify-content-center">
               <div class="col">
+              
                 <div v-for="(ticket, index) in filterOpenTickets('Closed')" :key="index">
                   <md-card>
                     <div class="md-card-content">
@@ -308,6 +314,8 @@ import axios from "~/plugins/axios";
 import VueMaterial from "vue-material";
 import "vue-material/dist/vue-material.min.css";
 import "vue-material/dist/theme/default.css";
+import AblyKey from "../../realtimeKey";
+
 import {BFormInput, BFormSelect, BButton, BFormCheckbox, } from 'bootstrap-vue'
 
 import * as Ably from "ably";
@@ -422,11 +430,6 @@ export default {
 
   beforeMount() {
     // ABLY KEY HERE
-    // var client = new Ably.Realtime({
-    //       authUrl: '/auth',
-    //       authMethod: 'POST',
-    //       authParams: { name: "bob" }});
-    //     var channel = client.channels.get('staff');
     var client = new Ably.Realtime(process.env.ABLY_KEY);
     var channel = client.channels.get('staff');
     channel.subscribe('ticketUpdate', function(message) {

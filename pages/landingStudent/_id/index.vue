@@ -154,6 +154,7 @@
                 style="padding-top:2%;"
               >The current wait time is approximately 20 minutes.</div>
             </div>
+            
             <div style="text-align: center;" :hidden='openTicket.owner === null'>
               <md-card>
                 <md-card-header>

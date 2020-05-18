@@ -92,16 +92,20 @@ footer {
     font-family: "Poppins";
     color: #545354;
 }
+.arrow-right-circle-icon{
+    margin-right: 8px ;
+    padding-top: 12px !important;
+}
 
 button[type="button"], button[type="submit"] input[type="reset"] {
     background: linear-gradient( 333deg, rgba(167, 115, 215, 0.72) 21%, rgba(169, 235, 244, 1) 75%);
-    border: none;
     color: white;
     letter-spacing: 0.5px;
     font-weight: bolder;
     font-size: 14px;
+    border: solid;
     justify-content: center;
-    width: 70%;
+    /* width: 70%; */
     height: 40px;
     text-align: center !important;
     text-decoration: none;
