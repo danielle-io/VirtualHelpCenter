@@ -422,6 +422,12 @@ export default {
 
   beforeMount() {
     // ABLY KEY HERE
+    // var client = new Ably.Realtime({
+    //       authUrl: '/auth',
+    //       authMethod: 'POST',
+    //       authParams: { name: "bob" }});
+    //     var channel = client.channels.get('staff');
+    var client = new Ably.Realtime(process.env.ABLY_KEY);
     var channel = client.channels.get('staff');
     channel.subscribe('ticketUpdate', function(message) {
       console.log('hello world');

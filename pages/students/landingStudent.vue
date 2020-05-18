@@ -528,16 +528,18 @@ export default {
         return this.request;
       } else {
         // ABLY KEY HERE
-        var channel = ably.channels.get('staff');
-
+        //var client = new Ably.Realtime();
+        // var channel = client.channels.get('staff');
+        var client = new Ably.Realtime(process.env.ABLY_KEY);
+        var channel = client.channels.get('staff');
         // Publish a message to the test channel
         channel.publish('ticketUpdate', 'ticket updated');
         this.submitRequest = true;
         this.scrollToTop();
         // HARD CODING A REDIRECT TEMPORARILY
-        setTimeout(function() {
-          window.location.href = "studentCountdown";
-        }, 8000);
+        // setTimeout(function() {
+        //   window.location.href = "studentCountdown";
+        // }, 8000);
         return this.request;
       }
     }
