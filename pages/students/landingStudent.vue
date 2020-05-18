@@ -35,6 +35,10 @@
   align-content: flex-end;
 }
 
+.form-buttons {
+  width: 30% !important;
+}
+
 table th,
 .table td {
   border-top: none;
@@ -92,6 +96,10 @@ table th,
   cursor: pointer;
   opacity: 0.8;
   font-weight: 200;
+}
+.arrow-right-circle-icon {
+  margin-right: 8px;
+  padding-top: 1px !important;
 }
 
 .request-tabs {
@@ -270,7 +278,7 @@ input[type="text"]:placeholder {
                   v-bind:key="request"
                   @click="changeRequestState"
                   type="submit"
-                  style="margin-bottom: 20%;"
+                  style="margin-bottom: 20%; width: 30%;"
                   class="fadeIn form-buttons"
                 >
                   <right-circle />Request a Session
@@ -361,11 +369,11 @@ input[type="text"]:placeholder {
                   <button
                     v-bind:key="submitRequest"
                     type="submit"
-                    style="margin-bottom: 10px; margin-top: 10px;"
+                    style="margin-bottom: 10px; margin margin-top: 10px;"
                     class="fadeIn form-buttons"
                     @click="changeRequestState"
                   >
-                    <right-circle />Submit Request
+                    <right-circle style="margin-right:4px" />Submit Request
                   </button>
                 </div>
               </div>
@@ -378,17 +386,59 @@ input[type="text"]:placeholder {
                 style="padding-top:2%;"
               >The current wait time is approximately 1 minute.</div>
             </div>
+
+            <div style="text-align: center;" :hidden="openTicket.owner === null">
+              <md-card>
+                <md-card-header>
+                  <div class="md-title">Ticket</div>
+                </md-card-header>
+
+                <div class="md-card-content">
+                  <strong>Status:</strong>
+                  {{ openTicket.status }}
+                </div>
+                <div class="md-card-content">
+                  <strong>Issue:</strong>
+                  {{ openTicket.oneLineOverview }}
+                </div>
+                <div class="md-card-content">
+                  <button type="button" v-on:click="closeTicket(openTicket)">Close Request</button>
+                </div>
+              </md-card>
+            </div>
           </div>
         </div>
 
-        <div v-if="this.requestHistoryTab">hi</div>
+        <div v-if="this.requestHistoryTab">
+          <div v-for="(ticket) in otherTickets" style="text-align: center;" :key="ticket._id">
+            <md-card>
+              <md-card-header>
+                <div class="md-title">Ticket</div>
+              </md-card-header>
+
+              <div class="md-card-content">
+                <strong>Status:</strong>
+                {{ ticket.status }}
+              </div>
+
+              <div class="md-card-content">
+                <strong>Short Description:</strong>
+                {{ ticket.oneLineOverview }}
+              </div>
+            </md-card>
+          </div>
+        </div>
       </transition>
     </div>
   </div>
 </template>
-      
+  
 <script src="https://cdn.ably.io/lib/ably.min-1.js"></script>
 <script>
+const userId = "5eb86452ed2ee55868633193";
+
+import AblyKey from "../../realtimeKey";
+
 import Vue from "vue";
 import axios from "~/plugins/axios";
 import * as Ably from "ably";
@@ -407,52 +457,10 @@ export default {
     "b-form-text-area": BFormTextarea
   },
 
-  // Not working currently
-  async loadClasses(courses) {
-    // courses = await axios.get("../api/controller/courses/" + courses._id);
-    // let text = courses.data.dep + " " + courses.data.courseNum;
-    // this.classes.push({ value: courses.data._id, text: text });
-    console.log("loading classes");
-  },
-
-  // async loadUser(user) {
-  //   this.student = user.data._id;
-  // },
-
-  // NOT INSERTED YET: file
-  submit: function() {
-    if (this.problem != "" && this.probDes != "") {
-      console.log("Submitting");
-      // axios.post("../api/controller/insertTicket", {
-      //   status: "Open",
-      //   owner: {
-      //     _id: this.currentUserId,
-      //   },
-      //   course: {
-      //     _id: this.selectedCourse
-      //   },
-      //   oneLineOverview: this.probDes,
-      //   longerDescription: this.problem,
-      //   codeSnippet: this.code,
-      //   createdAt: new Date().toString()
-      // });
-    } else {
-      // TODO: Tell the student they need to fill this out
-      console.log("not submitted");
-    }
-  },
   computed: {
     isDisabled: function() {
       return !this.selected;
     }
-  },
-
-  async created() {
-    // let student = await axios.get("../api/controller/students/" + this.$route.params.id);
-    // student.data.classes.forEach(element => {
-    //   this.loadClasses(element);
-    // });
-    // this.loadUser(student);
   },
 
   data() {
@@ -476,9 +484,14 @@ export default {
       file: null,
       student: null,
       classes: [
-        { value: null, text: "Please select the class you need help with:" },
-        { value: "5eadfd7f4f7f4d3d68a666f5", text: "ICS32" }
-      ]
+        { value: null, text: "Please select the class you need help with:" }
+      ],
+      openTicket: {
+        owner: null,
+        status: null,
+        oneLineOverview: null
+      },
+      otherTickets: [{ owner: null, status: null, oneLineOverview: null }]
     };
   },
   methods: {
@@ -527,11 +540,11 @@ export default {
         this.request = false;
         return this.request;
       } else {
-        var ably = new Ably.Realtime('vh5NDg.1jd6aw:MJ2_0CWNwz7KlzKr');
-        var channel = ably.channels.get('staff');
+        var ably = new Ably.Realtime(AblyKey);
+        var channel = ably.channels.get("staff");
 
         // Publish a message to the test channel
-        channel.publish('ticketUpdate', 'ticket updated');
+        channel.publish("ticketUpdate", "ticket updated");
         this.submitRequest = true;
         this.scrollToTop();
         // HARD CODING A REDIRECT TEMPORARILY
@@ -540,12 +553,115 @@ export default {
         }, 8000);
         return this.request;
       }
+    },
+    ticketNum: function() {
+      if (this.openTicket.owner != null) {
+        return "one";
+      }
+      return "no";
+    },
+    clearForm: function() {
+      this.problem = "";
+      this.probDes = "";
+      this.code = "";
+      this.file = null;
+      this.submitRequest = false;
+      this.request = true;
+    },
+    async loadClasses(classSelected) {
+      let classes = await axios.get("../../api/courses/" + classSelected._id);
+      this.classes.push({
+        value: classes.data._id,
+        text: classes.data.dep + classes.data.courseNum
+      });
+    },
+    async loadUser(user) {
+      // this.student = user.data._id;
+      this.student = userId;
+    },
+
+    // NOT INSERTED YET: file
+    async submit() {
+      if (this.problem != "" && this.probDes != "") {
+        console.log("Submitting");
+        let ticket = await axios.post("../../api/insertTicket", {
+          status: "Open",
+          owner: {
+            _id: this.student
+          },
+          course: {
+            _id: this.selectedCourse
+          },
+          oneLineOverview: this.probDes,
+          longerDescription: this.problem,
+          codeSnippet: this.code,
+          createdAt: new Date().toString()
+        });
+        this.openTicket = ticket.data;
+        this.waitforStaff(this.openTicket._id);
+      } else {
+        // TODO: Tell the student they need to fill this out
+        console.log("not submitted");
+      }
+    },
+
+    async waitforStaff(id) {
+      let x = setInterval(async function() {
+        let ticket = await axios.get("../../api/ticket/" + id);
+        if (ticket.data.status === "In Progress") {
+          clearInterval(x);
+          window.location.href = "/students/studentCountdown";
+        }
+        if (ticket.data.status === "Closed") {
+          clearInterval(x);
+        }
+      }, 10000);
+    },
+    async closeTicket(ticket) {
+      this.openTicket.status = "Closed";
+      this.otherTickets.push(this.openTicket);
+      this.openTicket = {
+        owner: null,
+        status: null,
+        oneLineOverview: null
+      };
+      this.clearForm();
+      await axios.put("../../api/updateTicket/" + ticket._id, {
+        status: "Closed"
+      });
+      this.scrollToTop();
     }
   },
+
   beforeMount() {
     this.scrollToTop();
     this.loadClasses();
   },
-  mounted() {}
+  async created() {
+    this.scrollToTop();
+    // let student = await axios.get("../../api/users/" + this.$route.params.id);
+    let student = await axios.get("../../api/users/" + userId);
+
+    student.data.classes.forEach(element => {
+      this.loadClasses(element);
+    });
+    this.loadUser(student);
+
+    let tickets = await axios.get("../../api/tickets");
+    // this.otherTickets = tickets.data.filter(ticket => (ticket.owner._id === this.$route.params.id) )
+    this.otherTickets = tickets.data.filter(
+      ticket => ticket.owner._id === userId
+    );
+    // tickets = tickets.data.filter(ticket => (ticket.owner._id === this.$route.params.id) && (ticket.status === 'Open'));
+
+    tickets = tickets.data.filter(
+      ticket => ticket.owner._id === userId && ticket.status === "Open"
+    );
+
+    if (tickets.length != 0) {
+      this.openTicket = tickets[0];
+      this.waitforStaff(this.openTicket._id);
+    }
+  }
 };
 </script>

@@ -2,3 +2,4 @@ node_modules
 .nuxt
 npm-debug.log
 .env
+realtimeKey.js
