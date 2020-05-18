@@ -36,7 +36,7 @@
 }
 
 .form-buttons {
-  width: 30% !important;
+  width: 40% !important;
 }
 
 table th,
@@ -278,7 +278,7 @@ input[type="text"]:placeholder {
                   v-bind:key="request"
                   @click="changeRequestState"
                   type="submit"
-                  style="margin-bottom: 20%; width: 30%;"
+                  style="margin-bottom: 20%; width: 40% !important;"
                   class="fadeIn form-buttons"
                 >
                   <right-circle />Request a Session
@@ -548,9 +548,9 @@ export default {
         this.submitRequest = true;
         this.scrollToTop();
         // HARD CODING A REDIRECT TEMPORARILY
-        setTimeout(function() {
-          window.location.href = "studentCountdown";
-        }, 8000);
+        // setTimeout(function() {
+        //   window.location.href = "studentCountdown";
+        // }, 8000);
         return this.request;
       }
     },

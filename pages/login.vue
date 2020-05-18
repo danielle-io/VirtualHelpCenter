@@ -13,7 +13,7 @@
       rgba(167, 115, 215, 0.72) 21%,
       rgba(169, 235, 244, 1) 75%
     );
-    border: none;
+    /* border: none; */
     color: white;
     letter-spacing: 0.5px;
     font-weight: bolder;
