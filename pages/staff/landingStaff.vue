@@ -314,7 +314,7 @@ import axios from "~/plugins/axios";
 import VueMaterial from "vue-material";
 import "vue-material/dist/vue-material.min.css";
 import "vue-material/dist/theme/default.css";
-import AblyKey from "../../realtimeKey";
+//import AblyKey from "../../realtimeKey";
 
 import {BFormInput, BFormSelect, BButton, BFormCheckbox, } from 'bootstrap-vue'
 
@@ -429,7 +429,8 @@ export default {
     },
 
   beforeMount() {
-    var client = new Ably.Realtime(AblyKey);
+    // ABLY KEY HERE
+    var client = new Ably.Realtime(process.env.ABLY_KEY);
     var channel = client.channels.get('staff');
     channel.subscribe('ticketUpdate', function(message) {
       console.log('hello world');

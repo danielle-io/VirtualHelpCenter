@@ -9,9 +9,29 @@ const morgan = require("morgan");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
+const Ably = require('ably');
+
+// Create Ably client 
+//const restClient = new Ably.Rest({ key: ''});
 
 // Create express instance
 const app = express();
+
+// app.post('/auth', (req, res) => {
+//   console.log(req.body)
+//   const clientId = req.body.name;
+
+//   restClient.auth.createTokenRequest({ clientId, }, (err, tokenRequest) => {
+//     console.log(`Authorization completed for client "${clientId}"`);
+//     if(err) {
+//       res.status(500);
+//       res.send(err);
+//     }
+//     else {
+//       res.send(tokenRequest);
+//     }
+//   });
+// });
 
 // Configure database and mongoose
 mongoose.set("useCreateIndex", true);
