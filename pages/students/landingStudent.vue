@@ -543,6 +543,8 @@ export default {
         var ably = new Ably.Realtime(AblyKey);
         var channel = ably.channels.get("staff");
 
+        console.log(AblyKey);
+
         // Publish a message to the test channel
         channel.publish("ticketUpdate", "ticket updated");
         this.submitRequest = true;
