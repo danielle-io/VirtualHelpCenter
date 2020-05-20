@@ -437,7 +437,7 @@ input[type="text"]:placeholder {
 <script>
 const userId = "5eb86452ed2ee55868633193";
 
-import AblyKey from "../../realtimeKey";
+//import AblyKey from "../../realtimeKey";
 
 import Vue from "vue";
 import axios from "~/plugins/axios";
@@ -540,11 +540,9 @@ export default {
         this.request = false;
         return this.request;
       } else {
-        var ably = new Ably.Realtime(AblyKey);
-        var channel = ably.channels.get("staff");
-
-        console.log(AblyKey);
-
+        // ABLY KEY HERE
+        var client = new Ably.Realtime(process.env.ABLY_KEY);
+        var channel = client.channels.get('staff');
         // Publish a message to the test channel
         channel.publish("ticketUpdate", "ticket updated");
         this.submitRequest = true;
