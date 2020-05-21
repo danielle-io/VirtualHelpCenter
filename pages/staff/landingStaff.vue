@@ -1,125 +1,127 @@
+
+
 <style scoped>
-  .card-text {
-    word-wrap: break-word;
-    word-break: break-all;
-  }
-  .material-design-icon {
-    margin-right: 10px !important;
-    margin-top: 3px;
+.card-text {
+  word-wrap: break-word;
+  word-break: break-all;
+}
+.material-design-icon {
+  margin-right: 10px !important;
+  margin-top: 3px;
 }
 
-  .tab-links {
-    display: inline-block;
-    margin-left: 4%;
-    margin-right: 4%;
-    font-size: 17px;
-    /* margin-left: 15px;
+.tab-links {
+  display: inline-block;
+  margin-left: 4%;
+  margin-right: 4%;
+  font-size: 17px;
+  /* margin-left: 15px;
     margin-right: 15px; */
-    cursor: pointer;
-    opacity: 0.8;
-    font-weight: 200;
-  }
-  .tab-links-active {
-    margin-left: 4%;
-    margin-right: 4%;
-    display: inline-block;
-    font-size: 18px;
-    cursor: pointer;
-    font-weight: 400 !important;
-    text-decoration: underline;
-    color: #0286a0 !important;
-  }
+  cursor: pointer;
+  opacity: 0.8;
+  font-weight: 200;
+}
+.tab-links-active {
+  margin-left: 4%;
+  margin-right: 4%;
+  display: inline-block;
+  font-size: 18px;
+  cursor: pointer;
+  font-weight: 400 !important;
+  text-decoration: underline;
+  color: #0286a0 !important;
+}
 
-  .loading-dots {
-    margin-top: 15px;
-    margin-bottom: 15px;
-    text-align: center;
-  }
+.loading-dots {
+  margin-top: 15px;
+  margin-bottom: 15px;
+  text-align: center;
+}
 
-  .request-staff-buttons {
-    width: 40% !important;
-    opacity: 0.9;
-  }
+.request-staff-buttons {
+  width: 40% !important;
+  opacity: 0.9;
+}
 
-  .request-tabs {
-    margin-top: 10px;
-    margin-bottom: 6px;
-    width: 100%;
-    display: inline-block;
-    text-align: center;
-  }
-  .staff-container {
-    position: relative;
-    padding-left: 10px;
-    padding-right: 10px;
-    margin-left: 15%;
-    margin-right: 15%;
-    margin-top: 6%;
-    margin-bottom: 2%;
-    font-family: "Poppins";
-    min-width: 200px;
-    border: solid 1px #ddd;
-    padding-left: 2%;
-    padding-right: 2%;
-    padding-bottom: 10px;
-    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.05);
-  }
-  .ticket-container {
-    text-align: center;
-    justify-content: center;
-    height: 400px;
-    overflow-y: scroll;
-  }
+.request-tabs {
+  margin-top: 10px;
+  margin-bottom: 6px;
+  width: 100%;
+  display: inline-block;
+  text-align: center;
+}
+.staff-container {
+  position: relative;
+  padding-left: 10px;
+  padding-right: 10px;
+  margin-left: 15%;
+  margin-right: 15%;
+  margin-top: 6%;
+  margin-bottom: 2%;
+  font-family: "Poppins";
+  min-width: 200px;
+  border: solid 1px #ddd;
+  padding-left: 2%;
+  padding-right: 2%;
+  padding-bottom: 10px;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.05);
+}
+.ticket-container {
+  text-align: center;
+  justify-content: center;
+  height: 400px;
+  overflow-y: scroll;
+}
 
-  .md-card-content {
-    word-wrap: break-word;
-    flex-wrap: wrap;
-    text-align: left;
-  }
-  .md-card {
-    width: 250px;
-    margin: 14px;
-    display: inline-block;
-    vertical-align: top;
-    cursor: pointer;
-  }
-  .selected-card {
-    border-width: 1px !important;
-    border-style: solid;
-    border-color: rgb(151, 223, 233) !important;
-    width: 250px;
-    margin: 14px;
-    display: inline-block;
-    cursor: pointer;
-  }
+.md-card-content {
+  word-wrap: break-word;
+  flex-wrap: wrap;
+  text-align: left;
+}
+.md-card {
+  width: 250px;
+  margin: 14px;
+  display: inline-block;
+  vertical-align: top;
+  cursor: pointer;
+}
+.selected-card {
+  border-width: 1px !important;
+  border-style: solid;
+  border-color: rgb(151, 223, 233) !important;
+  width: 250px;
+  margin: 14px;
+  display: inline-block;
+  cursor: pointer;
+}
 
-  .title {
-    margin-top: 30px;
-  }
+.title {
+  margin-top: 30px;
+}
 
-  .chevron {
-    opacity: 1;
-    float: right;
-    align-items: left;
-    font-size: 30px;
-    cursor: pointer;
-    padding-top: 15px !important;
-  }
+.chevron {
+  opacity: 1;
+  float: right;
+  align-items: left;
+  font-size: 30px;
+  cursor: pointer;
+  padding-top: 15px !important;
+}
 
-  .hidden {
-    opacity: 0;
-    display: none !important;
-    float: left !important;
-  }
+.hidden {
+  opacity: 0;
+  display: none !important;
+  float: left !important;
+}
 
-  .show-extra-content {
-    display: show;
-  }
+.show-extra-content {
+  display: show;
+}
 
-  .hide-extra-content {
-    height: 0px;
-    display: none;
-  }
+.hide-extra-content {
+  height: 0px;
+  display: none;
+}
 </style>
 
 
@@ -139,12 +141,16 @@
             @click="switchToRequestHistoryTab"
           >Request History</a>
         </div>
-         <div class="row" >
-                <div class="col-6">
-                    <label>Select your class:</label>
-                    <b-form-select v-model="course" :options="staffCourses" size="sm" v-on:change="setClass" ></b-form-select>
-                    
-                </div>
+        <div class="row">
+          <div class="col-6">
+            <label>Filter by course</label>
+            <b-form-select
+              v-model="course"
+              :options="staffCourses"
+              size="sm"
+              v-on:change="setClass"
+            ></b-form-select>
+          </div>
         </div>
 
         <div v-if="this.openRequestTab">
@@ -164,19 +170,16 @@
             <!-- Populate tickets -->
             <div v-if="!this.zoomLinkForm" class="row justify-content-center">
               <div class="col">
-               
                 <div
                   v-for="(ticket, index) in (filterCourseTickets('Open', this.course).slice(this.startingIndex, this.endingIndex))"
                   :key="ticket._id"
                 >
-                
                   <a @click="clickCard(ticket, index)">
                     <md-card v-bind:class="{ 'selected-card': selectedTicketIndex === index }">
                       <div>
                         <md-card-header>
                           <!-- TODO: put course title from db here -->
                           <div class="md-title"></div>
-
                         </md-card-header>
 
                         <!-- TODO: add student's name -->
@@ -195,8 +198,8 @@
                           <!-- I can't reference a class. -->
                           {{ticket.oneLineOverview}}
                         </div>
-                         <div class="md-card-content">
-                        <button type="button" v-on:click="acceptTicket(ticket, ticket._id)">Accept</button>
+                        <div class="md-card-content">
+                          <button type="button" v-on:click="acceptTicket(ticket, ticket._id)">Accept</button>
                         </div>
                         <div
                           v-bind:class="{ 'chevron': expandChevron, 'hidden': !expandChevron }"
@@ -218,7 +221,7 @@
                         <div class="md-card-content">
                           <strong>Longer Description:</strong>
                           <!-- I am trying to call a function from a class but importing gives an undefined error. -->
-                        {{ticket.longerDescription}}
+                          {{ticket.longerDescription}}
                         </div>
                         <div class="md-card-content">
                           <strong>Attached Files:</strong>
@@ -269,12 +272,11 @@
           <!-- <div
             class="sub-heading-text"
             style="padding-top:2%;"
-          >You currently have no request history.</div> -->
+          >You currently have no request history.</div>-->
 
           <div class="ticket-container">
             <div class="row justify-content-center">
               <div class="col">
-              
                 <div v-for="(ticket, index) in filterOpenTickets('Closed')" :key="index">
                   <md-card>
                     <div class="md-card-content">
@@ -314,25 +316,26 @@ import axios from "~/plugins/axios";
 import VueMaterial from "vue-material";
 import "vue-material/dist/vue-material.min.css";
 import "vue-material/dist/theme/default.css";
-//import AblyKey from "../../realtimeKey";
 
-import {BFormInput, BFormSelect, BButton, BFormCheckbox, } from 'bootstrap-vue'
+import { BFormInput, BFormSelect, BButton, BFormCheckbox } from "bootstrap-vue";
 
 import * as Ably from "ably";
 
+const client = new Ably.Realtime(process.env.ABLY_KEY);
+
+
 export default {
-  
   head() {
     return {
       title: "Tickets"
     };
   },
   components: {
-        'b-form-input': BFormInput,
-        'b-form-select': BFormSelect,
-        'b-button' : BButton,
-        'b-form-checkbox': BFormCheckbox
-    },
+    "b-form-input": BFormInput,
+    "b-form-select": BFormSelect,
+    "b-button": BButton,
+    "b-form-checkbox": BFormCheckbox
+  },
   data() {
     return {
       el: "#requests",
@@ -355,7 +358,7 @@ export default {
       startingIndex: 0,
       endingIndex: 3,
       tickets: [],
-      staffCourses: [],
+      staffCourses: []
     };
   },
   methods: {
@@ -367,10 +370,11 @@ export default {
       }
     },
     filterCourseTickets(status, course) {
-     
-      if (this.tickets){
-      return this.tickets.filter(ticket => (ticket.course._id === course) && (ticket.status === status));
-      }else{
+      if (this.tickets) {
+        return this.tickets.filter(
+          ticket => ticket.course._id === course && ticket.status === status
+        );
+      } else {
         return;
       }
     },
@@ -428,71 +432,99 @@ export default {
       console.log(this.requestHistoryTab);
     },
 
-  beforeMount() {
-    // ABLY KEY HERE
-    var client = new Ably.Realtime(process.env.ABLY_KEY);
-    var channel = client.channels.get('staff');
-    channel.subscribe('ticketUpdate', function(message) {
-      console.log('hello world');
-      console.log(message);
-      window.location.reload();
-    });
-    this.scrollToTop();
-  },
-  async acceptTicket(ticket, id){
+    async acceptTicket(ticket, id) {
+      console.log(" in accept");
       //update ticket within db
-      axios.put('/api/updateTicket/'+id, {
-        status: 'In Progress'
-      })
-  },
 
-  getSize: function(array){
-      if(array.length === 1 && array[0].value != null){
-          return 1;
+      axios.put("/api/updateTicket/" + id, {
+        status: "In Progress",
+        accepted: this.staff
+      });
+
+      // Get the students user id from the ticket
+      var studentChannel = client.channels.get(ticket.owner._id);
+
+      console.log("ticket owner is " + ticket.owner._id);
+
+      studentChannel.publish("acceptTicket", this.staff)
+
+      // we get in here ONLY IF the student accepts the ticket 
+      studentChannel.subscribe("acceptedTicket", function(message) {
+        
+        console.log("accepted ticket");
+      });
+
+       setTimeout(function() {
+         // Right here we let it know the student did not accept
+        }, 60000)
+
+         console.log("waiting on acceptance");
+
+        // Subscribe to an event on studentChannel
+        studentChannel.subscribe("studentAcceptedSession", function(message) {
+          console.log("student accepted");
+        });
+    },
+
+    getSize: function(array) {
+      if (array.length === 1 && array[0].value != null) {
+        return 1;
       }
-      if (array.length <=4){
-          return array.length;
+      if (array.length <= 4) {
+        return array.length;
       }
       return 4;
-  },
- 
-  async loadUser(user) {
-     this.staff = user.data._id
     },
-   
-  async setClass(course){
-    // console.log(course)
-    let chosenCourse = await axios.get('/api/courses/' + course)
-    this.course = chosenCourse.data._id;
-    console.log(this.course)
-   
 
-
-  },
-   async loadClasses(classSelected) {
-
-      let course = await axios.get('/api/courses/' + classSelected._id)
-     
-      var text = course.data.dep +" "+ course.data.courseNum;
-      this.staffCourses.push({value: classSelected._id, text: text})
+    async loadUser(user) {
+      this.staff = user.data._id;
     },
+
+    async setClass(course) {
+      if (course) {
+        let chosenCourse = await axios.get("/api/courses/" + course);
+        this.course = chosenCourse.data._id;
+        console.log(this.course);
+      }
+    },
+    async loadClasses(classSelected) {
+      if (classSelected) {
+        let course = await axios.get("/api/courses/" + classSelected._id);
+
+        var text = course.data.dep + " " + course.data.courseNum;
+        this.staffCourses.push({ value: classSelected._id, text: text });
+      }
+    }
   },
-  async created(){
+  async created() {
+    let tickets = await axios.get("/api/tickets");
 
-    let tickets = await axios.get('/api/tickets');
-
-    this.tickets = tickets.data
-    let staff = await axios.get('/api/users/' + this.staff)
+    this.tickets = tickets.data;
+    let staff = await axios.get("/api/users/" + this.staff);
     staff.data.classes.forEach(element => {
       this.loadClasses(element);
-    })
-    console.log("Created")
+    });
+    console.log("Classes Loaded");
     let course = staff.data.classes[0];
-    let staffcourse = course._id
+    let staffcourse = course._id;
     this.course = staffcourse;
 
     this.loadUser(staff);
+  },
+
+  beforeMount() {
+
+    // This gets ANY ticket submitted
+    var studentChannel = client.channels.get("tickets");
+
+    studentChannel.subscribe("ticketUpdate", function(message) {
+      console.log(message.data);
+      window.location.reload();
+    });
+    
+
+
+    this.scrollToTop();
   }
-  
 };
 </script>

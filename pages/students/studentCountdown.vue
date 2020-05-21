@@ -183,6 +183,10 @@ import {
   BFormCheckbox,
   BFormTextarea
 } from "bootstrap-vue";
+import * as Ably from "ably";
+
+const userId = "5ec5f90d81b13d23065ead3e";
+const client = new Ably.Realtime(process.env.ABLY_KEY);
 
 export default {
   components: {
@@ -209,7 +213,9 @@ export default {
       currentUserId: "5eb75ab2779eb66e27e4fad0",
       countdownShowing: true,
       submitClicked: false,
-      showLink: false
+      showLink: false,
+      staffId: null,
+      session: null,
     };
   },
   methods: {
@@ -224,10 +230,29 @@ export default {
     sendZoomLink: function() {
       this.scrollToTop();
       this.countdownShowing = false;
+
+    // Get the channel  
+      var studentChannel = client.channels.get(userId);
+
+      console.log("sending to student channel");
+
+      // Publish an event to the  channel
+      studentChannel.publish("studentAcceptedSession", userId);
     }
   },
-  beforeMount() {
-    this.scrollToTop();
+  async beforeMount() {
+    this.scrollToTop();{}
+
+    // let tickets = await axios.post("/api/ticketWithParam", {
+    //   status: 'In Progress',
+    //   owner: userId
+    // });
+    // console.log(tickets.data);
+
+    // this.staffId = tickets.acceptedBy._id;
+    // console.log("staff id " + this.staffId);
+
+
   },
   mounted() {}
 };

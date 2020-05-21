@@ -1,5 +1,3 @@
-<!-- TO DO: populate classes from course list -->
-
 <style>
 .fade-enter-active,
 .fade-leave-active {
@@ -271,7 +269,7 @@ input[type="text"]:placeholder {
               <div
                 class="sub-heading-text"
                 style="padding-top:2%;"
-              >You currently have no pending requests.</div>
+              >You currently have {{ticketNum()}} pending requests.</div>
 
               <div style="text-align: center;">
                 <button
@@ -367,9 +365,10 @@ input[type="text"]:placeholder {
                   <!--  On select, the state of request is changed, forcing a transition effect and
                   changing what is rendered on the page-->
                   <button
+                    v-on:click="submit"
                     v-bind:key="submitRequest"
                     type="submit"
-                    style="margin-bottom: 10px; margin margin-top: 10px;"
+                    style="margin-bottom: 20%; width: 40% !important;"
                     class="fadeIn form-buttons"
                     @click="changeRequestState"
                   >
@@ -435,7 +434,9 @@ input[type="text"]:placeholder {
   
 <script src="https://cdn.ably.io/lib/ably.min-1.js"></script>
 <script>
-const userId = "5eb86452ed2ee55868633193";
+const userId = "5ec5f90d81b13d23065ead3e";
+const client = new Ably.Realtime(process.env.ABLY_KEY);
+
 
 //import AblyKey from "../../realtimeKey";
 
@@ -468,7 +469,6 @@ export default {
       el: "#requests",
 
       // Hard coded user
-      currentUserId: "5eb75ab2779eb66e27e4fad0",
       currentRequestsTab: true,
       requestHistoryTab: false,
       show: true,
@@ -483,6 +483,7 @@ export default {
       code: "",
       file: null,
       student: null,
+      staffId: null,
       classes: [
         { value: null, text: "Please select the class you need help with:" }
       ],
@@ -525,26 +526,28 @@ export default {
       var file = event.target.files[0];
       row.file = file;
     },
+    async loadClasses(classSelected) {
+      if (classSelected){
+      let classes = await axios.get('../../api/courses/' + classSelected._id)
+      this.classes.push({value: classes.data._id, text: classes.data.dep + classes.data.courseNum})
+      }
 
-    // Not yet working
-    loadClasses: function(classSelected) {
-      // var text = classSelected.dep + " " + classSelected.courseNum;
-      // this.classes.push({ value: classSelected._id, text: text });
     },
     getSelectedCourse: function(course) {
       this.selectedCourse = course;
       console.log(course);
     },
+
     changeRequestState: function() {
       if (this.request === true && this.submitRequest === false) {
         this.request = false;
         return this.request;
       } else {
-        // ABLY KEY HERE
-        var client = new Ably.Realtime(process.env.ABLY_KEY);
-        var channel = client.channels.get('staff');
-        // Publish a message to the test channel
-        channel.publish("ticketUpdate", "ticket updated");
+        console.log("in the else");
+       
+       // ABLY KEY HERE
+        // var client = new Ably.Realtime('vh5NDg.1jd6aw:MJ2_0CWNwz7KlzKr');
+      
         this.submitRequest = true;
         this.scrollToTop();
         // HARD CODING A REDIRECT TEMPORARILY
@@ -575,19 +578,20 @@ export default {
         text: classes.data.dep + classes.data.courseNum
       });
     },
-    async loadUser(user) {
+    // async loadUser(user) {
       // this.student = user.data._id;
-      this.student = userId;
-    },
+      // this.student = userId;
+    // },
 
     // NOT INSERTED YET: file
     async submit() {
-      if (this.problem != "" && this.probDes != "") {
-        console.log("Submitting");
+      console.log("in the submit");
+      console.log(this.selectedCourse);
+      // if (this.problem != "" && this.probDes != "") {
         let ticket = await axios.post("../../api/insertTicket", {
           status: "Open",
           owner: {
-            _id: this.student
+            _id: userId
           },
           course: {
             _id: this.selectedCourse
@@ -598,11 +602,22 @@ export default {
           createdAt: new Date().toString()
         });
         this.openTicket = ticket.data;
-        this.waitforStaff(this.openTicket._id);
-      } else {
+
+        console.log("ticket is :: " + this.openTicket._id);
+
+                // console.log(env.ABLY_KEY);
+        // var client = new Ably.Realtime('vh5NDg.1jd6aw:MJ2_0CWNwz7KlzKr');
+       
+
+       // sends ticket to staff
+        var studentChannel = client.channels.get("tickets");
+        studentChannel.publish("ticketUpdate", this.openTicket);
+       
+       
+      //  this.waitforStaff(this.openTicket._id);
+      // } else {
         // TODO: Tell the student they need to fill this out
-        console.log("not submitted");
-      }
+      // }
     },
 
     async waitforStaff(id) {
@@ -617,6 +632,7 @@ export default {
         }
       }, 10000);
     },
+
     async closeTicket(ticket) {
       this.openTicket.status = "Closed";
       this.otherTickets.push(this.openTicket);
@@ -634,18 +650,33 @@ export default {
   },
 
   beforeMount() {
+    
+    var studentChannel = client.channels.get(userId);
+
+    // The student's ticket was accepted.
+    studentChannel.subscribe("acceptTicket", function(message) {
+      console.log(message.data);
+      
+      this.staffId = message.data;
+      
+      window.location.href = "studentCountdown";
+    });
+
     this.scrollToTop();
-    this.loadClasses();
+    // this.loadClasses();
   },
   async created() {
     this.scrollToTop();
     // let student = await axios.get("../../api/users/" + this.$route.params.id);
+
+        // this.loadUser(student);
+    this.student = userId;
+
     let student = await axios.get("../../api/users/" + userId);
 
     student.data.classes.forEach(element => {
       this.loadClasses(element);
     });
-    this.loadUser(student);
 
     let tickets = await axios.get("../../api/tickets");
     // this.otherTickets = tickets.data.filter(ticket => (ticket.owner._id === this.$route.params.id) )
