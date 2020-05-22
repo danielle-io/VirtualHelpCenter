@@ -1,33 +1,28 @@
 <style>
-button[type="button"],
-button[type="submit"] input[type="reset"] {
-  background: linear-gradient(
-    333deg,
-    rgba(167, 115, 215, 0.72) 21%,
-    rgba(169, 235, 244, 1) 75%
-  );
-  border: none;
-  color: white;
-  letter-spacing: 0.5px;
-  font-weight: bolder;
-  font-size: 14px;
-  justify-content: center;
-  width: 60%;
-  height: 40px;
-  text-align: center !important;
-  text-decoration: none;
-  display: inline-block;
-  text-transform: uppercase;
-  -webkit-box-shadow: 0 10px 30px 0 rgba(95, 186, 233, 0.4);
-  box-shadow: 0 10px 30px 0 rgba(137, 118, 241, 0.4);
-  -webkit-border-radius: 5px 5px 5px 5px;
-  border-radius: 7px 7px 7px 7px;
-  margin: 30px 20px 40px 20px;
-  -webkit-transition: all 0.3s ease-in-out;
-  -moz-transition: all 0.3s ease-in-out;
-  -ms-transition: all 0.3s ease-in-out;
-  -o-transition: all 0.3s ease-in-out;
-  transition: all 0.3s ease-in-out;
+button[type="button"], button[type="submit"] input[type="reset"] {
+    background: linear-gradient( 333deg, rgba(167, 115, 215, 0.72) 21%, rgba(169, 235, 244, 1) 75%);
+    border: none;
+    color: white;
+    letter-spacing: 0.5px;
+    font-weight: bolder;
+    font-size: 14px;
+    justify-content: center;
+    width: 60%;
+    height: 40px;
+    text-align: center !important;
+    text-decoration: none;
+    display: inline-block;
+    text-transform: uppercase;
+    -webkit-box-shadow: 0 10px 30px 0 rgba(95, 186, 233, 0.4);
+    box-shadow: 0 10px 30px 0 rgba(137, 118, 241, 0.4);
+    -webkit-border-radius: 5px 5px 5px 5px;
+    border-radius: 7px 7px 7px 7px;
+    margin: 30px 20px 40px 20px;
+    -webkit-transition: all 0.3s ease-in-out;
+    -moz-transition: all 0.3s ease-in-out;
+    -ms-transition: all 0.3s ease-in-out;
+    -o-transition: all 0.3s ease-in-out;
+    transition: all 0.3s ease-in-out;
 }
 .form-buttons {
   width: 60% !important;
@@ -126,13 +121,9 @@ button[type="submit"] input[type="reset"] {
 </style>
 
 <template>
- 
- 
   <div id="accept">
-
     <transition name="fade" mode="in-out">
-
-      <div v-if="this.countdownShowing === true && this.accepted === true">
+      <div v-if="this.countdownShowing === true">
         <div class="request-container">
           <div class="heading-text">Accept your session</div>
 
@@ -165,20 +156,21 @@ button[type="submit"] input[type="reset"] {
         </div>
       </div>
 
-      <div v-if="!this.countdownShowing && this.accepted === true">
+      <div v-if="!this.countdownShowing">
         <div v-bind:key="session" class="request-container">
           <div class="heading-text">Begin your session</div>
 
           <div class="sub-heading-text">Click the link to open your Zoom session</div>
           <div class="sub-heading-text-larger" style="margin-top: 15px;">
-            <a target="_blank" href + this.zoomLink>{{this.zoomLink}}</a>
+            <a
+              target="_blank"
+              href="https://uci.zoom.us/j/98814365521"
+            >https://uci.zoom.us/j/98814365521</a>
           </div>
         </div>
       </div>
-
     </transition>
   </div>
-
 </template>
 
 
@@ -219,11 +211,11 @@ export default {
       el: "#accept",
       // Hard coded user
       currentUserId: "5eb75ab2779eb66e27e4fad0",
-      studentChannel: client.channels.get(userId),
-      session: null,
-      zoomLink: null,
       countdownShowing: true,
-
+      submitClicked: false,
+      showLink: false,
+      staffId: null,
+      session: null,
     };
   },
   methods: {
@@ -239,25 +231,29 @@ export default {
       this.scrollToTop();
       this.countdownShowing = false;
 
+    // Get the channel  
+      var studentChannel = client.channels.get(userId);
+
       console.log("sending to student channel");
 
       // Publish an event to the  channel
-      this.studentChannel.publish("studentAcceptedSession", userId);
-
-      setTimeout(function() {
-        // Right here we let it know the student did not accept
-      }, 120000);
-
-      // Get zoom link from staff
-      this.studentChannel.subscribe("zoomLink", function(message) {
-        console.log("zoom link sent " + message.data);
-        this.zoomLink = message.data;
-
-      });
-    },
-    beforeMount() {
-      this.scrollToTop();
+      studentChannel.publish("studentAcceptedSession", userId);
     }
-  }
+  },
+  async beforeMount() {
+    this.scrollToTop();{}
+
+    // let tickets = await axios.post("/api/ticketWithParam", {
+    //   status: 'In Progress',
+    //   owner: userId
+    // });
+    // console.log(tickets.data);
+
+    // this.staffId = tickets.acceptedBy._id;
+    // console.log("staff id " + this.staffId);
+
+
+  },
+  mounted() {}
 };
 </script>

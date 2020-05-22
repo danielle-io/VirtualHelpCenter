@@ -588,18 +588,18 @@ input[type="text"]:placeholder {
 
                   <div class="sub-heading-text">Click the link to open your Zoom session</div>
                   <div class="sub-heading-text-larger" style="margin-top: 15px;">
-                    <a target="_blank" href = this.zoomLink>{{this.zoomLink}}</a>
+                    <a
+                      target="_blank"
+                      href="https://zoom.us/"
+                    >https://zoom.us/</a>
                   </div>
                 </div>
-                
               </div>
 
-              
               <div
                 style="text-align: center; margin-top: 12px;"
                 :hidden="openTicket.owner === null"
               >
-                
                 <md-card>
                   <div
                     style="float: right; margin-top: 6px; margin-left: 0px; margin-right: 10px; "
@@ -758,7 +758,7 @@ export default {
       this.showCountdown = false;
       this.studentAcceptedSession = true;
       console.log("in accept session and zoomLink is " + this.zoomLink);
-      
+
       this.finished();
       console.log("accepted session : " + this.studentAcceptedSession);
       // Publish an event to the  channel
@@ -901,6 +901,13 @@ export default {
       await axios.put("../../api/updateTicket/" + ticket._id, {
         status: "Closed"
       });
+
+      // Reloading gets rid of the begin session text for now
+        window.location.reload();
+
+
+      this.showCountdown = false;
+
       this.scrollToTop();
     }
   },
