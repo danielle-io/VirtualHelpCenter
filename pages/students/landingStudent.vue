@@ -29,6 +29,23 @@
   box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.05);
 }
 
+.request-container-two {
+  position: relative;
+  padding-left: 10px;
+  padding-right: 10px;
+  margin-left: 15%;
+  margin-right: 15%;
+  margin-top: 6%;
+  margin-bottom: 2%;
+  font-family: "Poppins";
+  min-width: 200px;
+  /* border: solid 1px #ddd; */
+  padding-left: 2%;
+  padding-right: 2%;
+  padding-bottom: 10px;
+  /* box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.05); */
+}
+
 /* ANIMATIONS */
 /* Simple CSS3 Fade-in-down Animation */
 .fadeInDown {
@@ -373,233 +390,253 @@ input[type="text"]:placeholder {
 <template>
   <div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/velocity/1.2.3/velocity.min.js"></script>
-
+    <button id="hiddenButton" style="display:none;" @click="triggerAccept"></button>
     <div id="requests">
       <!-- The transition effects for the containers changing -->
       <transition name="fade" mode="in-out">
-        <div v-bind:key="request" class="request-container">
-          <div class="request-tabs">
-            <a
-              @click="switchToCurrentRequestsTab"
-              v-bind:class="{ 'tab-links-active': currentRequestsTab, 'tab-links': !currentRequestsTab }"
-            >Current Requests</a>
+        <div>
+          <div v-bind:key="request" class="request-container">
+            <div class="request-tabs">
+              <a
+                @click="switchToCurrentRequestsTab"
+                v-bind:class="{ 'tab-links-active': currentRequestsTab, 'tab-links': !currentRequestsTab }"
+              >Current Requests</a>
 
-            <!-- (this.$route.query.tab   == 'requestHistory')-->
-            <a
-              v-bind:class="{ 'tab-links-active': requestHistoryTab, 'tab-links': !requestHistoryTab }"
-              @click="switchToRequestHistoryTab"
-            >Request History</a>
-          </div>
-
-          <!--  The first container to show  -->
-          <div v-if="this.currentRequestsTab">
-            <div
-              v-if="this.request === true && openTicket.owner === null && !this.countdownShowing"
-            >
-              <div class="heading-text">My Requests</div>
-
-              <!-- TO DO: make this text dynamic based on user tickets -->
-              <div
-                class="sub-heading-text"
-                style="padding-top:2%;"
-              >You currently have {{ticketNum()}} pending requests.</div>
-
-              <div style="text-align: center;">
-                <button
-                  v-bind:key="request"
-                  @click="changeRequestState"
-                  type="submit"
-                  style="margin-bottom: 20%; width: 40% !important;"
-                  class="fadeIn form-buttons"
-                >
-                  <right-circle />Request a Session
-                </button>
-              </div>
+              <!-- (this.$route.query.tab   == 'requestHistory')-->
+              <a
+                v-bind:class="{ 'tab-links-active': requestHistoryTab, 'tab-links': !requestHistoryTab }"
+                @click="switchToRequestHistoryTab"
+              >Request History</a>
             </div>
 
-            <!-- Container for filling out the request form -->
-            <div
-              v-if="this.request === false && this.submitRequest === false && !this.countdownShowing"
-            >
-              <div class="heading-text">Request a Session</div>
-              <div
-                class="sub-heading-text-left"
-                style="padding-top:2%;"
-              >Complete the form below to request assistance from a lab tutor.</div>
+            <!--  The first container to show  -->
+            <div v-if="this.currentRequestsTab">
+              <div v-if="this.request === true && openTicket.owner === null && !this.showCountdown">
+                <div class="heading-text">My Requests</div>
 
-              <div class="form-container">
-                <div class="row" style="width: 70%;">
-                  <b-form-select
-                    :options="classes"
-                    v-on:change="getSelectedCourse"
-                    size="sm"
-                    class="mt-3"
-                    placeholder="Please select the class you need help with"
-                  ></b-form-select>
-                </div>
-
-                <div class="row">
-                  <label class="label-format">Please enter a brief one-sentence summary of the issue</label>
-                  <b-form-input v-model="probDes" placeholder class="form-text-areas"></b-form-input>
-                </div>
-
-                <div class="row">
-                  <label class="label-format">Elaborate on the issue, if needed.</label>
-                  <b-form-text-area
-                    id="textarea"
-                    v-model="problem"
-                    placeholder
-                    rows="2"
-                    max-rows="6"
-                  ></b-form-text-area>
-                </div>
-
-                <div class="row">
-                  <label class="label-format">Paste a code snippet, if needed</label>
-                  <b-form-text-area id="textarea" v-model="code" placeholder rows="1" max-rows="6"></b-form-text-area>
-                  <!-- removed for now from above :disabled="isDisabled" -->
-                  <!-- <pre class="mt-3 mb-0">{{ code }}</pre> -->
-                </div>
-
-                <div class="Row">
-                  <label class="label-format">Add a file, if needed</label>
-                </div>
-
-                <table class="table request-table">
-                  <tbody>
-                    <!-- This is where the new questions are inserted -->
-                    <div class="top-row" v-for="(row, index) in rows" v-bind:key="row">
-                      <tr>
-                        <td>
-                          <button class="file-container file-button">
-                            {{row.file.name}}
-                            <input
-                              type="file"
-                              @change="setFilename($event, row)"
-                              :id="index"
-                            />
-                          </button>
-                        </td>
-
-                        <td class="remove-column">
-                          <a
-                            v-on:click="removeElement(index);"
-                            style="cursor: pointer; z-index: 999;"
-                          >Remove</a>
-                        </td>
-                      </tr>
-                    </div>
-                  </tbody>
-                </table>
-
-                <span class="add-button" @click="addRow">
-                  <plus-circle />
-                </span>
+                <!-- TO DO: make this text dynamic based on user tickets -->
+                <div
+                  class="sub-heading-text"
+                  style="padding-top:2%;"
+                >You currently have {{ticketNum()}} pending requests.</div>
 
                 <div style="text-align: center;">
-                  <!--  On select, the state of request is changed, forcing a transition effect and
-                  changing what is rendered on the page-->
                   <button
-                    v-on:click="submit"
-                    v-bind:key="submitRequest"
+                    v-bind:key="request"
+                    @click="changeRequestState"
                     type="submit"
                     style="margin-bottom: 20%; width: 40% !important;"
                     class="fadeIn form-buttons"
-                    @click="changeRequestState"
                   >
-                    <right-circle style="margin-right:4px" />Submit Request
+                    <right-circle />Request a Session
                   </button>
                 </div>
               </div>
-            </div>
 
-            <div v-if="this.submitRequest && !this.countdownShowing" v-bind:key="submitRequest">
-              <div class="heading-text">Your Request Was Submitted</div>
+              <!-- Container for filling out the request form -->
               <div
-                class="sub-heading-text"
-                style="padding-top:2%;"
-              >The current wait time is approximately 1 minute.</div>
-            </div>
-
-            <div v-if="this.countdownShowing">
-              <div class="request-container">
-                <div class="heading-text">Accept your session</div>
-
-                <div class="sub-heading-text-left" style="padding-top:2%;">
-                  A TA is available.
-                  <strong>Please accept the session before the timer runs out to continue.</strong>
-                </div>
+                v-if="this.request === false && this.submitRequest === false && !this.showCountdown"
+              >
+                <div class="heading-text">Request a Session</div>
                 <div
-                  class="sub-heading-text-left-italic"
-                >If you do not accept in time, your request will be removed, and placed in your request history for resubmission.</div>
+                  class="sub-heading-text-left"
+                  style="padding-top:2%;"
+                >Complete the form below to request assistance from a lab tutor.</div>
 
-                <div style="text-align: center;">
-                  <circular-count-down-timer
-                    :initial-value="60"
-                    :steps="60"
-                    :seconds-stroke-color="'#7fe3d4'"
-                    :second-label="''"
-                    @finish="finished"
-                  ></circular-count-down-timer>
-                 
-                  <button
-                    v-bind:key="accept"
-                    @click="acceptSession"
-                    type="submit"
-                    style="margin-bottom: 20%;"
-                    class="fadeIn form-buttons"
-                  >
-                    <right-circle />Accept the Session
-                  </button>
+                <div class="form-container">
+                  <div class="row" style="width: 70%;">
+                    <b-form-select
+                      :options="classes"
+                      v-on:change="getSelectedCourse"
+                      size="sm"
+                      class="mt-3"
+                      placeholder="Please select the class you need help with"
+                    ></b-form-select>
+                  </div>
+
+                  <div class="row">
+                    <label
+                      class="label-format"
+                    >Please enter a brief one-sentence summary of the issue</label>
+                    <b-form-input v-model="probDes" placeholder class="form-text-areas"></b-form-input>
+                  </div>
+
+                  <div class="row">
+                    <label class="label-format">Elaborate on the issue, if needed.</label>
+                    <b-form-text-area
+                      id="textarea"
+                      v-model="problem"
+                      placeholder
+                      rows="2"
+                      max-rows="6"
+                    ></b-form-text-area>
+                  </div>
+
+                  <div class="row">
+                    <label class="label-format">Paste a code snippet, if needed</label>
+                    <b-form-text-area
+                      id="textarea"
+                      v-model="code"
+                      placeholder
+                      rows="1"
+                      max-rows="6"
+                    ></b-form-text-area>
+                    <!-- removed for now from above :disabled="isDisabled" -->
+                    <!-- <pre class="mt-3 mb-0">{{ code }}</pre> -->
+                  </div>
+
+                  <div class="Row">
+                    <label class="label-format">Add a file, if needed</label>
+                  </div>
+
+                  <table class="table request-table">
+                    <tbody>
+                      <!-- This is where the new questions are inserted -->
+                      <div class="top-row" v-for="(row, index) in rows" v-bind:key="row">
+                        <tr>
+                          <td>
+                            <button class="file-container file-button">
+                              {{row.file.name}}
+                              <input
+                                type="file"
+                                @change="setFilename($event, row)"
+                                :id="index"
+                              />
+                            </button>
+                          </td>
+
+                          <td class="remove-column">
+                            <a
+                              v-on:click="removeElement(index);"
+                              style="cursor: pointer; z-index: 999;"
+                            >Remove</a>
+                          </td>
+                        </tr>
+                      </div>
+                    </tbody>
+                  </table>
+
+                  <span class="add-button" @click="addRow">
+                    <plus-circle />
+                  </span>
+
+                  <div style="text-align: center;">
+                    <!--  On select, the state of request is changed, forcing a transition effect and
+                    changing what is rendered on the page-->
+                    <button
+                      v-on:click="submit"
+                      v-bind:key="submitRequest"
+                      type="submit"
+                      style="margin-bottom: 20%; width: 40% !important;"
+                      class="fadeIn form-buttons"
+                      @click="changeRequestState"
+                    >
+                      <right-circle style="margin-right:4px" />Submit Request
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div v-if="!this.countdownShowing && this.accepted === true">
-              <div v-bind:key="session" class="request-container">
-                <div class="heading-text">Begin your session</div>
-
-                <div class="sub-heading-text">Click the link to open your Zoom session</div>
-                <div class="sub-heading-text-larger" style="margin-top: 15px;">
-                  <a target="_blank" href + this.zoomLink>{{this.zoomLink}}</a>
-                </div>
+              <div
+                v-if="this.submitRequest && !this.showCountdown && !this.studentAcceptedSession"
+                v-bind:key="submitRequest"
+              >
+                <div class="heading-text">Your Request Was Submitted</div>
+                <div
+                  class="sub-heading-text"
+                  style="padding-top:2%;"
+                >The current wait time is approximately 1 minute.</div>
               </div>
-            </div>
 
-            <div style="text-align: center; margin-top: 12px;" :hidden="openTicket.owner === null">
-              <md-card>
-                <div style="float: right; margin-top: 6px; margin-left: 0px; margin-right: 10px; ">
-                  <button
-                    class="close-button"
-                    style="margin-top: 5px;"
-                    v-on:click="closeTicket(openTicket)"
-                  >
-                    <div class="toolTip">
-                      <close
-                        style="color: red !important; margin-bottom: 0px; padding-bottom: 0px;"
-                        class="close-icon"
-                      />
-                      <!-- <span class="toolTipText">Cancel Request</span> -->
-                    </div>
-                  </button>
-                </div>
-                <md-card-header style="display: in-line-block;">
+              <div v-if="this.showCountdown && !this.studentAcceptedSession">
+                <div class="request-container">
+                  <div class="heading-text">Accept your session</div>
+
+                  <div class="sub-heading-text-left" style="padding-top:2%;">
+                    A TA is available.
+                    <strong>Please accept the session before the timer runs out to continue.</strong>
+                  </div>
                   <div
-                    style="justify-content: center; text-align: center; margin-top: 30px;"
-                    class="md-title"
-                  >Requested Session</div>
-                </md-card-header>
+                    class="sub-heading-text-left-italic"
+                  >If you do not accept in time, your request will be removed, and placed in your request history for resubmission.</div>
 
-                <div class="md-card-content">
-                  <strong>Status:</strong>
-                  {{ openTicket.status }}
+                  <div style="text-align: center;">
+                    <circular-count-down-timer
+                      :initial-value="60"
+                      :steps="60"
+                      :seconds-stroke-color="'#7fe3d4'"
+                      :second-label="''"
+                      @finish="finished"
+                    ></circular-count-down-timer>
+
+                    <button
+                      v-bind:key="acceptSession"
+                      @click="acceptSession"
+                      type="submit"
+                      style="margin-bottom: 20%;"
+                      class="fadeIn form-buttons"
+                    >
+                      <right-circle />Accept the Session
+                    </button>
+                  </div>
                 </div>
-                <div class="md-card-content">
-                  <strong>Issue:</strong>
-                  {{ openTicket.oneLineOverview }}
+              </div>
+
+              <div v-if="this.studentAcceptedSession">
+                <div v-bind:key="session" class="request-container-two">
+                  <div class="heading-text">Begin your session</div>
+
+                  <div class="sub-heading-text">Click the link to open your Zoom session</div>
+                  <div class="sub-heading-text-larger" style="margin-top: 15px;">
+                    <a target="_blank" href = this.zoomLink>{{this.zoomLink}}</a>
+                  </div>
                 </div>
-                <div class="md-card-content"></div>
-              </md-card>
+                
+              </div>
+
+              
+              <div
+                style="text-align: center; margin-top: 12px;"
+                :hidden="openTicket.owner === null"
+              >
+                
+                <md-card>
+                  <div
+                    style="float: right; margin-top: 6px; margin-left: 0px; margin-right: 10px; "
+                  >
+                    <button
+                      class="close-button"
+                      style="margin-top: 5px;"
+                      v-on:click="closeTicket(openTicket)"
+                    >
+                      <div class="toolTip">
+                        <close
+                          style="color: red !important; margin-bottom: 0px; padding-bottom: 0px;"
+                          class="close-icon"
+                        />
+                        <!-- <span class="toolTipText">Cancel Request</span> -->
+                      </div>
+                    </button>
+                  </div>
+
+                  <md-card-header style="display: in-line-block;">
+                    <div
+                      style="justify-content: center; text-align: center; margin-top: 30px;"
+                      class="md-title"
+                    >Requested Session</div>
+                  </md-card-header>
+
+                  <div class="md-card-content">
+                    <strong>Status:</strong>
+                    {{ openTicket.status }}
+                  </div>
+                  <div class="md-card-content">
+                    <strong>Issue:</strong>
+                    {{ openTicket.oneLineOverview }}
+                  </div>
+                  <div class="md-card-content"></div>
+                </md-card>
+              </div>
             </div>
           </div>
         </div>
@@ -633,8 +670,6 @@ input[type="text"]:placeholder {
 const userId = "5ec5f90d81b13d23065ead3e";
 const client = new Ably.Realtime(process.env.ABLY_KEY);
 
-//import AblyKey from "../../realtimeKey";
-
 import Vue from "vue";
 import axios from "~/plugins/axios";
 import * as Ably from "ably";
@@ -658,12 +693,9 @@ export default {
       return !this.selected;
     }
   },
-
   data() {
     return {
       el: "#requests",
-
-      // Hard coded user
       currentRequestsTab: true,
       requestHistoryTab: false,
       show: true,
@@ -689,8 +721,10 @@ export default {
       otherTickets: [{ owner: null, status: null, oneLineOverview: null }],
       session: null,
       zoomLink: null,
-      countdownShowing: false,
-      accepted: false
+      showCountdown: false,
+      studentAcceptedSession: false,
+      studentChannel: client.channels.get(userId),
+      ticketChannel: client.channels.get("tickets")
     };
   },
   methods: {
@@ -720,12 +754,21 @@ export default {
 
     acceptSession: function() {
       this.scrollToTop();
-      this.countdownShowing = false;
-
-      this.accepted = true;
-    
+      console.log("countdown is " + this.showCountdown);
+      this.showCountdown = false;
+      this.studentAcceptedSession = true;
+      console.log("in accept session and zoomLink is " + this.zoomLink);
+      
+      this.finished();
+      console.log("accepted session : " + this.studentAcceptedSession);
       // Publish an event to the  channel
       this.studentChannel.publish("studentAcceptedSession", userId);
+    },
+    triggerAccept: function() {
+      console.log("in triggerAccept");
+      console.log("countdown " + this.showCountdown);
+      this.showCountdown = true;
+      console.log("countdown " + this.showCountdown);
     },
     removeElement: function(index) {
       this.rows.splice(index, 1);
@@ -748,6 +791,20 @@ export default {
       console.log(course);
     },
 
+    async startSubscribe() {
+      console.log("subscribing to staff");
+      // The student's ticket was accepted by the staff
+      this.studentChannel.subscribe("staffAcceptedTicket", function(message) {
+        this.zoomLink = message.data;
+        console.log("zoomLink " + this.zoomLink);
+        document.getElementById("hiddenButton").click();
+      });
+    },
+    finished: () => {
+      console.log("in finished");
+    },
+
+    // TODO: use store to change the state- the timeout is a temp method to be able to do this but will be a problem once it runs out
     changeRequestState: function() {
       if (this.request === true && this.submitRequest === false) {
         this.request = false;
@@ -764,6 +821,8 @@ export default {
         // setTimeout(function() {
         //   window.location.href = "studentCountdown";
         // }, 8000);
+
+        this.startSubscribe();
         return this.request;
       }
     },
@@ -814,13 +873,7 @@ export default {
       this.openTicket = ticket.data;
 
       // sends ticket to staff
-      var studentChannel = client.channels.get("tickets");
-      studentChannel.publish("ticketUpdate", this.openTicket);
-
-      //  this.waitforStaff(this.openTicket._id);
-      // } else {
-      // TODO: Tell the student they need to fill this out
-      // }
+      this.ticketChannel.publish("ticketUpdate", this.openTicket);
     },
 
     async waitforStaff(id) {
@@ -852,25 +905,15 @@ export default {
     }
   },
 
+  mounted() {},
+
   beforeMount() {
-    var studentChannel = client.channels.get(userId);
-
-    // The student's ticket was accepted by the staff
-    studentChannel.subscribe("acceptTicket", function(message) {
-      console.log("staff message is: " +message.data);
-      // window.location.href = "studentCountdown";
-      this.countdownShowing = true;
-      this.zoomLink = message.data;
-      console.log("this.countdownShowing " + this.countdownShowing);
-    });
-
     this.scrollToTop();
     // this.loadClasses();
   },
   async created() {
     this.scrollToTop();
     // let student = await axios.get("../../api/users/" + this.$route.params.id);
-
     // this.loadUser(student);
     this.student = userId;
 

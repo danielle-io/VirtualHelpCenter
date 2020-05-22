@@ -125,6 +125,8 @@
 
 <template>
   <div id="requests" style="position: relative;">
+    <button id="hiddenButton" style="display:none;" @click="triggerAccept"></button>
+
     <div class="staff-container">
       <!-- <div class="heading-two-text">Select a Request</div> -->
       <div v-if="!this.connecting">
@@ -150,11 +152,14 @@
 
         <div v-if="this.openRequestTab">
           <div class="ticket-container">
-            <div
-              v-if="!this.selectedCard && !this.zoomLinkForm && this.tickets"
-              class="sub-heading-text"
-              style="padding-top:2%;"
-            >Select a request to continue.</div>
+            <div v-if="!this.selectedCard && !this.zoomLinkForm && this.tickets">
+              <!-- TODO: instead of tickets.length, get the filtered tickets length to hide message when no tickets show -->
+              <div
+                v-if="this.tickets.length > 0"
+                class="sub-heading-text"
+                style="padding-top:2%;"
+              >Select a request to continue.</div>
+            </div>
 
             <div
               v-if="!this.selectedCard && !this.zoomLinkForm && !this.tickets"
@@ -169,7 +174,6 @@
                   v-for="(ticket, index) in (getFilterClass('Open', this.course).slice(this.startingIndex, this.endingIndex))"
                   :key="ticket._id"
                 >
-                  <!-- v-on:click="acceptTicket(ticket, ticket._id)" -->
                   <a @click="clickCard(ticket, index, ticket._id)">
                     <md-card v-bind:class="{ 'selected-card': selectedTicketIndex === index}">
                       <div>
@@ -194,9 +198,7 @@
                           <!-- I can't reference a class. -->
                           {{ticket.oneLineOverview}}
                         </div>
-                        <div class="md-card-content">
-                          <!-- <button type="button" v-on:click="acceptTicket(ticket, ticket._id)">Accept</button> -->
-                        </div>
+                        <div class="md-card-content"></div>
                         <div
                           v-bind:class="{ 'chevron': expandChevron, 'hidden': !expandChevron }"
                           @click="changeChevronClass"
@@ -255,7 +257,7 @@
               />
 
               <div v-if="this.zoomLink">
-                <button type="submit" class="request-staff-buttons" @click="goToCountdownPage">
+                <button type="submit" class="request-staff-buttons" @click="sendZoomLink">
                   <right-circle />Send Link
                 </button>
               </div>
@@ -265,6 +267,7 @@
 
         <div v-if="this.requestHistoryTab">
           <!-- TO DO: Make this message dynamic -->
+
           <!-- <div
             class="sub-heading-text"
             style="padding-top:2%;"
@@ -297,9 +300,11 @@
       <div v-if="this.connecting">
         <div v-if="!this.studentAccepted">
           <div class="heading-two-text">Awaiting Student Acceptance</div>
-          <div class="loading-dots">
+       
+          <div v-if="!this.studentAccepted" class="loading-dots">
             <beat-loader :color="color"></beat-loader>
           </div>
+
           <div
             class="sub-heading-two-text"
           >Please prepare to begin the session. The student has 60 seconds to accept the request before it's canceled.</div>
@@ -307,9 +312,7 @@
 
         <div v-if="this.studentAccepted">
           <div class="heading-two-text">Student Accepted</div>
-          <div class="loading-dots">
-            <beat-loader :color="color"></beat-loader>
-          </div>
+         
           <div class="sub-heading-two-text">Please go to Zoom to begin your session.</div>
         </div>
         <div class="row justify-content-center">
@@ -437,7 +440,8 @@ export default {
       studentChannel: null,
       currentTicket: null,
       currentTicketId: null,
-      studentAccepted: false
+      studentAccepted: false,
+      ticketChannel: client.channels.get("tickets")
     };
   },
   methods: {
@@ -452,37 +456,36 @@ export default {
         return;
       }
     },
-
+    triggerAccept: function() {
+      console.log("in triggerAccept");
+      console.log("accepted " + this.studentAccepted);
+      this.studentAccepted = true;
+      console.log("accepted " + this.studentAccepted);
+    },
     getFilterClass(status, course) {
       console.log(course);
-      if (course === null){
+      if (course === null) {
         console.log("open tickets");
         return this.filterOpenTickets(status);
-      }
-      else{
-       return this.filterCourseTickets(status, course);
+      } else {
+        return this.filterCourseTickets(status, course);
       }
     },
 
     filterCourseTickets(status, course) {
       console.log(this.tickets);
-      console.log(course);
-      // console.log("filtering tickets and course is " + course.value + course.text);
 
       if (this.tickets) {
+        // Prevents code from breaking when no course is in the ticket
         if (typeof course !== "undefined") {
-          console.log(this.tickets);
           return this.tickets.filter(
             ticket => ticket.status === status && ticket.course._id === course
           );
         } else {
-          console.log(this.tickets);
-
           return this.tickets.filter(ticket => ticket.status === status);
         }
       } else {
         this.filteredTickets = [];
-        console.log("here");
         return;
       }
     },
@@ -532,13 +535,14 @@ export default {
     getZoomLink: function() {
       this.zoomLinkForm = true;
     },
+    
 
     startConnecting: function() {
       this.connecting = true;
     },
 
     // This is where the link is stored
-    goToCountdownPage: function() {
+    sendZoomLink: function() {
       axios.put("/api/updateTicket/" + this.currentTicketId, {
         status: "In Progress",
         accepted: this.staff
@@ -546,31 +550,22 @@ export default {
 
       // Get the students user id from the ticket
       this.studentChannel = client.channels.get(this.currentTicket.owner._id);
-      console.log(this.zoomLink);
+      this.studentChannel.publish("staffAcceptedTicket", this.zoomLink);
 
-      this.studentChannel.publish("acceptTicket", this.zoomLink);
-
-      // we get in here ONLY IF the student accepts the ticket
-      this.studentChannel.subscribe("acceptedTicket", function(message) {
-        console.log("accepted ticket");
-
-        // this.studentChannel.publish("zoomLink", ;
-      });
+      // Show connection screen once student receives countdown
       this.startConnecting();
-      console.log(this.zoomLink);
-
       // this.studentChannel = client.channels.get(ticket.owner._id);
 
       setTimeout(function() {
         // Right here we let it know the student did not accept
       }, 120000);
-
       console.log("waiting on acceptance");
 
-      // Subscribe to an event on studentChannel
+      // Subscribe to an event on studentChannel to see if they accepted ticket
       this.studentChannel.subscribe("studentAcceptedSession", function(
         message
       ) {
+        document.getElementById("hiddenButton").click();
         this.studentAccepted = true;
         console.log("student accepted");
       });
@@ -578,20 +573,9 @@ export default {
     expandCard: function() {},
 
     async acceptTicket() {
-      console.log(" in accept");
-      //update ticket within db
+      console.log(" in accept ticket");
       this.getZoomLink();
     },
-
-    // getSize: function(array) {
-    //   if (array.length === 1 && array[0].value != null) {
-    //     return 1;
-    //   }
-    //   if (array.length <= 4) {
-    //     return array.length;
-    //   }
-    //   return 4;
-    // },
 
     async loadUser(user) {
       if (user) {
@@ -649,9 +633,7 @@ export default {
     this.staffCourses.push({ value: null, text: "Show All Courses" });
 
     // This gets ANY ticket submitted by ANY student
-    var studentChannel = client.channels.get("tickets");
-
-    studentChannel.subscribe("ticketUpdate", function(message) {
+    this.ticketChannel.subscribe("ticketUpdate", function(message) {
       console.log(message.data);
       window.location.reload();
     });
