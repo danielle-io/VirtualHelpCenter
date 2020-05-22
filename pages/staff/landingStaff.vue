@@ -1,5 +1,3 @@
-
-
 <style scoped>
 .card-text {
   word-wrap: break-word;
@@ -141,15 +139,12 @@
             @click="switchToRequestHistoryTab"
           >Request History</a>
         </div>
-        <div class="row">
+
+        <div class="row" style="justify-content: center; margin-top: 5px; align-content: center;">
           <div class="col-6">
-            <label>Filter by course</label>
-            <b-form-select
-              v-model="course"
-              :options="staffCourses"
-              size="sm"
-              v-on:change="setClass"
-            ></b-form-select>
+            <div v-if="!this.selectedCard && this.staffCourses">
+              <b-form-select v-model="course" :options="staffCourses" v-on:change="setClass"></b-form-select>
+            </div>
           </div>
         </div>
 
@@ -171,11 +166,12 @@
             <div v-if="!this.zoomLinkForm" class="row justify-content-center">
               <div class="col">
                 <div
-                  v-for="(ticket, index) in (filterCourseTickets('Open', this.course).slice(this.startingIndex, this.endingIndex))"
+                  v-for="(ticket, index) in (getFilterClass('Open', this.course).slice(this.startingIndex, this.endingIndex))"
                   :key="ticket._id"
                 >
-                  <a @click="clickCard(ticket, index)">
-                    <md-card v-bind:class="{ 'selected-card': selectedTicketIndex === index }">
+                  <!-- v-on:click="acceptTicket(ticket, ticket._id)" -->
+                  <a @click="clickCard(ticket, index, ticket._id)">
+                    <md-card v-bind:class="{ 'selected-card': selectedTicketIndex === index}">
                       <div>
                         <md-card-header>
                           <!-- TODO: put course title from db here -->
@@ -199,7 +195,7 @@
                           {{ticket.oneLineOverview}}
                         </div>
                         <div class="md-card-content">
-                          <button type="button" v-on:click="acceptTicket(ticket, ticket._id)">Accept</button>
+                          <!-- <button type="button" v-on:click="acceptTicket(ticket, ticket._id)">Accept</button> -->
                         </div>
                         <div
                           v-bind:class="{ 'chevron': expandChevron, 'hidden': !expandChevron }"
@@ -228,11 +224,10 @@
                         </div>
 
                         <!-- TODO: add student's name from DB -->
-                        <div class="md-card-content">
+                        <!-- <div class="md-card-content">
                           <strong>Student:</strong>
-                          <!-- Alex Lang -->
                           {{ticket.owner._id}}
-                        </div>
+                        </div>-->
                       </div>
                     </md-card>
                   </a>
@@ -245,6 +240,7 @@
               type="submit"
               class="request-staff-buttons"
               @click="getZoomLink"
+              v-on:click="acceptTicket()"
             >
               <right-circle />Begin Session
             </button>
@@ -280,8 +276,8 @@
                 <div v-for="(ticket, index) in filterOpenTickets('Closed')" :key="index">
                   <md-card>
                     <div class="md-card-content">
-                      <!-- <div class="md-card-content">
-                    <strong>Student:</strong>
+                      <!-- <div class="md-card-content"> -->
+                      <!-- <strong>Student:</strong>
                     {{ ticket.owner }}
                       </div>-->
 
@@ -299,9 +295,88 @@
       </div>
 
       <div v-if="this.connecting">
-        <div class="heading-two-text">Connecting</div>
-        <div class="loading-dots">
-          <beat-loader :loading="loading" :color="color" :size="size"></beat-loader>
+        <div v-if="!this.studentAccepted">
+          <div class="heading-two-text">Awaiting Student Acceptance</div>
+          <div class="loading-dots">
+            <beat-loader :color="color"></beat-loader>
+          </div>
+          <div
+            class="sub-heading-two-text"
+          >Please prepare to begin the session. The student has 60 seconds to accept the request before it's canceled.</div>
+        </div>
+
+        <div v-if="this.studentAccepted">
+          <div class="heading-two-text">Student Accepted</div>
+          <div class="loading-dots">
+            <beat-loader :color="color"></beat-loader>
+          </div>
+          <div class="sub-heading-two-text">Please go to Zoom to begin your session.</div>
+        </div>
+        <div class="row justify-content-center">
+          <div
+            class="col"
+            style="justify-content: center; text-align: center; align-items: center;"
+          >
+            <md-card>
+              <div>
+                <md-card-header>
+                  <!-- TODO: put course title from db here -->
+                  <div class="md-title"></div>
+                </md-card-header>
+
+                <!-- TODO: add student's name -->
+                <!-- <div class="md-card-content">
+                        <strong>Student:</strong>
+                        <div class="card-text">{{ ticket.owner }}</div>
+                </div>-->
+
+                <div class="md-card-content">
+                  <strong>Status:</strong>
+                  {{ this.currentTicket.status }}
+                </div>
+
+                <div class="md-card-content">
+                  <strong>Issue:</strong>
+                  <!-- I can't reference a class. -->
+                  {{this.currentTicket.oneLineOverview}}
+                </div>
+                <div class="md-card-content">
+                  <!-- <button type="button" v-on:click="acceptTicket(ticket, ticket._id)">Accept</button> -->
+                </div>
+                <div
+                  v-bind:class="{ 'chevron': expandChevron, 'hidden': !expandChevron }"
+                  @click="changeChevronClass"
+                >
+                  <expand-arrow />
+                </div>
+              </div>
+              <div
+                @click="changeChevronClass"
+                v-bind:class="{ 'chevron': collapseChevron, 'hidden': !collapseChevron }"
+              >
+                <collapse-arrow />
+              </div>
+
+              <div
+                v-bind:class="{ 'show-extra-content': collapseChevron, 'hide-extra-content': expandChevron }"
+              >
+                <div class="md-card-content">
+                  <strong>Longer Description:</strong>
+                  <!-- I am trying to call a function from a class but importing gives an undefined error. -->
+                  {{this.currentTicket.longerDescription}}
+                </div>
+                <div class="md-card-content">
+                  <strong>Attached Files:</strong>
+                </div>
+
+                <!-- TODO: add student's name from DB -->
+                <div class="md-card-content">
+                  <strong>Student:</strong>
+                  <!-- {{this.currentTicket.owner._id}} -->
+                </div>
+              </div>
+            </md-card>
+          </div>
         </div>
       </div>
     </div>
@@ -316,13 +391,12 @@ import axios from "~/plugins/axios";
 import VueMaterial from "vue-material";
 import "vue-material/dist/vue-material.min.css";
 import "vue-material/dist/theme/default.css";
-
 import { BFormInput, BFormSelect, BButton, BFormCheckbox } from "bootstrap-vue";
+Vue.use(VueMaterial);
 
 import * as Ably from "ably";
 
 const client = new Ably.Realtime(process.env.ABLY_KEY);
-
 
 export default {
   head() {
@@ -358,25 +432,62 @@ export default {
       startingIndex: 0,
       endingIndex: 3,
       tickets: [],
-      staffCourses: []
+      filteredTickets: [],
+      staffCourses: [],
+      studentChannel: null,
+      currentTicket: null,
+      currentTicketId: null,
+      studentAccepted: false
     };
   },
   methods: {
     filterOpenTickets(status) {
       if (this.tickets) {
-        return this.tickets.filter(ticket => ticket.status === status);
+        this.filteredTickets = this.tickets.filter(
+          ticket => ticket.status === status
+        );
+        return this.filteredTickets;
       } else {
+        this.filteredTickets = [];
         return;
       }
     },
+
+    getFilterClass(status, course) {
+      console.log(course);
+      if (course === null){
+        console.log("open tickets");
+        return this.filterOpenTickets(status);
+      }
+      else{
+       return this.filterCourseTickets(status, course);
+      }
+    },
+
     filterCourseTickets(status, course) {
+      console.log(this.tickets);
+      console.log(course);
+      // console.log("filtering tickets and course is " + course.value + course.text);
+
       if (this.tickets) {
-        return this.tickets.filter(
-          ticket => ticket.course._id === course && ticket.status === status
-        );
+        if (typeof course !== "undefined") {
+          console.log(this.tickets);
+          return this.tickets.filter(
+            ticket => ticket.status === status && ticket.course._id === course
+          );
+        } else {
+          console.log(this.tickets);
+
+          return this.tickets.filter(ticket => ticket.status === status);
+        }
       } else {
+        this.filteredTickets = [];
+        console.log("here");
         return;
       }
+    },
+    scrollToTop() {
+      document.getElementById("tabs").scrollIntoView();
     },
     scrollToTop() {
       document.getElementById("tabs").scrollIntoView();
@@ -403,7 +514,10 @@ export default {
       }
       this.selectedCard = !this.selectedCard;
     },
-    clickCard: function(ticket, index) {
+    clickCard: function(ticket, index, id) {
+      this.currentTicket = ticket;
+      this.currentTicketId = id;
+
       this.selectedCard = !this.selectedCard;
       if (this.selectedTicketIndex === index) {
         this.selectedTicketIndex = -1;
@@ -425,61 +539,68 @@ export default {
 
     // This is where the link is stored
     goToCountdownPage: function() {
-      console.log(this.zoomLink);
-      window.location.href = "staffCountdown";
-    },
-    expandCard: function() {
-      console.log(this.requestHistoryTab);
-    },
-
-    async acceptTicket(ticket, id) {
-      console.log(" in accept");
-      //update ticket within db
-
-      axios.put("/api/updateTicket/" + id, {
+      axios.put("/api/updateTicket/" + this.currentTicketId, {
         status: "In Progress",
         accepted: this.staff
       });
 
       // Get the students user id from the ticket
-      var studentChannel = client.channels.get(ticket.owner._id);
+      this.studentChannel = client.channels.get(this.currentTicket.owner._id);
+      console.log(this.zoomLink);
 
-      console.log("ticket owner is " + ticket.owner._id);
+      this.studentChannel.publish("acceptTicket", this.zoomLink);
 
-      studentChannel.publish("acceptTicket", this.staff)
-
-      // we get in here ONLY IF the student accepts the ticket 
-      studentChannel.subscribe("acceptedTicket", function(message) {
-        
+      // we get in here ONLY IF the student accepts the ticket
+      this.studentChannel.subscribe("acceptedTicket", function(message) {
         console.log("accepted ticket");
+
+        // this.studentChannel.publish("zoomLink", ;
       });
+      this.startConnecting();
+      console.log(this.zoomLink);
 
-       setTimeout(function() {
-         // Right here we let it know the student did not accept
-        }, 60000)
+      // this.studentChannel = client.channels.get(ticket.owner._id);
 
-         console.log("waiting on acceptance");
+      setTimeout(function() {
+        // Right here we let it know the student did not accept
+      }, 120000);
 
-        // Subscribe to an event on studentChannel
-        studentChannel.subscribe("studentAcceptedSession", function(message) {
-          console.log("student accepted");
-        });
+      console.log("waiting on acceptance");
+
+      // Subscribe to an event on studentChannel
+      this.studentChannel.subscribe("studentAcceptedSession", function(
+        message
+      ) {
+        this.studentAccepted = true;
+        console.log("student accepted");
+      });
+    },
+    expandCard: function() {},
+
+    async acceptTicket() {
+      console.log(" in accept");
+      //update ticket within db
+      this.getZoomLink();
     },
 
-    getSize: function(array) {
-      if (array.length === 1 && array[0].value != null) {
-        return 1;
-      }
-      if (array.length <= 4) {
-        return array.length;
-      }
-      return 4;
-    },
+    // getSize: function(array) {
+    //   if (array.length === 1 && array[0].value != null) {
+    //     return 1;
+    //   }
+    //   if (array.length <= 4) {
+    //     return array.length;
+    //   }
+    //   return 4;
+    // },
 
     async loadUser(user) {
-      this.staff = user.data._id;
+      if (user) {
+        this.staff = user.data._id;
+        console.log("user loaded");
+      }
     },
 
+    // Sets the class to filter by based on dropdown
     async setClass(course) {
       if (course) {
         let chosenCourse = await axios.get("/api/courses/" + course);
@@ -487,42 +608,53 @@ export default {
         console.log(this.course);
       }
     },
+
     async loadClasses(classSelected) {
       if (classSelected) {
         let course = await axios.get("/api/courses/" + classSelected._id);
 
         var text = course.data.dep + " " + course.data.courseNum;
+        // console.log("adding " + course.data.dep + " id " + classSelected._id);
         this.staffCourses.push({ value: classSelected._id, text: text });
+        // console.log(this.staffCourses);
       }
     }
   },
+
   async created() {
+    console.log("in created");
     let tickets = await axios.get("/api/tickets");
 
-    this.tickets = tickets.data;
+    if (this.tickets) {
+      this.tickets = tickets.data;
+    }
     let staff = await axios.get("/api/users/" + this.staff);
-    staff.data.classes.forEach(element => {
-      this.loadClasses(element);
-    });
-    console.log("Classes Loaded");
-    let course = staff.data.classes[0];
-    let staffcourse = course._id;
-    this.course = staffcourse;
 
-    this.loadUser(staff);
+    if (staff) {
+      staff.data.classes.forEach(element => {
+        console.log(element);
+        this.loadClasses(element);
+      });
+      console.log("Classes Loaded");
+      let course = staff.data.classes[0];
+      let staffcourse = course._id;
+      this.course = staffcourse;
+
+      this.loadUser(staff);
+    }
   },
 
   beforeMount() {
+    // var course = {_id = null};
+    this.staffCourses.push({ value: null, text: "Show All Courses" });
 
-    // This gets ANY ticket submitted
+    // This gets ANY ticket submitted by ANY student
     var studentChannel = client.channels.get("tickets");
 
     studentChannel.subscribe("ticketUpdate", function(message) {
       console.log(message.data);
       window.location.reload();
     });
-    
-
 
     this.scrollToTop();
   }

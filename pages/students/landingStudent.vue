@@ -1,4 +1,99 @@
 <style>
+.form-buttons {
+  width: 60% !important;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s;
+}
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.request-container {
+  position: relative;
+  padding-left: 10px;
+  padding-right: 10px;
+  margin-left: 15%;
+  margin-right: 15%;
+  margin-top: 6%;
+  margin-bottom: 2%;
+  font-family: "Poppins";
+  min-width: 200px;
+  border: solid 1px #ddd;
+  padding-left: 2%;
+  padding-right: 2%;
+  padding-bottom: 10px;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+/* ANIMATIONS */
+/* Simple CSS3 Fade-in-down Animation */
+.fadeInDown {
+  -webkit-animation-name: fadeInDown;
+  animation-name: fadeInDown;
+  -webkit-animation-duration: 0.1s;
+  animation-duration: 0.1s;
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
+}
+
+@-webkit-keyframes fadeInDown {
+  0% {
+    opacity: 0;
+    -webkit-transform: translate3d(0, -100%, 0);
+    transform: translate3d(0, -100%, 0);
+  }
+  100% {
+    opacity: 1;
+    -webkit-transform: none;
+    transform: none;
+  }
+}
+
+/* Simple CSS3 Fade-in Animation */
+@-webkit-keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@-moz-keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.fadeIn {
+  opacity: 0;
+  -webkit-animation: fadeIn ease-in 1;
+  -moz-animation: fadeIn ease-in 1;
+  animation: fadeIn ease-in 1;
+
+  -webkit-animation-fill-mode: forwards;
+  -moz-animation-fill-mode: forwards;
+  animation-fill-mode: forwards;
+
+  -webkit-animation-duration: 1s;
+  -moz-animation-duration: 1s;
+  animation-duration: 1s;
+}
+
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.5s;
@@ -11,9 +106,40 @@
 .form-text-areas {
   border-style: solid;
   border: 1px !important;
-  /* border-color: rgb(180, 175, 175) !important; */
   border: 2px solid #dfdada !important;
 }
+
+.close-button {
+  margin-right: 10px;
+  font-size: 18px;
+  border: none;
+  color: "red" !important;
+}
+
+.toolTip {
+  position: relative;
+  display: inline-block;
+}
+
+.toolTip .tooltipText {
+  visibility: hidden;
+  width: 50px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+  top: -5px;
+  left: 105%;
+}
+
+/* .toolTip:hover .toolTiptext {
+  visibility: visible;
+} */
 
 /* Styling for adding rows */
 .add-button {
@@ -99,6 +225,10 @@ table th,
   margin-right: 8px;
   padding-top: 1px !important;
 }
+.close-icon {
+  color: "red" !important;
+  font-size: 22px;
+}
 
 .request-tabs {
   margin-top: 10px;
@@ -136,6 +266,7 @@ table th,
   padding-right: 12px;
   padding-bottom: 2px;
   font-family: "Poppins";
+  margin-left: 12px;
 }
 
 #formContent {
@@ -262,7 +393,9 @@ input[type="text"]:placeholder {
 
           <!--  The first container to show  -->
           <div v-if="this.currentRequestsTab">
-            <div v-if="this.request === true">
+            <div
+              v-if="this.request === true && openTicket.owner === null && !this.countdownShowing"
+            >
               <div class="heading-text">My Requests</div>
 
               <!-- TO DO: make this text dynamic based on user tickets -->
@@ -285,7 +418,9 @@ input[type="text"]:placeholder {
             </div>
 
             <!-- Container for filling out the request form -->
-            <div v-if="this.request === false && this.submitRequest === false">
+            <div
+              v-if="this.request === false && this.submitRequest === false && !this.countdownShowing"
+            >
               <div class="heading-text">Request a Session</div>
               <div
                 class="sub-heading-text-left"
@@ -378,18 +513,81 @@ input[type="text"]:placeholder {
               </div>
             </div>
 
-            <div v-if="this.submitRequest === true" v-bind:key="submitRequest">
-              <div class="heading-text">Request submitted</div>
+            <div v-if="this.submitRequest && !this.countdownShowing" v-bind:key="submitRequest">
+              <div class="heading-text">Your Request Was Submitted</div>
               <div
                 class="sub-heading-text"
                 style="padding-top:2%;"
               >The current wait time is approximately 1 minute.</div>
             </div>
 
-            <div style="text-align: center;" :hidden="openTicket.owner === null">
+            <div v-if="this.countdownShowing">
+              <div class="request-container">
+                <div class="heading-text">Accept your session</div>
+
+                <div class="sub-heading-text-left" style="padding-top:2%;">
+                  A TA is available.
+                  <strong>Please accept the session before the timer runs out to continue.</strong>
+                </div>
+                <div
+                  class="sub-heading-text-left-italic"
+                >If you do not accept in time, your request will be removed, and placed in your request history for resubmission.</div>
+
+                <div style="text-align: center;">
+                  <circular-count-down-timer
+                    :initial-value="60"
+                    :steps="60"
+                    :seconds-stroke-color="'#7fe3d4'"
+                    :second-label="''"
+                    @finish="finished"
+                  ></circular-count-down-timer>
+                 
+                  <button
+                    v-bind:key="accept"
+                    @click="acceptSession"
+                    type="submit"
+                    style="margin-bottom: 20%;"
+                    class="fadeIn form-buttons"
+                  >
+                    <right-circle />Accept the Session
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div v-if="!this.countdownShowing && this.accepted === true">
+              <div v-bind:key="session" class="request-container">
+                <div class="heading-text">Begin your session</div>
+
+                <div class="sub-heading-text">Click the link to open your Zoom session</div>
+                <div class="sub-heading-text-larger" style="margin-top: 15px;">
+                  <a target="_blank" href + this.zoomLink>{{this.zoomLink}}</a>
+                </div>
+              </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 12px;" :hidden="openTicket.owner === null">
               <md-card>
-                <md-card-header>
-                  <div class="md-title">Ticket</div>
+                <div style="float: right; margin-top: 6px; margin-left: 0px; margin-right: 10px; ">
+                  <button
+                    class="close-button"
+                    style="margin-top: 5px;"
+                    v-on:click="closeTicket(openTicket)"
+                  >
+                    <div class="toolTip">
+                      <close
+                        style="color: red !important; margin-bottom: 0px; padding-bottom: 0px;"
+                        class="close-icon"
+                      />
+                      <!-- <span class="toolTipText">Cancel Request</span> -->
+                    </div>
+                  </button>
+                </div>
+                <md-card-header style="display: in-line-block;">
+                  <div
+                    style="justify-content: center; text-align: center; margin-top: 30px;"
+                    class="md-title"
+                  >Requested Session</div>
                 </md-card-header>
 
                 <div class="md-card-content">
@@ -400,9 +598,7 @@ input[type="text"]:placeholder {
                   <strong>Issue:</strong>
                   {{ openTicket.oneLineOverview }}
                 </div>
-                <div class="md-card-content">
-                  <button type="button" v-on:click="closeTicket(openTicket)">Close Request</button>
-                </div>
+                <div class="md-card-content"></div>
               </md-card>
             </div>
           </div>
@@ -436,7 +632,6 @@ input[type="text"]:placeholder {
 <script>
 const userId = "5ec5f90d81b13d23065ead3e";
 const client = new Ably.Realtime(process.env.ABLY_KEY);
-
 
 //import AblyKey from "../../realtimeKey";
 
@@ -483,7 +678,6 @@ export default {
       code: "",
       file: null,
       student: null,
-      staffId: null,
       classes: [
         { value: null, text: "Please select the class you need help with:" }
       ],
@@ -492,7 +686,11 @@ export default {
         status: null,
         oneLineOverview: null
       },
-      otherTickets: [{ owner: null, status: null, oneLineOverview: null }]
+      otherTickets: [{ owner: null, status: null, oneLineOverview: null }],
+      session: null,
+      zoomLink: null,
+      countdownShowing: false,
+      accepted: false
     };
   },
   methods: {
@@ -519,6 +717,16 @@ export default {
       this.scrollToTop();
       return this.requestHistoryTab;
     },
+
+    acceptSession: function() {
+      this.scrollToTop();
+      this.countdownShowing = false;
+
+      this.accepted = true;
+    
+      // Publish an event to the  channel
+      this.studentChannel.publish("studentAcceptedSession", userId);
+    },
     removeElement: function(index) {
       this.rows.splice(index, 1);
     },
@@ -527,11 +735,13 @@ export default {
       row.file = file;
     },
     async loadClasses(classSelected) {
-      if (classSelected){
-      let classes = await axios.get('../../api/courses/' + classSelected._id)
-      this.classes.push({value: classes.data._id, text: classes.data.dep + classes.data.courseNum})
+      if (classSelected) {
+        let classes = await axios.get("../../api/courses/" + classSelected._id);
+        this.classes.push({
+          value: classes.data._id,
+          text: classes.data.dep + classes.data.courseNum
+        });
       }
-
     },
     getSelectedCourse: function(course) {
       this.selectedCourse = course;
@@ -544,10 +754,10 @@ export default {
         return this.request;
       } else {
         console.log("in the else");
-       
-       // ABLY KEY HERE
+
+        // ABLY KEY HERE
         // var client = new Ably.Realtime('vh5NDg.1jd6aw:MJ2_0CWNwz7KlzKr');
-      
+
         this.submitRequest = true;
         this.scrollToTop();
         // HARD CODING A REDIRECT TEMPORARILY
@@ -579,8 +789,8 @@ export default {
       });
     },
     // async loadUser(user) {
-      // this.student = user.data._id;
-      // this.student = userId;
+    // this.student = user.data._id;
+    // this.student = userId;
     // },
 
     // NOT INSERTED YET: file
@@ -588,35 +798,28 @@ export default {
       console.log("in the submit");
       console.log(this.selectedCourse);
       // if (this.problem != "" && this.probDes != "") {
-        let ticket = await axios.post("../../api/insertTicket", {
-          status: "Open",
-          owner: {
-            _id: userId
-          },
-          course: {
-            _id: this.selectedCourse
-          },
-          oneLineOverview: this.probDes,
-          longerDescription: this.problem,
-          codeSnippet: this.code,
-          createdAt: new Date().toString()
-        });
-        this.openTicket = ticket.data;
+      let ticket = await axios.post("../../api/insertTicket", {
+        status: "Open",
+        owner: {
+          _id: userId
+        },
+        course: {
+          _id: this.selectedCourse
+        },
+        oneLineOverview: this.probDes,
+        longerDescription: this.problem,
+        codeSnippet: this.code,
+        createdAt: new Date().toString()
+      });
+      this.openTicket = ticket.data;
 
-        console.log("ticket is :: " + this.openTicket._id);
+      // sends ticket to staff
+      var studentChannel = client.channels.get("tickets");
+      studentChannel.publish("ticketUpdate", this.openTicket);
 
-                // console.log(env.ABLY_KEY);
-        // var client = new Ably.Realtime('vh5NDg.1jd6aw:MJ2_0CWNwz7KlzKr');
-       
-
-       // sends ticket to staff
-        var studentChannel = client.channels.get("tickets");
-        studentChannel.publish("ticketUpdate", this.openTicket);
-       
-       
       //  this.waitforStaff(this.openTicket._id);
       // } else {
-        // TODO: Tell the student they need to fill this out
+      // TODO: Tell the student they need to fill this out
       // }
     },
 
@@ -625,7 +828,7 @@ export default {
         let ticket = await axios.get("../../api/ticket/" + id);
         if (ticket.data.status === "In Progress") {
           clearInterval(x);
-          window.location.href = "/students/studentCountdown";
+          // window.location.href = "/students/studentCountdown";
         }
         if (ticket.data.status === "Closed") {
           clearInterval(x);
@@ -650,16 +853,15 @@ export default {
   },
 
   beforeMount() {
-    
     var studentChannel = client.channels.get(userId);
 
-    // The student's ticket was accepted.
+    // The student's ticket was accepted by the staff
     studentChannel.subscribe("acceptTicket", function(message) {
-      console.log(message.data);
-      
-      this.staffId = message.data;
-      
-      window.location.href = "studentCountdown";
+      console.log("staff message is: " +message.data);
+      // window.location.href = "studentCountdown";
+      this.countdownShowing = true;
+      this.zoomLink = message.data;
+      console.log("this.countdownShowing " + this.countdownShowing);
     });
 
     this.scrollToTop();
@@ -669,7 +871,7 @@ export default {
     this.scrollToTop();
     // let student = await axios.get("../../api/users/" + this.$route.params.id);
 
-        // this.loadUser(student);
+    // this.loadUser(student);
     this.student = userId;
 
     let student = await axios.get("../../api/users/" + userId);

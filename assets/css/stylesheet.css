@@ -45,6 +45,15 @@ footer {
     color: #624b77;
 }
 
+.sub-heading-two-text {
+    margin-top: 15px;
+    margin-bottom: 15px;
+    font-size: 14px;
+    text-align: center;
+    font-family: "Poppins";
+    color: #624b77;
+}
+
 .sub-heading-text-larger {
     margin-top: 18px;
     margin-bottom: 15px;
@@ -96,6 +105,10 @@ footer {
     margin-right: 8px ;
     padding-top: 12px !important;
 }
+/* 
+.close-icon{
+    color: "red" !important;
+} */
 
 button[type="button"], button[type="submit"] input[type="reset"] {
     background: linear-gradient( 333deg, rgba(167, 115, 215, 0.72) 21%, rgba(169, 235, 244, 1) 75%);
