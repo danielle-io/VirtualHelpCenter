@@ -389,7 +389,9 @@ input[type="text"]:placeholder {
 
 <template>
   <div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/velocity/1.2.3/velocity.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/velocity/1.2.3/velocity.min.js">
+    
+    </script>
     <button id="hiddenButton" style="display:none;" @click="triggerAccept"></button>
     <div id="requests">
       <!-- The transition effects for the containers changing -->
@@ -665,12 +667,13 @@ input[type="text"]:placeholder {
   </div>
 </template>
   
-<script src="https://cdn.ably.io/lib/ably.min-1.js"></script>
-<script>
+<script src="https://cdn.ably.io/lib/ably.min-1.js">
+
 const userId = "5ec5f90d81b13d23065ead3e";
 const client = new Ably.Realtime(process.env.ABLY_KEY);
 
 import Vue from "vue";
+import firebase from 'firebase';
 import axios from "~/plugins/axios";
 import * as Ably from "ably";
 import {
@@ -724,7 +727,8 @@ export default {
       showCountdown: false,
       studentAcceptedSession: false,
       studentChannel: client.channels.get(userId),
-      ticketChannel: client.channels.get("tickets")
+      ticketChannel: client.channels.get("tickets"),
+      currentFile,
     };
   },
   methods: {
@@ -738,6 +742,19 @@ export default {
           name: "Choose File"
         }
       });
+    },
+     onUpload(){
+      this.currentFile=null;
+      const storageRef=firebase.storage().ref(`${this.imageData.name}`).put(this.imageData);
+      storageRef.on(`state_changed`,snapshot=>{
+        this.uploadValue = (snapshot.bytesTransferred/snapshot.totalBytes)*100;
+      }, error=>{console.log(error.message)},
+      ()=>{this.uploadValue=100;
+        storageRef.snapshot.ref.getDownloadURL().then((url)=>{
+          this.currentFile =url;
+        });
+      }
+      );
     },
     switchToCurrentRequestsTab: function() {
       this.currentRequestsTab = true;
@@ -796,6 +813,8 @@ export default {
       // The student's ticket was accepted by the staff
       this.studentChannel.subscribe("staffAcceptedTicket", function(message) {
         this.zoomLink = message.data;
+
+        
         console.log("zoomLink " + this.zoomLink);
         document.getElementById("hiddenButton").click();
       });
