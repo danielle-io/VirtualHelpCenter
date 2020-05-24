@@ -667,8 +667,21 @@ input[type="text"]:placeholder {
   </div>
 </template>
   
-<script src="https://cdn.ably.io/lib/ably.min-1.js">
-
+<script src="https://cdn.ably.io/lib/ably.min-1.js"/>
+<script>
+  var firebaseConfig = {
+    apiKey: process.env.API_KEY,
+    authDomain: process.env.AUTH_DOMAIN,
+    databaseURL: process.env.DATABASE_URL,
+    projectId: process.env.PROJECT_ID,
+    storageBucket: process.env.STORAGE_BUCKET,
+    messagingSenderId: process.env.MESSAGING_SENDER_ID,
+    appId: process.env.APP_ID
+  };
+  // Initialize Firebase
+if (!firebase.apps.length) {
+    firebase.initializeApp({});
+}
 const userId = "5ec5f90d81b13d23065ead3e";
 const client = new Ably.Realtime(process.env.ABLY_KEY);
 
@@ -728,7 +741,7 @@ export default {
       studentAcceptedSession: false,
       studentChannel: client.channels.get(userId),
       ticketChannel: client.channels.get("tickets"),
-      currentFile,
+      currentFile: null,
     };
   },
   methods: {
@@ -744,14 +757,14 @@ export default {
       });
     },
      onUpload(){
-      this.currentFile=null;
+      this.currentFile = null;
       const storageRef=firebase.storage().ref(`${this.imageData.name}`).put(this.imageData);
       storageRef.on(`state_changed`,snapshot=>{
         this.uploadValue = (snapshot.bytesTransferred/snapshot.totalBytes)*100;
       }, error=>{console.log(error.message)},
       ()=>{this.uploadValue=100;
         storageRef.snapshot.ref.getDownloadURL().then((url)=>{
-          this.currentFile =url;
+          this.currentFile = url;
         });
       }
       );
