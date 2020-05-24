@@ -633,6 +633,10 @@ input[type="text"]:placeholder {
                     <strong>Issue:</strong>
                     {{ openTicket.oneLineOverview }}
                   </div>
+                  <div v-if="openTicket.attachments" class="md-card-content">
+                    <strong>Attachments:</strong>
+                    {{ openTicket.attachments.length }}
+                  </div>
                   <div class="md-card-content"></div>
                 </md-card>
               </div>
@@ -754,29 +758,36 @@ export default {
         }
       });
     },
-    uploadFile(fileToUpload) {
-      this.currentFile = null;
-      const storageRef = firebase
-        .storage()
-        .ref(fileToUpload.name)
-        .put(fileToUpload);
-      storageRef.on(
-        `state_changed`,
-        snapshot => {
-          this.uploadValue =
-            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        },
-        error => {
-          console.log(error.message);
-        },
-        () => {
-          this.uploadValue = 100;
-          storageRef.snapshot.ref.getDownloadURL().then(url => {
-            this.currentFile = url;
-            this.fileUrls.push(this.currentFile);
-          });
+    async uploadFile() {
+      if (this.rows) {
+        for (var i = 0; i < this.rows.length; i++) {
+          var fileToUpload = this.rows[i].file;
+          this.currentFile = null;
+          const storageRef = firebase
+            .storage()
+            .ref(fileToUpload.name)
+            .put(fileToUpload);
+          storageRef.on(
+            `state_changed`,
+            snapshot => {
+              this.uploadValue =
+                (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            },
+            error => {
+              console.log(error.message);
+            },
+            () => {
+              this.uploadValue = 100;
+              storageRef.snapshot.ref.getDownloadURL().then(url => {
+                this.currentFile = url;
+                this.fileUrls.push(this.currentFile);
+                console.log(this.fileUrls);
+              });
+            }
+          );
         }
-      );
+        console.log("submitting");
+      }
     },
     switchToCurrentRequestsTab: function() {
       this.currentRequestsTab = true;
@@ -879,12 +890,9 @@ export default {
 
     async submit() {
       // Upload to firebase
-      if (this.rows) {
-        for (var i = 0; i < this.rows.length; i++) {
-          this.uploadFile(this.rows[i].file);
-          // console.log(this.rows[i].file);
-        }
-      }
+      await this.uploadFile();
+      console.log('after upload file')
+      console.log(this.fileUrls)
       let ticket = await axios.post("../../api/insertTicket", {
         status: "Open",
         owner: {

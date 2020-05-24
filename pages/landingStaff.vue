@@ -223,6 +223,8 @@
                         </div>
                         <div class="md-card-content">
                           <strong>Attached Files:</strong>
+
+
                         </div>
 
                         <!-- TODO: add student's name from DB -->
@@ -516,6 +518,9 @@ export default {
     },
     clickCard: function(ticket, index, id) {
       this.currentTicket = ticket;
+      console.log("selected card below");
+      console.log(this.currentTicket);
+
       this.currentTicketId = id;
 
       this.selectedCard = !this.selectedCard;
