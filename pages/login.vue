@@ -82,7 +82,7 @@
     border-radius: 0 !important;
     background: none !important;
     padding-top: 15px;
-    padding-bottom: 5px;
+    padding-bottom: 15px;
     padding-left: 8px;
     padding-right: 12px;
     margin-bottom: 20px;

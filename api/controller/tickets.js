@@ -38,6 +38,15 @@ router.get('/ticket/:id', function (req, res, next) {
   });
 })
 
+//
+router.post('/ticketWithParam', function(req,res,next){
+    console.log("inside ticket post request");
+    Ticket.find(req.params, (err, tickets)=>{
+        
+        res.send(tickets)
+    })
+})
+
 //Deleting Ticket
 router.delete('/deleteTicket/:id', function(req, res, next) {
     const id = req.params.id;
