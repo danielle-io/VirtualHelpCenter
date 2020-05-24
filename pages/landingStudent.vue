@@ -882,7 +882,7 @@ export default {
       if (this.rows) {
         for (var i = 0; i < this.rows.length; i++) {
           this.uploadFile(this.rows[i].file);
-          console.log(this.rows[i].file);
+          // console.log(this.rows[i].file);
         }
       }
       let ticket = await axios.post("../../api/insertTicket", {
