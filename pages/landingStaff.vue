@@ -340,11 +340,9 @@
 
                 <div class="md-card-content">
                   <strong>Issue:</strong>
-                  <!-- I can't reference a class. -->
                   {{this.currentTicket.oneLineOverview}}
                 </div>
                 <div class="md-card-content">
-                  <!-- <button type="button" v-on:click="acceptTicket(ticket, ticket._id)">Accept</button> -->
                 </div>
                 <div
                   v-bind:class="{ 'chevron': expandChevron, 'hidden': !expandChevron }"
@@ -365,7 +363,6 @@
               >
                 <div class="md-card-content">
                   <strong>Longer Description:</strong>
-                  <!-- I am trying to call a function from a class but importing gives an undefined error. -->
                   {{this.currentTicket.longerDescription}}
                 </div>
                 <div class="md-card-content">
