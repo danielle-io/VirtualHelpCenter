@@ -545,6 +545,7 @@ export default {
         message
       ) {
         //document.getElementById("hiddenButton").click();
+        console.log(this.studentAccepted)
         this.studentAccepted = true;
         console.log("student accepted");
       });
@@ -608,9 +609,9 @@ export default {
     this.scrollToTop();
   },
   computed: {
-    studentAccepted() {
-      return this.studentAccepted
-    }
+    // studentAccepted() {
+    //   return this.studentAccepted
+    // }
   }
 };
 </script>

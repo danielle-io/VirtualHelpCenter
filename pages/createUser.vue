@@ -99,7 +99,7 @@
 
 <script>
 import vue from 'vue'
-import Course from '../../ui/models/Course'
+import Course from '../ui/models/Course'
 import axios from '~/plugins/axios'
 import {BFormInput, BFormSelect, BButton, BFormCheckbox, } from 'bootstrap-vue'
 

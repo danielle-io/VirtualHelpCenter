@@ -590,7 +590,7 @@ input[type="text"]:placeholder {
 
                   <div class="sub-heading-text">Click the link to open your Zoom session</div>
                   <div class="sub-heading-text-larger" style="margin-top: 15px;">
-                    <a target="_blank" href="https://zoom.us/">https://zoom.us/</a>
+                    <a target="_blank" href="zoom.us">{{this.zoomLink}}</a>
                   </div>
                 </div>
               </div>
@@ -697,6 +697,9 @@ import {
   BFormTextarea
 } from "bootstrap-vue";
 
+//UI store imports
+import Ticket from '../ui/models/Ticket'
+
 export default {
   components: {
     "b-form-input": BFormInput,
@@ -705,11 +708,6 @@ export default {
     "b-form-text-area": BFormTextarea
   },
 
-  computed: {
-    isDisabled: function() {
-      return !this.selected;
-    }
-  },
   data() {
     return {
       el: "#requests",
@@ -840,11 +838,14 @@ export default {
     async startSubscribe() {
       console.log("subscribing to staff");
       // The student's ticket was accepted by the staff
-      this.studentChannel.subscribe("staffAcceptedTicket", function(message) {
+      this.studentChannel.subscribe("staffAcceptedTicket", (message) => {
         this.zoomLink = message.data;
 
         console.log("zoomLink " + this.zoomLink);
-        document.getElementById("hiddenButton").click();
+        //document.getElementById("hiddenButton").click();
+        console.log(this.showCountdown)
+        this.showCountdown = true
+        //this.studentAcceptedSession = true
       });
     },
     finished: () => {
@@ -981,6 +982,17 @@ export default {
       this.openTicket = tickets[0];
       this.waitforStaff(this.openTicket._id);
     }
-  }
+  },
+   computed: {
+    isDisabled: function() {
+      return !this.selected;
+    },
+    // studentSession() {
+    //   return this.studentAcceptedSession
+    // },
+    // showCountdown() {
+    //   return this.showCountdown
+    // }
+   },
 };
 </script>
