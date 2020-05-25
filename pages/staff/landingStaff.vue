@@ -429,7 +429,7 @@ export default {
       course: {},
       selected: "",
       staffClass: "none",
-      staff: "5eade62b47da2706382d53e8",
+      staff: "5ecafc0f5219c55528efe03f",
       zoomLink: null,
       selectedTicketIndex: -1,
       startingIndex: 0,
@@ -473,7 +473,6 @@ export default {
     },
 
     filterCourseTickets(status, course) {
-      console.log(this.tickets);
 
       if (this.tickets) {
         // Prevents code from breaking when no course is in the ticket
@@ -542,35 +541,60 @@ export default {
     },
 
     // This is where the link is stored
-    sendZoomLink: function() {
+    sendZoomLink() {
       axios.put("/api/updateTicket/" + this.currentTicketId, {
         status: "In Progress",
         accepted: this.staff
       });
+      
+      let ticketTime = new Date();
+
 
       // Get the students user id from the ticket
       this.studentChannel = client.channels.get(this.currentTicket.owner._id);
-      this.studentChannel.publish("staffAcceptedTicket", this.zoomLink);
+      this.studentChannel.publish("staffAcceptedTicket", {zoomLink: this.zoomLink, date: ticketTime});
 
       // Show connection screen once student receives countdown
       this.startConnecting();
       // this.studentChannel = client.channels.get(ticket.owner._id);
 
-      setTimeout(function() {
-        // Right here we let it know the student did not accept
-      }, 120000);
       console.log("waiting on acceptance");
 
       // Subscribe to an event on studentChannel to see if they accepted ticket
-      this.studentChannel.subscribe("studentAcceptedSession", function(
-        message
-      ) {
+      this.studentChannel.subscribe("studentAcceptedSession", function(message) {
         document.getElementById("hiddenButton").click();
         this.studentAccepted = true;
         console.log("student accepted");
       });
+
+      let x = setTimeout(function() {
+        // Right here we let it know the student did not accept
+        console.log('student did not accept in time')
+          axios.put("/api/updateTicket/" + this.currentTicketId, {
+          status: "Unresolved",
+        });
+      }, this.countdownTime(ticketTime));
+
+      //student did not accept the ticket
+      // this.studentChannel.subscribe("studentDidNotAcceptSession", function(message){
+      //   console.log("student did not accept session, moving on")
+      //   //not sure if the timeout is cleared when we move on
+      //   clearTimeout(x);
+      // });
+    },
+    countdownTime(ticketTime){
+      //read updated time
+
+      let currentTime = new Date()
+      ticketTime.setMinutes(ticketTime.getMinutes()+1);
+      console.log(ticketTime.getMinutes()*60+ticketTime.getSeconds()-(currentTime.getMinutes()*60+currentTime.getSeconds()))
+      
+      return (ticketTime.getMinutes()*60+ticketTime.getSeconds()-(currentTime.getMinutes()*60+currentTime.getSeconds()))*1000;
     },
     expandCard: function() {},
+    removeTicket(ticket){
+
+    },
 
     async acceptTicket() {
       console.log(" in accept ticket");
@@ -598,9 +622,7 @@ export default {
         let course = await axios.get("/api/courses/" + classSelected._id);
 
         var text = course.data.dep + " " + course.data.courseNum;
-        // console.log("adding " + course.data.dep + " id " + classSelected._id);
         this.staffCourses.push({ value: classSelected._id, text: text });
-        // console.log(this.staffCourses);
       }
     }
   },
@@ -616,10 +638,8 @@ export default {
 
     if (staff) {
       staff.data.classes.forEach(element => {
-        console.log(element);
         this.loadClasses(element);
       });
-      console.log("Classes Loaded");
       let course = staff.data.classes[0];
       let staffcourse = course._id;
       this.course = staffcourse;
@@ -631,12 +651,18 @@ export default {
   beforeMount() {
     // var course = {_id = null};
     this.staffCourses.push({ value: null, text: "Show All Courses" });
-
     // This gets ANY ticket submitted by ANY student
-    this.ticketChannel.subscribe("ticketUpdate", function(message) {
-      console.log(message.data);
-      window.location.reload();
+    this.ticketChannel.subscribe("ticketUpdate", (message)=>{
+      //add new ticket to existing tickets
+      this.tickets.push(message.data);
     });
+
+    this.ticketChannel.subscribe("ticketClosed", (message)=>{
+      console.log("ticket was deleted")
+
+      //ticket will be deleted from being displayed
+      removeTicket(message.data);
+    })
 
     this.scrollToTop();
   }
