@@ -223,6 +223,8 @@
                         </div>
                         <div class="md-card-content">
                           <strong>Attached Files:</strong>
+
+
                         </div>
 
                         <!-- TODO: add student's name from DB -->
@@ -340,11 +342,9 @@
 
                 <div class="md-card-content">
                   <strong>Issue:</strong>
-                  <!-- I can't reference a class. -->
                   {{this.currentTicket.oneLineOverview}}
                 </div>
                 <div class="md-card-content">
-                  <!-- <button type="button" v-on:click="acceptTicket(ticket, ticket._id)">Accept</button> -->
                 </div>
                 <div
                   v-bind:class="{ 'chevron': expandChevron, 'hidden': !expandChevron }"
@@ -365,7 +365,6 @@
               >
                 <div class="md-card-content">
                   <strong>Longer Description:</strong>
-                  <!-- I am trying to call a function from a class but importing gives an undefined error. -->
                   {{this.currentTicket.longerDescription}}
                 </div>
                 <div class="md-card-content">
@@ -529,6 +528,9 @@ export default {
     },
     clickCard: function(ticket, index, id) {
       this.currentTicket = ticket;
+      console.log("selected card below");
+      console.log(this.currentTicket);
+
       this.currentTicketId = id;
 
       this.selectedCard = !this.selectedCard;
