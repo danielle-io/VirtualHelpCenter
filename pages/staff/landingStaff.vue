@@ -426,6 +426,7 @@ export default {
       collapseChevron: false,
       selectedCard: false,
       color: "#7e6694",
+      // course: {},
       course: {},
       selected: "",
       staffClass: "none",
@@ -446,12 +447,19 @@ export default {
   },
   methods: {
     filterOpenTickets(status) {
+      // if (this.tickets) {
+      //   this.filteredTickets = this.tickets.filter(
+      //     ticket => ticket.status === status
+      //   );
+      //   console.log("filtering open tickets")
+      //   return this.filteredTickets;
+      // } 
       if (this.tickets) {
-        this.filteredTickets = this.tickets.filter(
-          ticket => ticket.status === status
-        );
-        return this.filteredTickets;
-      } else {
+        console.log("filtering open tickets")
+        return this.tickets.filter(ticket => ticket.status === status);
+      }
+  
+      else {
         this.filteredTickets = [];
         return;
       }
@@ -463,11 +471,13 @@ export default {
       console.log("accepted " + this.studentAccepted);
     },
     getFilterClass(status, course) {
+      console.log("filtering course")
       console.log(course);
       if (course === null) {
         console.log("open tickets");
         return this.filterOpenTickets(status);
       } else {
+        console.log("filtering here")
         return this.filterCourseTickets(status, course);
       }
     },
@@ -586,11 +596,14 @@ export default {
 
     // Sets the class to filter by based on dropdown
     async setClass(course) {
+      console.log("setting class")
       if (course) {
         let chosenCourse = await axios.get("/api/courses/" + course);
         this.course = chosenCourse.data._id;
+        
         console.log(this.course);
       }
+      console.log(this.course);
     },
 
     async loadClasses(classSelected) {
@@ -600,7 +613,7 @@ export default {
         var text = course.data.dep + " " + course.data.courseNum;
         // console.log("adding " + course.data.dep + " id " + classSelected._id);
         this.staffCourses.push({ value: classSelected._id, text: text });
-        // console.log(this.staffCourses);
+        console.log(this.staffCourses);
       }
     }
   },
@@ -620,16 +633,23 @@ export default {
         this.loadClasses(element);
       });
       console.log("Classes Loaded");
-      let course = staff.data.classes[0];
-      let staffcourse = course._id;
-      this.course = staffcourse;
+      
+  
+      let course = this.staffCourses[0];
+      this.course = course.value
+   
 
-      this.loadUser(staff);
+      console.log("this.course")
+      console.log(this.course)
+
+
+    this.loadUser(staff);
     }
   },
 
   beforeMount() {
     // var course = {_id = null};
+    console.log("push all")
     this.staffCourses.push({ value: null, text: "Show All Courses" });
 
     // This gets ANY ticket submitted by ANY student
