@@ -6,18 +6,18 @@
 
     <div class="Row card-row">
 
-      <md-card>
-        <md-card-header>
+      <!-- <md-card> -->
+        <!-- <md-card-header>
           <md-card-header-text>
             <div class="md-title">Ticket Display</div>
             <div class="md-subhead">Click here to See a display of the tickets</div>
           </md-card-header-text>
-        </md-card-header>
+        </md-card-header> -->
 
-        <md-card-actions>
+        <!-- <md-card-actions>
           <nuxt-link to="/testPages/listTickets">Ticket Display</nuxt-link>
         </md-card-actions>
-      </md-card>
+      </md-card> -->
 
       <md-card>
         <md-card-header>
@@ -30,7 +30,7 @@
         </md-card-header>
 
         <md-card-actions>
-          <nuxt-link to="/createUser">Create User</nuxt-link>
+          <nuxt-link to="/testPages/createUser">Create User</nuxt-link>
         </md-card-actions>
       </md-card>
 
@@ -45,7 +45,7 @@
         </md-card-header>
 
         <md-card-actions>
-          <nuxt-link to="/students/landingStudent">Student Landing</nuxt-link>
+          <nuxt-link to="/landingStudent">Student Landing</nuxt-link>
         </md-card-actions>
       </md-card>
 
@@ -60,20 +60,7 @@
         </md-card-header>
 
         <md-card-actions>
-          <nuxt-link to="/staff/landingStaff">Staff Landing</nuxt-link>
-        </md-card-actions>
-      </md-card>
-
-        <md-card>
-        <md-card-header>
-          <md-card-header-text>
-            <div class="md-title">Student Countdown</div>
-            <div class="md-subhead">The countdown that displays when student is paired with a TA</div>
-          </md-card-header-text>
-        </md-card-header>
-
-        <md-card-actions>
-          <nuxt-link to="/students/studentCountdown">Student Countdown</nuxt-link>
+          <nuxt-link to="/landingStaff">Staff Landing</nuxt-link>
         </md-card-actions>
       </md-card>
 
@@ -106,19 +93,6 @@
 
 
 
-        <md-card>
-        <md-card-header>
-          <md-card-header-text>
-            <div class="md-title">Staff Countdown</div>
-            <div class="md-subhead">The countdown that displays when a staff member selects a requested session.</div>
-          </md-card-header-text>
-        </md-card-header>
-
-        <md-card-actions>
-          <nuxt-link to="/staff/staffCountdown">Staff Countdown</nuxt-link>
-        </md-card-actions>
-      </md-card>
-
 
       <md-card>
         <md-card-header>
@@ -129,11 +103,11 @@
         </md-card-header>
 
         <md-card-actions>
-          <nuxt-link to="/admin/landingAdmin">Admin Landing</nuxt-link>
+          <nuxt-link to="/landingAdmin">Admin Landing</nuxt-link>
         </md-card-actions>
       </md-card>
 
-      <md-card>
+      <!-- <md-card>
         <md-card-header>
           <md-card-header-text>
             <div class="md-title">Insert Ticket Request</div>
@@ -144,7 +118,7 @@
         <md-card-actions>
           <nuxt-link :to="'/request/'+id">Ticket Request</nuxt-link>
         </md-card-actions>
-      </md-card>
+      </md-card> -->
     </div>
   </div>
 </template>
