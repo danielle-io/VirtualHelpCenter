@@ -686,7 +686,7 @@ input[type="text"]:placeholder {
 
                   <div class="sub-heading-text">Click the link to open your Zoom session</div>
                   <div class="sub-heading-text-larger" style="margin-top: 15px;">
-                    <a target="_blank" href="https://zoom.us/">https://zoom.us/</a>
+                    <a target="_blank" href="zoom.us">{{this.zoomLink}}</a>
                   </div>
                 </div>
               </div>
@@ -800,6 +800,9 @@ import {
   BFormTextarea
 } from "bootstrap-vue";
 
+//UI store imports
+import Ticket from '../ui/models/Ticket'
+
 export default {
   components: {
     "b-form-input": BFormInput,
@@ -808,11 +811,6 @@ export default {
     "b-form-text-area": BFormTextarea
   },
 
-  computed: {
-    isDisabled: function() {
-      return !this.selected;
-    }
-  },
   data() {
     return {
       el: "#requests",
@@ -1092,6 +1090,17 @@ export default {
       this.openTicket = tickets[0];
       this.startSubscribe();
     }
-  }
+  },
+   computed: {
+    isDisabled: function() {
+      return !this.selected;
+    },
+    // studentSession() {
+    //   return this.studentAcceptedSession
+    // },
+    // showCountdown() {
+    //   return this.showCountdown
+    // }
+   },
 };
 </script>
