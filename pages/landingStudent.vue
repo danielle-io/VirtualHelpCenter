@@ -700,11 +700,6 @@ input[type="text"]:placeholder {
                 <div
                   style="float: right; margin-top: 6px; margin-left: 0px; margin-right: 10px; "
                 >
-                  <button
-                    class="close-button"
-                    style="margin-top: 5px;"
-                    v-on:click="closeTicket(openTicket)"
-                  >
                     <button
                       class="close-button"
                       style="margin-top: 5px;"
