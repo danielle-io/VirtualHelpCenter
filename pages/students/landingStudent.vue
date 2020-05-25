@@ -680,6 +680,9 @@ import {
   BFormTextarea
 } from "bootstrap-vue";
 
+//UI store imports
+import Ticket from '../../ui/models/Ticket'
+
 export default {
   components: {
     "b-form-input": BFormInput,
@@ -688,11 +691,6 @@ export default {
     "b-form-text-area": BFormTextarea
   },
 
-  computed: {
-    isDisabled: function() {
-      return !this.selected;
-    }
-  },
   data() {
     return {
       el: "#requests",
@@ -797,7 +795,9 @@ export default {
       this.studentChannel.subscribe("staffAcceptedTicket", function(message) {
         this.zoomLink = message.data;
         console.log("zoomLink " + this.zoomLink);
-        document.getElementById("hiddenButton").click();
+        //document.getElementById("hiddenButton").click();
+        this.showCountdown = true
+        //this.studentAcceptedSession = true
       });
     },
     finished: () => {
@@ -945,6 +945,17 @@ export default {
       this.openTicket = tickets[0];
       this.waitforStaff(this.openTicket._id);
     }
-  }
+  },
+   computed: {
+    isDisabled: function() {
+      return !this.selected;
+    },
+    studentAcceptedSession() {
+      return this.studentAcceptedSession
+    },
+    showCountdown() {
+      return this.showCountdown
+    }
+  },
 };
 </script>

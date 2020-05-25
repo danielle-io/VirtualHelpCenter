@@ -7,7 +7,6 @@
   margin-right: 10px !important;
   margin-top: 3px;
 }
-
 .tab-links {
   display: inline-block;
   margin-left: 4%;
@@ -29,18 +28,15 @@
   text-decoration: underline;
   color: #0286a0 !important;
 }
-
 .loading-dots {
   margin-top: 15px;
   margin-bottom: 15px;
   text-align: center;
 }
-
 .request-staff-buttons {
   width: 40% !important;
   opacity: 0.9;
 }
-
 .request-tabs {
   margin-top: 10px;
   margin-bottom: 6px;
@@ -70,7 +66,6 @@
   height: 400px;
   overflow-y: scroll;
 }
-
 .md-card-content {
   word-wrap: break-word;
   flex-wrap: wrap;
@@ -92,11 +87,9 @@
   display: inline-block;
   cursor: pointer;
 }
-
 .title {
   margin-top: 30px;
 }
-
 .chevron {
   opacity: 1;
   float: right;
@@ -105,17 +98,14 @@
   cursor: pointer;
   padding-top: 15px !important;
 }
-
 .hidden {
   opacity: 0;
   display: none !important;
   float: left !important;
 }
-
 .show-extra-content {
   display: show;
 }
-
 .hide-extra-content {
   height: 0px;
   display: none;
@@ -223,6 +213,8 @@
                         </div>
                         <div class="md-card-content">
                           <strong>Attached Files:</strong>
+
+
                         </div>
 
                         <!-- TODO: add student's name from DB -->
@@ -340,11 +332,9 @@
 
                 <div class="md-card-content">
                   <strong>Issue:</strong>
-                  <!-- I can't reference a class. -->
                   {{this.currentTicket.oneLineOverview}}
                 </div>
                 <div class="md-card-content">
-                  <!-- <button type="button" v-on:click="acceptTicket(ticket, ticket._id)">Accept</button> -->
                 </div>
                 <div
                   v-bind:class="{ 'chevron': expandChevron, 'hidden': !expandChevron }"
@@ -365,7 +355,6 @@
               >
                 <div class="md-card-content">
                   <strong>Longer Description:</strong>
-                  <!-- I am trying to call a function from a class but importing gives an undefined error. -->
                   {{this.currentTicket.longerDescription}}
                 </div>
                 <div class="md-card-content">
@@ -396,11 +385,8 @@ import "vue-material/dist/vue-material.min.css";
 import "vue-material/dist/theme/default.css";
 import { BFormInput, BFormSelect, BButton, BFormCheckbox } from "bootstrap-vue";
 Vue.use(VueMaterial);
-
 import * as Ably from "ably";
-
 const client = new Ably.Realtime(process.env.ABLY_KEY);
-
 export default {
   head() {
     return {
@@ -471,10 +457,8 @@ export default {
         return this.filterCourseTickets(status, course);
       }
     },
-
     filterCourseTickets(status, course) {
       console.log(this.tickets);
-
       if (this.tickets) {
         // Prevents code from breaking when no course is in the ticket
         if (typeof course !== "undefined") {
@@ -519,8 +503,9 @@ export default {
     },
     clickCard: function(ticket, index, id) {
       this.currentTicket = ticket;
+      console.log("selected card below");
+      console.log(this.currentTicket);
       this.currentTicketId = id;
-
       this.selectedCard = !this.selectedCard;
       if (this.selectedTicketIndex === index) {
         this.selectedTicketIndex = -1;
@@ -536,54 +521,45 @@ export default {
       this.zoomLinkForm = true;
     },
     
-
     startConnecting: function() {
       this.connecting = true;
     },
-
     // This is where the link is stored
     sendZoomLink: function() {
       axios.put("/api/updateTicket/" + this.currentTicketId, {
         status: "In Progress",
         accepted: this.staff
       });
-
       // Get the students user id from the ticket
       this.studentChannel = client.channels.get(this.currentTicket.owner._id);
       this.studentChannel.publish("staffAcceptedTicket", this.zoomLink);
-
       // Show connection screen once student receives countdown
       this.startConnecting();
       // this.studentChannel = client.channels.get(ticket.owner._id);
-
       setTimeout(function() {
         // Right here we let it know the student did not accept
       }, 120000);
       console.log("waiting on acceptance");
-
       // Subscribe to an event on studentChannel to see if they accepted ticket
       this.studentChannel.subscribe("studentAcceptedSession", function(
         message
       ) {
-        document.getElementById("hiddenButton").click();
+        //document.getElementById("hiddenButton").click();
         this.studentAccepted = true;
         console.log("student accepted");
       });
     },
     expandCard: function() {},
-
     async acceptTicket() {
       console.log(" in accept ticket");
       this.getZoomLink();
     },
-
     async loadUser(user) {
       if (user) {
         this.staff = user.data._id;
         console.log("user loaded");
       }
     },
-
     // Sets the class to filter by based on dropdown
     async setClass(course) {
       if (course) {
@@ -592,11 +568,9 @@ export default {
         console.log(this.course);
       }
     },
-
     async loadClasses(classSelected) {
       if (classSelected) {
         let course = await axios.get("/api/courses/" + classSelected._id);
-
         var text = course.data.dep + " " + course.data.courseNum;
         // console.log("adding " + course.data.dep + " id " + classSelected._id);
         this.staffCourses.push({ value: classSelected._id, text: text });
@@ -604,16 +578,13 @@ export default {
       }
     }
   },
-
   async created() {
     console.log("in created");
     let tickets = await axios.get("/api/tickets");
-
     if (this.tickets) {
       this.tickets = tickets.data;
     }
     let staff = await axios.get("/api/users/" + this.staff);
-
     if (staff) {
       staff.data.classes.forEach(element => {
         console.log(element);
@@ -623,22 +594,23 @@ export default {
       let course = staff.data.classes[0];
       let staffcourse = course._id;
       this.course = staffcourse;
-
       this.loadUser(staff);
     }
   },
-
   beforeMount() {
     // var course = {_id = null};
     this.staffCourses.push({ value: null, text: "Show All Courses" });
-
     // This gets ANY ticket submitted by ANY student
     this.ticketChannel.subscribe("ticketUpdate", function(message) {
       console.log(message.data);
       window.location.reload();
     });
-
     this.scrollToTop();
+  },
+  computed: {
+    studentAccepted() {
+      return this.studentAccepted
+    }
   }
 };
 </script>

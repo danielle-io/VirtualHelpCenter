@@ -5,7 +5,7 @@ import Ticket from '../models/Ticket'
 
 const database = new Database()
 
-database.register(User)
-database.register(Ticket)
+// database.register(User)
+// database.register(Ticket)
 
 export default database
