@@ -542,10 +542,109 @@ input[type="text"]:placeholder {
             >
               <div class="heading-text">Your Request Was Submitted</div>
               <div
-                class="sub-heading-text"
-                style="padding-top:2%;"
-              >The current wait time is approximately 1 minute.</div>
-            </div>
+                v-if="this.request === false && this.submitRequest === false && !this.showCountdown"
+              >
+                <div class="heading-text">Request a Session</div>
+                <div
+                  class="sub-heading-text-left"
+                  style="padding-top:2%;"
+                >Complete the form below to request assistance from a lab tutor.</div>
+
+                <div class="form-container">
+                  <div class="row" style="width: 70%;">
+                    <b-form-select
+                      :options="classes"
+                      v-on:change="getSelectedCourse"
+                      size="sm"
+                      class="mt-3"
+                      placeholder="Please select the class you need help with"
+                    ></b-form-select>
+                  </div>
+
+                  <div class="row">
+                    <label
+                      class="label-format"
+                    >Please enter a brief one-sentence summary of the issue</label>
+                    <b-form-input v-model="probDes" placeholder class="form-text-areas"></b-form-input>
+                  </div>
+
+                  <div class="row">
+                    <label class="label-format">Elaborate on the issue, if needed.</label>
+                    <b-form-text-area
+                      id="textarea"
+                      v-model="problem"
+                      placeholder
+                      rows="2"
+                      max-rows="6"
+                    ></b-form-text-area>
+                  </div>
+
+                  <div class="row">
+                    <label class="label-format">Paste a code snippet, if needed</label>
+                    <b-form-text-area
+                      id="textarea"
+                      v-model="code"
+                      placeholder
+                      rows="1"
+                      max-rows="30"
+                    ></b-form-text-area>
+                    <!-- removed for now from above :disabled="isDisabled" -->
+                    <!-- <pre class="mt-3 mb-0">{{ code }}</pre> -->
+                  </div>
+
+                  <div class="Row">
+                    <label class="label-format">Add a file, if needed</label>
+                  </div>
+
+                  <table class="table request-table">
+                    <tbody>
+                      <!-- This is where the new questions are inserted -->
+                      <div class="top-row" v-for="(row, index) in rows" v-bind:key="row">
+                        <tr>
+                          <td>
+                            <button class="file-container file-button">
+                              {{row.file.name}}
+                              <input
+                                type="file"
+                                @change="setFilename($event, row)"
+                                :id="index"
+                              />
+                            </button>
+                          </td>
+
+                          <td class="remove-column">
+                            <a
+                              v-on:click="removeElement(index);"
+                              style="cursor: pointer; z-index: 999;"
+                            >Remove</a>
+                          </td>
+                        </tr>
+                      </div>
+                    </tbody>
+                  </table>
+
+                  <span class="add-button" @click="addRow">
+                    <plus-circle />
+                  </span>
+
+                  <div style="text-align: center;">
+                    <!--  On select, the state of request is changed, forcing a transition effect and
+                    changing what is rendered on the page-->
+                    <div v-if="this.problem && this.probDes && this.selectedCourse">
+                      <button
+                        v-on:click="submit"
+                        v-bind:key="submitRequest"
+                        type="submit"
+                        style="margin-bottom: 20%; width: 40% !important;"
+                        class="fadeIn form-buttons"
+                        @click="changeRequestState"
+                      >
+                        <right-circle style="margin-right:4px" />Submit Request
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
             <div v-if="this.showCountdown && !this.studentAcceptedSession">
               <div class="request-container">
@@ -581,16 +680,14 @@ input[type="text"]:placeholder {
               </div>
             </div>
 
-            <div v-if="this.studentAcceptedSession">
-              <div v-bind:key="session" class="request-container-two">
-                <div class="heading-text">Begin your session</div>
+              <div v-if="this.studentAcceptedSession">
+                <div v-bind:key="session" class="request-container-two">
+                  <div class="heading-text">Begin your session</div>
 
-                <div class="sub-heading-text">Click the link to open your Zoom session</div>
-                <div class="sub-heading-text-larger" style="margin-top: 15px;">
-                  <a
-                    target="_blank"
-                    href="https://zoom.us/"
-                  >https://zoom.us/</a>
+                  <div class="sub-heading-text">Click the link to open your Zoom session</div>
+                  <div class="sub-heading-text-larger" style="margin-top: 15px;">
+                    <a target="_blank" href="https://zoom.us/">https://zoom.us/</a>
+                  </div>
                 </div>
               </div>
             </div>
@@ -608,34 +705,43 @@ input[type="text"]:placeholder {
                     style="margin-top: 5px;"
                     v-on:click="closeTicket(openTicket)"
                   >
-                    <div class="toolTip">
-                      <close
-                        style="color: red !important; margin-bottom: 0px; padding-bottom: 0px;"
-                        class="close-icon"
-                      />
-                      <!-- <span class="toolTipText">Cancel Request</span> -->
-                    </div>
-                  </button>
-                </div>
+                    <button
+                      class="close-button"
+                      style="margin-top: 5px;"
+                      v-on:click="closeTicket(openTicket)"
+                    >
+                      <div class="toolTip">
+                        <close
+                          style="color: red !important; margin-bottom: 0px; padding-bottom: 0px;"
+                          class="close-icon"
+                        />
+                        <!-- <span class="toolTipText">Cancel Request</span> -->
+                      </div>
+                    </button>
+                  </div>
 
-                <md-card-header style="display: in-line-block;">
-                  <div
-                    style="justify-content: center; text-align: center; margin-top: 30px;"
-                    class="md-title"
-                  >Requested Session</div>
-                </md-card-header>
+                  <md-card-header style="display: in-line-block;">
+                    <div
+                      style="justify-content: center; text-align: center; margin-top: 30px;"
+                      class="md-title"
+                    >Requested Session</div>
+                  </md-card-header>
 
-                <div class="md-card-content">
-                  <strong>Status:</strong>
-                  {{ openTicket.status }}
-                </div>
-                <div class="md-card-content">
-                  <strong>Issue:</strong>
-                  {{ openTicket.oneLineOverview }}
-                </div>
-                <div class="md-card-content"></div>
-              </md-card>
-            </div>
+                  <div class="md-card-content">
+                    <strong>Status:</strong>
+                    {{ openTicket.status }}
+                  </div>
+                  <div class="md-card-content">
+                    <strong>Issue:</strong>
+                    {{ openTicket.oneLineOverview }}
+                  </div>
+                  <div v-if="openTicket.attachments" class="md-card-content">
+                    <strong>Attachments:</strong>
+                    {{ openTicket.attachments.length }}
+                  </div>
+                  <div class="md-card-content"></div>
+                </md-card>
+              </div>
             </div>
 
             <div v-if="this.requestHistoryTab">
@@ -665,12 +771,26 @@ input[type="text"]:placeholder {
   </div>
 </template>
   
-<script src="https://cdn.ably.io/lib/ably.min-1.js"></script>
+<script src="https://cdn.ably.io/lib/ably.min-1.js"/>
 <script>
-const userId = "5ecafbcd5219c55528efe03e";
+var firebaseConfig = {
+  apiKey: process.env.FB_API_KEY,
+  authDomain: process.env.FB_AUTH_DOMAIN,
+  databaseURL: process.env.FB_DATABASE_URL,
+  projectId: process.env.FB_PROJECT_ID,
+  storageBucket: process.env.FB_STORAGE_BUCKET,
+  messagingSenderId: process.env.FB_MESSAGING_SENDER_ID,
+  appId: process.env.FB_APP_ID
+};
+// Initialize Firebase
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
+const userId = "5ec5f90d81b13d23065ead3e";
 const client = new Ably.Realtime(process.env.ABLY_KEY);
 
 import Vue from "vue";
+import firebase from "firebase";
 import axios from "~/plugins/axios";
 import * as Ably from "ably";
 import {
@@ -724,7 +844,9 @@ export default {
       showCountdown: false,
       studentAcceptedSession: false,
       studentChannel: client.channels.get(userId),
-      ticketChannel: client.channels.get("tickets")
+      ticketChannel: client.channels.get("tickets"),
+      currentFile: null,
+      fileUrls: []
     };
   },
   methods: {
@@ -738,6 +860,37 @@ export default {
           name: "Choose File"
         }
       });
+    },
+    async uploadFile() {
+      if (this.rows) {
+        for (var i = 0; i < this.rows.length; i++) {
+          var fileToUpload = this.rows[i].file;
+          this.currentFile = null;
+          const storageRef = firebase
+            .storage()
+            .ref(fileToUpload.name)
+            .put(fileToUpload);
+          storageRef.on(
+            `state_changed`,
+            snapshot => {
+              this.uploadValue =
+                (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            },
+            error => {
+              console.log(error.message);
+            },
+            () => {
+              this.uploadValue = 100;
+              storageRef.snapshot.ref.getDownloadURL().then(url => {
+                this.currentFile = url;
+                this.fileUrls.push(this.currentFile);
+                console.log(this.fileUrls);
+              });
+            }
+          );
+        }
+        console.log("submitting");
+      }
     },
     switchToCurrentRequestsTab: function() {
       this.currentRequestsTab = true;
@@ -754,7 +907,6 @@ export default {
 
     acceptSession: function() {
       this.scrollToTop();
-      console.log("countdown is " + this.showCountdown);
       this.showCountdown = false;
       this.studentAcceptedSession = true;
       console.log("in accept session and zoomLink is " + this.zoomLink);
@@ -765,10 +917,7 @@ export default {
       this.studentChannel.publish("studentAcceptedSession", userId);
     },
     triggerAccept: function() {
-      console.log("in triggerAccept");
-      console.log("countdown " + this.showCountdown);
       this.showCountdown = true;
-      console.log("countdown " + this.showCountdown);
     },
     removeElement: function(index) {
       this.rows.splice(index, 1);
@@ -825,21 +974,13 @@ export default {
 
     },
 
-    // TODO: use store to change the state- the timeout is a temp method to be able to do this but will be a problem once it runs out
     changeRequestState: function() {
       if (this.request === true && this.submitRequest === false) {
         this.request = false;
         return this.request;
       } else {
-        console.log("in the else");
-
         this.submitRequest = true;
         this.scrollToTop();
-        // HARD CODING A REDIRECT TEMPORARILY
-        // setTimeout(function() {
-        //   window.location.href = "studentCountdown";
-        // }, 8000);
-
         this.startSubscribe();
         return this.request;
       }
@@ -866,11 +1007,11 @@ export default {
       });
     },
 
-    // NOT INSERTED YET: file
     async submit() {
-      console.log("in the submit");
-      console.log(this.selectedCourse);
-      // if (this.problem != "" && this.probDes != "") {
+      // Upload to firebase
+      await this.uploadFile();
+      console.log('after upload file')
+      console.log(this.fileUrls)
       let ticket = await axios.post("../../api/insertTicket", {
         status: "Open",
         owner: {
@@ -882,7 +1023,8 @@ export default {
         oneLineOverview: this.probDes,
         longerDescription: this.problem,
         codeSnippet: this.code,
-        createdAt: new Date().toString()
+        createdAt: new Date().toString(),
+        attachments: this.fileUrls
       });
       this.openTicket = ticket.data;
 
