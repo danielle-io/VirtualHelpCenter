@@ -590,7 +590,7 @@ input[type="text"]:placeholder {
 
                   <div class="sub-heading-text">Click the link to open your Zoom session</div>
                   <div class="sub-heading-text-larger" style="margin-top: 15px;">
-                    <a target="_blank" href="https://zoom.us/">https://zoom.us/</a>
+                    <a target="_blank" href="zoom.us">{{this.zoomLink}}</a>
                   </div>
                 </div>
               </div>
@@ -838,11 +838,12 @@ export default {
     async startSubscribe() {
       console.log("subscribing to staff");
       // The student's ticket was accepted by the staff
-      this.studentChannel.subscribe("staffAcceptedTicket", function(message) {
+      this.studentChannel.subscribe("staffAcceptedTicket", (message) => {
         this.zoomLink = message.data;
 
         console.log("zoomLink " + this.zoomLink);
         //document.getElementById("hiddenButton").click();
+        console.log(this.showCountdown)
         this.showCountdown = true
         //this.studentAcceptedSession = true
       });
@@ -986,12 +987,12 @@ export default {
     isDisabled: function() {
       return !this.selected;
     },
-    studentAcceptedSession() {
-      return this.studentAcceptedSession
-    },
-    showCountdown() {
-      return this.showCountdown
-    }
-  },
+    // studentSession() {
+    //   return this.studentAcceptedSession
+    // },
+    // showCountdown() {
+    //   return this.showCountdown
+    // }
+   },
 };
 </script>
