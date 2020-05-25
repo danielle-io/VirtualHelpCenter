@@ -593,7 +593,7 @@ export default {
     },
     expandCard: function() {},
     removeTicket(ticket){
-
+      this.tickets = this.tickets.filter(tickets => tickets._id != ticket._id);
     },
 
     async acceptTicket() {
@@ -661,7 +661,7 @@ export default {
       console.log("ticket was deleted")
 
       //ticket will be deleted from being displayed
-      removeTicket(message.data);
+      this.removeTicket(message.data);
     })
 
     this.scrollToTop();
