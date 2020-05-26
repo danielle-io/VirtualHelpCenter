@@ -223,8 +223,15 @@
                         </div>
                         <div class="md-card-content">
                           <strong>Attached Files:</strong>
+                       
+                          <div
+                            v-for="(index) in (ticket.attachments)"
+                            :key="index"
+                          >
+                          {{ticket.attachments[index]}}
+                          </div>
 
-
+                          <!-- {{this.getAttachments(ticket.attachments)}} -->
                         </div>
 
                         <!-- TODO: add student's name from DB -->
@@ -302,7 +309,7 @@
       <div v-if="this.connecting">
         <div v-if="!this.studentAccepted">
           <div class="heading-two-text">Awaiting Student Acceptance</div>
-       
+
           <div v-if="!this.studentAccepted" class="loading-dots">
             <beat-loader :color="color"></beat-loader>
           </div>
@@ -314,7 +321,7 @@
 
         <div v-if="this.studentAccepted">
           <div class="heading-two-text">Student Accepted</div>
-         
+
           <div class="sub-heading-two-text">Please go to Zoom to begin your session.</div>
         </div>
         <div class="row justify-content-center">
@@ -344,8 +351,7 @@
                   <strong>Issue:</strong>
                   {{this.currentTicket.oneLineOverview}}
                 </div>
-                <div class="md-card-content">
-                </div>
+                <div class="md-card-content"></div>
                 <div
                   v-bind:class="{ 'chevron': expandChevron, 'hidden': !expandChevron }"
                   @click="changeChevronClass"
@@ -506,6 +512,12 @@ export default {
       this.scrollToTop();
       return this.requestHistoryTab;
     },
+    // getAttachments: function(attachments){
+    //   for (var i = 0; i < attachments.length; i++){
+
+    //   }
+    //   return
+    // },
     changeChevronClass: function() {
       if (this.expandChevron) {
         this.collapseChevron = true;
@@ -537,7 +549,6 @@ export default {
     getZoomLink: function() {
       this.zoomLinkForm = true;
     },
-    
 
     startConnecting: function() {
       this.connecting = true;

@@ -390,7 +390,9 @@ input[type="text"]:placeholder {
 <template>
   <div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/velocity/1.2.3/velocity.min.js"></script>
+    
     <button id="hiddenButton" style="display:none;" @click="triggerAccept"></button>
+
     <div id="requests">
       <!-- The transition effects for the containers changing -->
       <transition name="fade" mode="in-out">
@@ -815,6 +817,7 @@ export default {
     },
     triggerAccept: function() {
       this.showCountdown = true;
+      console.log("in trigger click AcceptSession :: " + this.studentAcceptedSession + " countdownShowing :: " + this.showCountdown);
     },
     removeElement: function(index) {
       this.rows.splice(index, 1);
