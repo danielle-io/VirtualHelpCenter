@@ -1,8 +1,4 @@
 <style scoped>
-.card-text {
-  word-wrap: break-word;
-  word-break: break-all;
-}
 .material-design-icon {
   margin-right: 10px !important;
   margin-top: 3px;
@@ -32,6 +28,15 @@
   margin-top: 15px;
   margin-bottom: 15px;
   text-align: center;
+}
+.card-line {
+  display: in-line-block;
+  margin-bottom: 8px;
+  word-wrap: break-word;
+  word-break: break-all;
+  font-size: 16px;
+  flex-wrap: wrap;
+  text-align: left;
 }
 .request-staff-buttons {
   width: 40% !important;
@@ -72,11 +77,12 @@
   text-align: left;
 }
 .md-card {
-  width: 250px;
+  padding-top: 18px;
+  padding-left: 12px;
+  width: 400px;
   margin: 14px;
   display: inline-block;
   vertical-align: top;
-  cursor: pointer;
 }
 .selected-card {
   border-width: 1px !important;
@@ -85,12 +91,12 @@
   width: 250px;
   margin: 14px;
   display: inline-block;
-  cursor: pointer;
 }
 .title {
   margin-top: 30px;
 }
 .chevron {
+  z-index: 999;
   margin-bottom: 10px;
   opacity: 1;
   float: right;
@@ -116,7 +122,7 @@
 
 <template>
   <div id="requests" style="position: relative;">
-    <button id="hiddenButton" style="display:none;" @click="triggerAccept"></button>
+    <!-- <button id="hiddenButton" style="display:none;" @click="triggerAccept"></button> -->
 
     <div class="staff-container">
       <!-- <div class="heading-two-text">Select a Request</div> -->
@@ -135,7 +141,7 @@
 
         <div class="row" style="justify-content: center; margin-top: 5px; align-content: center;">
           <div class="col-6">
-            <div v-if="!this.selectedCard && this.staffCourses">
+            <div v-if="this.selectedTicketIndex === -1 && this.staffCourses">
               <b-form-select v-model="course" :options="staffCourses" v-on:change="setClass"></b-form-select>
             </div>
           </div>
@@ -143,7 +149,7 @@
 
         <div v-if="this.openRequestTab">
           <div class="ticket-container">
-            <div v-if="!this.selectedCard && !this.zoomLinkForm && this.tickets">
+            <div v-if="this.selectedTicketIndex === -1 && !this.zoomLinkForm && this.tickets">
               <!-- TODO: instead of tickets.length, get the filtered tickets length to hide message when no tickets show -->
               <div
                 v-if="this.tickets.length > 0"
@@ -153,86 +159,96 @@
             </div>
 
             <div
-              v-if="!this.selectedCard && !this.zoomLinkForm && !this.tickets"
+              v-if="!this.zoomLinkForm && !this.tickets"
               class="sub-heading-text"
               style="padding-top:2%;"
             >There are currently no open tickets</div>
 
             <!-- Populate tickets -->
             <div v-if="!this.zoomLinkForm" class="row justify-content-center">
-              <div class="col">
-                <div
-                  v-for="(ticket, index) in (getFilterClass('Open', this.course).slice(this.startingIndex, this.endingIndex))"
-                  :key="ticket._id"
-                >
-                  <a @click="clickCard(ticket, index, ticket._id)">
-                    <!-- Selected index allows only that card to show when selected -->
-                    <!-- Selected-card class is bound to the card selection  -->
-                    <md-card v-bind:class="{ 'selected-card': selectedTicketIndex === index}">
-                      <div>
-                        <div style="display:in-line-block" class="md-card-content">
-                          <strong>Student:</strong>
-                          <span id="studentName" class="card-text"> {{ ticket.owner._id + getStudentName(ticket.owner._id) }}</span>
-                        </div>
-
-                        <div class="md-card-content">
-                          <strong>Status:</strong>
-                          {{ ticket.status }}
-                        </div>
-
-                        <div class="md-card-content">
-                          <strong>Issue:</strong>
-                          {{ticket.oneLineOverview}}
-                        </div>
-                        <div class="md-card-content"></div>
-                        <div
-                          v-bind:class="{ 'chevron': expandChevron, 'hidden': !expandChevron }"
-                          @click="changeChevronClass"
-                        >
-                          <expand-arrow />
-                        </div>
-                      </div>
-                      <div
-                        @click="changeChevronClass"
-                        v-bind:class="{ 'chevron': collapseChevron, 'hidden': !collapseChevron }"
-                      >
-                        <collapse-arrow />
+              <!-- <div class="col"> -->
+              <div
+                v-for="(ticket, index) in (getFilterClass('Open', this.course).slice(this.startingIndex, this.endingIndex))"
+                :key="ticket._id"
+              >
+                <!-- Selected index allows only that card to show when selected -->
+                <!-- Selected-card class is bound to the card selection  -->
+                <md-card v-bind:class="{ 'selected-card': selectedTicketIndex === index}">
+                 
+                  <div style="cursor: pointer" @click="clickCard(ticket, index, ticket._id)">
+                     
+                      <div class="card-line">
+                        <strong>Student:</strong>
+                        {{ " " + ticket.ownerName }}
                       </div>
 
-                      <div
-                        v-bind:class="{ 'show-extra-content': collapseChevron, 'hide-extra-content': expandChevron }"
-                      >
-                        <div class="md-card-content">
-                          <strong>Longer Description:</strong>
-                          <!-- I am trying to call a function from a class but importing gives an undefined error. -->
-                          {{ticket.longerDescription}}
-                        </div>
-                        <div class="md-card-content">
-                          <strong>Attached Files:</strong>
-
-                          <div
-                            v-for="(index) in (ticket.attachments)"
-                            :key="index"
-                          >{{ticket.attachments[index]}}</div>
-
-                          <!-- {{this.getAttachments(ticket.attachments)}} -->
-                        </div>
-
-                        <md-card-header>
-                          <div class="md-title">
-                            <strong>Course:</strong>
-                            {{ticket.course}}>
-                          </div>
-                        </md-card-header>
+                      <div class="card-line">
+                        <strong>Status:</strong>
+                        {{ "  " + ticket.status }}
                       </div>
-                    </md-card>
-                  </a>
-                </div>
+
+                      <div class="card-line">
+                        <strong>Overview:</strong>
+                        {{ "  " + ticket.oneLineOverview}}
+                      </div>
+                    </div>
+
+                    <div
+                      v-bind:class="{ 'chevron': expandChevron, 'hidden': !expandChevron }"
+                      @click="changeChevronClass"
+                    >
+                      <expand-arrow />
+                    </div>
+
+                    <div
+                      @click="changeChevronClass"
+                      v-bind:class="{ 'chevron': collapseChevron, 'hidden': !collapseChevron }"
+                    >
+                      <collapse-arrow />
+                    </div>
+
+                    <div
+                      v-bind:class="{ 'show-extra-content': collapseChevron, 'hide-extra-content': expandChevron }"
+                    >
+                      <div class="card-line">
+                        <strong>Longer Description:</strong>
+                        {{"  " + ticket.longerDescription}}
+                      </div>
+
+                      <div v-if="ticket.attachments.length > 0"
+                      class="card-line">
+                        <strong>Attached Files:</strong>
+
+                        <span
+                          v-for="(index) in (ticket.attachments)"
+                          :key="index"
+                        >{{"  " + ticket.attachments[index]}}</span>
+
+                        <!-- {{this.getAttachments(ticket.attachments)}} -->
+                      </div>
+
+                      <div v-if="ticket.attachments.length === 0"
+                      class="card-line">
+                        <strong>Attached Files:</strong>
+
+                        <span style="margin-left: 3px;">  None</span>
+
+                        <!-- {{this.getAttachments(ticket.attachments)}} -->
+                      </div>
+
+                      <!-- <div class="card-line">
+                        <strong>Course:</strong>
+                        {{"  " + ticket.course}}>
+                      </div> -->
+                    </div>
+                  
+                </md-card>
               </div>
+              <!-- </div> -->
             </div>
 
             <button
-              v-if="this.selectedCard && !this.zoomLinkForm"
+              v-if="this.selectedTicketIndex != -1 && !this.zoomLinkForm"
               type="submit"
               class="request-staff-buttons"
               @click="getZoomLink"
@@ -318,12 +334,12 @@
 
                 <div class="md-card-content">
                   <strong>Status:</strong>
-                  {{ this.currentTicket.status }}
+                  {{"  " + this.currentTicket.status }}
                 </div>
 
                 <div class="md-card-content">
                   <strong>Issue:</strong>
-                  {{this.currentTicket.oneLineOverview}}
+                  {{"  " + this.currentTicket.oneLineOverview}}
                 </div>
                 <div class="md-card-content"></div>
                 <div
@@ -372,6 +388,7 @@ import VueMaterial from "vue-material";
 import "vue-material/dist/vue-material.min.css";
 import "vue-material/dist/theme/default.css";
 import { BFormInput, BFormSelect, BButton, BFormCheckbox } from "bootstrap-vue";
+
 Vue.use(VueMaterial);
 import * as Ably from "ably";
 const client = new Ably.Realtime(process.env.ABLY_KEY);
@@ -392,13 +409,11 @@ export default {
       el: "#requests",
       connecting: false,
       zoomLinkForm: false,
-      redirectToCountdown: false,
       openRequestTab: true,
       requestHistoryTab: false,
       selectedTicket: false,
       expandChevron: true,
       collapseChevron: false,
-      selectedCard: false,
       color: "#7e6694",
       course: {},
       selected: "",
@@ -430,16 +445,16 @@ export default {
         return;
       }
     },
-    triggerAccept: function() {
-      console.log("in triggerAccept");
-      console.log("accepted " + this.studentAccepted);
-      this.studentAccepted = true;
-      console.log("accepted " + this.studentAccepted);
-    },
+    // triggerAccept: function() {
+    //   console.log("in triggerAccept");
+    //   console.log("accepted " + this.studentAccepted);
+    //   this.studentAccepted = true;
+    //   console.log("accepted " + this.studentAccepted);
+    // },
     getFilterClass(status, course) {
-      console.log(course);
+      // console.log(course);
       if (course === null) {
-        console.log("open tickets");
+        // console.log("open tickets");
         return this.filterOpenTickets(status);
       } else {
         return this.filterCourseTickets(status, course);
@@ -464,25 +479,31 @@ export default {
     scrollToTop() {
       document.getElementById("tabs").scrollIntoView();
     },
-    scrollToTop() {
-      document.getElementById("tabs").scrollIntoView();
-    },
 
-    // TODO: this isnt getting the names for some reason
-    getStudentName(ticketOwnerId) {
-      console.log("ID IS  " + ticketOwnerId);
-      if (ticketOwnerId) {
-        axios.get("/api/getStudentsById/" + ticketOwnerId)
-        .then(function (response) {
-            if (response !== undefined) {
-              var fullName = response.data.name.firstname + " " + response.data.name.lastname;
-              console.log(fullName);
-              // console.log("student is " + response.name.firstname);
-              document.getElementById('studentName').innerHTML = fullName;
-              return fullName;
-            }
-        });
-       
+    async getStudentName(ticket, ticketOwnerId) {
+      var studentName = "";
+      if (ticketOwnerId && ticket) {
+        let studentResponse = await axios.get(
+          "/api/getStudentsById/" + ticketOwnerId
+        );
+        if (
+          studentResponse &&
+          typeof studentResponse !== undefined &&
+          typeof studentResponse.data !== undefined &&
+          typeof studentResponse.data.name !== undefined &&
+          typeof studentResponse.data.name.firstname !== undefined
+        ) {
+          if (studentResponse.data.name.firstname) {
+            studentName =
+              studentResponse.data.name.firstname +
+              " " +
+              studentResponse.data.name.lastname;
+            // document.getElementById('studentName').innerHTML = studentName;
+            this.$set(ticket, "ownerName", studentName);
+            // console.log(ticket);
+            // console.log(studentName);
+          }
+        }
       }
       return;
     },
@@ -505,6 +526,7 @@ export default {
     //   return
     // },
     changeChevronClass: function() {
+      console.log("in change chevron");
       if (this.expandChevron) {
         this.collapseChevron = true;
         this.expandChevron = false;
@@ -512,42 +534,31 @@ export default {
         this.expandChevron = true;
         this.collapseChevron = false;
       }
-      // this.selectedCard = !this.selectedCard;
     },
     clickCard: function(ticket, index, id) {
-      // SelectedIndex = the same as the index passed in means
+      // selectedTicketIndex = the same as the index passed in means
       // card was selected twice
-      if (this.selectedCard && this.selectedTicketIndex === index) {
+      if (index === this.selectedTicketIndex) {
         // The card already selected was selected again (unselect)
         console.log("unselect only");
         this.selectedTicketIndex = -1;
         this.startingIndex = 0;
         this.endingIndex = 3;
         this.currentTicketId = null;
-        this.selectedCard = false;
+        this.currentTicketId = null;
       }
 
       // The card already selected was replaced by another selection,
       // or a card is selected for the first time
       else {
-        this.selectedCard = true;
+        console.log("select");
         this.selectedTicketIndex = index;
         this.startingIndex = index;
         this.endingIndex = index + 1;
         this.currentTicket = ticket;
+        this.currentTicketId = id;
+        console.log(this.currentTicket);
       }
-
-      console.log("selected card below");
-      console.log(this.currentTicket);
-      this.currentTicketId = id;
-
-      // if (this.selectedTicketIndex === index) {
-      //   this.selectedTicketIndex = -1;
-      //   this.startingIndex = 0;
-      //   this.endingIndex = 3;
-      // } else {
-
-      // }
     },
     getZoomLink: function() {
       this.zoomLinkForm = true;
@@ -636,7 +647,7 @@ export default {
       if (course) {
         let chosenCourse = await axios.get("/api/courses/" + course);
         this.course = chosenCourse.data._id;
-        console.log(this.course);
+        // console.log(this.course);
       }
     },
     async loadClasses(classSelected) {
@@ -648,12 +659,19 @@ export default {
     }
   },
   async created() {
-    console.log("in created");
     let tickets = await axios.get("/api/tickets");
     if (this.tickets) {
       this.tickets = tickets.data;
+      // console.log(this.tickets);
+      for (var i = 0; i < this.tickets.length; i++) {
+        // Add the name to the open tickets
+        if (this.tickets[i].status === "Open") {
+          await this.getStudentName(this.tickets[i], this.tickets[i].owner._id);
+        }
+      }
     }
     let staff = await axios.get("/api/users/" + this.staff);
+
     if (staff) {
       staff.data.classes.forEach(element => {
         this.loadClasses(element);
@@ -665,20 +683,21 @@ export default {
     }
   },
   beforeMount() {
-    // var course = {_id = null};
-    this.staffCourses.push({ value: null, text: "Show All Courses" });
+    // this.staffCourses.push({ value: null, text: "Show All Courses" });
+
     // This gets ANY ticket submitted by ANY student
-    this.ticketChannel.subscribe("ticketUpdate", message => {
-      //add new ticket to existing tickets
-      this.tickets.push(message.data);
-    });
+    // this.ticketChannel.subscribe("ticketUpdate", message => {
 
-    this.ticketChannel.subscribe("ticketClosed", message => {
-      console.log("ticket was deleted");
+    //  //add new ticket to existing tickets
+    //   this.tickets.push(message.data);
+    // });
 
-      //ticket will be deleted from being displayed
-      this.removeTicket(message.data);
-    });
+    // this.ticketChannel.subscribe("ticketClosed", message => {
+    //   console.log("ticket was deleted");
+
+    //   //ticket will be deleted from being displayed
+    //   this.removeTicket(message.data);
+    // });
 
     this.scrollToTop();
   }
