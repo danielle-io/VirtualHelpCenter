@@ -91,6 +91,7 @@
   margin-top: 30px;
 }
 .chevron {
+  margin-bottom: 10px;
   opacity: 1;
   float: right;
   align-items: left;
@@ -165,18 +166,14 @@
                   :key="ticket._id"
                 >
                   <a @click="clickCard(ticket, index, ticket._id)">
+                    <!-- Selected index allows only that card to show when selected -->
+                    <!-- Selected-card class is bound to the card selection  -->
                     <md-card v-bind:class="{ 'selected-card': selectedTicketIndex === index}">
                       <div>
-                        <md-card-header>
-                          <!-- TODO: put course title from db here -->
-                          <div class="md-title"></div>
-                        </md-card-header>
-
-                        <!-- TODO: add student's name -->
-                        <!-- <div class="md-card-content">
-                        <strong>Student:</strong>
-                        <div class="card-text">{{ ticket.owner }}</div>
-                        </div>-->
+                        <div style="display:in-line-block" class="md-card-content">
+                          <strong>Student:</strong>
+                          <span id="studentName" class="card-text"> {{ ticket.owner._id + getStudentName(ticket.owner._id) }}</span>
+                        </div>
 
                         <div class="md-card-content">
                           <strong>Status:</strong>
@@ -185,7 +182,6 @@
 
                         <div class="md-card-content">
                           <strong>Issue:</strong>
-                          <!-- I can't reference a class. -->
                           {{ticket.oneLineOverview}}
                         </div>
                         <div class="md-card-content"></div>
@@ -213,22 +209,21 @@
                         </div>
                         <div class="md-card-content">
                           <strong>Attached Files:</strong>
-                       
+
                           <div
                             v-for="(index) in (ticket.attachments)"
                             :key="index"
-                          >
-                          {{ticket.attachments[index]}}
-                          </div>
+                          >{{ticket.attachments[index]}}</div>
 
                           <!-- {{this.getAttachments(ticket.attachments)}} -->
                         </div>
 
-                        <!-- TODO: add student's name from DB -->
-                        <!-- <div class="md-card-content">
-                          <strong>Student:</strong>
-                          {{ticket.owner._id}}
-                        </div>-->
+                        <md-card-header>
+                          <div class="md-title">
+                            <strong>Course:</strong>
+                            {{ticket.course}}>
+                          </div>
+                        </md-card-header>
                       </div>
                     </md-card>
                   </a>
@@ -278,11 +273,6 @@
                 <div v-for="(ticket, index) in filterOpenTickets('Closed')" :key="index">
                   <md-card>
                     <div class="md-card-content">
-                      <!-- <div class="md-card-content"> -->
-                      <!-- <strong>Student:</strong>
-                    {{ ticket.owner }}
-                      </div>-->
-
                       <strong>Status:</strong>
                       {{ ticket.status }}
                       <strong>Issue:</strong>
@@ -326,12 +316,6 @@
                   <div class="md-title"></div>
                 </md-card-header>
 
-                <!-- TODO: add student's name -->
-                <!-- <div class="md-card-content">
-                        <strong>Student:</strong>
-                        <div class="card-text">{{ ticket.owner }}</div>
-                </div>-->
-
                 <div class="md-card-content">
                   <strong>Status:</strong>
                   {{ this.currentTicket.status }}
@@ -365,12 +349,10 @@
                 </div>
                 <div class="md-card-content">
                   <strong>Attached Files:</strong>
-                </div>
-
-                <!-- TODO: add student's name from DB -->
-                <div class="md-card-content">
-                  <strong>Student:</strong>
-                  <!-- {{this.currentTicket.owner._id}} -->
+                  <div
+                    v-for="(index) in  this.currentTicket.attachments"
+                    :key="index"
+                  >{{this.currentTicket.attachments[index]}}</div>
                 </div>
               </div>
             </md-card>
@@ -464,7 +446,7 @@ export default {
       }
     },
     filterCourseTickets(status, course) {
-      console.log(this.tickets);
+      // console.log(this.tickets);
       if (this.tickets) {
         // Prevents code from breaking when no course is in the ticket
         if (typeof course !== "undefined") {
@@ -484,6 +466,25 @@ export default {
     },
     scrollToTop() {
       document.getElementById("tabs").scrollIntoView();
+    },
+
+    // TODO: this isnt getting the names for some reason
+    getStudentName(ticketOwnerId) {
+      console.log("ID IS  " + ticketOwnerId);
+      if (ticketOwnerId) {
+        axios.get("/api/getStudentsById/" + ticketOwnerId)
+        .then(function (response) {
+            if (response !== undefined) {
+              var fullName = response.data.name.firstname + " " + response.data.name.lastname;
+              console.log(fullName);
+              // console.log("student is " + response.name.firstname);
+              document.getElementById('studentName').innerHTML = fullName;
+              return fullName;
+            }
+        });
+       
+      }
+      return;
     },
     switchToOpenRequestTab: function() {
       this.openRequestTab = true;
@@ -511,45 +512,66 @@ export default {
         this.expandChevron = true;
         this.collapseChevron = false;
       }
-      this.selectedCard = !this.selectedCard;
+      // this.selectedCard = !this.selectedCard;
     },
     clickCard: function(ticket, index, id) {
-      this.currentTicket = ticket;
-      console.log("selected card below");
-      console.log(this.currentTicket);
-      this.currentTicketId = id;
-      this.selectedCard = !this.selectedCard;
-      if (this.selectedTicketIndex === index) {
+      // SelectedIndex = the same as the index passed in means
+      // card was selected twice
+      if (this.selectedCard && this.selectedTicketIndex === index) {
+        // The card already selected was selected again (unselect)
+        console.log("unselect only");
         this.selectedTicketIndex = -1;
         this.startingIndex = 0;
         this.endingIndex = 3;
-      } else {
+        this.currentTicketId = null;
+        this.selectedCard = false;
+      }
+
+      // The card already selected was replaced by another selection,
+      // or a card is selected for the first time
+      else {
+        this.selectedCard = true;
         this.selectedTicketIndex = index;
         this.startingIndex = index;
         this.endingIndex = index + 1;
+        this.currentTicket = ticket;
       }
+
+      console.log("selected card below");
+      console.log(this.currentTicket);
+      this.currentTicketId = id;
+
+      // if (this.selectedTicketIndex === index) {
+      //   this.selectedTicketIndex = -1;
+      //   this.startingIndex = 0;
+      //   this.endingIndex = 3;
+      // } else {
+
+      // }
     },
     getZoomLink: function() {
       this.zoomLinkForm = true;
     },
 
-    
     startConnecting: function() {
       this.connecting = true;
     },
+
     // This is where the link is stored
     sendZoomLink() {
       axios.put("/api/updateTicket/" + this.currentTicketId, {
         status: "In Progress",
         accepted: this.staff
       });
-      
-      let ticketTime = new Date();
 
+      let ticketTime = new Date();
 
       // Get the students user id from the ticket
       this.studentChannel = client.channels.get(this.currentTicket.owner._id);
-      this.studentChannel.publish("staffAcceptedTicket", {zoomLink: this.zoomLink, date: ticketTime});
+      this.studentChannel.publish("staffAcceptedTicket", {
+        zoomLink: this.zoomLink,
+        date: ticketTime
+      });
 
       // Show connection screen once student receives countdown
       this.startConnecting();
@@ -567,9 +589,9 @@ export default {
 
       let x = setTimeout(function() {
         // Right here we let it know the student did not accept
-        console.log('student did not accept in time')
-          axios.put("/api/updateTicket/" + this.currentTicketId, {
-          status: "Unresolved",
+        console.log("student did not accept in time");
+        axios.put("/api/updateTicket/" + this.currentTicketId, {
+          status: "Unresolved"
         });
       }, this.countdownTime(ticketTime));
 
@@ -580,14 +602,23 @@ export default {
       //   clearTimeout(x);
       // });
     },
-    countdownTime(ticketTime){
+    countdownTime(ticketTime) {
       //read updated time
 
-      let currentTime = new Date()
-      ticketTime.setMinutes(ticketTime.getMinutes()+1);
-      console.log(ticketTime.getMinutes()*60+ticketTime.getSeconds()-(currentTime.getMinutes()*60+currentTime.getSeconds()))
-      
-      return (ticketTime.getMinutes()*60+ticketTime.getSeconds()-(currentTime.getMinutes()*60+currentTime.getSeconds()))*1000;
+      let currentTime = new Date();
+      ticketTime.setMinutes(ticketTime.getMinutes() + 1);
+      console.log(
+        ticketTime.getMinutes() * 60 +
+          ticketTime.getSeconds() -
+          (currentTime.getMinutes() * 60 + currentTime.getSeconds())
+      );
+
+      return (
+        (ticketTime.getMinutes() * 60 +
+          ticketTime.getSeconds() -
+          (currentTime.getMinutes() * 60 + currentTime.getSeconds())) *
+        1000
+      );
     },
     expandCard: function() {},
     async acceptTicket() {
@@ -637,24 +668,24 @@ export default {
     // var course = {_id = null};
     this.staffCourses.push({ value: null, text: "Show All Courses" });
     // This gets ANY ticket submitted by ANY student
-    this.ticketChannel.subscribe("ticketUpdate", (message)=>{
+    this.ticketChannel.subscribe("ticketUpdate", message => {
       //add new ticket to existing tickets
       this.tickets.push(message.data);
     });
 
-    this.ticketChannel.subscribe("ticketClosed", (message)=>{
-      console.log("ticket was deleted")
+    this.ticketChannel.subscribe("ticketClosed", message => {
+      console.log("ticket was deleted");
 
       //ticket will be deleted from being displayed
       this.removeTicket(message.data);
-    })
+    });
 
     this.scrollToTop();
-  },
-  computed: {
-    studentAccepted() {
-      return this.studentAccepted
-    }
   }
+  // computed: {
+  //   studentAccepted() {
+  //     return this.studentAccepted;
+  //   }
+  // }
 };
 </script>
