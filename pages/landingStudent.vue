@@ -12,6 +12,17 @@
   opacity: 0;
 }
 
+.card-line {
+  display: in-line-block;
+  margin-bottom: 20px;
+  word-wrap: break-word;
+  word-break: break-all;
+  font-size: 16px;
+  flex-wrap: wrap;
+  text-align: left;
+  margin-left: 14px;
+}
+
 .request-container {
   position: relative;
   padding-left: 10px;
@@ -124,6 +135,15 @@
   border-style: solid;
   border: 1px !important;
   border: 2px solid #dfdada !important;
+}
+
+.card-class {
+  padding-top: 18px;
+  padding-left: 12px;
+  /* width: 400px; */
+  margin: 14px;
+  display: inline-block;
+  vertical-align: top;
 }
 
 .close-button {
@@ -390,7 +410,7 @@ input[type="text"]:placeholder {
 <template>
   <div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/velocity/1.2.3/velocity.min.js"></script>
-    
+
     <button id="hiddenButton" style="display:none;" @click="triggerAccept"></button>
 
     <div id="requests">
@@ -456,9 +476,7 @@ input[type="text"]:placeholder {
                 </div>
 
                 <div class="row">
-                  <label
-                    class="label-format"
-                  >Please enter a brief one-sentence summary of the issue</label>
+                  <label class="label-format">Please enter a brief one-sentence summary of the issue</label>
                   <b-form-input v-model="probDes" placeholder class="form-text-areas"></b-form-input>
                 </div>
 
@@ -475,13 +493,7 @@ input[type="text"]:placeholder {
 
                 <div class="row">
                   <label class="label-format">Paste a code snippet, if needed</label>
-                  <b-form-text-area
-                    id="textarea"
-                    v-model="code"
-                    placeholder
-                    rows="1"
-                    max-rows="6"
-                  ></b-form-text-area>
+                  <b-form-text-area id="textarea" v-model="code" placeholder rows="1" max-rows="6"></b-form-text-area>
                   <!-- removed for now from above :disabled="isDisabled" -->
                   <!-- <pre class="mt-3 mb-0">{{ code }}</pre> -->
                 </div>
@@ -542,7 +554,7 @@ input[type="text"]:placeholder {
               v-if="this.submitRequest && !this.showCountdown && !this.studentAcceptedSession"
               v-bind:key="submitRequest"
             >
-              <div class="heading-text">Your Request Was Submitted</div>
+              <div style="margin-bottom: 30px;" class="heading-text">Your Request Was Submitted</div>
               <div
                 v-if="this.request === false && this.submitRequest === false && !this.showCountdown"
               >
@@ -648,39 +660,39 @@ input[type="text"]:placeholder {
                 </div>
               </div>
 
-            <div v-if="this.showCountdown && !this.studentAcceptedSession">
-              <div class="request-container">
-                <div class="heading-text">Accept your session</div>
+              <div v-if="this.showCountdown && !this.studentAcceptedSession">
+                <div class="request-container">
+                  <div class="heading-text">Accept your session</div>
 
-                <div class="sub-heading-text-left" style="padding-top:2%;">
-                  A TA is available.
-                  <strong>Please accept the session before the timer runs out to continue.</strong>
-                </div>
-                <div
-                  class="sub-heading-text-left-italic"
-                >If you do not accept in time, your request will be removed, and placed in your request history for resubmission.</div>
+                  <div class="sub-heading-text-left" style="padding-top:2%;">
+                    A TA is available.
+                    <strong>Please accept the session before the timer runs out to continue.</strong>
+                  </div>
+                  <div
+                    class="sub-heading-text-left-italic"
+                  >If you do not accept in time, your request will be removed, and placed in your request history for resubmission.</div>
 
-                <div style="text-align: center;">
-                  <circular-count-down-timer
-                    :initial-value="countdownTime()"
-                    :steps="countdownTime()"
-                    :seconds-stroke-color="'#7fe3d4'"
-                    :second-label="''"
-                    @finish="finished(studentChannel)"
-                  ></circular-count-down-timer>
+                  <div style="text-align: center;">
+                    <circular-count-down-timer
+                      :initial-value="countdownTime()"
+                      :steps="countdownTime()"
+                      :seconds-stroke-color="'#7fe3d4'"
+                      :second-label="''"
+                      @finish="finished(studentChannel)"
+                    ></circular-count-down-timer>
 
-                  <button
-                    v-bind:key="acceptSession"
-                    @click="acceptSession"
-                    type="submit"
-                    style="margin-bottom: 20%;"
-                    class="fadeIn form-buttons"
-                  >
-                    <right-circle />Accept the Session
-                  </button>
+                    <button
+                      v-bind:key="acceptSession"
+                      @click="acceptSession"
+                      type="submit"
+                      style="margin-bottom: 20%;"
+                      class="fadeIn form-buttons"
+                    >
+                      <right-circle />Accept the Session
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
 
               <div v-if="this.studentAcceptedSession">
                 <div v-bind:key="session" class="request-container-two">
@@ -694,54 +706,50 @@ input[type="text"]:placeholder {
               </div>
             </div>
 
-            <div
-              style="text-align: center; margin-top: 12px;"
-              :hidden="openTicket.owner === null"
-            >
+            <div style="text-align: center; margin-top: 12px;" :hidden="openTicket.owner === null">
               <md-card>
-                <div
-                  style="float: right; margin-top: 6px; margin-left: 0px; margin-right: 10px; "
-                >
-                    <button
-                      class="close-button"
-                      style="margin-top: 5px;"
-                      v-on:click="closeTicket(openTicket)"
-                    >
-                      <div class="toolTip">
-                        <close
-                          style="color: red !important; margin-bottom: 0px; padding-bottom: 0px;"
-                          class="close-icon"
-                        />
-                        <!-- <span class="toolTipText">Cancel Request</span> -->
-                      </div>
-                    </button>
-                  </div>
+                <div style="float: right; margin-top: 6px; margin-left: 0px; margin-right: 10px; ">
+                  <button
+                    class="close-button"
+                    style="margin-top: 5px;"
+                    v-on:click="closeTicket(openTicket)"
+                  >
+                    <div class="toolTip">
+                      <close
+                        style="color: red !important; margin-bottom: 0px; padding-bottom: 0px;"
+                        class="close-icon"
+                      />
+                      <!-- <span class="toolTipText">Cancel Request</span> -->
+                    </div>
+                  </button>
+                </div>
 
-                  <md-card-header style="display: in-line-block;">
-                    <div
-                      style="justify-content: center; text-align: center; margin-top: 30px;"
-                      class="md-title"
-                    >Requested Session</div>
-                  </md-card-header>
+                <md-card-header style="display: in-line-block;">
+                  <div
+                    style="justify-content: center; font-size: 18px; text-align: center; margin-top: 20px;"
+                    class="md-title"
+                  > Pending Request</div>
+                </md-card-header>
 
-                  <div class="md-card-content">
+                <div class="md-card-content">
+                  <div class="card-line">
                     <strong>Status:</strong>
                     {{ openTicket.status }}
                   </div>
-                  <div class="md-card-content">
+                  <div class="card-line">
                     <strong>Issue:</strong>
                     {{ openTicket.oneLineOverview }}
                   </div>
-                  <div v-if="openTicket.attachments" class="md-card-content">
+                  <div v-if="openTicket.attachments" class="card-line">
                     <strong>Attachments:</strong>
                     {{ openTicket.attachments.length }}
                   </div>
-                  <div class="md-card-content"></div>
-                </md-card>
-              </div>
+                </div>
+              </md-card>
             </div>
+          </div>
 
-            <div v-if="this.requestHistoryTab">
+          <div v-if="this.requestHistoryTab">
             <div v-for="(ticket) in otherTickets" style="text-align: center;" :key="ticket._id">
               <md-card>
                 <md-card-header>
@@ -749,20 +757,20 @@ input[type="text"]:placeholder {
                 </md-card-header>
 
                 <div class="md-card-content">
-                  <strong>Status:</strong>
-                  {{ ticket.status }}
-                </div>
+                  <div class="card-line">
+                    <strong>Status:</strong>
+                    {{ ticket.status }}
+                  </div>
 
-                <div class="md-card-content">
-                  <strong>Short Description:</strong>
-                  {{ ticket.oneLineOverview }}
+                  <div class="card-line">
+                    <strong>Short Description:</strong>
+                    {{ ticket.oneLineOverview }}
+                  </div>
                 </div>
               </md-card>
             </div>
           </div>
         </div>
-
-        
       </transition>
     </div>
   </div>
@@ -783,7 +791,7 @@ var firebaseConfig = {
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
-const userId = "5ec5f90d81b13d23065ead3e";
+const userId = "5ec0858d7971d22628fd7e0d";
 const client = new Ably.Realtime(process.env.ABLY_KEY);
 
 import Vue from "vue";
@@ -798,7 +806,7 @@ import {
 } from "bootstrap-vue";
 
 //UI store imports
-import Ticket from '../ui/models/Ticket'
+import Ticket from "../ui/models/Ticket";
 
 export default {
   components: {
@@ -913,7 +921,12 @@ export default {
     },
     triggerAccept: function() {
       this.showCountdown = true;
-      console.log("in trigger click AcceptSession :: " + this.studentAcceptedSession + " countdownShowing :: " + this.showCountdown);
+      console.log(
+        "in trigger click AcceptSession :: " +
+          this.studentAcceptedSession +
+          " countdownShowing :: " +
+          this.showCountdown
+      );
     },
     removeElement: function(index) {
       this.rows.splice(index, 1);
@@ -939,7 +952,7 @@ export default {
     async startSubscribe() {
       console.log("subscribing to staff");
       // The student's ticket was accepted by the staff
-      this.studentChannel.subscribe("staffAcceptedTicket", (message) =>{
+      this.studentChannel.subscribe("staffAcceptedTicket", message => {
         this.zoomLink = message.data.zoomLink;
         this.openTicket.updatedAt = message.data.date;
         document.getElementById("hiddenButton").click();
@@ -950,12 +963,20 @@ export default {
       let ticketTime = new Date(this.openTicket.updatedAt);
 
       let currentTime = new Date();
-      ticketTime.setMinutes(ticketTime.getMinutes()+1);
-      console.log(ticketTime.getMinutes()*60+ticketTime.getSeconds()-(currentTime.getMinutes()*60+currentTime.getSeconds()))
-      
-      return ticketTime.getMinutes()*60+ticketTime.getSeconds()-(currentTime.getMinutes()*60+currentTime.getSeconds());
+      ticketTime.setMinutes(ticketTime.getMinutes() + 1);
+      console.log(
+        ticketTime.getMinutes() * 60 +
+          ticketTime.getSeconds() -
+          (currentTime.getMinutes() * 60 + currentTime.getSeconds())
+      );
+
+      return (
+        ticketTime.getMinutes() * 60 +
+        ticketTime.getSeconds() -
+        (currentTime.getMinutes() * 60 + currentTime.getSeconds())
+      );
     },
-    finished: (studentChannel) => {
+    finished: studentChannel => {
       console.log("in finished");
 
       //tell staff student did not accept session
@@ -967,7 +988,6 @@ export default {
       //   status: null,
       //   oneLineOverview: null
       // }
-
     },
 
     changeRequestState: function() {
@@ -1006,8 +1026,8 @@ export default {
     async submit() {
       // Upload to firebase
       await this.uploadFile();
-      console.log('after upload file')
-      console.log(this.fileUrls)
+      console.log("after upload file");
+      console.log(this.fileUrls);
       let ticket = await axios.post("../../api/insertTicket", {
         status: "Open",
         owner: {
@@ -1029,9 +1049,9 @@ export default {
     },
 
     async closeTicket(ticket) {
-      console.log("closing ticket")
+      console.log("closing ticket");
       this.ticketChannel.publish("ticketClosed", this.openTicket);
-      
+
       this.openTicket.status = "Closed";
       this.otherTickets.push(this.openTicket);
       this.openTicket = {
@@ -1044,10 +1064,8 @@ export default {
         status: "Closed"
       });
 
-      
       // Reloading gets rid of the begin session text for now
-        // window.location.reload();
-
+      // window.location.reload();
 
       this.showCountdown = false;
 
@@ -1089,16 +1107,16 @@ export default {
       this.startSubscribe();
     }
   },
-   computed: {
+  computed: {
     isDisabled: function() {
       return !this.selected;
-    },
+    }
     // studentSession() {
     //   return this.studentAcceptedSession
     // },
     // showCountdown() {
     //   return this.showCountdown
     // }
-   },
+  }
 };
 </script>

@@ -14,6 +14,13 @@
   opacity: 0.8;
   font-weight: 200;
 }
+
+.close-button {
+  margin-right: 10px;
+  font-size: 18px;
+  border: none;
+}
+
 .tab-links-active {
   margin-left: 4%;
   margin-right: 4%;
@@ -31,12 +38,13 @@
 }
 .card-line {
   display: in-line-block;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
   word-wrap: break-word;
   word-break: break-all;
   font-size: 16px;
   flex-wrap: wrap;
   text-align: left;
+  margin-left: 14px;
 }
 .request-staff-buttons {
   width: 40% !important;
@@ -44,7 +52,7 @@
 }
 .request-tabs {
   margin-top: 10px;
-  margin-bottom: 6px;
+  margin-bottom: 18px;
   width: 100%;
   display: inline-block;
   text-align: center;
@@ -71,7 +79,7 @@
   height: 400px;
   overflow-y: scroll;
 }
-.md-card-content {
+/* .md-card-content {
   word-wrap: break-word;
   flex-wrap: wrap;
   text-align: left;
@@ -79,31 +87,29 @@
 .md-card {
   padding-top: 18px;
   padding-left: 12px;
-  width: 400px;
   margin: 14px;
   display: inline-block;
   vertical-align: top;
-}
+} */
 .selected-card {
   border-width: 1px !important;
   border-style: solid;
   border-color: rgb(151, 223, 233) !important;
-  width: 250px;
-  margin: 14px;
-  display: inline-block;
+  /* width: 250px; */
+  /* margin: 14px;
+  display: inline-block; */
 }
 .title {
   margin-top: 30px;
 }
 .chevron {
   z-index: 999;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
   opacity: 1;
   float: right;
-  align-items: left;
   font-size: 30px;
   cursor: pointer;
-  padding-top: 15px !important;
+  /* padding-top: 15px !important; */
 }
 .hidden {
   opacity: 0;
@@ -165,7 +171,7 @@
             >There are currently no open tickets</div>
 
             <!-- Populate tickets -->
-            <div v-if="!this.zoomLinkForm" class="row justify-content-center">
+            <div v-if="!this.zoomLinkForm">
               <!-- <div class="col"> -->
               <div
                 v-for="(ticket, index) in (getFilterClass('Open', this.course).slice(this.startingIndex, this.endingIndex))"
@@ -173,75 +179,67 @@
               >
                 <!-- Selected index allows only that card to show when selected -->
                 <!-- Selected-card class is bound to the card selection  -->
-                <md-card v-bind:class="{ 'selected-card': selectedTicketIndex === index}">
-                 
-                  <div style="cursor: pointer" @click="clickCard(ticket, index, ticket._id)">
-                     
-                      <div class="card-line">
-                        <strong>Student:</strong>
-                        {{ " " + ticket.ownerName }}
-                      </div>
-
-                      <div class="card-line">
-                        <strong>Status:</strong>
-                        {{ "  " + ticket.status }}
-                      </div>
-
-                      <div class="card-line">
-                        <strong>Overview:</strong>
-                        {{ "  " + ticket.oneLineOverview}}
-                      </div>
+                <md-card
+                  style="    font-family: 'Manrope'; margin-left: 20px; margin-right: 20px; padding-bottom: 34px;"
+                  v-bind:class="{ 'selected-card': selectedTicketIndex === index}"
+                >
+                  <div
+                    style="cursor: pointer; padding-top: 18px; "
+                    @click="clickCard(ticket, index, ticket._id)"
+                  >
+                    <div class="card-line">
+                      <strong>Student:</strong>
+                      {{ " " + ticket.ownerName }}
                     </div>
 
-                    <div
-                      v-bind:class="{ 'chevron': expandChevron, 'hidden': !expandChevron }"
-                      @click="changeChevronClass"
-                    >
-                      <expand-arrow />
+                    <div class="card-line">
+                      <strong>Status:</strong>
+                      {{ " " + ticket.status }}
                     </div>
 
-                    <div
-                      @click="changeChevronClass"
-                      v-bind:class="{ 'chevron': collapseChevron, 'hidden': !collapseChevron }"
-                    >
-                      <collapse-arrow />
+                    <div class="card-line">
+                      <strong>Overview:</strong>
+                      {{ " " + ticket.oneLineOverview}}
+                    </div>
+                  </div>
+
+                  <div
+                    v-bind:class="{ 'chevron': expandChevron, 'hidden': !expandChevron }"
+                    @click="changeChevronClass"
+                  >
+                    <expand-arrow />
+                  </div>
+
+                  <div
+                    @click="changeChevronClass"
+                    v-bind:class="{ 'chevron': collapseChevron, 'hidden': !collapseChevron }"
+                  >
+                    <collapse-arrow />
+                  </div>
+
+                  <div
+                    v-bind:class="{ 'show-extra-content': collapseChevron, 'hide-extra-content': expandChevron }"
+                  >
+                    <div class="card-line">
+                      <strong>Longer Description:</strong>
+                      {{" " + ticket.longerDescription}}
                     </div>
 
-                    <div
-                      v-bind:class="{ 'show-extra-content': collapseChevron, 'hide-extra-content': expandChevron }"
-                    >
-                      <div class="card-line">
-                        <strong>Longer Description:</strong>
-                        {{"  " + ticket.longerDescription}}
-                      </div>
+                    <div v-if="ticket.attachments.length > 0" class="card-line">
+                      <strong>Attached Files:</strong>
 
-                      <div v-if="ticket.attachments.length > 0"
-                      class="card-line">
-                        <strong>Attached Files:</strong>
-
-                        <span
-                          v-for="(index) in (ticket.attachments)"
-                          :key="index"
-                        >{{"  " + ticket.attachments[index]}}</span>
-
-                        <!-- {{this.getAttachments(ticket.attachments)}} -->
-                      </div>
-
-                      <div v-if="ticket.attachments.length === 0"
-                      class="card-line">
-                        <strong>Attached Files:</strong>
-
-                        <span style="margin-left: 3px;">  None</span>
-
-                        <!-- {{this.getAttachments(ticket.attachments)}} -->
-                      </div>
-
-                      <!-- <div class="card-line">
-                        <strong>Course:</strong>
-                        {{"  " + ticket.course}}>
-                      </div> -->
+                      <span
+                        v-for="(index) in (ticket.attachments)"
+                        :key="index"
+                      >{{" " + ticket.attachments[index]}}</span>
                     </div>
-                  
+
+                    <div v-if="ticket.attachments.length === 0" class="card-line">
+                      <strong>Attached Files:</strong>
+
+                      <span style="margin-left: 3px;">None</span>
+                    </div>
+                  </div>
                 </md-card>
               </div>
               <!-- </div> -->
@@ -258,14 +256,21 @@
             </button>
 
             <div style="margin-top: 30px;" v-if="this.zoomLinkForm">
-              <input
-                width="90%"
-                type="text"
-                v-bind:value="zoomLink"
-                v-on:input="zoomLink = $event.target.value"
-                placeholder="Enter your Zoom Session link here"
-              />
+              <div style="float: right; margin-right: 10px; ">
+                <button class="close-button" v-on:click="cancelZoomLink">
+                  <close style="color: red !important;" class="close-icon" />
+                </button>
+              </div>
 
+              <div style="padding-top: 30px;">
+                <input
+                  width="90%"
+                  type="text"
+                  v-bind:value="zoomLink"
+                  v-on:input="zoomLink = $event.target.value"
+                  placeholder="Enter your Zoom Session link here"
+                />
+              </div>
               <div v-if="this.zoomLink">
                 <button type="submit" class="request-staff-buttons" @click="sendZoomLink">
                   <right-circle />Send Link
@@ -277,26 +282,25 @@
 
         <div v-if="this.requestHistoryTab">
           <!-- TO DO: Make this message dynamic -->
-
           <!-- <div
             class="sub-heading-text"
             style="padding-top:2%;"
           >You currently have no request history.</div>-->
 
           <div class="ticket-container">
-            <div class="row justify-content-center">
-              <div class="col">
-                <div v-for="(ticket, index) in filterOpenTickets('Closed')" :key="index">
-                  <md-card>
-                    <div class="md-card-content">
-                      <strong>Status:</strong>
-                      {{ ticket.status }}
-                      <strong>Issue:</strong>
-                      {{ticket.oneLineOverview}}
-                    </div>
-                  </md-card>
+            <!-- <div class="row justify-content-center">
+            <div class="col">-->
+            <div v-for="(ticket, index) in filterOpenTickets('Closed')" :key="index">
+              <md-card>
+                <div class="md-card-content">
+                  <strong>Status:</strong>
+                  {{ ticket.status }}
+                  <strong>Issue:</strong>
+                  {{ticket.oneLineOverview}}
                 </div>
-              </div>
+              </md-card>
+              <!-- </div>
+              </div>-->
             </div>
           </div>
         </div>
@@ -320,63 +324,59 @@
 
           <div class="sub-heading-two-text">Please go to Zoom to begin your session.</div>
         </div>
-        <div class="row justify-content-center">
-          <div
-            class="col"
-            style="justify-content: center; text-align: center; align-items: center;"
-          >
-            <md-card>
-              <div>
-                <md-card-header>
-                  <!-- TODO: put course title from db here -->
-                  <div class="md-title"></div>
-                </md-card-header>
 
-                <div class="md-card-content">
-                  <strong>Status:</strong>
-                  {{"  " + this.currentTicket.status }}
-                </div>
+        <!-- <div class="row justify-content-center"> -->
+        <md-card>
+          <md-card-header>
+            <!-- TODO: put course title from db here -->
+            <div class="md-title"></div>
+          </md-card-header>
 
-                <div class="md-card-content">
-                  <strong>Issue:</strong>
-                  {{"  " + this.currentTicket.oneLineOverview}}
-                </div>
-                <div class="md-card-content"></div>
-                <div
-                  v-bind:class="{ 'chevron': expandChevron, 'hidden': !expandChevron }"
-                  @click="changeChevronClass"
-                >
-                  <expand-arrow />
-                </div>
-              </div>
-              <div
-                @click="changeChevronClass"
-                v-bind:class="{ 'chevron': collapseChevron, 'hidden': !collapseChevron }"
-              >
-                <collapse-arrow />
-              </div>
-
-              <div
-                v-bind:class="{ 'show-extra-content': collapseChevron, 'hide-extra-content': expandChevron }"
-              >
-                <div class="md-card-content">
-                  <strong>Longer Description:</strong>
-                  {{this.currentTicket.longerDescription}}
-                </div>
-                <div class="md-card-content">
-                  <strong>Attached Files:</strong>
-                  <div
-                    v-for="(index) in  this.currentTicket.attachments"
-                    :key="index"
-                  >{{this.currentTicket.attachments[index]}}</div>
-                </div>
-              </div>
-            </md-card>
+          <div class="card-line">
+            <strong>Status:</strong>
+            {{" " + this.currentTicket.status }}
           </div>
-        </div>
+
+          <div class="card-line">
+            <strong>Issue:</strong>
+            {{" " + this.currentTicket.oneLineOverview}}
+          </div>
+
+          <div class="card-line"></div>
+          <div
+            v-bind:class="{ 'chevron': expandChevron, 'hidden': !expandChevron }"
+            @click="changeChevronClass"
+          >
+            <expand-arrow />
+          </div>
+          <div
+            @click="changeChevronClass"
+            v-bind:class="{ 'chevron': collapseChevron, 'hidden': !collapseChevron }"
+          >
+            <collapse-arrow />
+          </div>
+
+          <div
+            v-bind:class="{ 'show-extra-content': collapseChevron, 'hide-extra-content': expandChevron }"
+          >
+            <div class="card-line">
+              <strong>Longer Description:</strong>
+              {{this.currentTicket.longerDescription}}
+            </div>
+
+            <div class="card-line">
+              <strong>Attached Files:</strong>
+              <div
+                v-for="(index) in  this.currentTicket.attachments"
+                :key="index"
+              >{{this.currentTicket.attachments[index]}}</div>
+            </div>
+          </div>
+        </md-card>
       </div>
     </div>
   </div>
+  <!-- </div> -->
 </template>
       
 
@@ -563,6 +563,9 @@ export default {
     getZoomLink: function() {
       this.zoomLinkForm = true;
     },
+    cancelZoomLink: function() {
+      this.zoomLinkForm = false;
+    },
 
     startConnecting: function() {
       this.connecting = true;
@@ -633,7 +636,6 @@ export default {
     },
     expandCard: function() {},
     async acceptTicket() {
-      console.log(" in accept ticket");
       this.getZoomLink();
     },
     async loadUser(user) {
