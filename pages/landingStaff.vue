@@ -180,7 +180,7 @@
                 <!-- Selected index allows only that card to show when selected -->
                 <!-- Selected-card class is bound to the card selection  -->
                 <md-card
-                  style="    font-family: 'Manrope'; margin-left: 20px; margin-right: 20px; padding-bottom: 34px;"
+                  style=" margin-bottom: 10px;   font-family: 'Manrope'; margin-left: 20px; margin-right: 20px; padding-bottom: 34px;"
                   v-bind:class="{ 'selected-card': selectedTicketIndex === index}"
                 >
                   <div

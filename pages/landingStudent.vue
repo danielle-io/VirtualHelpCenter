@@ -693,47 +693,49 @@ const client = new Ably.Realtime(process.env.ABLY_KEY);
 // const userId = "5eb86452ed2ee55868633193";
 
 // base style
-import 'codemirror/lib/codemirror.css'
-import 'codemirror/theme/base16-dark.css'
+// import "codemirror/lib/codemirror.css";
+// import "codemirror/theme/base16-dark.css";
 
 // language
-import 'codemirror/mode/vue/vue.js'
+// import "codemirror/mode/vue/vue.js";
 
 // active-line.js
-import 'codemirror/addon/selection/active-line.js'
+// import "codemirror/addon/selection/active-line.js";
 
 // styleSelectedText
-import 'codemirror/addon/selection/mark-selection.js'
-import 'codemirror/addon/search/searchcursor.js'
+// import "codemirror/addon/selection/mark-selection.js";
+// import "codemirror/addon/search/searchcursor.js";
 
 // highlightSelectionMatches
-import 'codemirror/addon/scroll/annotatescrollbar.js'
-import 'codemirror/addon/search/matchesonscrollbar.js'
-import 'codemirror/addon/search/searchcursor.js'
-import 'codemirror/addon/search/match-highlighter.js'
+// import "codemirror/addon/scroll/annotatescrollbar.js";
+// import "codemirror/addon/search/matchesonscrollbar.js";
+// import "codemirror/addon/search/searchcursor.js";
+// import "codemirror/addon/search/match-highlighter.js";
 
 // keyMap
-import 'codemirror/mode/clike/clike.js'
-import 'codemirror/addon/edit/matchbrackets.js'
-import 'codemirror/addon/comment/comment.js'
-import 'codemirror/addon/dialog/dialog.js'
-import 'codemirror/addon/dialog/dialog.css'
-import 'codemirror/addon/search/searchcursor.js'
-import 'codemirror/addon/search/search.js'
-import 'codemirror/keymap/sublime.js'
+// import "codemirror/mode/clike/clike.js";
+// import "codemirror/addon/edit/matchbrackets.js";
+// import "codemirror/addon/comment/comment.js";
+// import "codemirror/addon/dialog/dialog.js";
+// import "codemirror/addon/dialog/dialog.css";
+// import "codemirror/addon/search/searchcursor.js";
+// import "codemirror/addon/search/search.js";
+// import "codemirror/keymap/sublime.js";
 
 // foldGutter
-import 'codemirror/addon/fold/foldgutter.css'
-import 'codemirror/addon/fold/brace-fold.js'
-import 'codemirror/addon/fold/comment-fold.js'
-import 'codemirror/addon/fold/foldcode.js'
-import 'codemirror/addon/fold/foldgutter.js'
-import 'codemirror/addon/fold/indent-fold.js'
-import 'codemirror/addon/fold/markdown-fold.js'
-import 'codemirror/addon/fold/xml-fold.js'
+// import "codemirror/addon/fold/foldgutter.css";
+// import "codemirror/addon/fold/brace-fold.js";
+// import "codemirror/addon/fold/comment-fold.js";
+// import "codemirror/addon/fold/foldcode.js";
+// import "codemirror/addon/fold/foldgutter.js";
+// import "codemirror/addon/fold/indent-fold.js";
+// import "codemirror/addon/fold/markdown-fold.js";
+// import "codemirror/addon/fold/xml-fold.js";
+
 import Vue from "vue";
 import axios from "~/plugins/axios";
-import { codemirror } from 'vue-codemirror';
+import firebase from "firebase";
+// import { codemirror } from "codemirror";
 import * as Ably from "ably";
 import {
   BFormInput,
@@ -753,7 +755,9 @@ export default {
     "b-form-select": BFormSelect,
     "b-form-checkbox": BFormCheckbox,
     "b-form-text-area": BFormTextarea,
-    codemirror
+    "b-form-radio": BFormRadio,
+    "b-form-radio-group": BFormRadioGroup
+    // codemirror
   },
 
   computed: {
@@ -765,30 +769,27 @@ export default {
   data() {
     return {
       el: "#requests",
-      code:"Paste your code here",
+      code: "Paste your code here",
       cmOption: {
-          tabSize: 4,
-          styleActiveLine: false,
-          lineNumbers: true,
-          styleSelectedText: false,
-          line: true,
-          foldGutter: true,
-          gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
-          highlightSelectionMatches: { showToken: /\w/, annotateScrollbar: true },
-          mode: 'text/javascript',
-          // hint.js options
-          hintOptions:{
-            completeSingle: false
-          },
-          keyMap: "sublime",
-          matchBrackets: true,
-          showCursorWhenSelecting: true,
-          theme: "monokai",
-          extraKeys: { "Ctrl": "autocomplete" }
+        tabSize: 4,
+        styleActiveLine: false,
+        lineNumbers: true,
+        styleSelectedText: false,
+        line: true,
+        foldGutter: true,
+        gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
+        highlightSelectionMatches: { showToken: /\w/, annotateScrollbar: true },
+        mode: "text/javascript",
+        // hint.js options
+        hintOptions: {
+          completeSingle: false
         },
-
-      // Hard coded user
-      currentUserId: "5eb75ab2779eb66e27e4fad0",
+        keyMap: "sublime",
+        matchBrackets: true,
+        showCursorWhenSelecting: true,
+        theme: "monokai",
+        extraKeys: { Ctrl: "autocomplete" }
+      },
       currentRequestsTab: true,
       requestHistoryTab: false,
       show: true,
@@ -800,7 +801,6 @@ export default {
       submitRequest: false,
       problem: "",
       probDes: "",
-      code: "",
       file: null,
       student: null,
       classes: [],
@@ -889,7 +889,6 @@ export default {
       return this.currentRequestsTab;
     },
     switchToRequestHistoryTab: function() {
-      console.log("switching to req his");
       this.currentRequestsTab = false;
       this.requestHistoryTab = true;
       this.scrollToTop();
@@ -911,7 +910,7 @@ export default {
       this.finished();
       console.log("accepted session : " + this.studentAcceptedSession);
       // Publish an event to the  channel
-      this.studentChannel.publish("studentAcceptedSession", userId);
+      // this.studentChannel.publish("studentAcceptedSession", userId);
     },
     triggerAccept: function() {
       this.showCountdown = true;
@@ -939,7 +938,7 @@ export default {
           value: classes.data._id,
           text: classes.data.dep + classes.data.courseNum
         });
-        console.log(this.classes[0].value);
+        console.log("class is " + this.classes[0].value);
         this.selected = this.classes[0].value;
       }
     },
@@ -997,15 +996,12 @@ export default {
       } else {
         // ABLY KEY HERE
         var client = new Ably.Realtime(process.env.ABLY_KEY);
-        var channel = client.channels.get('staff');
+        var channel = client.channels.get("staff");
         // Publish a message to the test channel
-        channel.publish("ticketUpdate", "ticket updated");
+        // channel.publish("ticketUpdate", "ticket updated");
         this.submitRequest = true;
         this.scrollToTop();
-        // HARD CODING A REDIRECT TEMPORARILY
-        // setTimeout(function() {
-        //   window.location.href = "studentCountdown";
-        // }, 8000);
+
         return this.request;
       }
     },
@@ -1117,7 +1113,6 @@ export default {
       let student = await axios.get("/api/users/" + userId);
       this.student = student.data;
 
-      console.log("got student " + this.student);
       student.data.classes.forEach(element => {
         this.loadClasses(element);
       });
@@ -1144,8 +1139,7 @@ export default {
             this.openTicket = null;
           });
 
-        // Reloading gets rid of the begin session text for now
-        // window.location.reload();
+        window.location.reload();
         this.showCountdown = false;
 
         this.scrollToTop();
@@ -1155,7 +1149,6 @@ export default {
 
   beforeMount() {
     this.scrollToTop();
-    console.log("loaded");
     this.getStudentInfo();
     this.startSubscribe();
   },
