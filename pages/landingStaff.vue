@@ -463,6 +463,22 @@ export default {
         return;
       }
     },
+
+    filterAllTickets(status){
+      // this.filteredTickets = [];
+      // this.staffCourses.forEach(element => {
+        return this.tickets.filter(ticket => ticket.status === status);
+        // return this.tickets.filter(ticket => ticket.course._id === status)
+        // this.filteredTickets.push(this.filterCourseTickets(status, element));
+      // //   this.filteredTickets.push(this.filterCourseTickets(status, element));
+      // // // this.loadClasses(element);
+      // });
+    
+      // return this.filteredTickets;
+      // return this.filteredTickets;
+      // return this.filterOpenTickets(status)
+    },
+
     triggerAccept: function() {
       console.log("in triggerAccept");
       console.log("accepted " + this.studentAccepted);
@@ -474,7 +490,8 @@ export default {
       console.log(course);
       if (course === null) {
         console.log("open tickets");
-        return this.filterOpenTickets(status);
+        return this.filterAllTickets(status);
+        // return this.filterOpenTickets(status);
       } else {
         console.log("filtering here")
         return this.filterCourseTickets(status, course);
