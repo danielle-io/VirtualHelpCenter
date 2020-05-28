@@ -222,7 +222,8 @@ export default {
     "b-form-checkbox": BFormCheckbox,
     "b-form-text-area": BFormTextarea,
     "b-form-radio": BFormRadio,
-    "b-form-radio-group": BFormRadioGroup
+    "b-form-radio-group": BFormRadioGroup,
+    "": Md-Ca
   },
 
   computed: {

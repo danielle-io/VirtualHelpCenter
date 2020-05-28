@@ -504,8 +504,8 @@ input[type="text"]:placeholder {
                   <b-form-text-area id="textarea" v-model="code" rows="1" max-rows="6"></b-form-text-area>
                 </div>
 
-                <div class="Row">
-                  <label class="label-format">Add a file, if needed</label>
+                <div class="row">
+                  <label style="margin-bottom: 0px;" class="label-format">Add a file, if needed</label>
                 </div>
 
                 <table class="table request-table">
@@ -527,7 +527,7 @@ input[type="text"]:placeholder {
                         <td class="remove-column">
                           <a
                             v-on:click="removeElement(index);"
-                            style="cursor: pointer; z-index: 999;"
+                            style="cursor: pointer; z-index: 999; margin-left: 6px;"
                           >Remove</a>
                         </td>
                       </tr>
@@ -543,7 +543,7 @@ input[type="text"]:placeholder {
                   <!--  On select, the state of request is changed, forcing a transition effect and
                   changing what is rendered on the page-->
                   <button
-                    v-on:click="submit"
+                    v-on:click="uploadFile"
                     v-bind:key="submitRequest"
                     type="submit"
                     style="margin-bottom: 20%; width: 40% !important;"
@@ -741,9 +741,24 @@ input[type="text"]:placeholder {
                   <strong>Issue:</strong>
                   {{ openTicket.oneLineOverview }}
                 </div>
-                <div v-if="openTicket.attachments" class="card-line">
+
+                <div
+                  v-if="openTicket.attachments && openTicket.attachments.length === 0"
+                  class="card-line"
+                >
                   <strong>Attachments:</strong>
                   {{ openTicket.attachments.length }}
+                </div>
+
+                <div
+                  v-if="openTicket.attachments && openTicket.attachments.length > 0"
+                  class="card-line"
+                >
+                  <strong>Attachments:</strong>
+
+                  <span v-for="(attachment, index) in (openTicket.attachments)" :key="index">
+                    <a target="_blank" style="cursor: pointer; margin-left: 10px" @click="openPage(attachment)">Attachment {{index + 1}}</a>
+                  </span>
                 </div>
               </div>
             </md-card>
@@ -853,9 +868,9 @@ export default {
       studentAcceptedSession: false,
       studentChannel: client.channels.get(userId),
       ticketChannel: client.channels.get("tickets"),
-      currentFile: null,
-      fileUrls: [],
-      selected: []
+      currentFileName: null,
+      selected: [],
+      fileUrls: []
     };
   },
   methods: {
@@ -870,11 +885,12 @@ export default {
         }
       });
     },
-    async uploadFile() {
+    uploadFile() {
       if (this.rows) {
         for (var i = 0; i < this.rows.length; i++) {
           var fileToUpload = this.rows[i].file;
-          this.currentFile = null;
+          console.log(this.rows[i].file.name);
+          this.currentFileName = this.rows[i].file.name;
           const storageRef = firebase
             .storage()
             .ref(fileToUpload.name)
@@ -890,16 +906,21 @@ export default {
             },
             () => {
               this.uploadValue = 100;
-              storageRef.snapshot.ref.getDownloadURL().then(url => {
-                this.currentFile = url;
-                this.fileUrls.push(this.currentFile);
-                console.log(this.fileUrls);
-              });
+              storageRef.snapshot.ref
+                .getDownloadURL()
+                .then(url => {
+                  // this.fileUrls.push(url);
+                  this.fileUrls.push(url);
+                })
+                .then(() => {
+                  console.log(this.fileUrls.value);
+                  this.submit(this.fileUrls);
+                });
             }
           );
         }
-        console.log("submitting");
-        return;
+      } else {
+        this.submit([]);
       }
     },
     switchToCurrentRequestsTab: function() {
@@ -913,6 +934,14 @@ export default {
       this.requestHistoryTab = true;
       this.scrollToTop();
       return this.requestHistoryTab;
+    },
+    openPage: function(attachmentUrl) {
+      console.log("open page");
+      window.open(
+        attachmentUrl,
+        "_blank" 
+      );
+      // location.href = attachmentUrl;
     },
     acceptSession: function() {
       this.scrollToTop();
@@ -948,7 +977,7 @@ export default {
           value: classes.data._id,
           text: classes.data.dep + classes.data.courseNum
         });
-        this.selected = this.classes[0].value; 
+        this.selected = this.classes[0].value;
       }
     },
     getSelectedCourse: function(course) {
@@ -959,11 +988,12 @@ export default {
     async startSubscribe() {
       console.log("subscribing to staff");
       // The student's ticket was accepted by the staff
-      this.studentChannel.subscribe("staffAcceptedTicket", message => {
-        this.zoomLink = message.data.zoomLink;
-        this.openTicket.updatedAt = message.data.date;
-        document.getElementById("hiddenButton").click();
-      });
+      // this.studentChannel.subscribe("staffAcceptedTicket", message => {
+      //   this.zoomLink = message.data.zoomLink;
+      //   this.openTicket.updatedAt = message.data.date;
+
+      //   document.getElementById("hiddenButton").click();
+      // });
     },
     countdownTime: function() {
       //read updated time
@@ -1025,11 +1055,13 @@ export default {
       this.rows = [];
     },
 
-    async submit() {
+    async submit(fileArray) {
       // Upload to firebase
-      await this.uploadFile();
+      //  let fileArray = await this.uploadFile();
       console.log("after upload file the file URLS are below");
-      console.log(this.fileUrls);
+
+      console.log(fileArray);
+      console.log(typeof fileArray);
 
       let ticket = await axios.post("../../api/insertTicket", {
         status: "Open",
@@ -1043,12 +1075,18 @@ export default {
         longerDescription: this.problem,
         codeSnippet: this.code,
         createdAt: new Date().toString(),
-        attachments: this.fileUrls
+        attachments: fileArray
       });
 
       this.openTicket = ticket.data;
+      // TODO: Get file names here
+      if (ticket.data.attachments && ticket.data.attachments.length > 0) {
+        for (var i = 0; i < ticket.data.attachments.length; i++) {}
+      }
+      console.log("Open ticket below");
+      console.log(this.openTicket);
       // sends ticket to staff
-      this.ticketChannel.publish("ticketUpdate", this.openTicket);
+      //   this.ticketChannel.publish("ticketUpdate", this.openTicket);
     },
 
     async closeTicket(ticket) {
