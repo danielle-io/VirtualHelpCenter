@@ -5,52 +5,10 @@
     position: relative;
   }
 
-  button[type="button"],
-  button[type="submit"]
-  {
-    background: linear-gradient(
-      333deg,
-      rgba(167, 115, 215, 0.72) 21%,
-      rgba(169, 235, 244, 1) 75%
-    );
-    /* border: none; */
-    color: white;
-    letter-spacing: 0.5px;
-    font-weight: bolder;
-    font-size: 14px;
-    width: 85%;
-    height: 50px;
-    text-align: center !important;
-    text-decoration: none;
-    display: inline-block;
-    text-transform: uppercase;
-    -webkit-box-shadow: 0 10px 30px 0 rgba(95, 186, 233, 0.4);
-    box-shadow: 0 10px 30px 0 rgba(137, 118, 241, 0.4);
-    -webkit-border-radius: 5px 5px 5px 5px;
-    border-radius: 7px 7px 7px 7px;
-    margin: 30px 20px 40px 20px;
-    -webkit-transition: all 0.3s ease-in-out;
-    -moz-transition: all 0.3s ease-in-out;
-    -ms-transition: all 0.3s ease-in-out;
-    -o-transition: all 0.3s ease-in-out;
-    transition: all 0.3s ease-in-out;
-  }
+  
 
-  button[type="button"]:hover,
-  button[type="submit"]:hover,
-  button[type="reset"]:hover {
-    background-color: #987cb3;
-  }
 
-  button[type="button"]:active,
-  button[type="submit"]:active,
-  button[type="reset"]:active {
-    -moz-transform: scale(0.95);
-    -webkit-transform: scale(0.95);
-    -o-transform: scale(0.95);
-    -ms-transform: scale(0.95);
-    transform: scale(0.95);
-  }
+ 
 
   input[type="password"] {
     border-radius: 0 !important;
