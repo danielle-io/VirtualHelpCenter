@@ -1,8 +1,6 @@
-<style>
-.form-buttons {
-  width: 60% !important;
-}
+<!-- TO DO: populate classes from course list -->
 
+<style>
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.5s;
@@ -52,96 +50,26 @@
   max-height: 800px;
   overflow-y: scroll;
 }
-
-.request-container-two {
-  position: relative;
-  padding-left: 10px;
-  padding-right: 10px;
-  margin-left: 15%;
-  margin-right: 15%;
-  margin-top: 6%;
-  margin-bottom: 2%;
-  font-family: "Poppins";
-  min-width: 200px;
-  /* border: solid 1px #ddd; */
-  padding-left: 2%;
-  padding-right: 2%;
-  padding-bottom: 10px;
-  /* box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.05); */
+.CodeMirror-focused .cm-matchhighlight {
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAFklEQVQI12NgYGBgkKzc8x9CMDAwAAAmhwSbidEoSQAAAABJRU5ErkJggg==);
+  background-position: bottom;
+  background-repeat: repeat-x;
 }
-
-/* ANIMATIONS */
-/* Simple CSS3 Fade-in-down Animation */
-.fadeInDown {
-  -webkit-animation-name: fadeInDown;
-  animation-name: fadeInDown;
-  -webkit-animation-duration: 0.1s;
-  animation-duration: 0.1s;
-  -webkit-animation-fill-mode: both;
-  animation-fill-mode: both;
+.cm-matchhighlight {
+  background-color: lightgreen;
 }
-
-@-webkit-keyframes fadeInDown {
-  0% {
-    opacity: 0;
-    -webkit-transform: translate3d(0, -100%, 0);
-    transform: translate3d(0, -100%, 0);
-  }
-  100% {
-    opacity: 1;
-    -webkit-transform: none;
-    transform: none;
-  }
+.CodeMirror-selection-highlight-scrollbar {
+  background-color: green;
 }
-
-/* Simple CSS3 Fade-in Animation */
-@-webkit-keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+.CodeMirror-scroll {
+  width: 700px;
+  height: 300px;
+  overflow-y: hidden;
+  overflow-x: auto;
 }
-@-moz-keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-.fadeIn {
-  opacity: 0;
-  -webkit-animation: fadeIn ease-in 1;
-  -moz-animation: fadeIn ease-in 1;
-  animation: fadeIn ease-in 1;
-
-  -webkit-animation-fill-mode: forwards;
-  -moz-animation-fill-mode: forwards;
-  animation-fill-mode: forwards;
-
-  -webkit-animation-duration: 1s;
-  -moz-animation-duration: 1s;
-  animation-duration: 1s;
-}
-
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.5s;
-}
-.fade-enter,
-.fade-leave-to {
-  opacity: 0;
+.CodeMirror {
+  border: 1px solid #eee !important;
+  height: auto;
 }
 
 .card-categories {
@@ -152,6 +80,7 @@
 .form-text-areas {
   border-style: solid;
   border: 1px !important;
+  /* border-color: rgb(180, 175, 175) !important; */
   border: 2px solid #dfdada !important;
 }
 
@@ -279,10 +208,6 @@ table th,
   margin-right: 8px;
   padding-top: 1px !important;
 }
-.close-icon {
-  color: "red" !important;
-  font-size: 22px;
-}
 
 .request-tabs {
   margin-top: 10px;
@@ -320,7 +245,6 @@ table th,
   padding-right: 12px;
   padding-bottom: 2px;
   font-family: "Poppins";
-  margin-left: 12px;
 }
 
 #formContent {
@@ -427,8 +351,6 @@ input[type="text"]:placeholder {
 <template>
   <div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/velocity/1.2.3/velocity.min.js"></script>
-
-    <button id="hiddenButton" style="display:none;" @click="triggerAccept"></button>
 
     <div id="requests">
       <!-- The transition effects for the containers changing -->
@@ -558,9 +480,7 @@ input[type="text"]:placeholder {
             </div>
 
             <!-- Container for filling out the request form -->
-            <div
-              v-if="this.request === false && this.submitRequest === false && !this.showCountdown"
-            >
+            <div v-if="this.request === false && this.submitRequest === false">
               <div class="heading-text">Request a Session</div>
               <!-- <div
                 class="sub-heading-text-left"
@@ -643,7 +563,7 @@ input[type="text"]:placeholder {
                     v-on:click="uploadFile"
                     v-bind:key="submitRequest"
                     type="submit"
-                    style="margin-bottom: 20%; width: 40% !important;"
+                    style="margin-bottom: 10px; margin margin-top: 10px;"
                     class="fadeIn form-buttons"
                     @click="changeRequestState"
                   >
@@ -751,7 +671,7 @@ input[type="text"]:placeholder {
   </div>
 </template>
   
-<script src="https://cdn.ably.io/lib/ably.min-1.js"/>
+<script src="https://cdn.ably.io/lib/ably.min-1.js"></script>
 <script>
 var firebaseConfig = {
   apiKey: process.env.FB_API_KEY,
@@ -770,10 +690,50 @@ if (!firebase.apps.length) {
 const userId = "5ecafbcd5219c55528efe03e";
 
 const client = new Ably.Realtime(process.env.ABLY_KEY);
+// const userId = "5eb86452ed2ee55868633193";
 
+// base style
+import 'codemirror/lib/codemirror.css'
+import 'codemirror/theme/base16-dark.css'
+
+// language
+import 'codemirror/mode/vue/vue.js'
+
+// active-line.js
+import 'codemirror/addon/selection/active-line.js'
+
+// styleSelectedText
+import 'codemirror/addon/selection/mark-selection.js'
+import 'codemirror/addon/search/searchcursor.js'
+
+// highlightSelectionMatches
+import 'codemirror/addon/scroll/annotatescrollbar.js'
+import 'codemirror/addon/search/matchesonscrollbar.js'
+import 'codemirror/addon/search/searchcursor.js'
+import 'codemirror/addon/search/match-highlighter.js'
+
+// keyMap
+import 'codemirror/mode/clike/clike.js'
+import 'codemirror/addon/edit/matchbrackets.js'
+import 'codemirror/addon/comment/comment.js'
+import 'codemirror/addon/dialog/dialog.js'
+import 'codemirror/addon/dialog/dialog.css'
+import 'codemirror/addon/search/searchcursor.js'
+import 'codemirror/addon/search/search.js'
+import 'codemirror/keymap/sublime.js'
+
+// foldGutter
+import 'codemirror/addon/fold/foldgutter.css'
+import 'codemirror/addon/fold/brace-fold.js'
+import 'codemirror/addon/fold/comment-fold.js'
+import 'codemirror/addon/fold/foldcode.js'
+import 'codemirror/addon/fold/foldgutter.js'
+import 'codemirror/addon/fold/indent-fold.js'
+import 'codemirror/addon/fold/markdown-fold.js'
+import 'codemirror/addon/fold/xml-fold.js'
 import Vue from "vue";
-import firebase from "firebase";
 import axios from "~/plugins/axios";
+import { codemirror } from 'vue-codemirror';
 import * as Ably from "ably";
 import {
   BFormInput,
@@ -793,13 +753,42 @@ export default {
     "b-form-select": BFormSelect,
     "b-form-checkbox": BFormCheckbox,
     "b-form-text-area": BFormTextarea,
-    "b-form-radio": BFormRadio,
-    "b-form-radio-group": BFormRadioGroup
+    codemirror
+  },
+
+  computed: {
+    isDisabled: function() {
+      return !this.selected;
+    }
   },
 
   data() {
     return {
       el: "#requests",
+      code:"Paste your code here",
+      cmOption: {
+          tabSize: 4,
+          styleActiveLine: false,
+          lineNumbers: true,
+          styleSelectedText: false,
+          line: true,
+          foldGutter: true,
+          gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
+          highlightSelectionMatches: { showToken: /\w/, annotateScrollbar: true },
+          mode: 'text/javascript',
+          // hint.js options
+          hintOptions:{
+            completeSingle: false
+          },
+          keyMap: "sublime",
+          matchBrackets: true,
+          showCursorWhenSelecting: true,
+          theme: "monokai",
+          extraKeys: { "Ctrl": "autocomplete" }
+        },
+
+      // Hard coded user
+      currentUserId: "5eb75ab2779eb66e27e4fad0",
       currentRequestsTab: true,
       requestHistoryTab: false,
       show: true,
@@ -1006,9 +995,17 @@ export default {
         this.request = false;
         return this.request;
       } else {
+        // ABLY KEY HERE
+        var client = new Ably.Realtime(process.env.ABLY_KEY);
+        var channel = client.channels.get('staff');
+        // Publish a message to the test channel
+        channel.publish("ticketUpdate", "ticket updated");
         this.submitRequest = true;
         this.scrollToTop();
-        this.startSubscribe();
+        // HARD CODING A REDIRECT TEMPORARILY
+        // setTimeout(function() {
+        //   window.location.href = "studentCountdown";
+        // }, 8000);
         return this.request;
       }
     },
@@ -1046,7 +1043,12 @@ export default {
         course: null
       };
     },
+    async loadUser(user) {
+      // this.student = user.data._id;
+      this.student = userId;
+    },
 
+    // NOT INSERTED YET: file
     async submit() {
       console.log("course is " + this.selectedCourse);
       if (this.selectedCourse === null) {
