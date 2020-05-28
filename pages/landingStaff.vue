@@ -228,16 +228,18 @@
                     <div v-if="ticket.attachments.length > 0" class="card-line">
                       <strong>Attached Files:</strong>
 
-                      <span
-                        v-for="(index) in (ticket.attachments)"
-                        :key="index"
-                      >{{" " + ticket.attachments[index]}}</span>
-                    </div>
+                      <span v-for="(attachment, index) in (ticket.attachments)" :key="index">
+                        <a
+                          style="cursor: pointer; margin-left: 10px"
+                          @click="openPage(attachment.filePath)"
+                        >{{attachment.fileName}}</a>
+                      </span>
 
-                    <div v-if="ticket.attachments.length === 0" class="card-line">
-                      <strong>Attached Files:</strong>
+                      <div v-if="ticket.attachments.length === 0" class="card-line">
+                        <strong>Attached Files:</strong>
 
-                      <span style="margin-left: 3px;">None</span>
+                        <span style="margin-left: 3px;">None</span>
+                      </div>
                     </div>
                   </div>
                 </md-card>
@@ -460,6 +462,12 @@ export default {
         return this.filterCourseTickets(status, course);
       }
     },
+    openPage: function(attachmentUrl) {
+      console.log(this.openTicket);
+      console.log(attachmentUrl);
+      window.open(attachmentUrl, "_blank");
+      // location.href = attachmentUrl;
+    },
     filterCourseTickets(status, course) {
       // console.log(this.tickets);
       if (this.tickets) {
@@ -487,11 +495,7 @@ export default {
           "/api/getStudentsById/" + ticketOwnerId
         );
         if (
-          studentResponse &&
-          typeof studentResponse !== undefined &&
-          typeof studentResponse.data !== undefined &&
-          typeof studentResponse.data.name !== undefined &&
-          typeof studentResponse.data.name.firstname !== undefined
+          studentResponse 
         ) {
           if (studentResponse.data.name.firstname) {
             studentName =

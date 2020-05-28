@@ -23,6 +23,17 @@
   margin-left: 14px;
 }
 
+.card-line-history {
+  margin-bottom: 4px;
+  word-wrap: break-word;
+  word-break: break-all;
+  font-size: 15px;
+  flex-wrap: wrap;
+  text-align: left;
+  margin-left: 10px;
+  display: inline-block;
+}
+
 .request-container {
   position: relative;
   padding-left: 10px;
@@ -38,6 +49,8 @@
   padding-right: 2%;
   padding-bottom: 10px;
   box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.05);
+  max-height: 800px;
+  overflow-y: scroll;
 }
 
 .request-container-two {
@@ -129,6 +142,11 @@
 .fade-enter,
 .fade-leave-to {
   opacity: 0;
+}
+
+.card-categories {
+  color: #53a59e;
+  font-weight: 500;
 }
 
 .form-text-areas {
@@ -429,17 +447,17 @@ input[type="text"]:placeholder {
             >Request History</a>
           </div>
 
-          <!--  The first container to show  -->
           <div v-if="this.currentRequestsTab">
-            <div v-if="this.request === true && openTicket.owner === null && !this.showCountdown">
+            <div v-if="this.request === true && !this.showCountdown">
               <div class="heading-text">My Requests</div>
 
-              <!-- TO DO: make this text dynamic based on user tickets -->
               <div
                 class="sub-heading-text"
                 style="padding-top:2%;"
-              >You currently have {{ticketNum()}} pending requests.</div>
+              >You currently have {{ticketNum()}} pending {{requestOrRequests()}}.</div>
+            </div>
 
+            <div v-if="this.request === true && !this.openTicket  && !this.showCountdown">
               <div style="text-align: center;">
                 <button
                   v-bind:key="request"
@@ -451,6 +469,92 @@ input[type="text"]:placeholder {
                   <right-circle />Request a Session
                 </button>
               </div>
+            </div>
+
+            <div
+              v-if="this.openTicket"
+              style="text-align: center; margin-top: 12px;"
+              :hidden="!this.openTicket"
+            >
+              <md-card>
+                <div style="float: right; margin-top: 6px; margin-left: 0px; margin-right: 10px; ">
+                  <button class="close-button" style="margin-top: 5px;" v-on:click="closeTicket()">
+                    <div class="toolTip">
+                      <close
+                        style="color: red !important; margin-bottom: 0px; padding-bottom: 0px;"
+                        class="close-icon"
+                      />
+                      <!-- <span class="toolTipText">Cancel Request</span> -->
+                    </div>
+                  </button>
+                </div>
+
+                <md-card-header style="display: in-line-block;">
+                  <div
+                    style="justify-content: center; font-size: 18px; text-align: center; margin-top: 20px;"
+                    class="md-title"
+                  ></div>
+                </md-card-header>
+
+                <div class="md-card-content">
+                  <div class="row">
+                    <div class="card-line">
+                      <span class="card-categories col-sm">Status:</span>
+                      <span
+                        style="padding-left:22px !important;"
+                        class="col-sm"
+                      >{{ this.openTicket.status }}</span>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="card-line">
+                      <span class="card-categories col-sm">Overview:</span>
+                      <span
+                        style="padding-left: 0px !important;"
+                        class="col-sm"
+                      >{{ this.openTicket.oneLineOverview }}</span>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="card-line">
+                      <span class="card-categories col-sm">Details:</span>
+                      <span
+                        style="padding-left: 20px !important;"
+                        class="col"
+                      >{{ this.openTicket.longerDescription }}</span>
+                    </div>
+                  </div>
+
+                  <div v-if="this.openTicket.attachments.length === 0">
+                    <div class="row">
+                      <div class="card-line">
+                        <span class="card-categories col-sm">Files:</span>
+                        <span style="padding-left: 40px !important;" class="col">None</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div v-if="this.openTicket.attachments.length > 0">
+                    <div class="row">
+                      <div class="card-line">
+                        <span class="card-categories col-sm">Files:</span>
+                        <span
+                          style="margin-left:20px !important;"
+                          v-for="(attachment, index) in (this.openTicket.attachments)"
+                          :key="index"
+                        >
+                          <a
+                            style="cursor: pointer; margin-left: 22px"
+                            @click="openPage(attachment.filePath, attachment.fileName)"
+                          >{{attachment.fileName}}</a>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </md-card>
             </div>
 
             <!-- Container for filling out the request form -->
@@ -467,14 +571,7 @@ input[type="text"]:placeholder {
                 <div class="row" style="width: 70%;">
                   <label class="label-format">Please select the class you need help with:</label>
                 </div>
-                <!-- 
-                  <b-form-select
-                    :options="classes"
-                    v-on:change="getSelectedCourse"
-                    size="sm"
-                    class="mt-3"
-                    placeholder="Please select the class you need help with"
-                ></b-form-select>-->
+
                 <div class="row">
                   <b-form-radio-group
                     v-model="selected"
@@ -511,7 +608,7 @@ input[type="text"]:placeholder {
                 <table class="table request-table">
                   <tbody>
                     <!-- This is where the new questions are inserted -->
-                    <div class="top-row" v-for="(row, index) in rows" v-bind:key="row">
+                    <div class="top-row" v-for="(row, index) in rows" v-bind:key="index">
                       <tr>
                         <td>
                           <button class="file-container file-button">
@@ -555,111 +652,6 @@ input[type="text"]:placeholder {
                 </div>
               </div>
             </div>
-
-            <!-- <div
-              v-if="this.submitRequest && !this.showCountdown && !this.studentAcceptedSession"
-              v-bind:key="submitRequest"
-            >
-              <div style="margin-bottom: 30px;" class="heading-text">Your Request Was Submitted</div>
-              <div
-                v-if="this.request === false && this.submitRequest === false && !this.showCountdown"
-              >
-                <div class="heading-text">Request a Session</div>
-                <div
-                  class="sub-heading-text-left"
-                  style="padding-top:2%;"
-            >Complete the form below to request assistance from a lab tutor.</div>-->
-
-            <!-- <div class="form-container">
-                  <div class="row" style="width: 70%;">
-                    <b-form-select
-                      :options="classes"
-                      v-on:change="getSelectedCourse"
-                      size="sm"
-                      class="mt-3"
-                      placeholder="Please select the class you need help with"
-                    ></b-form-select>
-            </div>-->
-
-            <!-- <div class="row">
-                    <label
-                      class="label-format"
-                    >Please enter a brief one-sentence summary of the issue</label>
-                    <b-form-input v-model="probDes" placeholder class="form-text-areas"></b-form-input>
-                  </div>
-
-                  <div class="row">
-                    <label class="label-format">Elaborate on the issue, if needed.</label>
-                    <b-form-text-area
-                      id="textarea"
-                      v-model="problem"
-                      placeholder
-                      rows="2"
-                      max-rows="6"
-                    ></b-form-text-area>
-            </div>-->
-
-            <!-- <div class="row">
-                    <label class="label-format">Paste a code snippet, if needed</label>
-                    <b-form-text-area
-                      id="textarea"
-                      v-model="code"
-                      placeholder
-                      rows="1"
-                      max-rows="30"
-                    ></b-form-text-area>
-            </div>-->
-
-            <!-- <div class="Row">
-                    <label class="label-format">Add a file, if needed</label>
-            </div>-->
-
-            <!-- <table class="table request-table">
-                    <tbody>
-                      <div class="top-row" v-for="(row, index) in rows" v-bind:key="row">
-                        <tr>
-                          <td>
-                            <button class="file-container file-button">
-                              {{row.file.name}}
-                              <input
-                                type="file"
-                                @change="setFilename($event, row)"
-                                :id="index"
-                              />
-                            </button>
-            </td>-->
-            <!-- 
-                          <td class="remove-column">
-                            <a
-                              v-on:click="removeElement(index);"
-                              style="cursor: pointer; z-index: 999;"
-                            >Remove</a>
-                          </td>
-                        </tr>
-                      </div>
-                    </tbody>
-            </table>-->
-            <!-- 
-                  <span class="add-button" @click="addRow">
-                    <plus-circle />
-            </span>-->
-            <!-- 
-                  <div style="text-align: center;">
-                    <div v-if="this.problem && this.probDes && this.selectedCourse">
-                      <button
-                        v-on:click="submit"
-                        v-bind:key="submitRequest"
-                        type="submit"
-                        style="margin-bottom: 20%; width: 40% !important;"
-                        class="fadeIn form-buttons"
-                        @click="changeRequestState"
-                      >
-                        <right-circle style="margin-right:4px" />Submit Request
-                      </button>
-            </div>-->
-            <!-- </div>
-            </div>-->
-            <!-- </div> -->
 
             <div v-if="this.showCountdown && !this.studentAcceptedSession">
               <div class="request-container">
@@ -707,86 +699,53 @@ input[type="text"]:placeholder {
             </div>
           </div>
 
-          <div style="text-align: center; margin-top: 12px;" :hidden="openTicket.owner === null">
-            <md-card>
-              <div style="float: right; margin-top: 6px; margin-left: 0px; margin-right: 10px; ">
-                <button
-                  class="close-button"
-                  style="margin-top: 5px;"
-                  v-on:click="closeTicket(openTicket)"
-                >
-                  <div class="toolTip">
-                    <close
-                      style="color: red !important; margin-bottom: 0px; padding-bottom: 0px;"
-                      class="close-icon"
-                    />
-                    <!-- <span class="toolTipText">Cancel Request</span> -->
+          <div v-if="!this.currentRequestsTab">
+            <div class="heading-text">My Requests</div>
+
+            <!-- TO DO: make this text dynamic based on user tickets -->
+            <div
+              class="sub-heading-text"
+              style="padding-top:2%;"
+            >You have {{this.closedTickets.length}} prior requests.</div>
+
+            <div
+              v-for="(ticket) in this.closedTickets"
+              style="text-align: center;"
+              :key="ticket._id"
+            >
+              <md-card style="margin-bottom:12px;">
+                <div class="md-card-content">
+                  <div class="row">
+                    <div class="card-line-history">
+                      <span class="card-categories col-sm">Status:</span>
+                      <span style="padding-left:22px !important;" class="col-sm">{{ ticket.status }}</span>
+                    </div>
                   </div>
-                </button>
-              </div>
 
-              <md-card-header style="display: in-line-block;">
-                <div
-                  style="justify-content: center; font-size: 18px; text-align: center; margin-top: 20px;"
-                  class="md-title"
-                >Pending Request</div>
-              </md-card-header>
+                  <div class="row">
+                    <div class="card-line-history">
+                      <span class="card-categories col-sm">Overview:</span>
+                      <span
+                        style="padding-left: 0px !important;"
+                        class="col-sm"
+                      >{{ ticket.oneLineOverview }}</span>
+                    </div>
+                  </div>
 
-              <div class="md-card-content">
-                <div class="card-line">
-                  <strong>Status:</strong>
-                  {{ openTicket.status }}
+                  <div class="row">
+                    <div class="card-line-history">
+                      <span class="card-categories col-sm">Details:</span>
+                      <span
+                        style="padding-left: 18px !important;"
+                        class="col"
+                      >{{ ticket.longerDescription }}</span>
+                    </div>
+                  </div>
                 </div>
-                <div class="card-line">
-                  <strong>Issue:</strong>
-                  {{ openTicket.oneLineOverview }}
-                </div>
-
-                <div
-                  v-if="openTicket.attachments && openTicket.attachments.length === 0"
-                  class="card-line"
-                >
-                  <strong>Attachments:</strong>
-                  {{ openTicket.attachments.length }}
-                </div>
-
-                <div
-                  v-if="openTicket.attachments && openTicket.attachments.length > 0"
-                  class="card-line"
-                >
-                  <strong>Attachments:</strong>
-
-                  <span v-for="(attachment, index) in (openTicket.attachments)" :key="index">
-                    <a target="_blank" style="cursor: pointer; margin-left: 10px" @click="openPage(attachment)">Attachment {{index + 1}}</a>
-                  </span>
-                </div>
-              </div>
-            </md-card>
+              </md-card>
+            </div>
           </div>
         </div>
-
-        <div v-if="this.requestHistoryTab">
-          <div v-for="(ticket) in otherTickets" style="text-align: center;" :key="ticket._id">
-            <md-card>
-              <md-card-header>
-                <div class="md-title">Previous</div>
-              </md-card-header>
-
-              <div class="md-card-content">
-                <div class="card-line">
-                  <strong>Status:</strong>
-                  {{ ticket.status }}
-                </div>
-
-                <div class="card-line">
-                  <strong>Short Description:</strong>
-                  {{ ticket.oneLineOverview }}
-                </div>
-              </div>
-            </md-card>
-          </div>
-        </div>
-        <!-- </div> -->
       </transition>
     </div>
   </div>
@@ -856,21 +815,26 @@ export default {
       file: null,
       student: null,
       classes: [],
-      openTicket: {
-        owner: null,
-        status: null,
-        oneLineOverview: null
-      },
-      otherTickets: [{ owner: null, status: null, oneLineOverview: null }],
+      openTicket: null,
+      closedTickets: [
+        {
+          owner: null,
+          status: null,
+          oneLineOverview: null,
+          longerDescription: null,
+          attachments: []
+        }
+      ],
       session: null,
       zoomLink: null,
       showCountdown: false,
       studentAcceptedSession: false,
       studentChannel: client.channels.get(userId),
       ticketChannel: client.channels.get("tickets"),
-      currentFileName: null,
       selected: [],
-      fileUrls: []
+      fileUrls: [],
+      fileObjects: [],
+      selectedCourse: null
     };
   },
   methods: {
@@ -889,8 +853,6 @@ export default {
       if (this.rows) {
         for (var i = 0; i < this.rows.length; i++) {
           var fileToUpload = this.rows[i].file;
-          console.log(this.rows[i].file.name);
-          this.currentFileName = this.rows[i].file.name;
           const storageRef = firebase
             .storage()
             .ref(fileToUpload.name)
@@ -909,18 +871,26 @@ export default {
               storageRef.snapshot.ref
                 .getDownloadURL()
                 .then(url => {
-                  // this.fileUrls.push(url);
                   this.fileUrls.push(url);
+
+                  if (this.fileUrls.length === this.rows.length) {
+                    console.log("going to for loop");
+                    for (var i = this.rows.length - 1; i > -1; i--) {
+                      this.fileObjects.push({
+                        fileName: this.rows[i].file.name,
+                        filePath: this.fileUrls[i]
+                      });
+                    }
+                  }
                 })
                 .then(() => {
-                  console.log(this.fileUrls.value);
-                  this.submit(this.fileUrls);
+                  this.submit();
                 });
             }
           );
         }
       } else {
-        this.submit([]);
+        this.submit();
       }
     },
     switchToCurrentRequestsTab: function() {
@@ -930,17 +900,17 @@ export default {
       return this.currentRequestsTab;
     },
     switchToRequestHistoryTab: function() {
+      console.log("switching to req his");
       this.currentRequestsTab = false;
       this.requestHistoryTab = true;
       this.scrollToTop();
       return this.requestHistoryTab;
     },
-    openPage: function(attachmentUrl) {
-      console.log("open page");
-      window.open(
-        attachmentUrl,
-        "_blank" 
-      );
+    openPage: function(attachmentUrl, attachmentName) {
+      console.log(this.openTicket);
+      console.log(attachmentUrl);
+      console.log(attachmentName);
+      window.open(attachmentUrl, "_blank");
       // location.href = attachmentUrl;
     },
     acceptSession: function() {
@@ -967,16 +937,20 @@ export default {
       this.rows.splice(index, 1);
     },
     setFilename: function(event, row) {
-      var file = event.target.files[0];
-      row.file = file;
+      if (event && row) {
+        var file = event.target.files[0];
+        row.file = file;
+      }
     },
+
     async loadClasses(classSelected) {
       if (classSelected) {
-        let classes = await axios.get("../../api/courses/" + classSelected._id);
+        let classes = await axios.get("/api/courses/" + classSelected._id);
         this.classes.push({
           value: classes.data._id,
           text: classes.data.dep + classes.data.courseNum
         });
+        console.log(this.classes[0].value);
         this.selected = this.classes[0].value;
       }
     },
@@ -1019,7 +993,7 @@ export default {
       //tell staff student did not accept session
       // studentChannel.publish("studentDidNotAcceptSession", userId);
       // this.openTicket.status = 'Unresolved'
-      // this.otherTickets.push(openTicket)
+      // this.closedTickets.push(openTicket)
       // this.openTicket = {
       //   owner: null,
       //   status: null,
@@ -1039,115 +1013,152 @@ export default {
       }
     },
     ticketNum: function() {
-      if (this.openTicket.owner != null) {
-        return "one";
+      if (!this.openTicket) {
+        return "requests";
       }
       return "no";
     },
+    requestOrRequests: function() {
+      if (!this.openTicket) {
+        return "requests";
+      }
+      return "requests";
+    },
     clearForm: function() {
+      console.log("clearing form");
       this.problem = "";
       this.probDes = "";
       this.code = "";
+      this.tickets = null;
+      this.openTickets = null;
       this.file = null;
       this.submitRequest = false;
       this.request = true;
       this.fileUrls = [];
       this.rows = [];
-    },
-
-    async submit(fileArray) {
-      // Upload to firebase
-      //  let fileArray = await this.uploadFile();
-      console.log("after upload file the file URLS are below");
-
-      console.log(fileArray);
-      console.log(typeof fileArray);
-
-      let ticket = await axios.post("../../api/insertTicket", {
-        status: "Open",
-        owner: {
-          _id: userId
-        },
-        course: {
-          _id: this.selectedCourse
-        },
-        oneLineOverview: this.probDes,
-        longerDescription: this.problem,
-        codeSnippet: this.code,
-        createdAt: new Date().toString(),
-        attachments: fileArray
-      });
-
-      this.openTicket = ticket.data;
-      // TODO: Get file names here
-      if (ticket.data.attachments && ticket.data.attachments.length > 0) {
-        for (var i = 0; i < ticket.data.attachments.length; i++) {}
-      }
-      console.log("Open ticket below");
-      console.log(this.openTicket);
-      // sends ticket to staff
-      //   this.ticketChannel.publish("ticketUpdate", this.openTicket);
-    },
-
-    async closeTicket(ticket) {
-      console.log("closing ticket");
-      this.ticketChannel.publish("ticketClosed", this.openTicket);
-
-      this.openTicket.status = "Closed";
-      this.otherTickets.push(this.openTicket);
+      this.fileObjects = [];
       this.openTicket = {
         owner: null,
         status: null,
-        oneLineOverview: null
+        oneLineOverview: null,
+        attachments: [],
+        longerDescription: [],
+        course: null
       };
-      this.clearForm();
-      await axios.put("../../api/updateTicket/" + ticket._id, {
-        status: "Closed"
+    },
+
+    async submit() {
+      console.log("course is " + this.selectedCourse);
+      if (this.selectedCourse === null) {
+        this.selectedCourse = this.classes[0].value;
+      }
+
+      if (!this.openTicket) {
+        console.log("inserting " + this.fileObjects);
+        let ticket = await axios.post("/api/insertTicket", {
+          status: "Open",
+          owner: {
+            _id: userId
+          },
+          course: {
+            _id: this.selectedCourse
+          },
+          oneLineOverview: this.probDes,
+          longerDescription: this.problem,
+          codeSnippet: this.code,
+          createdAt: new Date().toString(),
+          attachments: this.fileObjects
+        });
+
+        this.openTicket = ticket.data;
+        console.log("Open ticket below");
+        console.log(this.openTicket);
+        // sends ticket to staff
+        //   this.ticketChannel.publish("ticketUpdate", this.openTicket);
+      }
+    },
+    async getTickets() {
+      console.log("in get tickets");
+
+      let tickets = await axios.get("/api/tickets/getTickets", {
+        "owner._id": userId
       });
+      this.tickets = tickets;
 
-      // Reloading gets rid of the begin session text for now
-      // window.location.reload();
+      this.closedTickets = tickets.data.filter(
+        ticket => ticket.status !== "Open"
+      );
+      this.openTickets = tickets.data.filter(
+        ticket => ticket.status === "Open"
+      );
+      if (this.openTickets) {
+        this.openTicket = this.openTickets[0];
+      }
+    },
 
-      this.showCountdown = false;
+    // if (this.tickets) {
+    //   console.log(this.tickets);
+    // }
 
-      this.scrollToTop();
+    // let tickets = await axios.get("../../api/tickets");
+
+    // this.closedTickets = tickets.data.filter(
+    //   ticket => ticket.owner._id === userId
+    // );
+    // tickets = tickets.data.filter(ticket => (ticket.owner._id === this.$route.params.id) && (ticket.status === 'Open'));
+
+    //  tickets = tickets.data.filter(
+    //     ticket => ticket.owner._id === userId && ticket.status === "Open"
+    //   );
+
+    async getStudentInfo() {
+      let student = await axios.get("/api/users/" + userId);
+      this.student = student.data;
+
+      console.log("got student " + this.student);
+      student.data.classes.forEach(element => {
+        this.loadClasses(element);
+      });
+      this.getTickets();
+    },
+
+    async closeTicket() {
+      if (this.openTicket) {
+        console.log("closing ticket " + this.openTicket._id);
+
+        // this.ticketChannel.publish("ticketClosed", this.openTicket);
+        this.openTicket.status = "Closed";
+        this.closedTickets.push(this.openTicket);
+
+        var id = this.openTicket._id;
+        this.clearForm();
+
+        await axios
+          .put("/api/updateTicket/" + id, {
+            status: "Closed"
+          })
+          .then(() => {
+            console.log("resetting ticket");
+            this.openTicket = null;
+          });
+
+        // Reloading gets rid of the begin session text for now
+        // window.location.reload();
+        this.showCountdown = false;
+
+        this.scrollToTop();
+      }
     }
   },
-
-  mounted() {},
 
   beforeMount() {
     this.scrollToTop();
-    // this.loadClasses();
+    console.log("loaded");
+    this.getStudentInfo();
+    this.startSubscribe();
   },
-  async created() {
-    this.scrollToTop();
-    // let student = await axios.get("../../api/users/" + this.$route.params.id);
-    // this.loadUser(student);
-    this.student = userId;
 
-    let student = await axios.get("../../api/users/" + userId);
-
-    student.data.classes.forEach(element => {
-      this.loadClasses(element);
-    });
-
-    let tickets = await axios.get("../../api/tickets");
-    // this.otherTickets = tickets.data.filter(ticket => (ticket.owner._id === this.$route.params.id) )
-    this.otherTickets = tickets.data.filter(
-      ticket => ticket.owner._id === userId
-    );
-    // tickets = tickets.data.filter(ticket => (ticket.owner._id === this.$route.params.id) && (ticket.status === 'Open'));
-
-    tickets = tickets.data.filter(
-      ticket => ticket.owner._id === userId && ticket.status === "Open"
-    );
-
-    if (tickets.length != 0) {
-      this.openTicket = tickets[0];
-      this.startSubscribe();
-    }
-  },
+  async created() {},
   computed: {
     isDisabled: function() {
       return !this.selected;
