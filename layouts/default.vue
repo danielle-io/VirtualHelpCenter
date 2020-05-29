@@ -37,6 +37,7 @@ import LongDescription from "vue-material-design-icons/Text.vue";
 import ShortDescription from "vue-material-design-icons/TextShort.vue";
 import Check from "vue-material-design-icons/Check.vue";
 import Code from "vue-material-design-icons/CodeJson.vue";
+import Student from "vue-material-design-icons/Account.vue";
 
 
 import BeatLoader from 'vue-spinner/src/BeatLoader.vue';
@@ -62,6 +63,7 @@ Vue.component("long-description", LongDescription);
 Vue.component("short-description", ShortDescription);
 Vue.component("check", Check);
 Vue.component("code-symbol", Code);
+Vue.component("student", Student);
 
 Vue.component('beat-loader', BeatLoader);
 

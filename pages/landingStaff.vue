@@ -15,6 +15,12 @@
   font-weight: 200;
 }
 
+.custom-select{
+  border-color: white;
+  width: 50%;
+  border-bottom: 1px solid #ced4da;
+}
+
 .close-button {
   margin-right: 10px;
   font-size: 18px;
@@ -51,26 +57,28 @@
   opacity: 0.9;
 }
 .request-tabs {
-  margin-top: 10px;
-  margin-bottom: 18px;
+  margin-top: 26px;
+  margin-bottom: 6px;
   width: 100%;
+  padding-bottom: 15px;
   display: inline-block;
   text-align: center;
 }
+
 .staff-container {
   position: relative;
+  z-index: 999;
+  margin-left: auto;
+  margin-right: auto;
+  border: 1px solid #dadce0;
+  border-radius: 8px;
+  background-color: white;
   padding-left: 10px;
   padding-right: 10px;
-  margin-left: 15%;
-  margin-right: 15%;
-  margin-top: 6%;
+  padding-bottom: 10px;
   margin-bottom: 2%;
   font-family: "Poppins";
-  min-width: 200px;
-  border: solid 1px #ddd;
-  padding-left: 2%;
-  padding-right: 2%;
-  padding-bottom: 10px;
+  max-width: 800px;
   box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.05);
 }
 .ticket-container {
@@ -128,24 +136,23 @@
 
 <template>
   <div id="requests" style="position: relative;">
+    <div class="request-tabs">
+      <a
+        @click="switchToOpenRequestTab"
+        v-bind:class="{ 'tab-links-active': openRequestTab, 'tab-links': !openRequestTab }"
+      >Open Requests</a>
+
+      <a
+        v-bind:class="{ 'tab-links-active': requestHistoryTab, 'tab-links': !requestHistoryTab }"
+        @click="switchToRequestHistoryTab"
+      >Request History</a>
+    </div>
     <!-- <button id="hiddenButton" style="display:none;" @click="triggerAccept"></button> -->
 
     <div class="staff-container">
       <!-- <div class="heading-two-text">Select a Request</div> -->
       <div v-if="!this.connecting">
-        <div class="request-tabs">
-          <a
-            @click="switchToOpenRequestTab"
-            v-bind:class="{ 'tab-links-active': openRequestTab, 'tab-links': !openRequestTab }"
-          >Open Requests</a>
-
-          <a
-            v-bind:class="{ 'tab-links-active': requestHistoryTab, 'tab-links': !requestHistoryTab }"
-            @click="switchToRequestHistoryTab"
-          >Request History</a>
-        </div>
-
-        <div class="row" style="justify-content: center; margin-top: 5px; align-content: center;">
+        <div class="row" style="margin-top: 10px; margin-left: 5px;">
           <div class="col-6">
             <div v-if="this.selectedTicketIndex === -1 && this.staffCourses">
               <b-form-select v-model="course" :options="staffCourses" v-on:change="setClass"></b-form-select>
@@ -230,9 +237,15 @@
 
                       <span v-for="(attachment, index) in (ticket.attachments)" :key="index">
                         <a
-                          style="cursor: pointer; margin-left: 10px"
-                          @click="openPage(attachment.filePath)"
-                        >{{attachment.fileName}}</a>
+                          style="cursor: pointer; color: rgb(45, 58, 130) !important; z-index: 999; 
+                              text-shadow: none !important;
+                              margin-top: 4px;
+                              margin-left: 6px;"
+                          @click="openPage(attachment.filePath, attachment.fileName)"
+                        >
+                          <open-in-new-window />
+                          {{attachment.fileName}}
+                        </a>
                       </span>
 
                       <div v-if="ticket.attachments.length === 0" class="card-line">
@@ -494,9 +507,7 @@ export default {
         let studentResponse = await axios.get(
           "/api/getStudentsById/" + ticketOwnerId
         );
-        if (
-          studentResponse 
-        ) {
+        if (studentResponse) {
           if (studentResponse.data.name.firstname) {
             studentName =
               studentResponse.data.name.firstname +
@@ -689,7 +700,7 @@ export default {
     }
   },
   beforeMount() {
-    // this.staffCourses.push({ value: null, text: "Show All Courses" });
+    this.staffCourses.push({ value: null, text: "Show All Courses" });
 
     // This gets ANY ticket submitted by ANY student
     // this.ticketChannel.subscribe("ticketUpdate", message => {
