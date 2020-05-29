@@ -1,8 +1,4 @@
 <style scoped>
-.card-text {
-  word-wrap: break-word;
-  word-break: break-all;
-}
 .material-design-icon {
   margin-right: 10px !important;
   margin-top: 3px;
@@ -18,6 +14,13 @@
   opacity: 0.8;
   font-weight: 200;
 }
+
+.close-button {
+  margin-right: 10px;
+  font-size: 18px;
+  border: none;
+}
+
 .tab-links-active {
   margin-left: 4%;
   margin-right: 4%;
@@ -33,13 +36,23 @@
   margin-bottom: 15px;
   text-align: center;
 }
+.card-line {
+  display: in-line-block;
+  margin-bottom: 10px;
+  word-wrap: break-word;
+  word-break: break-all;
+  font-size: 16px;
+  flex-wrap: wrap;
+  text-align: left;
+  margin-left: 14px;
+}
 .request-staff-buttons {
   width: 40% !important;
   opacity: 0.9;
 }
 .request-tabs {
   margin-top: 10px;
-  margin-bottom: 6px;
+  margin-bottom: 18px;
   width: 100%;
   display: inline-block;
   text-align: center;
@@ -66,37 +79,37 @@
   height: 400px;
   overflow-y: scroll;
 }
-.md-card-content {
+/* .md-card-content {
   word-wrap: break-word;
   flex-wrap: wrap;
   text-align: left;
 }
 .md-card {
-  width: 250px;
+  padding-top: 18px;
+  padding-left: 12px;
   margin: 14px;
   display: inline-block;
   vertical-align: top;
-  cursor: pointer;
-}
+} */
 .selected-card {
   border-width: 1px !important;
   border-style: solid;
   border-color: rgb(151, 223, 233) !important;
-  width: 250px;
-  margin: 14px;
-  display: inline-block;
-  cursor: pointer;
+  /* width: 250px; */
+  /* margin: 14px;
+  display: inline-block; */
 }
 .title {
   margin-top: 30px;
 }
 .chevron {
+  z-index: 999;
+  margin-bottom: 8px;
   opacity: 1;
   float: right;
-  align-items: left;
   font-size: 30px;
   cursor: pointer;
-  padding-top: 15px !important;
+  /* padding-top: 15px !important; */
 }
 .hidden {
   opacity: 0;
@@ -115,7 +128,7 @@
 
 <template>
   <div id="requests" style="position: relative;">
-    <button id="hiddenButton" style="display:none;" @click="triggerAccept"></button>
+    <!-- <button id="hiddenButton" style="display:none;" @click="triggerAccept"></button> -->
 
     <div class="staff-container">
       <!-- <div class="heading-two-text">Select a Request</div> -->
@@ -134,7 +147,7 @@
 
         <div class="row" style="justify-content: center; margin-top: 5px; align-content: center;">
           <div class="col-6">
-            <div v-if="!this.selectedCard && this.staffCourses">
+            <div v-if="this.selectedTicketIndex === -1 && this.staffCourses">
               <b-form-select v-model="course" :options="staffCourses" v-on:change="setClass"></b-form-select>
             </div>
           </div>
@@ -142,7 +155,7 @@
 
         <div v-if="this.openRequestTab">
           <div class="ticket-container">
-            <div v-if="!this.selectedCard && !this.zoomLinkForm && this.tickets">
+            <div v-if="this.selectedTicketIndex === -1 && !this.zoomLinkForm && this.tickets">
               <!-- TODO: instead of tickets.length, get the filtered tickets length to hide message when no tickets show -->
               <div
                 v-if="this.tickets.length > 0"
@@ -152,85 +165,90 @@
             </div>
 
             <div
-              v-if="!this.selectedCard && !this.zoomLinkForm && !this.tickets"
+              v-if="!this.zoomLinkForm && !this.tickets"
               class="sub-heading-text"
               style="padding-top:2%;"
             >There are currently no open tickets</div>
 
             <!-- Populate tickets -->
-            <div v-if="!this.zoomLinkForm" class="row justify-content-center">
-              <div class="col">
-                <div
-                  v-for="(ticket, index) in (getFilterClass('Open', this.course).slice(this.startingIndex, this.endingIndex))"
-                  :key="ticket._id"
+            <div v-if="!this.zoomLinkForm">
+              <!-- <div class="col"> -->
+              <div
+                v-for="(ticket, index) in (getFilterClass('Open', this.course).slice(this.startingIndex, this.endingIndex))"
+                :key="ticket._id"
+              >
+                <!-- Selected index allows only that card to show when selected -->
+                <!-- Selected-card class is bound to the card selection  -->
+                <md-card
+                  style=" margin-bottom: 10px;   font-family: 'Manrope'; margin-left: 20px; margin-right: 20px; padding-bottom: 34px;"
+                  v-bind:class="{ 'selected-card': selectedTicketIndex === index}"
                 >
-                  <a @click="clickCard(ticket, index, ticket._id)">
-                    <md-card v-bind:class="{ 'selected-card': selectedTicketIndex === index}">
-                      <div>
-                        <md-card-header>
-                          <!-- TODO: put course title from db here -->
-                          <div class="md-title"></div>
-                        </md-card-header>
+                  <div
+                    style="cursor: pointer; padding-top: 18px; "
+                    @click="clickCard(ticket, index, ticket._id)"
+                  >
+                    <div class="card-line">
+                      <strong>Student:</strong>
+                      {{ " " + ticket.ownerName }}
+                    </div>
 
-                        <!-- TODO: add student's name -->
-                        <!-- <div class="md-card-content">
-                        <strong>Student:</strong>
-                        <div class="card-text">{{ ticket.owner }}</div>
-                        </div>-->
+                    <div class="card-line">
+                      <strong>Status:</strong>
+                      {{ " " + ticket.status }}
+                    </div>
 
-                        <div class="md-card-content">
-                          <strong>Status:</strong>
-                          {{ ticket.status }}
-                        </div>
+                    <div class="card-line">
+                      <strong>Overview:</strong>
+                      {{ " " + ticket.oneLineOverview}}
+                    </div>
+                  </div>
 
-                        <div class="md-card-content">
-                          <strong>Issue:</strong>
-                          <!-- I can't reference a class. -->
-                          {{ticket.oneLineOverview}}
-                        </div>
-                        <div class="md-card-content"></div>
-                        <div
-                          v-bind:class="{ 'chevron': expandChevron, 'hidden': !expandChevron }"
-                          @click="changeChevronClass"
-                        >
-                          <expand-arrow />
-                        </div>
+                  <div
+                    v-bind:class="{ 'chevron': expandChevron, 'hidden': !expandChevron }"
+                    @click="changeChevronClass"
+                  >
+                    <expand-arrow />
+                  </div>
+
+                  <div
+                    @click="changeChevronClass"
+                    v-bind:class="{ 'chevron': collapseChevron, 'hidden': !collapseChevron }"
+                  >
+                    <collapse-arrow />
+                  </div>
+
+                  <div
+                    v-bind:class="{ 'show-extra-content': collapseChevron, 'hide-extra-content': expandChevron }"
+                  >
+                    <div class="card-line">
+                      <strong>Longer Description:</strong>
+                      {{" " + ticket.longerDescription}}
+                    </div>
+
+                    <div v-if="ticket.attachments.length > 0" class="card-line">
+                      <strong>Attached Files:</strong>
+
+                      <span v-for="(attachment, index) in (ticket.attachments)" :key="index">
+                        <a
+                          style="cursor: pointer; margin-left: 10px"
+                          @click="openPage(attachment.filePath)"
+                        >{{attachment.fileName}}</a>
+                      </span>
+
+                      <div v-if="ticket.attachments.length === 0" class="card-line">
+                        <strong>Attached Files:</strong>
+
+                        <span style="margin-left: 3px;">None</span>
                       </div>
-                      <div
-                        @click="changeChevronClass"
-                        v-bind:class="{ 'chevron': collapseChevron, 'hidden': !collapseChevron }"
-                      >
-                        <collapse-arrow />
-                      </div>
-
-                      <div
-                        v-bind:class="{ 'show-extra-content': collapseChevron, 'hide-extra-content': expandChevron }"
-                      >
-                        <div class="md-card-content">
-                          <strong>Longer Description:</strong>
-                          <!-- I am trying to call a function from a class but importing gives an undefined error. -->
-                          {{ticket.longerDescription}}
-                        </div>
-                        <div class="md-card-content">
-                          <strong>Attached Files:</strong>
-
-
-                        </div>
-
-                        <!-- TODO: add student's name from DB -->
-                        <!-- <div class="md-card-content">
-                          <strong>Student:</strong>
-                          {{ticket.owner._id}}
-                        </div>-->
-                      </div>
-                    </md-card>
-                  </a>
-                </div>
+                    </div>
+                  </div>
+                </md-card>
               </div>
+              <!-- </div> -->
             </div>
 
             <button
-              v-if="this.selectedCard && !this.zoomLinkForm"
+              v-if="this.selectedTicketIndex != -1 && !this.zoomLinkForm"
               type="submit"
               class="request-staff-buttons"
               @click="getZoomLink"
@@ -240,14 +258,21 @@
             </button>
 
             <div style="margin-top: 30px;" v-if="this.zoomLinkForm">
-              <input
-                width="90%"
-                type="text"
-                v-bind:value="zoomLink"
-                v-on:input="zoomLink = $event.target.value"
-                placeholder="Enter your Zoom Session link here"
-              />
+              <div style="float: right; margin-right: 10px; ">
+                <button class="close-button" v-on:click="cancelZoomLink">
+                  <close style="color: red !important;" class="close-icon" />
+                </button>
+              </div>
 
+              <div style="padding-top: 30px;">
+                <input
+                  width="90%"
+                  type="text"
+                  v-bind:value="zoomLink"
+                  v-on:input="zoomLink = $event.target.value"
+                  placeholder="Enter your Zoom Session link here"
+                />
+              </div>
               <div v-if="this.zoomLink">
                 <button type="submit" class="request-staff-buttons" @click="sendZoomLink">
                   <right-circle />Send Link
@@ -259,31 +284,25 @@
 
         <div v-if="this.requestHistoryTab">
           <!-- TO DO: Make this message dynamic -->
-
           <!-- <div
             class="sub-heading-text"
             style="padding-top:2%;"
           >You currently have no request history.</div>-->
 
           <div class="ticket-container">
-            <div class="row justify-content-center">
-              <div class="col">
-                <div v-for="(ticket, index) in filterOpenTickets('Closed')" :key="index">
-                  <md-card>
-                    <div class="md-card-content">
-                      <!-- <div class="md-card-content"> -->
-                      <!-- <strong>Student:</strong>
-                    {{ ticket.owner }}
-                      </div>-->
-
-                      <strong>Status:</strong>
-                      {{ ticket.status }}
-                      <strong>Issue:</strong>
-                      {{ticket.oneLineOverview}}
-                    </div>
-                  </md-card>
+            <!-- <div class="row justify-content-center">
+            <div class="col">-->
+            <div v-for="(ticket, index) in filterOpenTickets('Closed')" :key="index">
+              <md-card>
+                <div class="md-card-content">
+                  <strong>Status:</strong>
+                  {{ ticket.status }}
+                  <strong>Issue:</strong>
+                  {{ticket.oneLineOverview}}
                 </div>
-              </div>
+              </md-card>
+              <!-- </div>
+              </div>-->
             </div>
           </div>
         </div>
@@ -292,7 +311,7 @@
       <div v-if="this.connecting">
         <div v-if="!this.studentAccepted">
           <div class="heading-two-text">Awaiting Student Acceptance</div>
-       
+
           <div v-if="!this.studentAccepted" class="loading-dots">
             <beat-loader :color="color"></beat-loader>
           </div>
@@ -304,75 +323,62 @@
 
         <div v-if="this.studentAccepted">
           <div class="heading-two-text">Student Accepted</div>
-         
+
           <div class="sub-heading-two-text">Please go to Zoom to begin your session.</div>
         </div>
-        <div class="row justify-content-center">
-          <div
-            class="col"
-            style="justify-content: center; text-align: center; align-items: center;"
-          >
-            <md-card>
-              <div>
-                <md-card-header>
-                  <!-- TODO: put course title from db here -->
-                  <div class="md-title"></div>
-                </md-card-header>
 
-                <!-- TODO: add student's name -->
-                <!-- <div class="md-card-content">
-                        <strong>Student:</strong>
-                        <div class="card-text">{{ ticket.owner }}</div>
-                </div>-->
+        <!-- <div class="row justify-content-center"> -->
+        <md-card>
+          <md-card-header>
+            <!-- TODO: put course title from db here -->
+            <div class="md-title"></div>
+          </md-card-header>
 
-                <div class="md-card-content">
-                  <strong>Status:</strong>
-                  {{ this.currentTicket.status }}
-                </div>
-
-                <div class="md-card-content">
-                  <strong>Issue:</strong>
-                  {{this.currentTicket.oneLineOverview}}
-                </div>
-                <div class="md-card-content">
-                </div>
-                <div
-                  v-bind:class="{ 'chevron': expandChevron, 'hidden': !expandChevron }"
-                  @click="changeChevronClass"
-                >
-                  <expand-arrow />
-                </div>
-              </div>
-              <div
-                @click="changeChevronClass"
-                v-bind:class="{ 'chevron': collapseChevron, 'hidden': !collapseChevron }"
-              >
-                <collapse-arrow />
-              </div>
-
-              <div
-                v-bind:class="{ 'show-extra-content': collapseChevron, 'hide-extra-content': expandChevron }"
-              >
-                <div class="md-card-content">
-                  <strong>Longer Description:</strong>
-                  {{this.currentTicket.longerDescription}}
-                </div>
-                <div class="md-card-content">
-                  <strong>Attached Files:</strong>
-                </div>
-
-                <!-- TODO: add student's name from DB -->
-                <div class="md-card-content">
-                  <strong>Student:</strong>
-                  <!-- {{this.currentTicket.owner._id}} -->
-                </div>
-              </div>
-            </md-card>
+          <div class="card-line">
+            <strong>Status:</strong>
+            {{" " + this.currentTicket.status }}
           </div>
-        </div>
+
+          <div class="card-line">
+            <strong>Issue:</strong>
+            {{" " + this.currentTicket.oneLineOverview}}
+          </div>
+
+          <div class="card-line"></div>
+          <div
+            v-bind:class="{ 'chevron': expandChevron, 'hidden': !expandChevron }"
+            @click="changeChevronClass"
+          >
+            <expand-arrow />
+          </div>
+          <div
+            @click="changeChevronClass"
+            v-bind:class="{ 'chevron': collapseChevron, 'hidden': !collapseChevron }"
+          >
+            <collapse-arrow />
+          </div>
+
+          <div
+            v-bind:class="{ 'show-extra-content': collapseChevron, 'hide-extra-content': expandChevron }"
+          >
+            <div class="card-line">
+              <strong>Longer Description:</strong>
+              {{this.currentTicket.longerDescription}}
+            </div>
+
+            <div class="card-line">
+              <strong>Attached Files:</strong>
+              <div
+                v-for="(index) in  this.currentTicket.attachments"
+                :key="index"
+              >{{this.currentTicket.attachments[index]}}</div>
+            </div>
+          </div>
+        </md-card>
       </div>
     </div>
   </div>
+  <!-- </div> -->
 </template>
       
 
@@ -384,6 +390,7 @@ import VueMaterial from "vue-material";
 import "vue-material/dist/vue-material.min.css";
 import "vue-material/dist/theme/default.css";
 import { BFormInput, BFormSelect, BButton, BFormCheckbox } from "bootstrap-vue";
+
 Vue.use(VueMaterial);
 import * as Ably from "ably";
 const client = new Ably.Realtime(process.env.ABLY_KEY);
@@ -404,13 +411,11 @@ export default {
       el: "#requests",
       connecting: false,
       zoomLinkForm: false,
-      redirectToCountdown: false,
       openRequestTab: true,
       requestHistoryTab: false,
       selectedTicket: false,
       expandChevron: true,
       collapseChevron: false,
-      selectedCard: false,
       color: "#7e6694",
       course: {},
       selected: "",
@@ -442,23 +447,29 @@ export default {
         return;
       }
     },
-    triggerAccept: function() {
-      console.log("in triggerAccept");
-      console.log("accepted " + this.studentAccepted);
-      this.studentAccepted = true;
-      console.log("accepted " + this.studentAccepted);
-    },
+    // triggerAccept: function() {
+    //   console.log("in triggerAccept");
+    //   console.log("accepted " + this.studentAccepted);
+    //   this.studentAccepted = true;
+    //   console.log("accepted " + this.studentAccepted);
+    // },
     getFilterClass(status, course) {
-      console.log(course);
+      // console.log(course);
       if (course === null) {
-        console.log("open tickets");
+        // console.log("open tickets");
         return this.filterOpenTickets(status);
       } else {
         return this.filterCourseTickets(status, course);
       }
     },
+    openPage: function(attachmentUrl) {
+      console.log(this.openTicket);
+      console.log(attachmentUrl);
+      window.open(attachmentUrl, "_blank");
+      // location.href = attachmentUrl;
+    },
     filterCourseTickets(status, course) {
-      console.log(this.tickets);
+      // console.log(this.tickets);
       if (this.tickets) {
         // Prevents code from breaking when no course is in the ticket
         if (typeof course !== "undefined") {
@@ -476,8 +487,29 @@ export default {
     scrollToTop() {
       document.getElementById("tabs").scrollIntoView();
     },
-    scrollToTop() {
-      document.getElementById("tabs").scrollIntoView();
+
+    async getStudentName(ticket, ticketOwnerId) {
+      var studentName = "";
+      if (ticketOwnerId && ticket) {
+        let studentResponse = await axios.get(
+          "/api/getStudentsById/" + ticketOwnerId
+        );
+        if (
+          studentResponse 
+        ) {
+          if (studentResponse.data.name.firstname) {
+            studentName =
+              studentResponse.data.name.firstname +
+              " " +
+              studentResponse.data.name.lastname;
+            // document.getElementById('studentName').innerHTML = studentName;
+            this.$set(ticket, "ownerName", studentName);
+            // console.log(ticket);
+            // console.log(studentName);
+          }
+        }
+      }
+      return;
     },
     switchToOpenRequestTab: function() {
       this.openRequestTab = true;
@@ -491,7 +523,14 @@ export default {
       this.scrollToTop();
       return this.requestHistoryTab;
     },
+    // getAttachments: function(attachments){
+    //   for (var i = 0; i < attachments.length; i++){
+
+    //   }
+    //   return
+    // },
     changeChevronClass: function() {
+      console.log("in change chevron");
       if (this.expandChevron) {
         this.collapseChevron = true;
         this.expandChevron = false;
@@ -499,44 +538,58 @@ export default {
         this.expandChevron = true;
         this.collapseChevron = false;
       }
-      this.selectedCard = !this.selectedCard;
     },
     clickCard: function(ticket, index, id) {
-      this.currentTicket = ticket;
-      console.log("selected card below");
-      console.log(this.currentTicket);
-      this.currentTicketId = id;
-      this.selectedCard = !this.selectedCard;
-      if (this.selectedTicketIndex === index) {
+      // selectedTicketIndex = the same as the index passed in means
+      // card was selected twice
+      if (index === this.selectedTicketIndex) {
+        // The card already selected was selected again (unselect)
+        console.log("unselect only");
         this.selectedTicketIndex = -1;
         this.startingIndex = 0;
         this.endingIndex = 3;
-      } else {
+        this.currentTicketId = null;
+        this.currentTicketId = null;
+      }
+
+      // The card already selected was replaced by another selection,
+      // or a card is selected for the first time
+      else {
+        console.log("select");
         this.selectedTicketIndex = index;
         this.startingIndex = index;
         this.endingIndex = index + 1;
+        this.currentTicket = ticket;
+        this.currentTicketId = id;
+        console.log(this.currentTicket);
       }
     },
     getZoomLink: function() {
       this.zoomLinkForm = true;
     },
-    
+    cancelZoomLink: function() {
+      this.zoomLinkForm = false;
+    },
+
     startConnecting: function() {
       this.connecting = true;
     },
+
     // This is where the link is stored
     sendZoomLink() {
       axios.put("/api/updateTicket/" + this.currentTicketId, {
         status: "In Progress",
         accepted: this.staff
       });
-      
-      let ticketTime = new Date();
 
+      let ticketTime = new Date();
 
       // Get the students user id from the ticket
       this.studentChannel = client.channels.get(this.currentTicket.owner._id);
-      this.studentChannel.publish("staffAcceptedTicket", {zoomLink: this.zoomLink, date: ticketTime});
+      this.studentChannel.publish("staffAcceptedTicket", {
+        zoomLink: this.zoomLink,
+        date: ticketTime
+      });
 
       // Show connection screen once student receives countdown
       this.startConnecting();
@@ -554,9 +607,9 @@ export default {
 
       let x = setTimeout(function() {
         // Right here we let it know the student did not accept
-        console.log('student did not accept in time')
-          axios.put("/api/updateTicket/" + this.currentTicketId, {
-          status: "Unresolved",
+        console.log("student did not accept in time");
+        axios.put("/api/updateTicket/" + this.currentTicketId, {
+          status: "Unresolved"
         });
       }, this.countdownTime(ticketTime));
 
@@ -567,18 +620,26 @@ export default {
       //   clearTimeout(x);
       // });
     },
-    countdownTime(ticketTime){
+    countdownTime(ticketTime) {
       //read updated time
 
-      let currentTime = new Date()
-      ticketTime.setMinutes(ticketTime.getMinutes()+1);
-      console.log(ticketTime.getMinutes()*60+ticketTime.getSeconds()-(currentTime.getMinutes()*60+currentTime.getSeconds()))
-      
-      return (ticketTime.getMinutes()*60+ticketTime.getSeconds()-(currentTime.getMinutes()*60+currentTime.getSeconds()))*1000;
+      let currentTime = new Date();
+      ticketTime.setMinutes(ticketTime.getMinutes() + 1);
+      console.log(
+        ticketTime.getMinutes() * 60 +
+          ticketTime.getSeconds() -
+          (currentTime.getMinutes() * 60 + currentTime.getSeconds())
+      );
+
+      return (
+        (ticketTime.getMinutes() * 60 +
+          ticketTime.getSeconds() -
+          (currentTime.getMinutes() * 60 + currentTime.getSeconds())) *
+        1000
+      );
     },
     expandCard: function() {},
     async acceptTicket() {
-      console.log(" in accept ticket");
       this.getZoomLink();
     },
     async loadUser(user) {
@@ -592,7 +653,7 @@ export default {
       if (course) {
         let chosenCourse = await axios.get("/api/courses/" + course);
         this.course = chosenCourse.data._id;
-        console.log(this.course);
+        // console.log(this.course);
       }
     },
     async loadClasses(classSelected) {
@@ -604,12 +665,19 @@ export default {
     }
   },
   async created() {
-    console.log("in created");
     let tickets = await axios.get("/api/tickets");
     if (this.tickets) {
       this.tickets = tickets.data;
+      // console.log(this.tickets);
+      for (var i = 0; i < this.tickets.length; i++) {
+        // Add the name to the open tickets
+        if (this.tickets[i].status === "Open") {
+          await this.getStudentName(this.tickets[i], this.tickets[i].owner._id);
+        }
+      }
     }
     let staff = await axios.get("/api/users/" + this.staff);
+
     if (staff) {
       staff.data.classes.forEach(element => {
         this.loadClasses(element);
@@ -621,27 +689,28 @@ export default {
     }
   },
   beforeMount() {
-    // var course = {_id = null};
-    this.staffCourses.push({ value: null, text: "Show All Courses" });
+    // this.staffCourses.push({ value: null, text: "Show All Courses" });
+
     // This gets ANY ticket submitted by ANY student
-    this.ticketChannel.subscribe("ticketUpdate", (message)=>{
-      //add new ticket to existing tickets
-      this.tickets.push(message.data);
-    });
+    // this.ticketChannel.subscribe("ticketUpdate", message => {
 
-    this.ticketChannel.subscribe("ticketClosed", (message)=>{
-      console.log("ticket was deleted")
+    //  //add new ticket to existing tickets
+    //   this.tickets.push(message.data);
+    // });
 
-      //ticket will be deleted from being displayed
-      this.removeTicket(message.data);
-    })
+    // this.ticketChannel.subscribe("ticketClosed", message => {
+    //   console.log("ticket was deleted");
+
+    //   //ticket will be deleted from being displayed
+    //   this.removeTicket(message.data);
+    // });
 
     this.scrollToTop();
-  },
-  computed: {
-    studentAccepted() {
-      return this.studentAccepted
-    }
   }
+  // computed: {
+  //   studentAccepted() {
+  //     return this.studentAccepted;
+  //   }
+  // }
 };
 </script>

@@ -10,6 +10,46 @@
   opacity: 0;
 }
 
+.card-line {
+  display: in-line-block;
+  margin-bottom: 20px;
+  word-wrap: break-word;
+  word-break: break-all;
+  font-size: 16px;
+  flex-wrap: wrap;
+  text-align: left;
+  margin-left: 14px;
+}
+
+.card-line-history {
+  margin-bottom: 4px;
+  word-wrap: break-word;
+  word-break: break-all;
+  font-size: 15px;
+  flex-wrap: wrap;
+  text-align: left;
+  margin-left: 10px;
+  display: inline-block;
+}
+
+.request-container {
+  position: relative;
+  padding-left: 10px;
+  padding-right: 10px;
+  margin-left: 15%;
+  margin-right: 15%;
+  margin-top: 6%;
+  margin-bottom: 2%;
+  font-family: "Poppins";
+  min-width: 200px;
+  border: solid 1px #ddd;
+  padding-left: 2%;
+  padding-right: 2%;
+  padding-bottom: 10px;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.05);
+  max-height: 800px;
+  overflow-y: scroll;
+}
 .CodeMirror-focused .cm-matchhighlight {
   background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAFklEQVQI12NgYGBgkKzc8x9CMDAwAAAmhwSbidEoSQAAAABJRU5ErkJggg==);
   background-position: bottom;
@@ -32,12 +72,58 @@
   height: auto;
 }
 
+.card-categories {
+  color: #53a59e;
+  font-weight: 500;
+}
+
 .form-text-areas {
   border-style: solid;
   border: 1px !important;
   /* border-color: rgb(180, 175, 175) !important; */
   border: 2px solid #dfdada !important;
 }
+
+.card-class {
+  padding-top: 18px;
+  padding-left: 12px;
+  /* width: 400px; */
+  margin: 14px;
+  display: inline-block;
+  vertical-align: top;
+}
+
+.close-button {
+  margin-right: 10px;
+  font-size: 18px;
+  border: none;
+  color: "red" !important;
+}
+
+.toolTip {
+  position: relative;
+  display: inline-block;
+}
+
+.toolTip .tooltipText {
+  visibility: hidden;
+  width: 50px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+  top: -5px;
+  left: 105%;
+}
+
+/* .toolTip:hover .toolTiptext {
+  visibility: visible;
+} */
 
 /* Styling for adding rows */
 .add-button {
@@ -67,7 +153,6 @@ table th,
 }
 
 .request-table {
-  margin-top: 10px;
   z-index: 1 !important;
 }
 
@@ -284,17 +369,17 @@ input[type="text"]:placeholder {
             >Request History</a>
           </div>
 
-          <!--  The first container to show  -->
           <div v-if="this.currentRequestsTab">
-            <div v-if="this.request === true">
+            <div v-if="this.request === true && !this.showCountdown">
               <div class="heading-text">My Requests</div>
 
-              <!-- TO DO: make this text dynamic based on user tickets -->
               <div
                 class="sub-heading-text"
                 style="padding-top:2%;"
-              >You currently have no pending requests.</div>
+              >You currently have {{ticketNum()}} pending {{requestOrRequests()}}.</div>
+            </div>
 
+            <div v-if="this.request === true && !this.openTicket  && !this.showCountdown">
               <div style="text-align: center;">
                 <button
                   v-bind:key="request"
@@ -308,28 +393,116 @@ input[type="text"]:placeholder {
               </div>
             </div>
 
+            <div
+              v-if="this.openTicket"
+              style="text-align: center; margin-top: 12px;"
+              :hidden="!this.openTicket"
+            >
+              <md-card>
+                <div style="float: right; margin-top: 6px; margin-left: 0px; margin-right: 10px; ">
+                  <button class="close-button" style="margin-top: 5px;" v-on:click="closeTicket()">
+                    <div class="toolTip">
+                      <close
+                        style="color: red !important; margin-bottom: 0px; padding-bottom: 0px;"
+                        class="close-icon"
+                      />
+                      <!-- <span class="toolTipText">Cancel Request</span> -->
+                    </div>
+                  </button>
+                </div>
+
+                <md-card-header style="display: in-line-block;">
+                  <div
+                    style="justify-content: center; font-size: 18px; text-align: center; margin-top: 20px;"
+                    class="md-title"
+                  ></div>
+                </md-card-header>
+
+                <div class="md-card-content">
+                  <div class="row">
+                    <div class="card-line">
+                      <span class="card-categories col-sm">Status:</span>
+                      <span
+                        style="padding-left:22px !important;"
+                        class="col-sm"
+                      >{{ this.openTicket.status }}</span>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="card-line">
+                      <span class="card-categories col-sm">Overview:</span>
+                      <span
+                        style="padding-left: 0px !important;"
+                        class="col-sm"
+                      >{{ this.openTicket.oneLineOverview }}</span>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="card-line">
+                      <span class="card-categories col-sm">Details:</span>
+                      <span
+                        style="padding-left: 20px !important;"
+                        class="col"
+                      >{{ this.openTicket.longerDescription }}</span>
+                    </div>
+                  </div>
+
+                  <div v-if="this.openTicket.attachments.length === 0">
+                    <div class="row">
+                      <div class="card-line">
+                        <span class="card-categories col-sm">Files:</span>
+                        <span style="padding-left: 40px !important;" class="col">None</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div v-if="this.openTicket.attachments.length > 0">
+                    <div class="row">
+                      <div class="card-line">
+                        <span class="card-categories col-sm">Files:</span>
+                        <span
+                          style="margin-left:20px !important;"
+                          v-for="(attachment, index) in (this.openTicket.attachments)"
+                          :key="index"
+                        >
+                          <a
+                            style="cursor: pointer; margin-left: 22px"
+                            @click="openPage(attachment.filePath, attachment.fileName)"
+                          >{{attachment.fileName}}</a>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </md-card>
+            </div>
+
             <!-- Container for filling out the request form -->
             <div v-if="this.request === false && this.submitRequest === false">
               <div class="heading-text">Request a Session</div>
-              <div
+              <!-- <div
                 class="sub-heading-text-left"
                 style="padding-top:2%;"
-              >Complete the form below to request assistance from a lab tutor.</div>
+              >Complete the form below to request assistance from a lab tutor.</div>-->
 
               <div class="form-container">
                 <div class="row" style="width: 70%;">
-                  <b-form-select
+                  <label class="label-format">Please select the class you need help with:</label>
+                </div>
+
+                <div class="row">
+                  <b-form-radio-group
+                    v-model="selected"
                     :options="classes"
                     v-on:change="getSelectedCourse"
-                    size="sm"
-                    class="mt-3"
-                    placeholder="Please select the class you need help with"
-                  ></b-form-select>
+                  ></b-form-radio-group>
                 </div>
 
                 <div class="row">
                   <label class="label-format">Please enter a brief one-sentence summary of the issue</label>
-                  <b-form-input v-model="probDes" placeholder class="form-text-areas"></b-form-input>
+                  <b-form-input v-model="probDes"></b-form-input>
                 </div>
 
                 <div class="row">
@@ -338,29 +511,24 @@ input[type="text"]:placeholder {
                     id="textarea"
                     v-model="problem"
                     placeholder
-                    rows="2"
-                    max-rows="6"
+                    rows="4"
+                    max-rows="10"
                   ></b-form-text-area>
                 </div>
 
                 <div class="row">
                   <label class="label-format">Paste a code snippet, if needed</label>
-                  <!-- removed for now from above :disabled="isDisabled" -->
-                  <!-- <pre class="mt-3 mb-0">{{ code }}</pre> -->
+                  <b-form-text-area id="textarea" v-model="code" rows="1" max-rows="6"></b-form-text-area>
                 </div>
 
-                <div class="row" width=700px>
-                  <codemirror v-model="code" :options="cmOption" />
-                </div>
-
-                <div class="Row">
-                  <label class="label-format">Add a file, if needed</label>
+                <div class="row">
+                  <label style="margin-bottom: 0px;" class="label-format">Add a file, if needed</label>
                 </div>
 
                 <table class="table request-table">
                   <tbody>
                     <!-- This is where the new questions are inserted -->
-                    <div class="top-row" v-for="(row, index) in rows" v-bind:key="row">
+                    <div class="top-row" v-for="(row, index) in rows" v-bind:key="index">
                       <tr>
                         <td>
                           <button class="file-container file-button">
@@ -376,7 +544,7 @@ input[type="text"]:placeholder {
                         <td class="remove-column">
                           <a
                             v-on:click="removeElement(index);"
-                            style="cursor: pointer; z-index: 999;"
+                            style="cursor: pointer; z-index: 999; margin-left: 6px;"
                           >Remove</a>
                         </td>
                       </tr>
@@ -392,6 +560,7 @@ input[type="text"]:placeholder {
                   <!--  On select, the state of request is changed, forcing a transition effect and
                   changing what is rendered on the page-->
                   <button
+                    v-on:click="uploadFile"
                     v-bind:key="submitRequest"
                     type="submit"
                     style="margin-bottom: 10px; margin margin-top: 10px;"
@@ -404,53 +573,97 @@ input[type="text"]:placeholder {
               </div>
             </div>
 
-            <div v-if="this.submitRequest === true" v-bind:key="submitRequest">
-              <div class="heading-text">Request submitted</div>
-              <div
-                class="sub-heading-text"
-                style="padding-top:2%;"
-              >The current wait time is approximately 1 minute.</div>
+            <div v-if="this.showCountdown && !this.studentAcceptedSession">
+              <div class="request-container">
+                <div class="heading-text">Accept your session</div>
+
+                <div class="sub-heading-text-left" style="padding-top:2%;">
+                  A TA is available.
+                  <strong>Please accept the session before the timer runs out to continue.</strong>
+                </div>
+                <div
+                  class="sub-heading-text-left-italic"
+                >If you do not accept in time, your request will be removed, and placed in your request history for resubmission.</div>
+
+                <div style="text-align: center;">
+                  <circular-count-down-timer
+                    :initial-value="countdownTime()"
+                    :steps="countdownTime()"
+                    :seconds-stroke-color="'#7fe3d4'"
+                    :second-label="''"
+                    @finish="finished(studentChannel)"
+                  ></circular-count-down-timer>
+
+                  <button
+                    v-bind:key="acceptSession"
+                    @click="acceptSession"
+                    type="submit"
+                    style="margin-bottom: 20%;"
+                    class="fadeIn form-buttons"
+                  >
+                    <right-circle />Accept the Session
+                  </button>
+                </div>
+              </div>
             </div>
 
-            <div style="text-align: center;" :hidden="openTicket.owner === null">
-              <md-card>
-                <md-card-header>
-                  <div class="md-title">Ticket</div>
-                </md-card-header>
+            <div v-if="this.studentAcceptedSession">
+              <div v-bind:key="session" class="request-container-two">
+                <div class="heading-text">Begin your session</div>
 
-                <div class="md-card-content">
-                  <strong>Status:</strong>
-                  {{ openTicket.status }}
+                <div class="sub-heading-text">Click the link to open your Zoom session</div>
+                <div class="sub-heading-text-larger" style="margin-top: 15px;">
+                  <a target="_blank" href="zoom.us">{{this.zoomLink}}</a>
                 </div>
+              </div>
+            </div>
+          </div>
+
+          <div v-if="!this.currentRequestsTab">
+            <div class="heading-text">My Requests</div>
+
+            <!-- TO DO: make this text dynamic based on user tickets -->
+            <div
+              class="sub-heading-text"
+              style="padding-top:2%;"
+            >You have {{this.closedTickets.length}} prior requests.</div>
+
+            <div
+              v-for="(ticket) in this.closedTickets"
+              style="text-align: center;"
+              :key="ticket._id"
+            >
+              <md-card style="margin-bottom:12px;">
                 <div class="md-card-content">
-                  <strong>Issue:</strong>
-                  {{ openTicket.oneLineOverview }}
-                </div>
-                <div class="md-card-content">
-                  <button type="button" v-on:click="closeTicket(openTicket)">Close Request</button>
+                  <div class="row">
+                    <div class="card-line-history">
+                      <span class="card-categories col-sm">Status:</span>
+                      <span style="padding-left:22px !important;" class="col-sm">{{ ticket.status }}</span>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="card-line-history">
+                      <span class="card-categories col-sm">Overview:</span>
+                      <span
+                        style="padding-left: 0px !important;"
+                        class="col-sm"
+                      >{{ ticket.oneLineOverview }}</span>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="card-line-history">
+                      <span class="card-categories col-sm">Details:</span>
+                      <span
+                        style="padding-left: 18px !important;"
+                        class="col"
+                      >{{ ticket.longerDescription }}</span>
+                    </div>
+                  </div>
                 </div>
               </md-card>
             </div>
-          </div>
-        </div>
-
-        <div v-if="this.requestHistoryTab">
-          <div v-for="(ticket) in otherTickets" style="text-align: center;" :key="ticket._id">
-            <md-card>
-              <md-card-header>
-                <div class="md-title">Ticket</div>
-              </md-card-header>
-
-              <div class="md-card-content">
-                <strong>Status:</strong>
-                {{ ticket.status }}
-              </div>
-
-              <div class="md-card-content">
-                <strong>Short Description:</strong>
-                {{ ticket.oneLineOverview }}
-              </div>
-            </md-card>
           </div>
         </div>
       </transition>
@@ -460,60 +673,81 @@ input[type="text"]:placeholder {
   
 <script src="https://cdn.ably.io/lib/ably.min-1.js"></script>
 <script>
-const userId = "5eb86452ed2ee55868633193";
+var firebaseConfig = {
+  apiKey: process.env.FB_API_KEY,
+  authDomain: process.env.FB_AUTH_DOMAIN,
+  databaseURL: process.env.FB_DATABASE_URL,
+  projectId: process.env.FB_PROJECT_ID,
+  storageBucket: process.env.FB_STORAGE_BUCKET,
+  messagingSenderId: process.env.FB_MESSAGING_SENDER_ID,
+  appId: process.env.FB_APP_ID
+};
+// Initialize Firebase
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
+// const userId = "5ec0858d7971d22628fd7e0d";
+const userId = "5ecafbcd5219c55528efe03e";
 
-//import AblyKey from "../../realtimeKey";
-  // base style
-import 'codemirror/lib/codemirror.css'
+const client = new Ably.Realtime(process.env.ABLY_KEY);
+// const userId = "5eb86452ed2ee55868633193";
 
-// theme css
-import 'codemirror/theme/base16-dark.css'
+// base style
+// import "codemirror/lib/codemirror.css";
+// import "codemirror/theme/base16-dark.css";
 
 // language
-import 'codemirror/mode/vue/vue.js'
+// import "codemirror/mode/vue/vue.js";
 
 // active-line.js
-import 'codemirror/addon/selection/active-line.js'
+// import "codemirror/addon/selection/active-line.js";
 
 // styleSelectedText
-import 'codemirror/addon/selection/mark-selection.js'
-import 'codemirror/addon/search/searchcursor.js'
+// import "codemirror/addon/selection/mark-selection.js";
+// import "codemirror/addon/search/searchcursor.js";
 
 // highlightSelectionMatches
-import 'codemirror/addon/scroll/annotatescrollbar.js'
-import 'codemirror/addon/search/matchesonscrollbar.js'
-import 'codemirror/addon/search/searchcursor.js'
-import 'codemirror/addon/search/match-highlighter.js'
+// import "codemirror/addon/scroll/annotatescrollbar.js";
+// import "codemirror/addon/search/matchesonscrollbar.js";
+// import "codemirror/addon/search/searchcursor.js";
+// import "codemirror/addon/search/match-highlighter.js";
 
 // keyMap
-import 'codemirror/mode/clike/clike.js'
-import 'codemirror/addon/edit/matchbrackets.js'
-import 'codemirror/addon/comment/comment.js'
-import 'codemirror/addon/dialog/dialog.js'
-import 'codemirror/addon/dialog/dialog.css'
-import 'codemirror/addon/search/searchcursor.js'
-import 'codemirror/addon/search/search.js'
-import 'codemirror/keymap/sublime.js'
+// import "codemirror/mode/clike/clike.js";
+// import "codemirror/addon/edit/matchbrackets.js";
+// import "codemirror/addon/comment/comment.js";
+// import "codemirror/addon/dialog/dialog.js";
+// import "codemirror/addon/dialog/dialog.css";
+// import "codemirror/addon/search/searchcursor.js";
+// import "codemirror/addon/search/search.js";
+// import "codemirror/keymap/sublime.js";
 
 // foldGutter
-import 'codemirror/addon/fold/foldgutter.css'
-import 'codemirror/addon/fold/brace-fold.js'
-import 'codemirror/addon/fold/comment-fold.js'
-import 'codemirror/addon/fold/foldcode.js'
-import 'codemirror/addon/fold/foldgutter.js'
-import 'codemirror/addon/fold/indent-fold.js'
-import 'codemirror/addon/fold/markdown-fold.js'
-import 'codemirror/addon/fold/xml-fold.js'
+// import "codemirror/addon/fold/foldgutter.css";
+// import "codemirror/addon/fold/brace-fold.js";
+// import "codemirror/addon/fold/comment-fold.js";
+// import "codemirror/addon/fold/foldcode.js";
+// import "codemirror/addon/fold/foldgutter.js";
+// import "codemirror/addon/fold/indent-fold.js";
+// import "codemirror/addon/fold/markdown-fold.js";
+// import "codemirror/addon/fold/xml-fold.js";
+
 import Vue from "vue";
 import axios from "~/plugins/axios";
-import { codemirror } from 'vue-codemirror';
+import firebase from "firebase";
+// import { codemirror } from "codemirror";
 import * as Ably from "ably";
 import {
   BFormInput,
   BFormSelect,
   BFormCheckbox,
-  BFormTextarea
+  BFormTextarea,
+  BFormRadio,
+  BFormRadioGroup
 } from "bootstrap-vue";
+
+//UI store imports
+import Ticket from "../ui/models/Ticket";
 
 export default {
   components: {
@@ -521,7 +755,9 @@ export default {
     "b-form-select": BFormSelect,
     "b-form-checkbox": BFormCheckbox,
     "b-form-text-area": BFormTextarea,
-    codemirror
+    "b-form-radio": BFormRadio,
+    "b-form-radio-group": BFormRadioGroup
+    // codemirror
   },
 
   computed: {
@@ -533,30 +769,27 @@ export default {
   data() {
     return {
       el: "#requests",
-      code:"Paste your code here",
+      code: "Paste your code here",
       cmOption: {
-          tabSize: 4,
-          styleActiveLine: false,
-          lineNumbers: true,
-          styleSelectedText: false,
-          line: true,
-          foldGutter: true,
-          gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
-          highlightSelectionMatches: { showToken: /\w/, annotateScrollbar: true },
-          mode: 'text/javascript',
-          // hint.js options
-          hintOptions:{
-            completeSingle: false
-          },
-          keyMap: "sublime",
-          matchBrackets: true,
-          showCursorWhenSelecting: true,
-          theme: "monokai",
-          extraKeys: { "Ctrl": "autocomplete" }
+        tabSize: 4,
+        styleActiveLine: false,
+        lineNumbers: true,
+        styleSelectedText: false,
+        line: true,
+        foldGutter: true,
+        gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
+        highlightSelectionMatches: { showToken: /\w/, annotateScrollbar: true },
+        mode: "text/javascript",
+        // hint.js options
+        hintOptions: {
+          completeSingle: false
         },
-
-      // Hard coded user
-      currentUserId: "5eb75ab2779eb66e27e4fad0",
+        keyMap: "sublime",
+        matchBrackets: true,
+        showCursorWhenSelecting: true,
+        theme: "monokai",
+        extraKeys: { Ctrl: "autocomplete" }
+      },
       currentRequestsTab: true,
       requestHistoryTab: false,
       show: true,
@@ -568,18 +801,29 @@ export default {
       submitRequest: false,
       problem: "",
       probDes: "",
-      code: "",
       file: null,
       student: null,
-      classes: [
-        { value: null, text: "Please select the class you need help with:" }
+      classes: [],
+      openTicket: null,
+      closedTickets: [
+        {
+          owner: null,
+          status: null,
+          oneLineOverview: null,
+          longerDescription: null,
+          attachments: []
+        }
       ],
-      openTicket: {
-        owner: null,
-        status: null,
-        oneLineOverview: null
-      },
-      otherTickets: [{ owner: null, status: null, oneLineOverview: null }]
+      session: null,
+      zoomLink: null,
+      showCountdown: false,
+      studentAcceptedSession: false,
+      studentChannel: client.channels.get(userId),
+      ticketChannel: client.channels.get("tickets"),
+      selected: [],
+      fileUrls: [],
+      fileObjects: [],
+      selectedCourse: null
     };
   },
   methods: {
@@ -594,6 +838,50 @@ export default {
         }
       });
     },
+    uploadFile() {
+      if (this.rows) {
+        for (var i = 0; i < this.rows.length; i++) {
+          var fileToUpload = this.rows[i].file;
+          const storageRef = firebase
+            .storage()
+            .ref(fileToUpload.name)
+            .put(fileToUpload);
+          storageRef.on(
+            `state_changed`,
+            snapshot => {
+              this.uploadValue =
+                (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            },
+            error => {
+              console.log(error.message);
+            },
+            () => {
+              this.uploadValue = 100;
+              storageRef.snapshot.ref
+                .getDownloadURL()
+                .then(url => {
+                  this.fileUrls.push(url);
+
+                  if (this.fileUrls.length === this.rows.length) {
+                    console.log("going to for loop");
+                    for (var i = this.rows.length - 1; i > -1; i--) {
+                      this.fileObjects.push({
+                        fileName: this.rows[i].file.name,
+                        filePath: this.fileUrls[i]
+                      });
+                    }
+                  }
+                })
+                .then(() => {
+                  this.submit();
+                });
+            }
+          );
+        }
+      } else {
+        this.submit();
+      }
+    },
     switchToCurrentRequestsTab: function() {
       this.currentRequestsTab = true;
       this.requestHistoryTab = false;
@@ -606,23 +894,101 @@ export default {
       this.scrollToTop();
       return this.requestHistoryTab;
     },
+    openPage: function(attachmentUrl, attachmentName) {
+      console.log(this.openTicket);
+      console.log(attachmentUrl);
+      console.log(attachmentName);
+      window.open(attachmentUrl, "_blank");
+      // location.href = attachmentUrl;
+    },
+    acceptSession: function() {
+      this.scrollToTop();
+      this.showCountdown = false;
+      this.studentAcceptedSession = true;
+      console.log("in accept session and zoomLink is " + this.zoomLink);
+
+      this.finished();
+      console.log("accepted session : " + this.studentAcceptedSession);
+      // Publish an event to the  channel
+      // this.studentChannel.publish("studentAcceptedSession", userId);
+    },
+    triggerAccept: function() {
+      this.showCountdown = true;
+      console.log(
+        "in trigger click AcceptSession :: " +
+          this.studentAcceptedSession +
+          " countdownShowing :: " +
+          this.showCountdown
+      );
+    },
     removeElement: function(index) {
       this.rows.splice(index, 1);
     },
     setFilename: function(event, row) {
-      var file = event.target.files[0];
-      row.file = file;
+      if (event && row) {
+        var file = event.target.files[0];
+        row.file = file;
+      }
     },
 
-    // Not yet working
-    loadClasses: function(classSelected) {
-      // var text = classSelected.dep + " " + classSelected.courseNum;
-      // this.classes.push({ value: classSelected._id, text: text });
+    async loadClasses(classSelected) {
+      if (classSelected) {
+        let classes = await axios.get("/api/courses/" + classSelected._id);
+        this.classes.push({
+          value: classes.data._id,
+          text: classes.data.dep + classes.data.courseNum
+        });
+        console.log("class is " + this.classes[0].value);
+        this.selected = this.classes[0].value;
+      }
     },
     getSelectedCourse: function(course) {
       this.selectedCourse = course;
       console.log(course);
     },
+
+    async startSubscribe() {
+      console.log("subscribing to staff");
+      // The student's ticket was accepted by the staff
+      // this.studentChannel.subscribe("staffAcceptedTicket", message => {
+      //   this.zoomLink = message.data.zoomLink;
+      //   this.openTicket.updatedAt = message.data.date;
+
+      //   document.getElementById("hiddenButton").click();
+      // });
+    },
+    countdownTime: function() {
+      //read updated time
+      let ticketTime = new Date(this.openTicket.updatedAt);
+
+      let currentTime = new Date();
+      ticketTime.setMinutes(ticketTime.getMinutes() + 1);
+      console.log(
+        ticketTime.getMinutes() * 60 +
+          ticketTime.getSeconds() -
+          (currentTime.getMinutes() * 60 + currentTime.getSeconds())
+      );
+
+      return (
+        ticketTime.getMinutes() * 60 +
+        ticketTime.getSeconds() -
+        (currentTime.getMinutes() * 60 + currentTime.getSeconds())
+      );
+    },
+    finished: studentChannel => {
+      console.log("in finished");
+
+      //tell staff student did not accept session
+      // studentChannel.publish("studentDidNotAcceptSession", userId);
+      // this.openTicket.status = 'Unresolved'
+      // this.closedTickets.push(openTicket)
+      // this.openTicket = {
+      //   owner: null,
+      //   status: null,
+      //   oneLineOverview: null
+      // }
+    },
+
     changeRequestState: function() {
       if (this.request === true && this.submitRequest === false) {
         this.request = false;
@@ -630,38 +996,48 @@ export default {
       } else {
         // ABLY KEY HERE
         var client = new Ably.Realtime(process.env.ABLY_KEY);
-        var channel = client.channels.get('staff');
+        var channel = client.channels.get("staff");
         // Publish a message to the test channel
-        channel.publish("ticketUpdate", "ticket updated");
+        // channel.publish("ticketUpdate", "ticket updated");
         this.submitRequest = true;
         this.scrollToTop();
-        // HARD CODING A REDIRECT TEMPORARILY
-        // setTimeout(function() {
-        //   window.location.href = "studentCountdown";
-        // }, 8000);
+
         return this.request;
       }
     },
     ticketNum: function() {
-      if (this.openTicket.owner != null) {
-        return "one";
+      if (!this.openTicket) {
+        return "requests";
       }
       return "no";
     },
+    requestOrRequests: function() {
+      if (!this.openTicket) {
+        return "requests";
+      }
+      return "requests";
+    },
     clearForm: function() {
+      console.log("clearing form");
       this.problem = "";
       this.probDes = "";
       this.code = "";
+      this.tickets = null;
+      this.openTickets = null;
       this.file = null;
       this.submitRequest = false;
       this.request = true;
-    },
-    async loadClasses(classSelected) {
-      let classes = await axios.get("../../api/courses/" + classSelected._id);
-      this.classes.push({
-        value: classes.data._id,
-        text: classes.data.dep + classes.data.courseNum
-      });
+      this.fileUrls = [];
+      this.rows = [];
+      this.fileObjects = [];
+      this.openTicket = {
+        owner: null,
+        status: null,
+        oneLineOverview: null,
+        attachments: [],
+        longerDescription: [],
+        course: null
+      };
     },
     async loadUser(user) {
       // this.student = user.data._id;
@@ -670,12 +1046,17 @@ export default {
 
     // NOT INSERTED YET: file
     async submit() {
-      if (this.problem != "" && this.probDes != "") {
-        console.log("Submitting");
-        let ticket = await axios.post("../../api/insertTicket", {
+      console.log("course is " + this.selectedCourse);
+      if (this.selectedCourse === null) {
+        this.selectedCourse = this.classes[0].value;
+      }
+
+      if (!this.openTicket) {
+        console.log("inserting " + this.fileObjects);
+        let ticket = await axios.post("/api/insertTicket", {
           status: "Open",
           owner: {
-            _id: this.student
+            _id: userId
           },
           course: {
             _id: this.selectedCourse
@@ -683,73 +1064,106 @@ export default {
           oneLineOverview: this.probDes,
           longerDescription: this.problem,
           codeSnippet: this.code,
-          createdAt: new Date().toString()
+          createdAt: new Date().toString(),
+          attachments: this.fileObjects
         });
+
         this.openTicket = ticket.data;
-        this.waitforStaff(this.openTicket._id);
-      } else {
-        // TODO: Tell the student they need to fill this out
-        console.log("not submitted");
+        console.log("Open ticket below");
+        console.log(this.openTicket);
+        // sends ticket to staff
+        //   this.ticketChannel.publish("ticketUpdate", this.openTicket);
+      }
+    },
+    async getTickets() {
+      console.log("in get tickets");
+
+      let tickets = await axios.get("/api/tickets/getTickets", {
+        "owner._id": userId
+      });
+      this.tickets = tickets;
+
+      this.closedTickets = tickets.data.filter(
+        ticket => ticket.status !== "Open"
+      );
+      this.openTickets = tickets.data.filter(
+        ticket => ticket.status === "Open"
+      );
+      if (this.openTickets) {
+        this.openTicket = this.openTickets[0];
       }
     },
 
-    async waitforStaff(id) {
-      let x = setInterval(async function() {
-        let ticket = await axios.get("../../api/ticket/" + id);
-        if (ticket.data.status === "In Progress") {
-          clearInterval(x);
-          window.location.href = "/students/studentCountdown";
-        }
-        if (ticket.data.status === "Closed") {
-          clearInterval(x);
-        }
-      }, 10000);
-    },
-    async closeTicket(ticket) {
-      this.openTicket.status = "Closed";
-      this.otherTickets.push(this.openTicket);
-      this.openTicket = {
-        owner: null,
-        status: null,
-        oneLineOverview: null
-      };
-      this.clearForm();
-      await axios.put("../../api/updateTicket/" + ticket._id, {
-        status: "Closed"
+    // if (this.tickets) {
+    //   console.log(this.tickets);
+    // }
+
+    // let tickets = await axios.get("../../api/tickets");
+
+    // this.closedTickets = tickets.data.filter(
+    //   ticket => ticket.owner._id === userId
+    // );
+    // tickets = tickets.data.filter(ticket => (ticket.owner._id === this.$route.params.id) && (ticket.status === 'Open'));
+
+    //  tickets = tickets.data.filter(
+    //     ticket => ticket.owner._id === userId && ticket.status === "Open"
+    //   );
+
+    async getStudentInfo() {
+      let student = await axios.get("/api/users/" + userId);
+      this.student = student.data;
+
+      student.data.classes.forEach(element => {
+        this.loadClasses(element);
       });
-      this.scrollToTop();
+      this.getTickets();
+    },
+
+    async closeTicket() {
+      if (this.openTicket) {
+        console.log("closing ticket " + this.openTicket._id);
+
+        // this.ticketChannel.publish("ticketClosed", this.openTicket);
+        this.openTicket.status = "Closed";
+        this.closedTickets.push(this.openTicket);
+
+        var id = this.openTicket._id;
+        this.clearForm();
+
+        await axios
+          .put("/api/updateTicket/" + id, {
+            status: "Closed"
+          })
+          .then(() => {
+            console.log("resetting ticket");
+            this.openTicket = null;
+          });
+
+        window.location.reload();
+        this.showCountdown = false;
+
+        this.scrollToTop();
+      }
     }
   },
 
   beforeMount() {
     this.scrollToTop();
-    this.loadClasses();
+    this.getStudentInfo();
+    this.startSubscribe();
   },
-  async created() {
-    this.scrollToTop();
-    // let student = await axios.get("../../api/users/" + this.$route.params.id);
-    let student = await axios.get("../../api/users/" + userId);
 
-    student.data.classes.forEach(element => {
-      this.loadClasses(element);
-    });
-    this.loadUser(student);
-
-    let tickets = await axios.get("../../api/tickets");
-    // this.otherTickets = tickets.data.filter(ticket => (ticket.owner._id === this.$route.params.id) )
-    this.otherTickets = tickets.data.filter(
-      ticket => ticket.owner._id === userId
-    );
-    // tickets = tickets.data.filter(ticket => (ticket.owner._id === this.$route.params.id) && (ticket.status === 'Open'));
-
-    tickets = tickets.data.filter(
-      ticket => ticket.owner._id === userId && ticket.status === "Open"
-    );
-
-    if (tickets.length != 0) {
-      this.openTicket = tickets[0];
-      this.waitforStaff(this.openTicket._id);
+  async created() {},
+  computed: {
+    isDisabled: function() {
+      return !this.selected;
     }
+    // studentSession() {
+    //   return this.studentAcceptedSession
+    // },
+    // showCountdown() {
+    //   return this.showCountdown
+    // }
   }
 };
 </script>

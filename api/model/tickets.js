@@ -27,7 +27,7 @@ var ticketSchema = new Schema({
   oneLineOverview: String,
   longerDescription: String,
   questions:   [String],
-  attachments: [String],
+  attachments: [Object],
   acceptedBy: {
     _id:{
       type: Schema.Types.ObjectId,
