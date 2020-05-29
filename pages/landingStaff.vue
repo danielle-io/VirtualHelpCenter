@@ -8,13 +8,28 @@
   margin-left: 4%;
   margin-right: 4%;
   font-size: 17px;
-  /* margin-left: 15px;
-    margin-right: 15px; */
   cursor: pointer;
   opacity: 0.8;
   font-weight: 200;
 }
 
+.ticket-categories {
+  /* padding-right:0px;  */
+  /* margin-right:0px;  */
+  color: #41408a;
+  margin-left: 5px;
+}
+
+.col-sm-3 {
+  overflow: show;
+  flex-wrap: wrap;
+}
+
+.requests-heading {
+  border-bottom: 1px solid #b8b7c081;
+}
+
+/* The drop down styling */
 .custom-select {
   border-color: white;
   width: 50%;
@@ -151,28 +166,40 @@
 
     <div class="staff-container">
       <div v-if="!this.connecting">
-        <div class="row" style="margin-bottom: 14px;">
-          <span
-            style="margin-top: 10px; margin-right: 22px; margin-left: 15px;"
-            v-if="this.selectedTicketIndex === -1 && this.staffCourses"
-          >
-            <b-form-select
-              style="width: 100% !important;"
-              v-model="course"
-              :options="staffCourses"
-              v-on:change="setClass"
-            ></b-form-select>
-          </span>
-
-          <span
-            style="margin-top: 18px; "
-            v-if="this.selectedTicketIndex === -1 && !this.zoomLinkForm && this.tickets"
-          >
-            <!-- TODO: instead of tickets.length, get the filtered tickets length to hide message when no tickets show -->
+        <div class="requests-heading">
+          <div class="row" style="margin-bottom: 12px;">
             <span
-              v-if="this.tickets.length > 0"
-              class="sub-heading-text"
-            >Select a request to continue.</span>
+              style="margin: auto;"
+              v-if="this.selectedTicketIndex === -1 && !this.zoomLinkForm && this.tickets"
+            >
+              <!-- TODO: instead of tickets.length, get the filtered tickets length to hide message when no tickets show -->
+              <div v-if="this.tickets.length > 0" class="heading-text-alt">Select an open request</div>
+            </span>
+
+            <span
+              style="margin: auto;"
+              v-if="this.selectedTicketIndex != -1 && !this.zoomLinkForm && this.tickets"
+            >
+              <!-- TODO: instead of tickets.length, get the filtered tickets length to hide message when no tickets show -->
+              <div v-if="this.tickets.length > 0" class="heading-text-alt">Request Selected</div>
+            </span>
+          </div>
+
+          <span v-if="this.selectedTicketIndex === -1 && this.staffCourses">
+            <div
+              class="row"
+              style="font-size: 20px !important; margin-bottom: 14px; margin-left: 15px;"
+            >
+              <span class="label-format-smaller" style="margin-right:14px;">
+                <filter-icon />Filter:
+              </span>
+              <b-form-select
+                style="display: in-line-block; width: 30%; color: #41408a; "
+                v-model="course"
+                :options="staffCourses"
+                v-on:change="setClass"
+              ></b-form-select>
+            </div>
           </span>
         </div>
 
@@ -194,27 +221,71 @@
                 <!-- Selected index allows only that card to show when selected -->
                 <!-- Selected-card class is bound to the card selection  -->
                 <md-card
-                  style=" margin-bottom: 10px;   font-family: 'Manrope'; margin-left: 20px; margin-right: 20px; padding-bottom: 34px;"
+                  style=" margin-bottom: 10px; font-family: 'Manrope'; margin-left: 20px; margin-right: 20px; margin-top: 8px; padding-top:15px; padding-bottom: 34px;"
                   v-bind:class="{ 'selected-card': selectedTicketIndex === index}"
                 >
+                  
                   <div
-                    style="cursor: pointer; padding-top: 18px; "
+                    style="cursor: pointer;"
                     @click="clickCard(ticket, index, ticket._id)"
                   >
+                    
                     <div class="card-line">
-                      <strong>Student:</strong>
-                      {{ " " + ticket.ownerName }}
+                      <span class="row">
+                        <span class="ticket-categories col-sm-3">
+                          <student class="label-icons" />
+                          <strong>Student:</strong>
+                        </span>
+                        <span style="margin-left:0px;" class="col">{{ " " + ticket.ownerName }}</span>
+                      </span>
                     </div>
 
                     <div class="card-line">
-                      <strong>Status:</strong>
-                      {{ " " + ticket.status }}
+                      <span class="row">
+                        <span class="ticket-categories col-sm-3">
+                          <clock class="label-icons" />
+                          <strong>Time:</strong>
+                        </span>
+                        <span
+                          style="margin-left:0px;"
+                          class="col"
+                        >{{ " " + (ticket.createdAt.split('T')[1]).split('.')[0]}}</span>
+                      </span>
                     </div>
 
                     <div class="card-line">
-                      <strong>Overview:</strong>
-                      {{ " " + ticket.oneLineOverview}}
+                      <span class="row">
+                        <span class="ticket-categories col-sm-3">
+                          <date class="label-icons" />
+                          <strong>Date:</strong>
+                        </span>
+                        <span
+                          style="margin-left:0px;"
+                          class="col"
+                        >{{ " " + (ticket.createdAt.split(':')[0]).split('T')[0]}}</span>
+                      </span>
                     </div>
+
+                    <!-- <div class="card-line">
+                      <span class="row">
+                        <span class="ticket-categories col-sm-3">
+                          <bell class="label-icons" />
+                          <strong>Status:</strong>
+                        </span>
+                        <span style="margin-left:0px;" class="col-sm-6">{{ " " + ticket.status }}</span>
+                      </span>
+                    </div>-->
+
+                    <div class="card-line">
+                      <span class="row">
+                        <span class="ticket-categories col-sm-3">
+                          <short-description class="label-icons" />
+                          <strong>Overview:</strong>
+                        </span>
+                        <span class="col">{{ " " + ticket.oneLineOverview}}</span>
+                      </span>
+                    </div>
+
                   </div>
 
                   <div
@@ -234,31 +305,59 @@
                   <div
                     v-bind:class="{ 'show-extra-content': collapseChevron, 'hide-extra-content': expandChevron }"
                   >
+                  
                     <div class="card-line">
-                      <strong>Longer Description:</strong>
-                      {{" " + ticket.longerDescription}}
+                      <span class="row">
+                        <span class="ticket-categories col-sm-3">
+                          <long-description class="label-icons" />
+                          <strong>Details:</strong>
+                        </span>
+                        <span style="margin-left: 16px;"
+                          class="col"
+                        >{{ " " + ticket.longerDescription}}</span>
+                      </span>
                     </div>
 
-                    <div v-if="ticket.attachments.length > 0" class="card-line">
-                      <strong>Attached Files:</strong>
+    
+                    <div v-if="ticket.attachments.length > 0">
+                      <div class="card-line">
+                        <span class="row">
+                        <span class="ticket-categories col-sm-3">
+                            <long-description class="label-icons" />
+                            <strong>Files:</strong>
+                          </span>
 
-                      <span v-for="(attachment, index) in (ticket.attachments)" :key="index">
-                        <a
-                          style="cursor: pointer; color: rgb(45, 58, 130) !important; z-index: 999; 
+                          <span
+                            style="margin-left: 16px;"
+                            class="col"
+                            v-for="(attachment, index) in (ticket.attachments)"
+                            :key="index"
+                          >
+                            <a
+                              style="cursor: pointer; color: rgb(45, 58, 130) !important; z-index: 999; 
                               text-shadow: none !important;
                               margin-top: 4px;
                               margin-left: 6px;"
-                          @click="openPage(attachment.filePath, attachment.fileName)"
-                        >
-                          <open-in-new-window />
-                          {{attachment.fileName}}
-                        </a>
-                      </span>
+                              @click="openPage(attachment.filePath, attachment.fileName)"
+                            >
+                              <open-in-new-window />
+                              {{attachment.fileName}}
+                            </a>
+                          </span>
+                        </span>
+                      </div>
+                    </div>
 
-                      <div v-if="ticket.attachments.length === 0" class="card-line">
-                        <strong>Attached Files:</strong>
+                    <div v-if="ticket.attachments.length === 0">
+                      <div class="card-line">
+                        <span class="row">
+                        <span class="ticket-categories col-sm-3">
+                            <attachment class="label-icons" />
+                            <strong>Files:</strong>
+                          </span>
 
-                        <span style="margin-left: 3px;">None</span>
+                          <span style="margin-left: 16px;" class="col">None</span>
+                        </span>
                       </div>
                     </div>
                   </div>

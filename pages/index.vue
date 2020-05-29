@@ -65,8 +65,8 @@
       <md-card>
         <md-card-header>
           <md-card-header-text>
-            <div class="md-title">Staff Login</div>
-            <div class="md-subhead">Temp page</div>
+            <div class="md-title">Login</div>
+            <div class="md-subhead">One login page for all users</div>
           </md-card-header-text>
         </md-card-header>
 
@@ -74,25 +74,8 @@
           <nuxt-link
             style="cursor: pointer; color: #56a2b1  !important; z-index: 999; 
                               text-shadow: none !important;"
-            to="/testPages/loginStaff"
-          >Staff Login</nuxt-link>
-        </md-card-actions>
-      </md-card>
-
-      <md-card>
-        <md-card-header>
-          <md-card-header-text>
-            <div class="md-title">Student Login</div>
-            <div class="md-subhead">Temp page</div>
-          </md-card-header-text>
-        </md-card-header>
-
-        <md-card-actions>
-          <nuxt-link
-            style="cursor: pointer; color: #56a2b1  !important; z-index: 999; 
-                              text-shadow: none !important;"
-            to="/testPages/loginStudent"
-          >Student Login</nuxt-link>
+            to="/Login"
+          >Login</nuxt-link>
         </md-card-actions>
       </md-card>
 

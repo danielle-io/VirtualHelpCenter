@@ -37,6 +37,14 @@ footer {
     color: #624b77;
 }
 
+.heading-text-alt {
+    margin-top: 16px;
+    font-size: 22px;
+    text-align: center;
+    font-family: "Poppins";
+    color: #624b77;
+}
+
 /* The instructions & details */
 
 .sub-heading-text {
@@ -96,6 +104,12 @@ footer {
     font-style: italic;
 }
 
+.title {
+    font-weight: 300;
+    font-size: 2.5em;
+    margin: 0;
+  }
+
 .label-format {
     margin-top: 12px;
     margin-bottom: 15px;
@@ -103,13 +117,21 @@ footer {
     text-align: left;
     font-family: "Poppins";
     color: #41408a;
-    /* padding-bottom: 4px; */
-    /* border-bottom: 1px solid rgb(214, 208, 208); */
+}
+
+
+.label-format-smaller {
+    margin-top: 7px;
+    font-size: 16px;
+    text-align: left;
+    font-family: "Poppins";
+    color: #41408a;
 }
 
 .label-icons {
     margin-right: 6px;
 }
+
 
 .asterisk {
     margin-left: 4px;

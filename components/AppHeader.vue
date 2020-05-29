@@ -1,50 +1,4 @@
 
-<template>
-  <div class="main-nav">
-    <div class="blue-curved-container">
-      <svg viewBox="-420 60 620 180" preserveAspectRatio="xMinYMin meet" class="blue-curved">
-        <path d="M1, 50 C70,180 550, 0 900, 1400 L1200,00 L100, 0 Z" />
-        <!--  example: <path d=" M0,100 C150,200 350,0 500,100   L500,00 L0,0 Z" style="stroke: none; fill:red;"></path> -->
-      </svg>
-    </div>
-
-    <div class="green-circle"></div>
-    <div class="purple-circle-bottom"></div>
-
-    <div class="tabs" id="tabs">
-      <div id="logo" class="logo">
-        <span class="virtual">virtual</span>
-
-        <span class="help">help</span>
-      </div>
-
-      <div class="right-nav">
-        <nuxt-link class="link-styling" to="../login">home</nuxt-link>
-
-        <nuxt-link class="link-styling" to="/">testing</nuxt-link>
-
-        <nuxt-link class="link-styling" to="../account">
-          <account-circle />
-        </nuxt-link>
-      </div>
-      <div v-if="$auth.loggedIn">
-        <v-btn text @click="$auth.logout()">Logout</v-btn>
-      </div>
-      <!-- App background shapes -->
-
-      <div class="purple-circle"></div>
-    </div>
-  </div>
-</template>
-
-
-<script>
-import Vue from "vue";
-
-Vue.config.productionTip = false;
-export default {};
-</script>
-
     '~/assets/css/stylesheet.css',
 
 <style>
@@ -53,6 +7,7 @@ export default {};
   margin-right: 10px;
   color: #f1f8f8;
   font-family: "Manrope";
+  font-size: 18px;
 }
 
 .md-theme-default a:not(.md-button) {
@@ -117,12 +72,6 @@ export default {};
   font-weight: 300;
 }
 
-.title {
-  font-weight: 300;
-  font-size: 2.5em;
-  margin: 0;
-}
-
 .tabs {
   position: fixed;
   position: absolute;
@@ -144,4 +93,50 @@ html.md-theme-default {
 }
 </style>
 
+
+
+<template>
+  <div class="main-nav">
+    <div class="blue-curved-container">
+      <svg viewBox="-420 60 620 180" preserveAspectRatio="xMinYMin meet" class="blue-curved">
+        <path d="M1, 50 C70,180 550, 0 900, 1400 L1200,00 L100, 0 Z" />
+        <!--  example: <path d=" M0,100 C150,200 350,0 500,100   L500,00 L0,0 Z" style="stroke: none; fill:red;"></path> -->
+      </svg>
+    </div>
+
+    <div class="green-circle"></div>
+    <div class="purple-circle-bottom"></div>
+
+    <div class="tabs" id="tabs">
+      <nuxt-link to="/">
+        <div id="logo" class="logo">
+          <span class="virtual">virtual</span>
+          <span class="help">help</span>
+        </div>
+      </nuxt-link>
+
+      <div class="right-nav">
+        <nuxt-link class="link-styling" to="/">home</nuxt-link>
+
+        <nuxt-link class="link-styling" to="../account">
+          <account-circle />
+        </nuxt-link>
+      </div>
+      <div v-if="$auth.loggedIn">
+        <v-btn text @click="$auth.logout()">Logout</v-btn>
+      </div>
+      <!-- App background shapes -->
+
+      <div class="purple-circle"></div>
+    </div>
+  </div>
+</template>
+
+
+<script>
+import Vue from "vue";
+
+Vue.config.productionTip = false;
+export default {};
+</script>
 

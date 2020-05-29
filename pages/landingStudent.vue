@@ -170,9 +170,8 @@ table th,
 
 .request-tabs {
   margin-top: 26px;
-  margin-bottom: 6px;
+  margin-bottom: 18px;
   width: 100%;
-  padding-bottom: 15px;
   display: inline-block;
   text-align: center;
 }

@@ -38,7 +38,12 @@ import ShortDescription from "vue-material-design-icons/TextShort.vue";
 import Check from "vue-material-design-icons/Check.vue";
 import Code from "vue-material-design-icons/CodeJson.vue";
 import Student from "vue-material-design-icons/Account.vue";
-
+import Clock from "vue-material-design-icons/Timer.vue";
+import Label from "vue-material-design-icons/Label.vue";
+import Restore from "vue-material-design-icons/Restore.vue";
+import Bell from "vue-material-design-icons/BellRingOutline.vue";
+import Filter from "vue-material-design-icons/FilterVariant.vue";
+import Calendar from "vue-material-design-icons/Calendar.vue";
 
 import BeatLoader from 'vue-spinner/src/BeatLoader.vue';
 
@@ -64,6 +69,14 @@ Vue.component("short-description", ShortDescription);
 Vue.component("check", Check);
 Vue.component("code-symbol", Code);
 Vue.component("student", Student);
+Vue.component("clock", Clock);
+Vue.component("label-icon", Label);
+Vue.component("restore", Restore);
+Vue.component("bell", Bell);
+Vue.component("filter-icon", Filter);
+Vue.component("date", Calendar);
+
+
 
 Vue.component('beat-loader', BeatLoader);
 
