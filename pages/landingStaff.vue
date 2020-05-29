@@ -15,7 +15,7 @@
   font-weight: 200;
 }
 
-.custom-select{
+.custom-select {
   border-color: white;
   width: 50%;
   border-bottom: 1px solid #ced4da;
@@ -150,27 +150,26 @@
     <!-- <button id="hiddenButton" style="display:none;" @click="triggerAccept"></button> -->
 
     <div class="staff-container">
-      <!-- <div class="heading-two-text">Select a Request</div> -->
+     
       <div v-if="!this.connecting">
-        <div class="row" style="margin-top: 10px; margin-left: 5px;">
-          <div class="col-6">
-            <div v-if="this.selectedTicketIndex === -1 && this.staffCourses">
-              <b-form-select v-model="course" :options="staffCourses" v-on:change="setClass"></b-form-select>
-            </div>
-          </div>
+        <div class="row" style="margin-bottom: 14px;">
+          
+          <span style="margin-top: 10px; margin-right: 22px; margin-left: 15px;" v-if="this.selectedTicketIndex === -1 && this.staffCourses">
+            <b-form-select style="width: 100% !important;" v-model="course" :options="staffCourses" v-on:change="setClass"></b-form-select>
+          </span>
+
+          <span  style="margin-top: 18px; " v-if="this.selectedTicketIndex === -1 && !this.zoomLinkForm && this.tickets">
+            <!-- TODO: instead of tickets.length, get the filtered tickets length to hide message when no tickets show -->
+            <span
+              v-if="this.tickets.length > 0"
+              class="sub-heading-text"
+             
+            >Select a request to continue.</span>
+          </span>
         </div>
 
         <div v-if="this.openRequestTab">
-          <div class="ticket-container">
-            <div v-if="this.selectedTicketIndex === -1 && !this.zoomLinkForm && this.tickets">
-              <!-- TODO: instead of tickets.length, get the filtered tickets length to hide message when no tickets show -->
-              <div
-                v-if="this.tickets.length > 0"
-                class="sub-heading-text"
-                style="padding-top:2%;"
-              >Select a request to continue.</div>
-            </div>
-
+          <div style="margin-top: 30px;" class="ticket-container">
             <div
               v-if="!this.zoomLinkForm && !this.tickets"
               class="sub-heading-text"
