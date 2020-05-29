@@ -6,19 +6,6 @@
 
     <div class="Row card-row">
 
-      <!-- <md-card> -->
-        <!-- <md-card-header>
-          <md-card-header-text>
-            <div class="md-title">Ticket Display</div>
-            <div class="md-subhead">Click here to See a display of the tickets</div>
-          </md-card-header-text>
-        </md-card-header> -->
-
-        <!-- <md-card-actions>
-          <nuxt-link to="/testPages/listTickets">Ticket Display</nuxt-link>
-        </md-card-actions>
-      </md-card> -->
-
       <md-card>
         <md-card-header>
           <md-card-header-text>
@@ -107,18 +94,6 @@
         </md-card-actions>
       </md-card>
 
-      <!-- <md-card>
-        <md-card-header>
-          <md-card-header-text>
-            <div class="md-title">Insert Ticket Request</div>
-            <div class="md-subhead">Click here to go to the ticket request form</div>
-          </md-card-header-text>
-        </md-card-header>
-
-        <md-card-actions>
-          <nuxt-link :to="'/request/'+id">Ticket Request</nuxt-link>
-        </md-card-actions>
-      </md-card> -->
     </div>
   </div>
 </template>
@@ -183,6 +158,7 @@ export default {
   word-wrap: break-word;
   vertical-align: top;
 }
+
 .card-row {
   display: flex;
   flex-wrap: wrap;

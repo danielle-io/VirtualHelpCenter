@@ -5,10 +5,6 @@
     position: relative;
   }
 
-  
-
-
- 
 
   input[type="password"] {
     border-radius: 0 !important;
@@ -64,7 +60,7 @@
 
   input[type="text"]:focus {
     background-color: #fff;
-    border-bottom: 1px solid #5fbae9;
+    /* border-bottom: 1px solid #5fbae9; */
   }
 
   input[type="text"]:placeholder {

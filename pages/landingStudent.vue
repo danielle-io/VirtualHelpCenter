@@ -30,26 +30,14 @@
   display: inline-block;
 }
 
-.request-container {
-  position: relative;
+.container-body {
   padding-left: 10px;
   padding-right: 10px;
-  margin-left: 15%;
-  margin-right: 15%;
-  margin-top: 6%;
-  margin-bottom: 2%;
-  font-family: "Poppins";
-  min-width: 200px;
-  border: solid 1px #ddd;
-  padding-left: 2%;
-  padding-right: 2%;
-  padding-bottom: 10px;
-  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.05);
-}
-
-.container-body{
+  padding-bottom: 8px;
+  margin-left: 8px;
+  margin-right: 8px;
   overflow-y: scroll;
-  max-height: 800px;
+  max-height: 670px;
 }
 
 .CodeMirror-focused .cm-matchhighlight {
@@ -86,38 +74,11 @@
   color: "red" !important;
 }
 
-.toolTip {
-  position: relative;
-  display: inline-block;
-}
-
-.toolTip .tooltipText {
-  visibility: hidden;
-  width: 50px;
-  background-color: black;
-  color: #fff;
-  text-align: center;
-  border-radius: 6px;
-  padding: 5px 0;
-
-  /* Position the tooltip */
-  position: absolute;
-  z-index: 1;
-  top: -5px;
-  left: 105%;
-}
-
-/* .toolTip:hover .toolTiptext {
-  visibility: visible;
-} */
-
 /* Styling for adding rows */
 .add-button {
-  align-items: left;
-  font-size: 30px;
-  color: rgb(154, 224, 231);
+  font-size: 22px;
+  color: rgb(55, 115, 226);
   cursor: pointer;
-  padding-top: 15px !important;
 }
 
 .row {
@@ -179,24 +140,26 @@ table th,
 }
 
 .tab-links-active {
+  cursor: pointer;
   margin-left: 4%;
   margin-right: 4%;
   display: inline-block;
-  font-size: 18px;
-  cursor: pointer;
+  font-size: 20px;
   font-weight: 400 !important;
-  text-decoration: underline !important;
-  color: #0286a0 !important;
+  border-bottom: 1px solid #e6e4f1;
+  padding-bottom: 1px;
+  color: #d6cece !important;
 }
 
 .tab-links {
   display: inline-block;
   margin-left: 4%;
   margin-right: 4%;
-  font-size: 17px;
+  font-size: 20px;
   cursor: pointer;
   opacity: 0.8;
   font-weight: 200;
+  color: #faf4f4 !important;
 }
 
 .arrow-right-circle-icon {
@@ -205,9 +168,10 @@ table th,
 }
 
 .request-tabs {
-  margin-top: 10px;
+  margin-top: 26px;
   margin-bottom: 6px;
   width: 100%;
+  padding-bottom: 15px;
   display: inline-block;
   text-align: center;
 }
@@ -216,21 +180,51 @@ table th,
   opacity: 0.8;
 }
 
+.side-border-line {
+  background-color: rgb(202, 228, 241);
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  height: -webkit-calc(100% + 2px);
+  height: calc(100% + 2px);
+  left: -1px;
+  padding-right: 14px;
+  margin-right: 16px;
+  position: absolute;
+  bottom: -1px;
+  width: 6px;
+}
+
+.top-border-line {
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  height: 14px;
+  background-color: rgba(123, 196, 236, 0.322);
+  /* background-color: rgb(202, 228, 241); */
+  left: -1px;
+  position: absolute;
+  top: -1px;
+  width: calc(100% + 2px);
+}
+
 .request-container {
   position: relative;
+  z-index: 999;
+  margin-left: auto;
+  margin-right: auto;
+  border: 1px solid #dadce0;
+  border-radius: 8px;
+  background-color: white;
   padding-left: 10px;
   padding-right: 10px;
-  margin-left: 15%;
-  margin-right: 15%;
-  margin-top: 6%;
+  padding-bottom: 10px;
+  /* margin-left: 15%;
+  margin-right: 15%; */
   margin-bottom: 2%;
   font-family: "Poppins";
-  min-width: 200px;
-  /* border: solid 1px #ddd; */
-  padding-left: 2%;
-  padding-right: 2%;
-  padding-bottom: 10px;
-  /* box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.05); */
+  /* min-width: 200px; */
+  max-width: 800px;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.05);
 }
 
 .form-container {
@@ -348,24 +342,34 @@ input[type="text"]:placeholder {
 
     <div id="requests">
       <!-- The transition effects for the containers changing -->
-      <transition name="fade" mode="in-out">
-        <div v-bind:key="request" class="request-container">
-          <div class="request-tabs">
-            <a
-              @click="switchToCurrentRequestsTab"
-              v-bind:class="{ 'tab-links-active': currentRequestsTab, 'tab-links': !currentRequestsTab }"
-            >Current Requests</a>
 
-            <!-- (this.$route.query.tab   == 'requestHistory')-->
-            <a
-              v-bind:class="{ 'tab-links-active': requestHistoryTab, 'tab-links': !requestHistoryTab }"
-              @click="switchToRequestHistoryTab"
-            >Request History</a>
-          </div>
+      <div class="request-tabs">
+        <a
+          @click="switchToCurrentRequestsTab"
+          v-bind:class="{ 'tab-links-active': currentRequestsTab, 'tab-links': !currentRequestsTab }"
+        >Current Requests</a>
+
+        <!-- (this.$route.query.tab   == 'requestHistory')-->
+        <a
+          v-bind:class="{ 'tab-links-active': requestHistoryTab, 'tab-links': !requestHistoryTab }"
+          @click="switchToRequestHistoryTab"
+        >Request History</a>
+      </div>
+
+      <transition name="fade" mode="in-out">
+        <!-- <div style="text-align: center;"> -->
+
+        <div v-bind:key="request" class="request-container">
+          <div v-if="!this.request && !this.submitRequest" class="side-border-line" />
 
           <div class="container-body">
             <div v-if="this.currentRequestsTab">
               <div v-if="this.request === true && !this.showCountdown">
+                <div class="top-border-line" />
+
+                <!-- This moves the MY Requests page down if there's no requests so that it's more centered -->
+                <div v-if="this.getNumberOfPendingTickets() === 'no'" style="margin-top:70px;"></div>
+
                 <div class="heading-text">My Requests</div>
 
                 <div
@@ -383,17 +387,19 @@ input[type="text"]:placeholder {
                 </div>
               </div>
 
-              <div v-if="this.request === true && !this.openTicket  && !this.showCountdown">
+              <div v-if="this.request && !this.openTicket  && !this.showCountdown">
                 <div style="text-align: center;">
                   <button
                     v-bind:key="request"
                     @click="changeRequestState"
                     type="submit"
-                    style="margin-bottom: 20%; width: 40% !important;"
+                    style="margin-bottom: 8px; width: 40% !important;"
                     class="fadeIn form-buttons"
                   >
                     <right-circle />Request a Session
                   </button>
+
+                  <div v-if="this.getNumberOfPendingTickets() === 'no'" style="margin-bottom:70px;"></div>
                 </div>
               </div>
 
@@ -412,13 +418,10 @@ input[type="text"]:placeholder {
                       style="margin-top: 5px;"
                       v-on:click="closeTicket()"
                     >
-                      <div class="toolTip">
-                        <close
-                          style="color: red !important; margin-bottom: 0px; padding-bottom: 0px;"
-                          class="close-icon"
-                        />
-                        <!-- <span class="toolTipText">Cancel Request</span> -->
-                      </div>
+                      <close
+                        style="color: red !important; margin-bottom: 0px; padding-bottom: 0px;"
+                        class="close-icon"
+                      />
                     </button>
                   </div>
 
@@ -479,9 +482,15 @@ input[type="text"]:placeholder {
                             :key="index"
                           >
                             <a
-                              style="cursor: pointer; margin-left: 22px"
+                              style="cursor: pointer; color: rgb(45, 58, 130) !important; z-index: 999; 
+                              text-shadow: none !important;
+                              margin-top: 4px;
+                              margin-left: 6px;"
                               @click="openPage(attachment.filePath, attachment.fileName)"
-                            >{{attachment.fileName}}</a>
+                            >
+                              <open-in-new-window />
+                              {{attachment.fileName}}
+                            </a>
                           </span>
                         </div>
                       </div>
@@ -491,55 +500,76 @@ input[type="text"]:placeholder {
               </div>
 
               <!-- Container for filling out the request form -->
-              <div v-if="this.request === false && this.submitRequest === false">
+              <div v-if="!this.request && !this.submitRequest">
                 <div class="heading-text">Request a Session</div>
-                <!-- <div
-                class="sub-heading-text-left"
-                style="padding-top:2%;"
-                >Complete the form below to request assistance from a lab tutor.</div>-->
 
-                <div class="form-container">
+                <div style="margin-left: 8px;" class="form-container">
                   <div class="row" style="width: 70%;">
-                    <label class="label-format">Please select the class you need help with:</label>
+                    <label class="label-format">
+                      <check class="label-icons" />Course Selection
+                    </label>
+                    <span v-if="!this.selectedCourse" class="asterisk">*</span>
                   </div>
 
                   <div class="row">
                     <b-form-radio-group
                       v-model="selectedCourse"
                       :options="enrolledCourses"
+                      required
                       v-on:change="getSelectedCourse"
                     ></b-form-radio-group>
                   </div>
 
                   <div class="row">
-                    <label
-                      class="label-format"
-                    >Please enter a brief one-sentence summary of the issue</label>
-                    <b-form-input v-model="probDes"></b-form-input>
+                    <label class="label-format">
+                      <short-description class="label-icons" />Question Overview
+                    </label>
+                    <span v-if="!this.oneLineOverview" class="asterisk">*</span>
+
+                    <b-form-input
+                      placeholder="Please enter a  one sentence summary of the issue"
+                      v-model="oneLineOverview"
+                      required
+                    ></b-form-input>
                   </div>
 
                   <div class="row">
-                    <label class="label-format">Elaborate on the issue, if needed.</label>
+                    <label class="label-format">
+                      <long-description class="label-icons" />Detailed Problem Description
+                    </label>
+                    <span v-if="!this.probDes" class="asterisk">*</span>
                     <b-form-text-area
                       id="textarea"
-                      v-model="oneLineOverview"
-                      rows="4"
+                      v-model="probDes"
+                      placeholder="Explain your issue in detail."
+                      rows="2"
+                      required
                       max-rows="10"
                     ></b-form-text-area>
                   </div>
 
                   <div class="row">
-                    <label class="label-format">Paste a code snippet, if needed</label>
-                    <b-form-text-area id="textarea" v-model="code" rows="1" max-rows="6"></b-form-text-area>
+                    <label class="label-format">
+                      <code-symbol class="label-icons" />Code
+                    </label>
+
+                    <b-form-text-area
+                      id="textarea"
+                      v-model="code"
+                      rows="1"
+                      placeholder="Paste code here, if needed."
+                      max-rows="6"
+                    ></b-form-text-area>
                   </div>
 
                   <div class="row">
-                    <label style="margin-bottom: 0px;" class="label-format">Add a file, if needed</label>
+                    <label style="margin-bottom: 0px;" class="label-format">
+                      <attachment class="label-icons" />Attachments
+                    </label>
                   </div>
 
                   <table class="table request-table">
                     <tbody>
-                      <!-- This is where the new questions are inserted -->
                       <div class="top-row" v-for="(row, index) in rows" v-bind:key="index">
                         <tr>
                           <td>
@@ -556,7 +586,10 @@ input[type="text"]:placeholder {
                           <td class="remove-column">
                             <a
                               v-on:click="removeElement(index);"
-                              style="cursor: pointer; z-index: 999; margin-left: 6px;"
+                              style="cursor: pointer; color: rgb(45, 58, 130) !important; z-index: 999; 
+                              text-shadow: none !important;
+                              margin-top: 4px;
+                              margin-left: 6px;"
                             >Remove</a>
                           </td>
                         </tr>
@@ -564,9 +597,15 @@ input[type="text"]:placeholder {
                     </tbody>
                   </table>
 
-                  <span class="add-button" @click="addRow">
+                  <div class="row">
+                    <div style="margin-bottom: 0px;" class="add-button">
+                      <plus-circle @click="addRow" class="label-icons" />
+                    </div>
+                  </div>
+
+                  <!-- <span class="add-button" @click="addRow">
                     <plus-circle />
-                  </span>
+                  </span>-->
 
                   <div v-if="this.selectedCourse && this.oneLineOverview  && this.probDes">
                     <div style="text-align: center;">
@@ -661,7 +700,9 @@ input[type="text"]:placeholder {
                 style="text-align: center;"
                 :key="ticket._id"
               >
-                <md-card style="margin-bottom:12px;">
+                <md-card
+                  style="border-radius: 8px; box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.05); margin-bottom:12px;"
+                >
                   <div class="md-card-content">
                     <div class="row">
                       <div class="card-line-history">
@@ -801,7 +842,7 @@ export default {
   data() {
     return {
       el: "#requests",
-      code: "Paste your code here",
+      code: null,
       cmOption: {
         tabSize: 4,
         styleActiveLine: false,
@@ -1009,11 +1050,7 @@ export default {
       this.openTicket.status = "Unresolved";
       this.ticketHistory.push(this.openTicket);
       this.unresolvedTicket = true;
-      this.openTicket = {
-        owner: null,
-        status: null,
-        oneLineOverview: null
-      };
+      this.openTicket = null;
     },
 
     changeRequestState: function() {
@@ -1049,7 +1086,6 @@ export default {
       this.oneLineOverview = "";
       this.probDes = "";
       this.code = "";
-      this.tickets = null;
       this.openTickets = null;
       this.file = null;
       this.showCountdown = false;
@@ -1102,7 +1138,6 @@ export default {
       let tickets = await axios.get("/api/tickets/getTickets", {
         "owner._id": userId
       });
-      this.tickets = tickets;
 
       this.ticketHistory = tickets.data.filter(
         ticket => ticket.status !== "Open"
@@ -1112,6 +1147,9 @@ export default {
       );
       if (this.openTickets) {
         this.openTicket = this.openTickets[0];
+        if (this.openTicket) {
+          console.log(this.openTicket);
+        }
       }
     },
 

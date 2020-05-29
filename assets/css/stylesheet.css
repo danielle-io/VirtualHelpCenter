@@ -1,5 +1,6 @@
 @import url("https://fonts.googleapis.com/css?family=Poppins");
 html, body {
+    background: linear-gradient(333deg, rgba(167, 115, 215, 1) 10%, rgba(65, 196, 214, 1) 85%);
     max-width: 100%;
     overflow-x: hidden;
     /* background-color: #fff; */
@@ -11,9 +12,11 @@ html, body {
 }
 
 footer {
+    position: relative;
+    height: 10px;
     padding: 10px;
     text-align: center;
-    border-top: 1px solid #ddd;
+    border-top: 1px solid #dddddd75;
 }
 
 @font-face {
@@ -26,7 +29,7 @@ footer {
 /* Welcome text, other headings text */
 
 .heading-text {
-    margin-top: 30px;
+    margin-top: 50px;
     font-size: 28px;
     text-align: center;
     /* font-family: "Manrope"; */
@@ -95,10 +98,31 @@ footer {
 .label-format {
     margin-top: 12px;
     margin-bottom: 15px;
-    font-size: 13px;
+    font-size: 18px;
     text-align: left;
     font-family: "Poppins";
-    color: #545354;
+    color: #41408a;
+    /* padding-bottom: 4px; */
+    /* border-bottom: 1px solid rgb(214, 208, 208); */
+}
+
+.label-icons {
+    margin-right: 6px;
+}
+
+.asterisk {
+    margin-left: 4px;
+    font-size: 14px;
+    margin-top:10px;
+    color: #c23838;
+}
+
+.detailed-text {
+    margin-bottom: 1px;
+    font-size: 10px;
+    text-align: left;
+    font-family: "Poppins";
+    color: #1f1e1e;
 }
 
 .arrow-right-circle-icon {
@@ -149,7 +173,7 @@ button[type="button"]:active, button[type="submit"]:active, button[type="reset"]
 }
 
 button[type="disabled"]:disabled {
-    background: linear-gradient(  21%, #868282 75%);
+    background: linear-gradient( 21%, #868282 75%);
     /* : #d3d3d3 !important; */
     /* border: none; */
     color: white;

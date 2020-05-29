@@ -381,8 +381,7 @@ export default {
   font-size: 30px;
   color: rgb(154, 224, 231);
   cursor: pointer;
-  padding-top: 15px !important;
-  margin-left: 6px;
+  padding-top: 10px !important;
 }
 
 .top-row {
@@ -423,7 +422,7 @@ h2.inactive {
 
 h2.active {
   color: #0d0d0d;
-  border-bottom: 2px solid #5fbae9;
+  /* border-bottom: 2px solid #5fbae9; */
 }
 
 input[type="text"] {
@@ -446,7 +445,7 @@ input[type="text"] {
 }
 
 input[type="text"]:focus {
-  border-bottom: 2px solid #5fbae9;
+  /* border-bottom: 2px solid #5fbae9; */
 }
 
 input[type="text"]:placeholder {
