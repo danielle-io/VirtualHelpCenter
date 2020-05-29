@@ -506,7 +506,7 @@ table th,
   text-align: center;
 }
 
-.request-container {
+/* .request-container {
   position: relative;
   padding-left: 10px;
   padding-right: 10px;
@@ -521,7 +521,7 @@ table th,
   padding-right: 2%;
   padding-bottom: 10px;
   box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.05);
-}
+} */
 
 .form-container {
   position: relative;
@@ -550,7 +550,7 @@ h2.inactive {
 
 h2.active {
   color: #0d0d0d;
-  border-bottom: 2px solid #5fbae9;
+  /* border-bottom: 2px solid #5fbae9; */
 }
 
 input[type="text"] {
@@ -571,7 +571,7 @@ input[type="text"] {
 }
 
 input[type="text"]:focus {
-  border-bottom: 2px solid #5fbae9;
+  /* border-bottom: 2px solid #5fbae9; */
 }
 
 input[type="text"]:placeholder {

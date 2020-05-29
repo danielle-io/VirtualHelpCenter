@@ -5,39 +5,52 @@ svg {
     left: 0;
   }
 
-  .squiggle-container {
+  .blue-curved-container {
     height: 20px;
   }
 
-.squiggle{
+.blue-curved{
   /* width: 100px;
   height: 500px; */
     z-index: 0;
-    opacity: .7;
+    opacity: .1;
     position: absolute;
-    fill: #D7F0F3;
-	  /* box-shadow: 0px 5px 90px rgba(99, 96, 96, 0.3); */
+    fill: #629a6e;
 }
 
 .green-circle {
     z-index: 9 !important;
     opacity: .4;
     width: 7%;
-    height: 10%;
+    height: 8%;
     border-radius: 50%;
     background: #71C9D5;
     position: absolute;
-    left: 93%;
-    top: 28%;
+    left: 94%;
+    top: 23%;
     transform: translate3d(-50%, 0, 0);
 	/* box-shadow: 0px 5px 40px rgba(0, 0, 0, 0.3); */
 }
 
+.purple-circle-bottom {
+  z-index: 9 !important;
+  opacity: .2;
+  width: 7%;
+  height: 8%;
+  border-radius: 50%;
+  background: rgb(162, 153, 211);
+  position: absolute;
+  left: .5%;
+  top: 84%;
+  transform: translate3d(-50%, 0, 0);
+/* box-shadow: 0px 5px 40px rgba(0, 0, 0, 0.3); */
+}
+
 .purple-circle {
     z-index: 4 !important;
-    opacity: .6;
-    width: 28%;
-    height: 40vh;
+    opacity: .3;
+    width: 22%;
+    height: 30vh;
     position: absolute;
     border-radius: 50%;
     background: #C4BDE0;
@@ -47,3 +60,11 @@ svg {
     border: none;
 }
 
+@media only screen and (max-width: 750px) { 
+  .purple-circle  { 
+    display: none !important;
+  } 
+  .green-circle {
+    display: none !important;
+  }
+}

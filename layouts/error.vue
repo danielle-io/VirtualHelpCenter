@@ -26,7 +26,7 @@ export default {
 .info
 {
   font-weight: 300;
-  color: #9aabb1;
+  color: white;
   margin: 0;
 }
 .button

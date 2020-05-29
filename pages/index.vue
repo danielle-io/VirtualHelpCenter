@@ -1,24 +1,10 @@
 <template>
   <div style="position: relative;">
     <section class="header-title-container">
-      <h1 class="title">Testing Home Page</h1>
+      <h1 style="color:white;" class="title">Testing Home Page</h1>
     </section>
 
     <div class="Row card-row">
-
-      <!-- <md-card> -->
-        <!-- <md-card-header>
-          <md-card-header-text>
-            <div class="md-title">Ticket Display</div>
-            <div class="md-subhead">Click here to See a display of the tickets</div>
-          </md-card-header-text>
-        </md-card-header> -->
-
-        <!-- <md-card-actions>
-          <nuxt-link to="/testPages/listTickets">Ticket Display</nuxt-link>
-        </md-card-actions>
-      </md-card> -->
-
       <md-card>
         <md-card-header>
           <md-card-header-text>
@@ -30,7 +16,11 @@
         </md-card-header>
 
         <md-card-actions>
-          <nuxt-link to="/testPages/createUser">Create User</nuxt-link>
+          <nuxt-link
+            style="cursor: pointer; color: #56a2b1  !important; z-index: 999; 
+                              text-shadow: none !important;"
+            to="/testPages/createUser"
+          >Create User</nuxt-link>
         </md-card-actions>
       </md-card>
 
@@ -45,7 +35,11 @@
         </md-card-header>
 
         <md-card-actions>
-          <nuxt-link to="/landingStudent">Student Landing</nuxt-link>
+          <nuxt-link
+            style="cursor: pointer; color: #56a2b1  !important; z-index: 999; 
+                              text-shadow: none !important;"
+            to="/landingStudent"
+          >Student Landing</nuxt-link>
         </md-card-actions>
       </md-card>
 
@@ -60,39 +54,30 @@
         </md-card-header>
 
         <md-card-actions>
-          <nuxt-link to="/landingStaff">Staff Landing</nuxt-link>
+          <nuxt-link
+            style="cursor: pointer; color: #56a2b1  !important; z-index: 999; 
+                              text-shadow: none !important;"
+            to="/landingStaff"
+          >Staff Landing</nuxt-link>
         </md-card-actions>
       </md-card>
 
-
-        <md-card>
+      <md-card>
         <md-card-header>
           <md-card-header-text>
-            <div class="md-title">Staff Login</div>
-            <div class="md-subhead">Temp page</div>
+            <div class="md-title">Login</div>
+            <div class="md-subhead">One login page for all users</div>
           </md-card-header-text>
         </md-card-header>
 
         <md-card-actions>
-          <nuxt-link to="/testPages/loginStaff">Staff Login</nuxt-link>
+          <nuxt-link
+            style="cursor: pointer; color: #56a2b1  !important; z-index: 999; 
+                              text-shadow: none !important;"
+            to="/Login"
+          >Login</nuxt-link>
         </md-card-actions>
       </md-card>
-
-              <md-card>
-        <md-card-header>
-          <md-card-header-text>
-            <div class="md-title">Student Login</div>
-            <div class="md-subhead">Temp page</div>
-          </md-card-header-text>
-        </md-card-header>
-
-        <md-card-actions>
-          <nuxt-link to="/testPages/loginStudent">Student Login</nuxt-link>
-        </md-card-actions>
-      </md-card>
-
-
-
 
       <md-card>
         <md-card-header>
@@ -103,22 +88,13 @@
         </md-card-header>
 
         <md-card-actions>
-          <nuxt-link to="/landingAdmin">Admin Landing</nuxt-link>
+          <nuxt-link
+            style="cursor: pointer; color: #56a2b1 !important; z-index: 999; 
+                              text-shadow: none !important;"
+            to="/landingAdmin"
+          >Admin Landing</nuxt-link>
         </md-card-actions>
       </md-card>
-
-      <!-- <md-card>
-        <md-card-header>
-          <md-card-header-text>
-            <div class="md-title">Insert Ticket Request</div>
-            <div class="md-subhead">Click here to go to the ticket request form</div>
-          </md-card-header-text>
-        </md-card-header>
-
-        <md-card-actions>
-          <nuxt-link :to="'/request/'+id">Ticket Request</nuxt-link>
-        </md-card-actions>
-      </md-card> -->
     </div>
   </div>
 </template>
@@ -136,7 +112,7 @@ import Vue from "vue";
 import VueMaterial from "vue-material";
 import "vue-material/dist/vue-material.min.css";
 import "vue-material/dist/theme/default.css";
-import User from '../ui/models/User';
+import User from "../ui/models/User";
 
 Vue.config.productionTip = false;
 Vue.use(VueMaterial);
@@ -183,6 +159,7 @@ export default {
   word-wrap: break-word;
   vertical-align: top;
 }
+
 .card-row {
   display: flex;
   flex-wrap: wrap;
