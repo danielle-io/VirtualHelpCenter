@@ -147,23 +147,31 @@
         @click="switchToRequestHistoryTab"
       >Request History</a>
     </div>
-    <!-- <button id="hiddenButton" style="display:none;" @click="triggerAccept"></button> -->
+    <button id="hiddenButton" style="display:none;" @click="triggerAccept"></button>
 
     <div class="staff-container">
-     
       <div v-if="!this.connecting">
         <div class="row" style="margin-bottom: 14px;">
-          
-          <span style="margin-top: 10px; margin-right: 22px; margin-left: 15px;" v-if="this.selectedTicketIndex === -1 && this.staffCourses">
-            <b-form-select style="width: 100% !important;" v-model="course" :options="staffCourses" v-on:change="setClass"></b-form-select>
+          <span
+            style="margin-top: 10px; margin-right: 22px; margin-left: 15px;"
+            v-if="this.selectedTicketIndex === -1 && this.staffCourses"
+          >
+            <b-form-select
+              style="width: 100% !important;"
+              v-model="course"
+              :options="staffCourses"
+              v-on:change="setClass"
+            ></b-form-select>
           </span>
 
-          <span  style="margin-top: 18px; " v-if="this.selectedTicketIndex === -1 && !this.zoomLinkForm && this.tickets">
+          <span
+            style="margin-top: 18px; "
+            v-if="this.selectedTicketIndex === -1 && !this.zoomLinkForm && this.tickets"
+          >
             <!-- TODO: instead of tickets.length, get the filtered tickets length to hide message when no tickets show -->
             <span
               v-if="this.tickets.length > 0"
               class="sub-heading-text"
-             
             >Select a request to continue.</span>
           </span>
         </div>
@@ -340,53 +348,69 @@
         </div>
 
         <!-- <div class="row justify-content-center"> -->
-        <md-card>
-          <md-card-header>
-            <!-- TODO: put course title from db here -->
-            <div class="md-title"></div>
-          </md-card-header>
+        <div v-if="!this.currentTicket">
+          <md-card>
+            <md-card-header>
+              <!-- TODO: put course title from db here -->
+              <div class="md-title"></div>
+            </md-card-header>
 
-          <div class="card-line">
-            <strong>Status:</strong>
-            {{" " + this.currentTicket.status }}
-          </div>
-
-          <div class="card-line">
-            <strong>Issue:</strong>
-            {{" " + this.currentTicket.oneLineOverview}}
-          </div>
-
-          <div class="card-line"></div>
-          <div
-            v-bind:class="{ 'chevron': expandChevron, 'hidden': !expandChevron }"
-            @click="changeChevronClass"
-          >
-            <expand-arrow />
-          </div>
-          <div
-            @click="changeChevronClass"
-            v-bind:class="{ 'chevron': collapseChevron, 'hidden': !collapseChevron }"
-          >
-            <collapse-arrow />
-          </div>
-
-          <div
-            v-bind:class="{ 'show-extra-content': collapseChevron, 'hide-extra-content': expandChevron }"
-          >
             <div class="card-line">
-              <strong>Longer Description:</strong>
-              {{this.currentTicket.longerDescription}}
+              <strong>Status:</strong>
+              {{" " + this.currentTicket.status }}
             </div>
 
             <div class="card-line">
-              <strong>Attached Files:</strong>
-              <div
-                v-for="(index) in  this.currentTicket.attachments"
-                :key="index"
-              >{{this.currentTicket.attachments[index]}}</div>
+              <strong>Issue:</strong>
+              {{" " + this.currentTicket.oneLineOverview}}
             </div>
-          </div>
-        </md-card>
+
+            <div class="card-line"></div>
+            <div
+              v-bind:class="{ 'chevron': expandChevron, 'hidden': !expandChevron }"
+              @click="changeChevronClass"
+            >
+              <expand-arrow />
+            </div>
+            <div
+              @click="changeChevronClass"
+              v-bind:class="{ 'chevron': collapseChevron, 'hidden': !collapseChevron }"
+            >
+              <collapse-arrow />
+            </div>
+
+            <div
+              v-bind:class="{ 'show-extra-content': collapseChevron, 'hide-extra-content': expandChevron }"
+            >
+              <div class="card-line">
+                <strong>Longer Description:</strong>
+                {{this.currentTicket.longerDescription}}
+              </div>
+              <div v-if="this.currentTicket.attachments.length > 0" class="card-line">
+                <strong>Attached Files:</strong>
+
+                <span v-for="(attachment, index) in (this.currentTicket.attachments)" :key="index">
+                  <a
+                    style="cursor: pointer; color: rgb(45, 58, 130) !important; z-index: 999; 
+                              text-shadow: none !important;
+                              margin-top: 4px;
+                              margin-left: 6px;"
+                    @click="openPage(attachment.filePath, attachment.fileName)"
+                  >
+                    <open-in-new-window />
+                    {{attachment.fileName}}
+                  </a>
+                </span>
+
+                <div v-if="ticket.attachments.length === 0" class="card-line">
+                  <strong>Attached Files:</strong>
+
+                  <span style="margin-left: 3px;">None</span>
+                </div>
+              </div>
+            </div>
+          </md-card>
+        </div>
       </div>
     </div>
   </div>
@@ -459,12 +483,12 @@ export default {
         return;
       }
     },
-    // triggerAccept: function() {
-    //   console.log("in triggerAccept");
-    //   console.log("accepted " + this.studentAccepted);
-    //   this.studentAccepted = true;
-    //   console.log("accepted " + this.studentAccepted);
-    // },
+    triggerAccept: function() {
+      console.log("in triggerAccept");
+      console.log("accepted " + this.studentAccepted);
+      this.studentAccepted = true;
+      console.log("accepted " + this.studentAccepted);
+    },
     getFilterClass(status, course) {
       // console.log(course);
       if (course === null) {
@@ -558,20 +582,20 @@ export default {
         this.selectedTicketIndex = -1;
         this.startingIndex = 0;
         this.endingIndex = 3;
-        this.currentTicketId = null;
+        this.currentTicket = null;
         this.currentTicketId = null;
       }
 
       // The card already selected was replaced by another selection,
       // or a card is selected for the first time
       else {
-        console.log("select");
         this.selectedTicketIndex = index;
         this.startingIndex = index;
         this.endingIndex = index + 1;
         this.currentTicket = ticket;
         this.currentTicketId = id;
-        console.log(this.currentTicket);
+        console.log("selected ticket " + this.currentTicket);
+        console.log(JSON.stringify(this.currentTicket));
       }
     },
     getZoomLink: function() {
@@ -581,12 +605,9 @@ export default {
       this.zoomLinkForm = false;
     },
 
-    startConnecting: function() {
-      this.connecting = true;
-    },
-
     // This is where the link is stored
     sendZoomLink() {
+      console.log("ticket id is " + this.currentTicketId);
       axios.put("/api/updateTicket/" + this.currentTicketId, {
         status: "In Progress",
         accepted: this.staff
@@ -594,26 +615,27 @@ export default {
 
       let ticketTime = new Date();
 
+      console.log("ticket is " + JSON.stringify(this.currentTicket));
+
       // Get the students user id from the ticket
-      this.studentChannel = client.channels.get(this.currentTicket.owner._id);
-      this.studentChannel.publish("staffAcceptedTicket", {
-        zoomLink: this.zoomLink,
-        date: ticketTime
-      });
+      // this.studentChannel = client.channels.get(this.currentTicket.owner._id);
+      // this.studentChannel.publish("staffAcceptedTicket", {
+      //   zoomLink: this.zoomLink,
+      //   date: ticketTime
+      // });
 
       // Show connection screen once student receives countdown
-      this.startConnecting();
-      // this.studentChannel = client.channels.get(ticket.owner._id);
+      this.connecting = true;
 
       console.log("waiting on acceptance");
       // Subscribe to an event on studentChannel to see if they accepted ticket
-      this.studentChannel.subscribe("studentAcceptedSession", function(
-        message
-      ) {
-        //document.getElementById("hiddenButton").click();
-        this.studentAccepted = true;
-        console.log("student accepted");
-      });
+      // this.studentChannel.subscribe("studentAcceptedSession", function(
+      //   message
+      // ) {
+      //   document.getElementById("hiddenButton").click();
+      //   this.studentAccepted = true;
+      //   console.log("student accepted");
+      // });
 
       let x = setTimeout(function() {
         // Right here we let it know the student did not accept
@@ -624,8 +646,10 @@ export default {
       }, this.countdownTime(ticketTime));
 
       //student did not accept the ticket
-      // this.studentChannel.subscribe("studentDidNotAcceptSession", function(message){
-      //   console.log("student did not accept session, moving on")
+      // this.studentChannel.subscribe("studentDidNotAcceptSession", function(
+      //   message
+      // ) {
+      //   console.log("student did not accept session, moving on");
       //   //not sure if the timeout is cleared when we move on
       //   clearTimeout(x);
       // });
@@ -703,8 +727,7 @@ export default {
 
     // This gets ANY ticket submitted by ANY student
     // this.ticketChannel.subscribe("ticketUpdate", message => {
-
-    //  //add new ticket to existing tickets
+    //   //add new ticket to existing tickets
     //   this.tickets.push(message.data);
     // });
 

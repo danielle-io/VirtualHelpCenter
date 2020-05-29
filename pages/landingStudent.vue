@@ -141,6 +141,7 @@ table th,
 
 .tab-links-active {
   cursor: pointer;
+  text-decoration: none !important;
   margin-left: 4%;
   margin-right: 4%;
   display: inline-block;
@@ -218,11 +219,8 @@ table th,
   padding-left: 10px;
   padding-right: 10px;
   padding-bottom: 10px;
-  /* margin-left: 15%;
-  margin-right: 15%; */
   margin-bottom: 2%;
   font-family: "Poppins";
-  /* min-width: 200px; */
   max-width: 800px;
   box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.05);
 }
@@ -359,12 +357,30 @@ input[type="text"]:placeholder {
       <transition name="fade" mode="in-out">
         <!-- <div style="text-align: center;"> -->
 
-        <div v-bind:key="request" class="request-container">
-          <div v-if="!this.request && !this.submitRequest" class="side-border-line" />
+        <div v-bind:key="requestLandingPage" class="request-container">
+          <div v-if="!this.requestLandingPage && !this.submitRequest" class="side-border-line" />
 
           <div class="container-body">
             <div v-if="this.currentRequestsTab">
-              <div v-if="this.request === true && !this.showCountdown">
+              <div v-if="this.studentAcceptedSession">
+                <div class="request-container-two">
+                  <div class="heading-text">Begin your session</div>
+
+                  <div class="sub-heading-text">Click the link to open your Zoom session</div>
+                  <div class="sub-heading-text-larger" style="margin-top: 15px;">
+                    <a
+                      style="cursor: pointer; color: rgb(45, 58, 130) !important; z-index: 999; 
+                              text-shadow: none !important;
+                              margin-top: 4px;
+                              margin-left: 6px;"
+                      target="_blank"
+                      href="zoom.us"
+                    >{{this.zoomLink}}</a>
+                  </div>
+                </div>
+              </div>
+
+              <div v-if="this.requestLandingPage === true && !this.showCountdown">
                 <div class="top-border-line" />
 
                 <!-- This moves the MY Requests page down if there's no requests so that it's more centered -->
@@ -387,10 +403,44 @@ input[type="text"]:placeholder {
                 </div>
               </div>
 
-              <div v-if="this.request && !this.openTicket  && !this.showCountdown">
+              <div v-if="this.showCountdown && !this.studentAcceptedSession">
+                <div class="request-container">
+                  <div class="heading-text">Accept your session</div>
+
+                  <div class="sub-heading-text-left" style="padding-top:2%;">
+                    A TA is available.
+                    <strong>Please accept the session before the timer runs out to continue.</strong>
+                  </div>
+                  <div
+                    class="sub-heading-text-left-italic"
+                  >If you do not accept in time, your request will be removed, and placed in your request history for resubmission.</div>
+
+                  <div style="text-align: center;">
+                    <circular-count-down-timer
+                      :initial-value="countdownTime()"
+                      :steps="countdownTime()"
+                      :seconds-stroke-color="'#7fe3d4'"
+                      :second-label="''"
+                      @finish="finished(studentChannel)"
+                    ></circular-count-down-timer>
+
+                    <button
+                      v-bind:key="acceptSession"
+                      @click="acceptSession"
+                      type="submit"
+                      style="margin-bottom: 20%;"
+                      class="fadeIn form-buttons"
+                    >
+                      <right-circle />Accept the Session
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div v-if="this.requestLandingPage && !this.openTicket  && !this.showCountdown">
                 <div style="text-align: center;">
                   <button
-                    v-bind:key="request"
+                    v-bind:key="requestLandingPage"
                     @click="changeRequestState"
                     type="submit"
                     style="margin-bottom: 8px; width: 40% !important;"
@@ -500,7 +550,7 @@ input[type="text"]:placeholder {
               </div>
 
               <!-- Container for filling out the request form -->
-              <div v-if="!this.request && !this.submitRequest">
+              <div v-if="!this.requestLandingPage && !this.submitRequest">
                 <div class="heading-text">Request a Session</div>
 
                 <div style="margin-left: 8px;" class="form-container">
@@ -637,51 +687,6 @@ input[type="text"]:placeholder {
                   </div>
                 </div>
               </div>
-
-              <div v-if="this.showCountdown && !this.studentAcceptedSession">
-                <div class="request-container">
-                  <div class="heading-text">Accept your session</div>
-
-                  <div class="sub-heading-text-left" style="padding-top:2%;">
-                    A TA is available.
-                    <strong>Please accept the session before the timer runs out to continue.</strong>
-                  </div>
-                  <div
-                    class="sub-heading-text-left-italic"
-                  >If you do not accept in time, your request will be removed, and placed in your request history for resubmission.</div>
-
-                  <div style="text-align: center;">
-                    <circular-count-down-timer
-                      :initial-value="countdownTime()"
-                      :steps="countdownTime()"
-                      :seconds-stroke-color="'#7fe3d4'"
-                      :second-label="''"
-                      @finish="finished(studentChannel)"
-                    ></circular-count-down-timer>
-
-                    <button
-                      v-bind:key="acceptSession"
-                      @click="acceptSession"
-                      type="submit"
-                      style="margin-bottom: 20%;"
-                      class="fadeIn form-buttons"
-                    >
-                      <right-circle />Accept the Session
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <div v-if="this.studentAcceptedSession">
-                <div class="request-container-two">
-                  <div class="heading-text">Begin your session</div>
-
-                  <div class="sub-heading-text">Click the link to open your Zoom session</div>
-                  <div class="sub-heading-text-larger" style="margin-top: 15px;">
-                    <a target="_blank" href="zoom.us">{{this.zoomLink}}</a>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
 
@@ -741,6 +746,7 @@ input[type="text"]:placeholder {
         </div>
       </transition>
     </div>
+    <button id="hiddenButton" style="display:none;" @click="triggerAccept"></button>
   </div>
 </template>
   
@@ -870,7 +876,7 @@ export default {
       rows: [],
       status: "Open",
       oneLineOverview: "",
-      request: true,
+      requestLandingPage: true,
       submitRequest: false,
       probDes: "",
       file: null,
@@ -980,15 +986,15 @@ export default {
       // Publish an event to the  channel
       // this.studentChannel.publish("studentAcceptedSession", userId);
     },
-    // triggerAccept: function() {
-    //   this.showCountdown = true;
-    //   console.log(
-    //     "in trigger click AcceptSession :: " +
-    //       this.studentAcceptedSession +
-    //       " countdownShowing :: " +
-    //       this.showCountdown
-    //   );
-    // },
+    triggerAccept: function() {
+      this.showCountdown = true;
+      console.log(
+        "in trigger click AcceptSession :: " +
+          this.studentAcceptedSession +
+          " countdownShowing :: " +
+          this.showCountdown
+      );
+    },
     removeElement: function(index) {
       this.rows.splice(index, 1);
     },
@@ -1017,6 +1023,7 @@ export default {
       console.log("subscribing to staff");
       // The student's ticket was accepted by the staff
       // this.studentChannel.subscribe("staffAcceptedTicket", message => {
+      //   console.log("staff accepted ticket");
       //   this.zoomLink = message.data.zoomLink;
       //   this.openTicket.updatedAt = message.data.date;
 
@@ -1045,7 +1052,7 @@ export default {
       console.log("in finished");
 
       //tell staff student did not accept session
-      studentChannel.publish("studentDidNotAcceptSession", userId);
+      // studentChannel.publish("studentDidNotAcceptSession", userId);
 
       this.openTicket.status = "Unresolved";
       this.ticketHistory.push(this.openTicket);
@@ -1054,19 +1061,20 @@ export default {
     },
 
     changeRequestState: function() {
-      if (this.request === true && this.submitRequest === false) {
-        this.request = false;
-        return this.request;
+      if (this.requestLandingPage === true && this.submitRequest === false) {
+        this.requestLandingPage = false;
+        return this.requestLandingPage;
       } else {
-        // ABLY KEY HERE
-        var client = new Ably.Realtime(process.env.ABLY_KEY);
-        var channel = client.channels.get("staff");
-        // Publish a message to the test channel
+        // var client = new Ably.Realtime(process.env.ABLY_KEY);
+        // var channel = client.channels.get("staff");
+       
+       // Publish a message to the test channel
         // channel.publish("ticketUpdate", "ticket updated");
+
         this.submitRequest = true;
         this.scrollToTop();
 
-        return this.request;
+        return this.requestLandingPage;
       }
     },
     getNumberOfPendingTickets: function() {
@@ -1090,7 +1098,7 @@ export default {
       this.file = null;
       this.showCountdown = false;
       this.submitRequest = false;
-      this.request = true;
+      this.requestLandingPage = false;
       this.fileUrls = [];
       this.rows = [];
       this.fileObjects = [];
@@ -1128,8 +1136,9 @@ export default {
         this.openTicket = ticket.data;
         console.log("Open ticket below");
         console.log(this.openTicket);
+
         // sends ticket to staff
-        //   this.ticketChannel.publish("ticketUpdate", this.openTicket);
+        // this.ticketChannel.publish("ticketUpdate", this.openTicket);
       }
     },
     async getTickets() {
@@ -1181,12 +1190,13 @@ export default {
         console.log("closing ticket " + this.openTicket._id);
 
         // this.ticketChannel.publish("ticketClosed", this.openTicket);
+
         this.openTicket.status = "Closed";
         this.ticketHistory.push(this.openTicket);
 
         var id = this.openTicket._id;
 
-        await axios
+        axios
           .put("/api/updateTicket/" + id, {
             status: "Closed"
           })
