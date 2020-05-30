@@ -717,24 +717,22 @@ export default {
       console.log("ticket is " + JSON.stringify(this.currentTicket));
 
       // Get the students user id from the ticket
-      // this.studentChannel = client.channels.get(this.currentTicket.owner._id);
-      // this.studentChannel.publish("staffAcceptedTicket", {
-      //   zoomLink: this.zoomLink,
-      //   date: ticketTime
-      // });
+      this.studentChannel = client.channels.get(this.currentTicket.owner._id);
+      this.studentChannel.publish("staffAcceptedTicket", {
+        zoomLink: this.zoomLink,
+        date: ticketTime
+      });
 
       // Show connection screen once student receives countdown
       this.connecting = true;
 
       console.log("waiting on acceptance");
       // Subscribe to an event on studentChannel to see if they accepted ticket
-      // this.studentChannel.subscribe("studentAcceptedSession", function(
-      //   message
-      // ) {
-      //   document.getElementById("hiddenButton").click();
-      //   this.studentAccepted = true;
-      //   console.log("student accepted");
-      // });
+      this.studentChannel.subscribe("studentAcceptedSession", (message) => {
+        //document.getElementById("hiddenButton").click();
+        this.studentAccepted = true;
+        console.log("student accepted");
+      });
 
       let x = setTimeout(function() {
         // Right here we let it know the student did not accept
@@ -825,19 +823,20 @@ export default {
     this.staffCourses.push({ value: null, text: "Show All Courses" });
 
     // This gets ANY ticket submitted by ANY student
-    // this.ticketChannel.subscribe("ticketUpdate", message => {
-    //   //add new ticket to existing tickets
-    //   this.tickets.push(message.data);
-    // });
+    this.ticketChannel.subscribe("ticketUpdate", message => {
+      //add new ticket to existing tickets
+      this.tickets.push(message.data);
+    });
 
-    // this.ticketChannel.subscribe("ticketClosed", message => {
-    //   console.log("ticket was deleted");
+    this.ticketChannel.subscribe("ticketClosed", message => {
+      console.log("ticket was deleted");
 
-    //   //ticket will be deleted from being displayed
-    //   this.removeTicket(message.data);
-    // });
+      //ticket will be deleted from being displayed
+      this.removeTicket(message.data);
+    });
 
     this.scrollToTop();
+
   }
   // computed: {
   //   studentAccepted() {
