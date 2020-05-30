@@ -1044,7 +1044,7 @@ export default {
       });
     },
     uploadFile() {
-      if (this.rows) {
+      if (this.rows.length > 0) {
         for (var i = 0; i < this.rows.length; i++) {
           var fileToUpload = this.rows[i].file;
           const storageRef = firebase
@@ -1073,18 +1073,13 @@ export default {
                       filePath: this.fileUrls[i]
                     });
                   }
-                  console.log("submitting");
                   this.submit();
                 }
               });
-              // .then(() => {
-              //   this.submit();
-              // });
             }
           );
         }
       } else {
-        console.log("in else");
         this.submit();
       }
     },
