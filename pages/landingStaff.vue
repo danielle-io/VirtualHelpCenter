@@ -3,6 +3,7 @@
   margin-right: 10px !important;
   margin-top: 3px;
 }
+
 .tab-links {
   display: inline-block;
   margin-left: 4%;
@@ -14,15 +15,16 @@
 }
 
 .ticket-categories {
-  /* padding-right:0px;  */
-  /* margin-right:0px;  */
   color: #41408a;
-  margin-left: 5px;
 }
 
 .col-sm-3 {
-  overflow: show;
   flex-wrap: wrap;
+  flex: 0 0 20%;
+}
+
+.col {
+  word-break: keep-all;
 }
 
 .requests-heading {
@@ -60,8 +62,7 @@
 .card-line {
   display: in-line-block;
   margin-bottom: 10px;
-  word-wrap: break-word;
-  word-break: break-all;
+  word-break: keep-all;
   font-size: 16px;
   flex-wrap: wrap;
   text-align: left;
@@ -211,7 +212,6 @@
 
             <!-- Populate tickets -->
             <div v-if="!this.zoomLinkForm">
-              <!-- <div class="col"> -->
               <div
                 v-for="(ticket, index) in (getFilterClass('Open', this.course).slice(this.startingIndex, this.endingIndex))"
                 :key="ticket._id"
@@ -223,61 +223,61 @@
                   v-bind:class="{ 'selected-card': selectedTicketIndex === index}"
                 >
                   <div style="cursor: pointer;" @click="clickCard(ticket, index, ticket._id)">
-                    <div class="card-line">
-                      <span class="row">
-                        <span class="ticket-categories col-sm-3">
-                          <student class="label-icons" />
-                          <strong>Student:</strong>
+                      <div class="card-line">
+                        <span class="row">
+                          <span class="ticket-categories col-sm-3">
+                            <student />
+                            <strong>Student:</strong>
+                          </span>
+                          <span class="col">{{ " " + ticket.ownerName }}</span>
                         </span>
-                        <span style="margin-left:0px;" class="col">{{ " " + ticket.ownerName }}</span>
-                      </span>
-                    </div>
+                      </div>
 
-                    <div class="card-line">
-                      <span class="row">
-                        <span class="ticket-categories col-sm-3">
-                          <clock class="label-icons" />
-                          <strong>Time:</strong>
+                      <div class="card-line">
+                        <span class="row">
+                          <span class="ticket-categories col-sm-3">
+                            <clock />
+                            <strong>Time:</strong>
+                          </span>
+                          <span
+                            style="margin-left:0px;"
+                            class="col"
+                          >{{ " " + (ticket.createdAt.split('T')[1]).substring(0,5)}}</span>
                         </span>
-                        <span
-                          style="margin-left:0px;"
-                          class="col"
-                        >{{ " " + (ticket.createdAt.split('T')[1]).substring(0,5)}}</span>
-                      </span>
-                    </div>
+                      </div>
 
-                    <div class="card-line">
-                      <span class="row">
-                        <span class="ticket-categories col-sm-3">
-                          <date class="label-icons" />
-                          <strong>Date:</strong>
+                      <div class="card-line">
+                        <span class="row">
+                          <span class="ticket-categories col-sm-3">
+                            <date />
+                            <strong>Date:</strong>
+                          </span>
+                          <span
+                            style="margin-left:0px;"
+                            class="col"
+                          >{{ (ticket.createdAt.split('T')[0].split('-')[1] + '-' + ticket.createdAt.split('T')[0].split('-')[2] + '-' + ticket.createdAt.split('T')[0].split('-')[0])}}</span>
                         </span>
-                        <span
-                          style="margin-left:0px;"
-                          class="col"
-                        >{{ (ticket.createdAt.split('T')[0].split('-')[1] + '-' + ticket.createdAt.split('T')[0].split('-')[2] + '-' + ticket.createdAt.split('T')[0].split('-')[0])}}</span>
-                      </span>
-                    </div>
+                      </div>
 
-                    <!-- <div class="card-line">
+                      <!-- <div class="card-line">
                       <span class="row">
                         <span class="ticket-categories col-sm-3">
-                          <bell class="label-icons" />
+                          <bell class="label-icons-smaller" />
                           <strong>Status:</strong>
                         </span>
                         <span style="margin-left:0px;" class="col-sm-6">{{ " " + ticket.status }}</span>
                       </span>
-                    </div>-->
+                      </div>-->
 
-                    <div class="card-line">
-                      <span class="row">
-                        <span class="ticket-categories col-sm-3">
-                          <short-description class="label-icons" />
-                          <strong>Overview:</strong>
+                      <div class="card-line">
+                        <span class="row">
+                          <span class="ticket-categories col-sm-3">
+                            <short-description />
+                            <strong>Overview:</strong>
+                          </span>
+                          <span class="col">{{ " " + ticket.oneLineOverview}}</span>
                         </span>
-                        <span class="col">{{ " " + ticket.oneLineOverview}}</span>
-                      </span>
-                    </div>
+                      </div>
                   </div>
 
                   <div
@@ -300,7 +300,7 @@
                     <div class="card-line">
                       <span class="row">
                         <span class="ticket-categories col-sm-3">
-                          <long-description class="label-icons" />
+                          <long-description />
                           <strong>Details:</strong>
                         </span>
                         <span
@@ -314,21 +314,18 @@
                       <div class="card-line">
                         <span class="row">
                           <span class="ticket-categories col-sm-3">
-                            <long-description class="label-icons" />
+                            <attachment />
                             <strong>Files:</strong>
                           </span>
 
                           <span
-                            style="margin-left: 16px;"
                             class="col"
                             v-for="(attachment, index) in (ticket.attachments)"
                             :key="index"
                           >
                             <a
                               style="cursor: pointer; color: rgb(45, 58, 130) !important; z-index: 999; 
-                              text-shadow: none !important;
-                              margin-top: 4px;
-                              margin-left: 6px;"
+                              text-shadow: none !important;"
                               @click="openPage(attachment.filePath, attachment.fileName)"
                             >
                               <open-in-new-window />
@@ -343,7 +340,7 @@
                       <div class="card-line">
                         <span class="row">
                           <span class="ticket-categories col-sm-3">
-                            <attachment class="label-icons" />
+                            <attachment />
                             <strong>Files:</strong>
                           </span>
 
@@ -409,8 +406,6 @@
                   {{ticket.oneLineOverview}}
                 </div>
               </md-card>
-              <!-- </div>
-              </div>-->
             </div>
           </div>
         </div>
@@ -454,12 +449,14 @@
             </div>
 
             <div class="card-line"></div>
+
             <div
               v-bind:class="{ 'chevron': expandChevron, 'hidden': !expandChevron }"
               @click="changeChevronClass"
             >
               <expand-arrow />
             </div>
+
             <div
               @click="changeChevronClass"
               v-bind:class="{ 'chevron': collapseChevron, 'hidden': !collapseChevron }"
@@ -475,7 +472,7 @@
                 {{this.currentTicket.longerDescription}}
               </div>
               <div v-if="this.currentTicket.attachments.length > 0" class="card-line">
-                <strong>Attached Files:</strong>
+                <strong>Files:</strong>
 
                 <span v-for="(attachment, index) in (this.currentTicket.attachments)" :key="index">
                   <a
@@ -491,7 +488,7 @@
                 </span>
 
                 <div v-if="ticket.attachments.length === 0" class="card-line">
-                  <strong>Attached Files:</strong>
+                  <strong>Files:</strong>
 
                   <span style="margin-left: 3px;">None</span>
                 </div>
@@ -502,7 +499,6 @@
       </div>
     </div>
   </div>
-  <!-- </div> -->
 </template>
       
 
@@ -706,24 +702,24 @@ export default {
       console.log("ticket is " + JSON.stringify(this.currentTicket));
 
       // Get the students user id from the ticket
-      this.studentChannel = client.channels.get(this.currentTicket.owner._id);
-      this.studentChannel.publish("staffAcceptedTicket", {
-        zoomLink: this.zoomLink,
-        date: ticketTime
-      });
+      // this.studentChannel = client.channels.get(this.currentTicket.owner._id);
+      // this.studentChannel.publish("staffAcceptedTicket", {
+      //   zoomLink: this.zoomLink,
+      //   date: ticketTime
+      // });
 
       // Show connection screen once student receives countdown
       this.connecting = true;
 
       console.log("waiting on acceptance");
       // Subscribe to an event on studentChannel to see if they accepted ticket
-      this.studentChannel.subscribe("studentAcceptedSession", function(
-        message
-      ) {
-        document.getElementById("hiddenButton").click();
-        this.studentAccepted = true;
-        console.log("student accepted");
-      });
+      // this.studentChannel.subscribe("studentAcceptedSession", function(
+      //   message
+      // ) {
+      //   document.getElementById("hiddenButton").click();
+      // this.studentAccepted = true;
+      // console.log("student accepted");
+      // });
 
       let x = setTimeout(function() {
         // Right here we let it know the student did not accept
@@ -734,13 +730,13 @@ export default {
       }, this.countdownTime(ticketTime));
 
       //student did not accept the ticket
-      this.studentChannel.subscribe("studentDidNotAcceptSession", function(
-        message
-      ) {
-        console.log("student did not accept session, moving on");
-        //not sure if the timeout is cleared when we move on
-        clearTimeout(x);
-      });
+      // this.studentChannel.subscribe("studentDidNotAcceptSession", function(
+      //   message
+      // ) {
+      //   console.log("student did not accept session, moving on");
+      //not sure if the timeout is cleared when we move on
+      clearTimeout(x);
+      // });
     },
     countdownTime(ticketTime) {
       //read updated time
@@ -814,17 +810,17 @@ export default {
     this.staffCourses.push({ value: null, text: "Show All Courses" });
 
     // This gets ANY ticket submitted by ANY student
-    this.ticketChannel.subscribe("ticketUpdate", message => {
-      //add new ticket to existing tickets
-      this.tickets.push(message.data);
-    });
+    // this.ticketChannel.subscribe("ticketUpdate", message => {
+    //   //add new ticket to existing tickets
+    //   this.tickets.push(message.data);
+    // });
 
-    this.ticketChannel.subscribe("ticketClosed", message => {
-      console.log("ticket was deleted");
+    // this.ticketChannel.subscribe("ticketClosed", message => {
+    //   console.log("ticket was deleted");
 
-      //ticket will be deleted from being displayed
-      this.removeTicket(message.data);
-    });
+    //   //ticket will be deleted from being displayed
+    //   this.removeTicket(message.data);
+    // });
 
     this.scrollToTop();
   }

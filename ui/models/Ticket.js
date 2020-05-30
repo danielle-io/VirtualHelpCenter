@@ -11,7 +11,6 @@ export default class Ticket extends Model {
       _id: this.string(''),
       status: this.string(''),
       codeSnippet: this.string(''),
-      questions: this.attr([]),
       oneLineOverview: this.string(''),
       longerDescription: this.string(''),
       attachments: this.attr([]),

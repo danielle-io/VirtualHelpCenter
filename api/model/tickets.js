@@ -1,5 +1,4 @@
 // 'use strict';
-
 var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
 
@@ -10,7 +9,7 @@ var ticketSchema = new Schema(
   {
     status: {
       type: String,
-      enum: ["Open", "Closed", "In Progress", "Unresolved"],
+      enum: ["Open", "Closed", "In Progress", "Unresolved", "Void"],
     },
     owner: {
       _id: {
@@ -25,13 +24,13 @@ var ticketSchema = new Schema(
       },
     },
     rating: {
-      type: int,
+      type: Number,
       enum: [ 0, 1, 2, 3, 4, 5],
     },
+    ratingExplanation: String,
     codeSnippet: String,
     oneLineOverview: String,
     longerDescription: String,
-    questions: [String],
     attachments: [Object],
     acceptedBy: {
       _id: {
