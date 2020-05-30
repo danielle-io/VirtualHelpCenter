@@ -118,10 +118,8 @@
   border-width: 1px !important;
   border-style: solid;
   border-color: rgb(151, 223, 233) !important;
-  /* width: 250px; */
-  /* margin: 14px;
-  display: inline-block; */
 }
+
 .title {
   margin-top: 30px;
 }
@@ -224,12 +222,7 @@
                   style=" margin-bottom: 10px; font-family: 'Manrope'; margin-left: 20px; margin-right: 20px; margin-top: 8px; padding-top:15px; padding-bottom: 34px;"
                   v-bind:class="{ 'selected-card': selectedTicketIndex === index}"
                 >
-                  
-                  <div
-                    style="cursor: pointer;"
-                    @click="clickCard(ticket, index, ticket._id)"
-                  >
-                    
+                  <div style="cursor: pointer;" @click="clickCard(ticket, index, ticket._id)">
                     <div class="card-line">
                       <span class="row">
                         <span class="ticket-categories col-sm-3">
@@ -249,7 +242,7 @@
                         <span
                           style="margin-left:0px;"
                           class="col"
-                        >{{ " " + (ticket.createdAt.split('T')[1]).split('.')[0]}}</span>
+                        >{{ " " + (ticket.createdAt.split('T')[1]).substring(0,5)}}</span>
                       </span>
                     </div>
 
@@ -262,7 +255,7 @@
                         <span
                           style="margin-left:0px;"
                           class="col"
-                        >{{ " " + (ticket.createdAt.split(':')[0]).split('T')[0]}}</span>
+                        >{{ (ticket.createdAt.split('T')[0].split('-')[1] + '-' + ticket.createdAt.split('T')[0].split('-')[2] + '-' + ticket.createdAt.split('T')[0].split('-')[0])}}</span>
                       </span>
                     </div>
 
@@ -285,7 +278,6 @@
                         <span class="col">{{ " " + ticket.oneLineOverview}}</span>
                       </span>
                     </div>
-
                   </div>
 
                   <div
@@ -305,24 +297,23 @@
                   <div
                     v-bind:class="{ 'show-extra-content': collapseChevron, 'hide-extra-content': expandChevron }"
                   >
-                  
                     <div class="card-line">
                       <span class="row">
                         <span class="ticket-categories col-sm-3">
                           <long-description class="label-icons" />
                           <strong>Details:</strong>
                         </span>
-                        <span style="margin-left: 16px;"
+                        <span
+                          style="margin-left: 16px;"
                           class="col"
                         >{{ " " + ticket.longerDescription}}</span>
                       </span>
                     </div>
 
-    
                     <div v-if="ticket.attachments.length > 0">
                       <div class="card-line">
                         <span class="row">
-                        <span class="ticket-categories col-sm-3">
+                          <span class="ticket-categories col-sm-3">
                             <long-description class="label-icons" />
                             <strong>Files:</strong>
                           </span>
@@ -351,7 +342,7 @@
                     <div v-if="ticket.attachments.length === 0">
                       <div class="card-line">
                         <span class="row">
-                        <span class="ticket-categories col-sm-3">
+                          <span class="ticket-categories col-sm-3">
                             <attachment class="label-icons" />
                             <strong>Files:</strong>
                           </span>
@@ -409,8 +400,6 @@
           >You currently have no request history.</div>-->
 
           <div class="ticket-container">
-            <!-- <div class="row justify-content-center">
-            <div class="col">-->
             <div v-for="(ticket, index) in filterOpenTickets('Closed')" :key="index">
               <md-card>
                 <div class="md-card-content">
@@ -717,24 +706,24 @@ export default {
       console.log("ticket is " + JSON.stringify(this.currentTicket));
 
       // Get the students user id from the ticket
-      // this.studentChannel = client.channels.get(this.currentTicket.owner._id);
-      // this.studentChannel.publish("staffAcceptedTicket", {
-      //   zoomLink: this.zoomLink,
-      //   date: ticketTime
-      // });
+      this.studentChannel = client.channels.get(this.currentTicket.owner._id);
+      this.studentChannel.publish("staffAcceptedTicket", {
+        zoomLink: this.zoomLink,
+        date: ticketTime
+      });
 
       // Show connection screen once student receives countdown
       this.connecting = true;
 
       console.log("waiting on acceptance");
       // Subscribe to an event on studentChannel to see if they accepted ticket
-      // this.studentChannel.subscribe("studentAcceptedSession", function(
-      //   message
-      // ) {
-      //   document.getElementById("hiddenButton").click();
-      //   this.studentAccepted = true;
-      //   console.log("student accepted");
-      // });
+      this.studentChannel.subscribe("studentAcceptedSession", function(
+        message
+      ) {
+        document.getElementById("hiddenButton").click();
+        this.studentAccepted = true;
+        console.log("student accepted");
+      });
 
       let x = setTimeout(function() {
         // Right here we let it know the student did not accept
@@ -745,13 +734,13 @@ export default {
       }, this.countdownTime(ticketTime));
 
       //student did not accept the ticket
-      // this.studentChannel.subscribe("studentDidNotAcceptSession", function(
-      //   message
-      // ) {
-      //   console.log("student did not accept session, moving on");
-      //   //not sure if the timeout is cleared when we move on
-      //   clearTimeout(x);
-      // });
+      this.studentChannel.subscribe("studentDidNotAcceptSession", function(
+        message
+      ) {
+        console.log("student did not accept session, moving on");
+        //not sure if the timeout is cleared when we move on
+        clearTimeout(x);
+      });
     },
     countdownTime(ticketTime) {
       //read updated time
@@ -825,17 +814,17 @@ export default {
     this.staffCourses.push({ value: null, text: "Show All Courses" });
 
     // This gets ANY ticket submitted by ANY student
-    // this.ticketChannel.subscribe("ticketUpdate", message => {
-    //   //add new ticket to existing tickets
-    //   this.tickets.push(message.data);
-    // });
+    this.ticketChannel.subscribe("ticketUpdate", message => {
+      //add new ticket to existing tickets
+      this.tickets.push(message.data);
+    });
 
-    // this.ticketChannel.subscribe("ticketClosed", message => {
-    //   console.log("ticket was deleted");
+    this.ticketChannel.subscribe("ticketClosed", message => {
+      console.log("ticket was deleted");
 
-    //   //ticket will be deleted from being displayed
-    //   this.removeTicket(message.data);
-    // });
+      //ticket will be deleted from being displayed
+      this.removeTicket(message.data);
+    });
 
     this.scrollToTop();
   }

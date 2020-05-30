@@ -195,6 +195,12 @@ table th,
   width: 6px;
 }
 
+.expired-card {
+  border-width: 1px !important;
+  border-style: solid;
+  border-color: rgb(151, 223, 233) !important;
+}
+
 .top-border-line {
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
@@ -690,15 +696,15 @@ input[type="text"]:placeholder {
           </div>
 
           <div v-if="!this.currentRequestsTab">
+            <div class="heading-text">My Requests</div>
+
+            <!-- TO DO: make this text dynamic based on user tickets -->
+            <div
+              class="sub-heading-text"
+              style="padding-top:2%;"
+            >You have {{this.ticketHistory.length}} prior requests.</div>
+
             <div class="container-body">
-              <div class="heading-text">My Requests</div>
-
-              <!-- TO DO: make this text dynamic based on user tickets -->
-              <div
-                class="sub-heading-text"
-                style="padding-top:2%;"
-              >You have {{this.ticketHistory.length}} prior requests.</div>
-
               <div
                 v-for="(ticket) in this.ticketHistory"
                 style="text-align: center;"
@@ -710,7 +716,9 @@ input[type="text"]:placeholder {
                   <div class="md-card-content">
                     <div class="row">
                       <div class="card-line-history">
-                        <span class="card-categories col-sm">Status:</span>
+                        <span class="card-categories col-sm">
+                          <bell class="label-icons" />Status:
+                        </span>
                         <span
                           style="padding-left:22px !important;"
                           class="col-sm"
@@ -720,7 +728,33 @@ input[type="text"]:placeholder {
 
                     <div class="row">
                       <div class="card-line-history">
-                        <span class="card-categories col-sm">Overview:</span>
+                        <span class="card-categories col-sm" style="margin-right:9px;">
+                          <date class="label-icons" />Date:
+                        </span>
+                        <span
+                          style="padding-left:22px !important;"
+                          class="col-sm"
+                        >{{ (ticket.createdAt.split('T')[0].split('-')[1] + '-' + ticket.createdAt.split('T')[0].split('-')[2] + '-' + ticket.createdAt.split('T')[0].split('-')[0])}}</span>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="card-line-history">
+                        <span class="card-categories col-sm" style="margin-right:9px;">
+                          <clock class="label-icons" />Time:
+                        </span>
+                        <span
+                          style="padding-left:22px !important;"
+                          class="col-sm"
+                        >{{ " " + (ticket.createdAt.split('T')[1]).substring(0,5)}}</span>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="card-line-history">
+                        <span class="card-categories col-sm">
+                          <short-description class="label-icons" />Overview:
+                        </span>
                         <span
                           style="padding-left: 0px !important;"
                           class="col-sm"
@@ -730,7 +764,9 @@ input[type="text"]:placeholder {
 
                     <div class="row">
                       <div class="card-line-history">
-                        <span class="card-categories col-sm">Details:</span>
+                        <span class="card-categories col-sm">
+                          <long-description class="label-icons" />Details:
+                        </span>
                         <span
                           style="padding-left: 18px !important;"
                           class="col"
@@ -983,7 +1019,7 @@ export default {
       // this.finished();
 
       // Publish an event to the  channel
-      // this.studentChannel.publish("studentAcceptedSession", userId);
+      this.studentChannel.publish("studentAcceptedSession", userId);
     },
     triggerAccept: function() {
       this.showCountdown = true;
@@ -1021,13 +1057,13 @@ export default {
     async startSubscribe() {
       console.log("subscribing to staff");
       // The student's ticket was accepted by the staff
-      // this.studentChannel.subscribe("staffAcceptedTicket", message => {
-      //   console.log("staff accepted ticket");
-      //   this.zoomLink = message.data.zoomLink;
-      //   this.openTicket.updatedAt = message.data.date;
+      this.studentChannel.subscribe("staffAcceptedTicket", message => {
+        console.log("staff accepted ticket");
+        this.zoomLink = message.data.zoomLink;
+        this.openTicket.updatedAt = message.data.date;
 
-      //   document.getElementById("hiddenButton").click();
-      // });
+        document.getElementById("hiddenButton").click();
+      });
     },
     countdownTime: function() {
       //read updated time
@@ -1051,7 +1087,7 @@ export default {
       console.log("in finished");
 
       //tell staff student did not accept session
-      // studentChannel.publish("studentDidNotAcceptSession", userId);
+      studentChannel.publish("studentDidNotAcceptSession", userId);
 
       this.openTicket.status = "Unresolved";
       this.ticketHistory.push(this.openTicket);
@@ -1064,11 +1100,11 @@ export default {
         this.requestLandingPage = false;
         return this.requestLandingPage;
       } else {
-        // var client = new Ably.Realtime(process.env.ABLY_KEY);
-        // var channel = client.channels.get("staff");
-       
-       // Publish a message to the test channel
-        // channel.publish("ticketUpdate", "ticket updated");
+        var client = new Ably.Realtime(process.env.ABLY_KEY);
+        var channel = client.channels.get("staff");
+
+        // Publish a message to the test channel
+        channel.publish("ticketUpdate", "ticket updated");
 
         this.submitRequest = true;
         this.scrollToTop();
@@ -1137,7 +1173,7 @@ export default {
         console.log(this.openTicket);
 
         // sends ticket to staff
-        // this.ticketChannel.publish("ticketUpdate", this.openTicket);
+        this.ticketChannel.publish("ticketUpdate", this.openTicket);
       }
     },
     async getTickets() {
@@ -1153,6 +1189,7 @@ export default {
       this.openTickets = tickets.data.filter(
         ticket => ticket.status === "Open"
       );
+      
       if (this.openTickets) {
         this.openTicket = this.openTickets[0];
         if (this.openTicket) {
@@ -1188,7 +1225,7 @@ export default {
       if (this.openTicket) {
         console.log("closing ticket " + this.openTicket._id);
 
-        // this.ticketChannel.publish("ticketClosed", this.openTicket);
+        this.ticketChannel.publish("ticketClosed", this.openTicket);
 
         this.openTicket.status = "Closed";
         this.ticketHistory.push(this.openTicket);
