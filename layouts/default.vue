@@ -38,7 +38,7 @@ import ShortDescription from "vue-material-design-icons/TextShort.vue";
 import Check from "vue-material-design-icons/Check.vue";
 import Code from "vue-material-design-icons/CodeJson.vue";
 import Student from "vue-material-design-icons/Account.vue";
-import Clock from "vue-material-design-icons/Timer.vue";
+import Clock from "vue-material-design-icons/ClockOutline.vue";
 import Label from "vue-material-design-icons/Label.vue";
 import Restore from "vue-material-design-icons/Restore.vue";
 import Bell from "vue-material-design-icons/BellRingOutline.vue";

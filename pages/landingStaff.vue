@@ -3,6 +3,7 @@
   margin-right: 10px !important;
   margin-top: 3px;
 }
+
 .tab-links {
   display: inline-block;
   margin-left: 4%;
@@ -14,15 +15,16 @@
 }
 
 .ticket-categories {
-  /* padding-right:0px;  */
-  /* margin-right:0px;  */
   color: #41408a;
-  margin-left: 5px;
 }
 
 .col-sm-3 {
-  overflow: show;
   flex-wrap: wrap;
+  flex: 0 0 20%;
+}
+
+.col {
+  word-break: keep-all;
 }
 
 .requests-heading {
@@ -60,8 +62,7 @@
 .card-line {
   display: in-line-block;
   margin-bottom: 10px;
-  word-wrap: break-word;
-  word-break: break-all;
+  word-break: keep-all;
   font-size: 16px;
   flex-wrap: wrap;
   text-align: left;
@@ -118,10 +119,8 @@
   border-width: 1px !important;
   border-style: solid;
   border-color: rgb(151, 223, 233) !important;
-  /* width: 250px; */
-  /* margin: 14px;
-  display: inline-block; */
 }
+
 .title {
   margin-top: 30px;
 }
@@ -213,7 +212,6 @@
 
             <!-- Populate tickets -->
             <div v-if="!this.zoomLinkForm">
-              <!-- <div class="col"> -->
               <div
                 v-for="(ticket, index) in (getFilterClass('Open', this.course).slice(this.startingIndex, this.endingIndex))"
                 :key="ticket._id"
@@ -224,68 +222,62 @@
                   style=" margin-bottom: 10px; font-family: 'Manrope'; margin-left: 20px; margin-right: 20px; margin-top: 8px; padding-top:15px; padding-bottom: 34px;"
                   v-bind:class="{ 'selected-card': selectedTicketIndex === index}"
                 >
-                  
-                  <div
-                    style="cursor: pointer;"
-                    @click="clickCard(ticket, index, ticket._id)"
-                  >
-                    
-                    <div class="card-line">
-                      <span class="row">
-                        <span class="ticket-categories col-sm-3">
-                          <student class="label-icons" />
-                          <strong>Student:</strong>
+                  <div style="cursor: pointer;" @click="clickCard(ticket, index, ticket._id)">
+                      <div class="card-line">
+                        <span class="row">
+                          <span class="ticket-categories col-sm-3">
+                            <student />
+                            <strong>Student:</strong>
+                          </span>
+                          <span class="col">{{ " " + ticket.ownerName }}</span>
                         </span>
-                        <span style="margin-left:0px;" class="col">{{ " " + ticket.ownerName }}</span>
-                      </span>
-                    </div>
+                      </div>
 
-                    <div class="card-line">
-                      <span class="row">
-                        <span class="ticket-categories col-sm-3">
-                          <clock class="label-icons" />
-                          <strong>Time:</strong>
+                      <div class="card-line">
+                        <span class="row">
+                          <span class="ticket-categories col-sm-3">
+                            <clock />
+                            <strong>Time:</strong>
+                          </span>
+                          <span
+                            style="margin-left:0px;"
+                            class="col"
+                          >{{ " " + (ticket.createdAt.split('T')[1]).substring(0,5)}}</span>
                         </span>
-                        <span
-                          style="margin-left:0px;"
-                          class="col"
-                        >{{ " " + (ticket.createdAt.split('T')[1]).split('.')[0]}}</span>
-                      </span>
-                    </div>
+                      </div>
 
-                    <div class="card-line">
-                      <span class="row">
-                        <span class="ticket-categories col-sm-3">
-                          <date class="label-icons" />
-                          <strong>Date:</strong>
+                      <div class="card-line">
+                        <span class="row">
+                          <span class="ticket-categories col-sm-3">
+                            <date />
+                            <strong>Date:</strong>
+                          </span>
+                          <span
+                            style="margin-left:0px;"
+                            class="col"
+                          >{{ (ticket.createdAt.split('T')[0].split('-')[1] + '-' + ticket.createdAt.split('T')[0].split('-')[2] + '-' + ticket.createdAt.split('T')[0].split('-')[0])}}</span>
                         </span>
-                        <span
-                          style="margin-left:0px;"
-                          class="col"
-                        >{{ " " + (ticket.createdAt.split(':')[0]).split('T')[0]}}</span>
-                      </span>
-                    </div>
+                      </div>
 
-                    <!-- <div class="card-line">
+                      <!-- <div class="card-line">
                       <span class="row">
                         <span class="ticket-categories col-sm-3">
-                          <bell class="label-icons" />
+                          <bell class="label-icons-smaller" />
                           <strong>Status:</strong>
                         </span>
                         <span style="margin-left:0px;" class="col-sm-6">{{ " " + ticket.status }}</span>
                       </span>
-                    </div>-->
+                      </div>-->
 
-                    <div class="card-line">
-                      <span class="row">
-                        <span class="ticket-categories col-sm-3">
-                          <short-description class="label-icons" />
-                          <strong>Overview:</strong>
+                      <div class="card-line">
+                        <span class="row">
+                          <span class="ticket-categories col-sm-3">
+                            <short-description />
+                            <strong>Overview:</strong>
+                          </span>
+                          <span class="col">{{ " " + ticket.oneLineOverview}}</span>
                         </span>
-                        <span class="col">{{ " " + ticket.oneLineOverview}}</span>
-                      </span>
-                    </div>
-
+                      </div>
                   </div>
 
                   <div
@@ -305,39 +297,35 @@
                   <div
                     v-bind:class="{ 'show-extra-content': collapseChevron, 'hide-extra-content': expandChevron }"
                   >
-                  
                     <div class="card-line">
                       <span class="row">
                         <span class="ticket-categories col-sm-3">
-                          <long-description class="label-icons" />
+                          <long-description />
                           <strong>Details:</strong>
                         </span>
-                        <span style="margin-left: 16px;"
+                        <span
+                          style="margin-left: 16px;"
                           class="col"
                         >{{ " " + ticket.longerDescription}}</span>
                       </span>
                     </div>
 
-    
                     <div v-if="ticket.attachments.length > 0">
                       <div class="card-line">
                         <span class="row">
-                        <span class="ticket-categories col-sm-3">
-                            <long-description class="label-icons" />
+                          <span class="ticket-categories col-sm-3">
+                            <attachment />
                             <strong>Files:</strong>
                           </span>
 
                           <span
-                            style="margin-left: 16px;"
                             class="col"
                             v-for="(attachment, index) in (ticket.attachments)"
                             :key="index"
                           >
                             <a
                               style="cursor: pointer; color: rgb(45, 58, 130) !important; z-index: 999; 
-                              text-shadow: none !important;
-                              margin-top: 4px;
-                              margin-left: 6px;"
+                              text-shadow: none !important;"
                               @click="openPage(attachment.filePath, attachment.fileName)"
                             >
                               <open-in-new-window />
@@ -351,8 +339,8 @@
                     <div v-if="ticket.attachments.length === 0">
                       <div class="card-line">
                         <span class="row">
-                        <span class="ticket-categories col-sm-3">
-                            <attachment class="label-icons" />
+                          <span class="ticket-categories col-sm-3">
+                            <attachment />
                             <strong>Files:</strong>
                           </span>
 
@@ -409,8 +397,6 @@
           >You currently have no request history.</div>-->
 
           <div class="ticket-container">
-            <!-- <div class="row justify-content-center">
-            <div class="col">-->
             <div v-for="(ticket, index) in filterOpenTickets('Closed')" :key="index">
               <md-card>
                 <div class="md-card-content">
@@ -420,8 +406,6 @@
                   {{ticket.oneLineOverview}}
                 </div>
               </md-card>
-              <!-- </div>
-              </div>-->
             </div>
           </div>
         </div>
@@ -465,12 +449,14 @@
             </div>
 
             <div class="card-line"></div>
+
             <div
               v-bind:class="{ 'chevron': expandChevron, 'hidden': !expandChevron }"
               @click="changeChevronClass"
             >
               <expand-arrow />
             </div>
+
             <div
               @click="changeChevronClass"
               v-bind:class="{ 'chevron': collapseChevron, 'hidden': !collapseChevron }"
@@ -486,7 +472,7 @@
                 {{this.currentTicket.longerDescription}}
               </div>
               <div v-if="this.currentTicket.attachments.length > 0" class="card-line">
-                <strong>Attached Files:</strong>
+                <strong>Files:</strong>
 
                 <span v-for="(attachment, index) in (this.currentTicket.attachments)" :key="index">
                   <a
@@ -502,7 +488,7 @@
                 </span>
 
                 <div v-if="ticket.attachments.length === 0" class="card-line">
-                  <strong>Attached Files:</strong>
+                  <strong>Files:</strong>
 
                   <span style="margin-left: 3px;">None</span>
                 </div>
@@ -513,7 +499,6 @@
       </div>
     </div>
   </div>
-  <!-- </div> -->
 </template>
       
 
@@ -747,8 +732,8 @@ export default {
       //   message
       // ) {
       //   console.log("student did not accept session, moving on");
-      //   //not sure if the timeout is cleared when we move on
-      //   clearTimeout(x);
+      //not sure if the timeout is cleared when we move on
+      clearTimeout(x);
       // });
     },
     countdownTime(ticketTime) {
