@@ -558,12 +558,21 @@ export default {
   },
   methods: {
     filterOpenTickets(status) {
+      // if (this.tickets) {
+      //   this.filteredTickets = this.tickets.filter(
+      //     ticket => ticket.status === status
+      //   );
+      //   return this.filteredTickets;
+      // } else {
+      //   this.filteredTickets = [];
+      //   return;
+      // }
       if (this.tickets) {
-        this.filteredTickets = this.tickets.filter(
-          ticket => ticket.status === status
-        );
-        return this.filteredTickets;
-      } else {
+        console.log("filtering open tickets")
+        return this.tickets.filter(ticket => ticket.status === status);
+      }
+  
+      else {
         this.filteredTickets = [];
         return;
       }
@@ -812,9 +821,8 @@ export default {
       staff.data.classes.forEach(element => {
         this.loadClasses(element);
       });
-      let course = staff.data.classes[0];
-      let staffcourse = course._id;
-      this.course = staffcourse;
+      let course = this.staffCourses[0];
+      this.course = course.value
     }
   },
   beforeMount() {

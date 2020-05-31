@@ -1528,18 +1528,5 @@ export default {
     this.getStudentInfo();
     this.startSubscribe();
   },
-
-  async created() {},
-  computed: {
-    isDisabled: function() {
-      return !this.selected;
-    }
-    // studentSession() {
-    //   return this.studentAcceptedSession
-    // },
-    // showCountdown() {
-    //   return this.showCountdown
-    // }
-  }
 };
 </script>
