@@ -3,10 +3,10 @@
         <!-- Name -->
         <div class="row">
             <div class="col">
-                <b-form-input v-model="firstname" placeholder="First name" ></b-form-input>
+                <b-form-input v-model="firstName" placeholder="First name" ></b-form-input>
             </div>
             <div class="col">
-                <b-form-input v-model="lastname" placeholder="Last name" ></b-form-input>
+                <b-form-input v-model="lastName" placeholder="Last name" ></b-form-input>
             </div>
         </div>
 
@@ -113,8 +113,8 @@ export default {
     data(){
         return{
             // User input
-            firstname: '',
-            lastname: '',
+            firstName: '',
+            lastName: '',
             email:'',
             ucinetid: '',
 
@@ -195,7 +195,7 @@ export default {
             }
         },
         async submit(){
-            if(this.firstname != '' && this.lastname != '' && this.email != '' && this.ucinetid != '' && this.pickedClasses){
+            if(this.firstName != '' && this.lastName != '' && this.email != '' && this.ucinetid != '' && this.pickedClasses){
                 let classesStudent = [];
                 let classesStaff = [];
                 this.pickedClasses.forEach((element)=>{
@@ -209,8 +209,8 @@ export default {
                 if(this.staff === 'true'){
                     user = await axios.post('/api/insertStaff',{
                         name: {
-                            firstname: this.firstname,
-                            lastname: this.lastname
+                            firstName: this.firstName,
+                            lastName: this.lastName
                         },
                         email: this.email,
                         ucinetid: this.ucinetid,
@@ -221,8 +221,8 @@ export default {
                 if(this.student === 'true'){
                     user = await axios.post('/api/insertStudent',{
                         name: {
-                            firstname: this.firstname,
-                            lastname: this.lastname
+                            firstName: this.firstName,
+                            lastName: this.lastName
                         },
                         email: this.email,
                         ucinetid: this.ucinetid,
