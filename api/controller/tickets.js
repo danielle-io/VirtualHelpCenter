@@ -21,9 +21,6 @@ router.get('/tickets', function (req, res, next) {
 
 router.post('/insertTicket',function(req, res, next) {
     let ticketData = new Ticket(req.body);
-    console.log('Ticket data before insert');
-    console.log(ticketData);
-    console.log('============');
     ticketData.save((err, ticket)=>{
         res.send(ticket);
     });
@@ -39,10 +36,10 @@ router.get('/ticket/:id', function (req, res, next) {
 })
 
 //
-router.post('/ticketWithParam', function(req,res,next){
+router.get('/tickets/getTickets', function(req,res,next){
     console.log("inside ticket post request");
     Ticket.find(req.params, (err, tickets)=>{
-        // 
+        console.log(tickets);
         res.send(tickets)
     })
 })
@@ -66,6 +63,7 @@ router.delete('/deleteTicket/:id', function(req, res, next) {
 
 router.put('/updateTicket/:id', function(req, res, next) {
     const id = req.params.id;
+    console.log("ticket id is " + id);
     Ticket.updateOne({_id: id}, {$set: req.body,}, function(err, ticket){});
 })
 

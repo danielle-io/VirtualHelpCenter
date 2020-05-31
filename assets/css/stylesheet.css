@@ -1,5 +1,6 @@
 @import url("https://fonts.googleapis.com/css?family=Poppins");
 html, body {
+    background: linear-gradient(333deg, rgba(167, 115, 215, 1) 10%, rgba(65, 196, 214, 1) 85%);
     max-width: 100%;
     overflow-x: hidden;
     /* background-color: #fff; */
@@ -11,9 +12,11 @@ html, body {
 }
 
 footer {
+    position: relative;
+    height: 10px;
     padding: 10px;
     text-align: center;
-    border-top: 1px solid #ddd;
+    border-top: 1px solid #dddddd75;
 }
 
 @font-face {
@@ -26,10 +29,18 @@ footer {
 /* Welcome text, other headings text */
 
 .heading-text {
-    margin-top: 30px;
+    margin-top: 20px;
     font-size: 28px;
     text-align: center;
     /* font-family: "Manrope"; */
+    font-family: "Poppins";
+    color: #624b77;
+}
+
+.heading-text-alt {
+    margin-top: 16px;
+    font-size: 22px;
+    text-align: center;
     font-family: "Poppins";
     color: #624b77;
 }
@@ -42,7 +53,8 @@ footer {
     font-size: 15px;
     text-align: center;
     font-family: "Poppins";
-    color: #624b77;
+    font-weight: 200;
+    color: #489dc5;
 }
 
 .sub-heading-two-text {
@@ -92,34 +104,70 @@ footer {
     font-style: italic;
 }
 
+.title {
+    font-weight: 300;
+    font-size: 2.5em;
+    margin: 0;
+  }
 
 .label-format {
     margin-top: 12px;
     margin-bottom: 15px;
-    font-size: 13px;
+    font-size: 18px;
     text-align: left;
     font-family: "Poppins";
-    color: #545354;
+    color: #41408a;
 }
-.arrow-right-circle-icon{
-    margin-right: 8px ;
+
+
+.label-format-smaller {
+    margin-top: 7px;
+    font-size: 16px;
+    text-align: left;
+    font-family: "Poppins";
+    color: #41408a;
+}
+
+.label-icons {
+    margin-right: 6px;
+}
+
+
+
+.asterisk {
+    margin-left: 4px;
+    font-size: 14px;
+    margin-top:10px;
+    color: #c23838;
+}
+
+.detailed-text {
+    margin-bottom: 1px;
+    font-size: 10px;
+    text-align: left;
+    font-family: "Poppins";
+    color: #1f1e1e;
+}
+
+.arrow-right-circle-icon {
+    margin-right: 8px;
     padding-top: 12px !important;
 }
+
 /* 
 .close-icon{
     color: "red" !important;
 } */
 
-button[type="button"], button[type="submit"] input[type="reset"] {
+button[type="button"], button[type="submit"] {
     background: linear-gradient( 333deg, rgba(167, 115, 215, 0.72) 21%, rgba(169, 235, 244, 1) 75%);
+    /* border: none; */
     color: white;
     letter-spacing: 0.5px;
     font-weight: bolder;
     font-size: 14px;
-    border: solid;
-    justify-content: center;
-    /* width: 70%; */
-    height: 40px;
+    width: 85%;
+    height: 50px;
     text-align: center !important;
     text-decoration: none;
     display: inline-block;
@@ -138,6 +186,45 @@ button[type="button"], button[type="submit"] input[type="reset"] {
 
 button[type="button"]:hover, button[type="submit"]:hover, button[type="reset"]:hover {
     background-color: #987cb3;
+}
+
+button[type="button"]:active, button[type="submit"]:active, button[type="reset"]:active {
+    -moz-transform: scale(0.95);
+    -webkit-transform: scale(0.95);
+    -o-transform: scale(0.95);
+    -ms-transform: scale(0.95);
+    transform: scale(0.95);
+}
+
+button[type="disabled"]:disabled {
+    background: linear-gradient( 21%, #868282 75%);
+    /* : #d3d3d3 !important; */
+    /* border: none; */
+    color: white;
+    letter-spacing: 0.5px;
+    opacity: .7;
+    font-weight: bolder;
+    font-size: 14px;
+    width: 85%;
+    height: 50px;
+    text-align: center !important;
+    text-decoration: none;
+    display: inline-block;
+    text-transform: uppercase;
+    /* -webkit-box-shadow: 0 10px 30px 0 rgba(95, 186, 233, 0.4); */
+    /* box-shadow: 0 10px 30px 0 rgba(191, 188, 206, 0.4); */
+    -webkit-border-radius: 5px 5px 5px 5px;
+    border-radius: 7px 7px 7px 7px;
+    margin: 30px 20px 40px 20px;
+    -webkit-transition: all 0.3s ease-in-out;
+    -moz-transition: all 0.3s ease-in-out;
+    -ms-transition: all 0.3s ease-in-out;
+    -o-transition: all 0.3s ease-in-out;
+    transition: all 0.3s ease-in-out;
+}
+
+button[type="button"]:hover, button[type="submit"]:hover, button[type="reset"]:hover {
+    /* background-color: #987cb3; */
 }
 
 button[type="button"]:active, button[type="submit"]:active, button[type="reset"]:active {

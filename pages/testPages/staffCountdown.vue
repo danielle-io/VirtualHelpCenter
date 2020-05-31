@@ -12,7 +12,7 @@
   opacity: 0;
 }
 
-.request-container {
+/* .request-container {
   position: relative;
   padding-left: 10px;
   padding-right: 10px;
@@ -27,7 +27,7 @@
   padding-right: 2%;
   padding-bottom: 10px;
   box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.05);
-}
+} */
 
 /* ANIMATIONS */
 /* Simple CSS3 Fade-in-down Animation */

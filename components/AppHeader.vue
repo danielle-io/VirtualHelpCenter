@@ -1,63 +1,19 @@
 
-<template>
-  <div class="main-nav">
-    <div class="squiggle-container">
-      <svg viewBox="-380 60 620 680" preserveAspectRatio="xMinYMin meet" class="squiggle">
-        <path d="M1, 50 C10,200 550, 0 900, 1400 L1300,00 L100, 0 Z" />
-        <!--  example: <path d=" M0,100 C150,200 350,0 500,100   L500,00 L0,0 Z" style="stroke: none; fill:red;"></path> -->
-      </svg>
-    </div>
-
-    <div class="green-circle"></div>
-
-    <div class="tabs" id="tabs">
-      <div id="logo" class="logo">
-        <span class="virtual">virtual</span>
-
-        <span class="help">help</span>
-      </div>
-      <div class="right-nav">
-        <nuxt-link class="link-styling" to="../login">home</nuxt-link>
-
-        <nuxt-link class="link-styling" to="../help">help</nuxt-link>
-
-        <nuxt-link class="link-styling" to="/">testing</nuxt-link>
-
-        <nuxt-link class="link-styling" to="../account">
-          <account-circle />
-        </nuxt-link>
-      </div>
-      <div v-if="$auth.loggedIn">
-          <v-btn text @click="$auth.logout()">Logout</v-btn>
-      </div>
-      <!-- App background shapes -->
-
-      <div class="purple-circle"></div>
-    </div>
-  </div>
-</template>
-
-
-<script>
-import Vue from "vue";
-
-Vue.config.productionTip = false;
-export default {};
-</script>
-
     '~/assets/css/stylesheet.css',
 
 <style>
 .link-styling {
   margin-left: 10px;
   margin-right: 10px;
-  color: #0090ad;
-
+  color: #f1f8f8;
   font-family: "Manrope";
+  font-size: 18px;
 }
 
 .md-theme-default a:not(.md-button) {
-  color: #0090ad !important;
+  color: #f4f5f5 !important;
+  padding: 2px;
+  text-shadow: 0.7px 0.7px #c3cbd6af;
 }
 
 .material-design-icon.icon-2x {
@@ -77,11 +33,12 @@ export default {};
 
 .main-nav {
   z-index: 999 !important;
-  font-size: 15px;
+  font-size: 18px;
   margin-left: 5px;
   margin-right: 5px;
   margin-top: 20px;
   margin-left: 8px;
+  padding-bottom: 30px;
 }
 
 .logo {
@@ -103,32 +60,25 @@ export default {};
   color: #7436ad;
 }
 .virtual {
-  font-size: 30px;
+  font-size: 35px;
   font-weight: 200;
-  color: #7436ad;
+  color: #9963cc;
+  text-shadow: 0.7px 0.7px #7099cfaf;
 }
 
 .help {
-  color: #50bdcb;
-  font-size: 30px;
+  color: white;
+  font-size: 35px;
   font-weight: 300;
-}
-.title {
-  font-weight: 300;
-  font-size: 2.5em;
-  margin: 0;
 }
 
 .tabs {
+  position: fixed;
   position: absolute;
   padding-top: 2%;
   padding-left: 2%;
-
   display: inline-block !important;
-  /* align-items: flex-end; */
-  /* border-bottom: rgb(161, 160, 153); */
   border-width: 2px;
-  /* position: relative; */
   width: 100%;
   left: 0;
   top: 0;
@@ -138,12 +88,55 @@ export default {};
 
 html.md-theme-default {
   background-color: #ffffff !important;
-  /* border-bottom-style: solid !important; 
-  border-bottom-width: 3px !important;
-  border-bottom-color: darkgray !important; */
   margin-bottom: 20px !important;
   padding-bottom: 30px !important;
 }
 </style>
 
+
+
+<template>
+  <div class="main-nav">
+    <div class="blue-curved-container">
+      <svg viewBox="-420 60 620 180" preserveAspectRatio="xMinYMin meet" class="blue-curved">
+        <path d="M1, 50 C70,180 550, 0 900, 1400 L1200,00 L100, 0 Z" />
+        <!--  example: <path d=" M0,100 C150,200 350,0 500,100   L500,00 L0,0 Z" style="stroke: none; fill:red;"></path> -->
+      </svg>
+    </div>
+
+    <div class="green-circle"></div>
+    <div class="purple-circle-bottom"></div>
+
+    <div class="tabs" id="tabs">
+      <nuxt-link to="/">
+        <div id="logo" class="logo">
+          <span class="virtual">virtual</span>
+          <span class="help">help</span>
+        </div>
+      </nuxt-link>
+
+      <div class="right-nav">
+        <nuxt-link class="link-styling" to="/">home</nuxt-link>
+
+        <nuxt-link class="link-styling" to="../account">
+          <account-circle />
+        </nuxt-link>
+      </div>
+      <div v-if="$auth.loggedIn">
+        <v-btn text @click="$auth.logout()">Logout</v-btn>
+      </div>
+      <!-- App background shapes -->
+
+      <div class="purple-circle"></div>
+    </div>
+  </div>
+</template>
+
+
+<script>
+import Vue from "vue";
+
+Vue.config.productionTip = false;
+export default {};
+</script>
 
