@@ -1001,7 +1001,7 @@ if (!firebase.apps.length) {
 const userId = "5ed30b9ae2cb7f76b8bb3937";
 
 // DELETE THIS: FOR TESTING ADDING CLOSED TICKETS ONLY
-const staffId = "5ecafc0f5219c55528efe03f";
+const staffId = "5eade47047da2706382d53e6";
 
 const client = new Ably.Realtime(process.env.ABLY_KEY);
 // const userId = "5eb86452ed2ee55868633193";
@@ -1437,7 +1437,7 @@ export default {
           attachments: this.fileObjects,
           rating: 0,
           ratingExplanation: "",
-          wasRated: 0
+          wasRated: 0,
           // This is only for testing Closed tickets
           // acceptedBy: {
           //   _id: staffId

@@ -166,7 +166,7 @@
     <div class="staff-container">
       <div v-if="!this.connecting">
         <div class="requests-heading">
-          <div class="row" style="margin-bottom: 12px;">
+          <div v-if="this.openRequestTab" class="row" style="margin-bottom: 12px;">
             <span
               style="margin: auto;"
               v-if="this.selectedTicketIndex === -1 && !this.zoomLinkForm && this.tickets"
@@ -184,7 +184,7 @@
             </span>
           </div>
 
-          <span v-if="this.selectedTicketIndex === -1 && this.staffCourses">
+          <span v-if="this.selectedTicketIndex === -1 && this.staffCourses && this.openRequestTab">
             <div
               class="row"
               style="font-size: 20px !important; margin-bottom: 14px; margin-left: 15px;"
@@ -389,24 +389,104 @@
         </div>
 
         <div v-if="this.requestHistoryTab">
+          <!-- TO DO: make this text dynamic based on user tickets -->
+          <div
+            class="sub-heading-text"
+            style="padding-top:2%;"
+          >You have {{this.ticketHistory.length}} prior requests.</div>
+
+          <div class="container-body">
+            <div v-for="(ticket) in this.ticketHistory" :key="ticket._id">
+              <md-card
+                style="border: 1px solid #dde0e681; margin-bottom: 10px; padding-bottom: 8px; border-radius: 8px; padding-top:8px; box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.05);"
+              >
+                <div class="md-card-content" style="margin-bottom:20px;">
+                  <div class="card-line-history">
+                    <div class="row">
+                      <span class="card-categories col-sm-3">
+                        <clock class="label-icons" />Date :
+                      </span>
+                      <span
+                        class="col-sm-9 text-body"
+                      >{{ (ticket.createdAt.split('T')[0].split('-')[1] + '-' + ticket.createdAt.split('T')[0].split('-')[2] + '-' + ticket.createdAt.split('T')[0].split('-')[0])}}</span>
+                    </div>
+                  </div>
+
+                  <div class="card-line-history">
+                    <div class="row">
+                      <span class="card-categories col-sm-3">
+                        <date class="label-icons" />Time:
+                      </span>
+                      <span
+                        class="col-sm-9 text-body"
+                      >{{ " " + (ticket.createdAt.split('T')[1]).substring(0,5)}}</span>
+                    </div>
+                  </div>
+
+                  <div class="card-line-history">
+                    <div class="row">
+                      <span class="card-categories col-sm-3">
+                        <bell class="label-icons" />Status:
+                      </span>
+                      <span class="col-sm-9 text-body">{{ ticket.status }}</span>
+                    </div>
+                  </div>
+
+                  <div class="card-line-history">
+                    <div class="row">
+                      <span class="card-categories col-sm-3">
+                        <short-description class="label-icons" />Overview:
+                      </span>
+                      <span class="col-sm-9 text-body">{{ ticket.oneLineOverview }}</span>
+                    </div>
+                  </div>
+
+                  <div
+                    v-bind:class="{ 'chevron': expandChevron, 'hidden': !expandChevron }"
+                    @click="changeChevronClass"
+                  >
+                    <expand-arrow />
+                  </div>
+
+                  <div
+                    @click="changeChevronClass"
+                    v-bind:class="{ 'chevron': collapseChevron, 'hidden': !collapseChevron }"
+                  >
+                    <collapse-arrow />
+                  </div>
+
+                  <div
+                    v-bind:class="{ 'show-extra-content': collapseChevron, 'hide-extra-content': expandChevron }"
+                  >
+                    <div class="card-line-history">
+                      <div class="row">
+                        <span class="card-categories col-sm-3">
+                          <long-description class="label-icons" />Details:
+                        </span>
+                        <span class="col-sm-9 text-body">{{ ticket.longerDescription }}</span>
+                      </div>
+                    </div>
+
+                      <div class="card-line-history">
+                    <div class="row">
+                      <span class="card-categories col-sm-3">
+                        <student class="label-icons" />Name:
+                      </span>
+                      <span
+                        class="col-sm-9 text-body"
+                      >{{ ticket.ownerName }}</span>
+                    </div>
+                  </div>
+                  </div>
+                </div>
+              </md-card>
+            </div>
+          </div>
           <!-- TO DO: Make this message dynamic -->
           <!-- <div
             class="sub-heading-text"
             style="padding-top:2%;"
           >You currently have no request history.</div>-->
-
-          <div class="ticket-container">
-            <div v-for="(ticket, index) in filterOpenTickets('Closed')" :key="index">
-              <md-card>
-                <div class="md-card-content">
-                  <strong>Status:</strong>
-                  {{ ticket.status }}
-                  <strong>Issue:</strong>
-                  {{ticket.oneLineOverview}}
-                </div>
-              </md-card>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -510,7 +590,7 @@ import "vue-material/dist/vue-material.min.css";
 import "vue-material/dist/theme/default.css";
 import { BFormInput, BFormSelect, BButton, BFormCheckbox } from "bootstrap-vue";
 
-const staffId = "5ecafc0f5219c55528efe03f";
+const staffId = "5eade47047da2706382d53e6";
 
 Vue.use(VueMaterial);
 import * as Ably from "ably";
@@ -553,7 +633,8 @@ export default {
       currentTicket: null,
       currentTicketId: null,
       studentAccepted: false,
-      ticketChannel: client.channels.get("tickets")
+      ticketChannel: client.channels.get("tickets"),
+      ticketHistory: []
     };
   },
   methods: {
@@ -569,7 +650,6 @@ export default {
       }
     },
     triggerAccept: function() {
-      console.log("in triggerAccept");
       this.studentAccepted = true;
       console.log("accepted " + this.studentAccepted);
 
@@ -624,11 +704,11 @@ export default {
           "/api/getStudentsById/" + ticketOwnerId
         );
         if (studentResponse) {
-          if (studentResponse.data.name.firstname) {
+          if (studentResponse.data.name.firstName) {
             studentName =
-              studentResponse.data.name.firstname +
+              studentResponse.data.name.firstName +
               " " +
-              studentResponse.data.name.lastname;
+              studentResponse.data.name.lastName;
             // document.getElementById('studentName').innerHTML = studentName;
             this.$set(ticket, "ownerName", studentName);
           }
@@ -799,6 +879,10 @@ export default {
         // Add the name to the open tickets
         if (this.tickets[i].status === "Open") {
           await this.getStudentName(this.tickets[i], this.tickets[i].owner._id);
+        }
+        if (this.tickets[i].status === "Closed") {
+          await this.getStudentName(this.tickets[i], this.tickets[i].owner._id);
+          this.ticketHistory.push(this.tickets[i]);
         }
       }
     }
