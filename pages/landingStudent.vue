@@ -892,11 +892,10 @@ var firebaseConfig = {
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
-// const userId = "5ec0858d7971d22628fd7e0d";
-const userId = "5ecafbcd5219c55528efe03e";
+
+const userId = "5ecafc0f5219c55528efe03f";
 
 const client = new Ably.Realtime(process.env.ABLY_KEY);
-// const userId = "5eb86452ed2ee55868633193";
 
 // base style
 // import "codemirror/lib/codemirror.css";
@@ -1162,13 +1161,13 @@ export default {
     async startSubscribe() {
       console.log("subscribing to staff");
       // The student's ticket was accepted by the staff
-      // this.studentChannel.subscribe("staffAcceptedTicket", message => {
-      //   console.log("staff accepted ticket");
-      //   this.zoomLink = message.data.zoomLink;
-      //   this.openTicket.updatedAt = message.data.date;
+      this.studentChannel.subscribe("staffAcceptedTicket", message => {
+        console.log("staff accepted ticket");
+        this.zoomLink = message.data.zoomLink;
+        this.openTicket.updatedAt = message.data.date;
 
-      //   document.getElementById("hiddenButton").click();
-      // });
+        document.getElementById("hiddenButton").click();
+      });
     },
     countdownTime: function() {
       //read updated time
@@ -1188,16 +1187,16 @@ export default {
         (currentTime.getMinutes() * 60 + currentTime.getSeconds())
       );
     },
-    finished: studentChannel => {
-      console.log("in finished");
+    finished: function (){
 
       //tell staff student did not accept session
+
       // studentChannel.publish("studentDidNotAcceptSession", userId);
 
       this.openTicket.status = "Unresolved";
       this.ticketHistory.push(this.openTicket);
       this.unresolvedTicket = true;
-      this.openTicket = null;
+      this.openTicket = null; 
     },
 
     reSubmitTicket: function(ticket) {
@@ -1279,7 +1278,7 @@ export default {
       }
 
       if (!this.openTicket) {
-        console.log("inserting " + this.fileObjects);
+        console.log("inserting ", this.fileObjects);
         let ticket = await axios.post("/api/insertTicket", {
           status: "Open",
           owner: {
@@ -1302,7 +1301,7 @@ export default {
         console.log(this.openTicket);
 
         // sends ticket to staff
-        // this.ticketChannel.publish("ticketUpdate", this.openTicket);
+        this.ticketChannel.publish("ticketUpdate", this.openTicket);
       }
     },
     async getTickets() {
@@ -1313,11 +1312,11 @@ export default {
       });
 
       this.ticketHistory = tickets.data.filter(
-        ticket => ticket.status !== "Open"
+        ticket => ticket.status !== "Open" && ticket.owner._id == userId
       );
 
       this.openTickets = tickets.data.filter(
-        ticket => ticket.status === "Open"
+        ticket => ticket.status === "Open" && ticket.owner._id == userId
       );
 
       if (this.openTickets) {
