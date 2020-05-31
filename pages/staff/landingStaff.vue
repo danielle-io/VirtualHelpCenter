@@ -412,11 +412,10 @@ export default {
       collapseChevron: false,
       selectedCard: false,
       color: "#7e6694",
-      // course: {},
       course: {},
       selected: "",
       staffClass: "none",
-      staff: "5ecafc0f5219c55528efe03f",
+      staff: "5eade62b47da2706382d53e8",
       zoomLink: null,
       selectedTicketIndex: -1,
       startingIndex: 0,
@@ -433,39 +432,16 @@ export default {
   },
   methods: {
     filterOpenTickets(status) {
-      // if (this.tickets) {
-      //   this.filteredTickets = this.tickets.filter(
-      //     ticket => ticket.status === status
-      //   );
-      //   console.log("filtering open tickets")
-      //   return this.filteredTickets;
-      // } 
       if (this.tickets) {
-        console.log("filtering open tickets")
-        return this.tickets.filter(ticket => ticket.status === status);
-      }
-  
-      else {
+        this.filteredTickets = this.tickets.filter(
+          ticket => ticket.status === status
+        );
+        return this.filteredTickets;
+      } else {
         this.filteredTickets = [];
         return;
       }
     },
-
-    filterAllTickets(status){
-      // this.filteredTickets = [];
-      // this.staffCourses.forEach(element => {
-        return this.tickets.filter(ticket => ticket.status === status);
-        // return this.tickets.filter(ticket => ticket.course._id === status)
-        // this.filteredTickets.push(this.filterCourseTickets(status, element));
-      // //   this.filteredTickets.push(this.filterCourseTickets(status, element));
-      // // // this.loadClasses(element);
-      // });
-    
-      // return this.filteredTickets;
-      // return this.filteredTickets;
-      // return this.filterOpenTickets(status)
-    },
-
     triggerAccept: function() {
       console.log("in triggerAccept");
       console.log("accepted " + this.studentAccepted);
@@ -473,14 +449,11 @@ export default {
       console.log("accepted " + this.studentAccepted);
     },
     getFilterClass(status, course) {
-      console.log("filtering course")
       console.log(course);
       if (course === null) {
         console.log("open tickets");
-        return this.filterAllTickets(status);
-        // return this.filterOpenTickets(status);
+        return this.filterOpenTickets(status);
       } else {
-        console.log("filtering here")
         return this.filterCourseTickets(status, course);
       }
     },
@@ -552,56 +525,30 @@ export default {
       this.connecting = true;
     },
     // This is where the link is stored
-    sendZoomLink() {
+    sendZoomLink: function() {
       axios.put("/api/updateTicket/" + this.currentTicketId, {
         status: "In Progress",
         accepted: this.staff
       });
-      
-      let ticketTime = new Date();
-
-
       // Get the students user id from the ticket
       this.studentChannel = client.channels.get(this.currentTicket.owner._id);
-      this.studentChannel.publish("staffAcceptedTicket", {zoomLink: this.zoomLink, date: ticketTime});
-
+      this.studentChannel.publish("staffAcceptedTicket", this.zoomLink);
       // Show connection screen once student receives countdown
       this.startConnecting();
       // this.studentChannel = client.channels.get(ticket.owner._id);
-
+      setTimeout(function() {
+        // Right here we let it know the student did not accept
+      }, 120000);
       console.log("waiting on acceptance");
       // Subscribe to an event on studentChannel to see if they accepted ticket
       this.studentChannel.subscribe("studentAcceptedSession", function(
         message
       ) {
         //document.getElementById("hiddenButton").click();
+        console.log(this.studentAccepted)
         this.studentAccepted = true;
         console.log("student accepted");
       });
-
-      let x = setTimeout(function() {
-        // Right here we let it know the student did not accept
-        console.log('student did not accept in time')
-          axios.put("/api/updateTicket/" + this.currentTicketId, {
-          status: "Unresolved",
-        });
-      }, this.countdownTime(ticketTime));
-
-      //student did not accept the ticket
-      // this.studentChannel.subscribe("studentDidNotAcceptSession", function(message){
-      //   console.log("student did not accept session, moving on")
-      //   //not sure if the timeout is cleared when we move on
-      //   clearTimeout(x);
-      // });
-    },
-    countdownTime(ticketTime){
-      //read updated time
-
-      let currentTime = new Date()
-      ticketTime.setMinutes(ticketTime.getMinutes()+1);
-      console.log(ticketTime.getMinutes()*60+ticketTime.getSeconds()-(currentTime.getMinutes()*60+currentTime.getSeconds()))
-      
-      return (ticketTime.getMinutes()*60+ticketTime.getSeconds()-(currentTime.getMinutes()*60+currentTime.getSeconds()))*1000;
     },
     expandCard: function() {},
     async acceptTicket() {
@@ -616,21 +563,19 @@ export default {
     },
     // Sets the class to filter by based on dropdown
     async setClass(course) {
-      console.log("setting class")
       if (course) {
         let chosenCourse = await axios.get("/api/courses/" + course);
         this.course = chosenCourse.data._id;
-        
         console.log(this.course);
       }
-      console.log(this.course);
     },
     async loadClasses(classSelected) {
       if (classSelected) {
         let course = await axios.get("/api/courses/" + classSelected._id);
         var text = course.data.dep + " " + course.data.courseNum;
+        // console.log("adding " + course.data.dep + " id " + classSelected._id);
         this.staffCourses.push({ value: classSelected._id, text: text });
-        console.log(this.staffCourses);
+        // console.log(this.staffCourses);
       }
     }
   },
@@ -643,49 +588,30 @@ export default {
     let staff = await axios.get("/api/users/" + this.staff);
     if (staff) {
       staff.data.classes.forEach(element => {
+        console.log(element);
         this.loadClasses(element);
       });
       console.log("Classes Loaded");
-      
-  
-      let course = this.staffCourses[0];
-      this.course = course.value
-   
-
-      console.log("this.course")
-      console.log(this.course)
-
-
-    this.loadUser(staff);
-      // let course = staff.data.classes[0];
-      // let staffcourse = course._id;
-      // this.course = staffcourse;
-      // this.loadUser(staff);
+      let course = staff.data.classes[0];
+      let staffcourse = course._id;
+      this.course = staffcourse;
+      this.loadUser(staff);
     }
   },
   beforeMount() {
     // var course = {_id = null};
-    console.log("push all")
     this.staffCourses.push({ value: null, text: "Show All Courses" });
     // This gets ANY ticket submitted by ANY student
-    this.ticketChannel.subscribe("ticketUpdate", (message)=>{
-      //add new ticket to existing tickets
-      this.tickets.push(message.data);
+    this.ticketChannel.subscribe("ticketUpdate", function(message) {
+      console.log(message.data);
+      window.location.reload();
     });
-
-    this.ticketChannel.subscribe("ticketClosed", (message)=>{
-      console.log("ticket was deleted")
-
-      //ticket will be deleted from being displayed
-      this.removeTicket(message.data);
-    })
-
     this.scrollToTop();
   },
   computed: {
-    studentAccepted() {
-      return this.studentAccepted
-    }
+    // studentAccepted() {
+    //   return this.studentAccepted
+    // }
   }
 };
 </script>

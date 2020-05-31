@@ -1,8 +1,6 @@
+<!-- TO DO: populate classes from course list -->
+
 <style>
-.form-buttons {
-  width: 60% !important;
-}
-
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.5s;
@@ -12,151 +10,34 @@
   opacity: 0;
 }
 
-.request-container {
-  position: relative;
-  padding-left: 10px;
-  padding-right: 10px;
-  margin-left: 15%;
-  margin-right: 15%;
-  margin-top: 6%;
-  margin-bottom: 2%;
-  font-family: "Poppins";
-  min-width: 200px;
-  border: solid 1px #ddd;
-  padding-left: 2%;
-  padding-right: 2%;
-  padding-bottom: 10px;
-  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.05);
+.CodeMirror-focused .cm-matchhighlight {
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAFklEQVQI12NgYGBgkKzc8x9CMDAwAAAmhwSbidEoSQAAAABJRU5ErkJggg==);
+  background-position: bottom;
+  background-repeat: repeat-x;
 }
-
-.request-container-two {
-  position: relative;
-  padding-left: 10px;
-  padding-right: 10px;
-  margin-left: 15%;
-  margin-right: 15%;
-  margin-top: 6%;
-  margin-bottom: 2%;
-  font-family: "Poppins";
-  min-width: 200px;
-  /* border: solid 1px #ddd; */
-  padding-left: 2%;
-  padding-right: 2%;
-  padding-bottom: 10px;
-  /* box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.05); */
+.cm-matchhighlight {
+  background-color: lightgreen;
 }
-
-/* ANIMATIONS */
-/* Simple CSS3 Fade-in-down Animation */
-.fadeInDown {
-  -webkit-animation-name: fadeInDown;
-  animation-name: fadeInDown;
-  -webkit-animation-duration: 0.1s;
-  animation-duration: 0.1s;
-  -webkit-animation-fill-mode: both;
-  animation-fill-mode: both;
+.CodeMirror-selection-highlight-scrollbar {
+  background-color: green;
 }
-
-@-webkit-keyframes fadeInDown {
-  0% {
-    opacity: 0;
-    -webkit-transform: translate3d(0, -100%, 0);
-    transform: translate3d(0, -100%, 0);
-  }
-  100% {
-    opacity: 1;
-    -webkit-transform: none;
-    transform: none;
-  }
+.CodeMirror-scroll {
+  width: 700px;
+  height: 300px;
+  overflow-y: hidden;
+  overflow-x: auto;
 }
-
-/* Simple CSS3 Fade-in Animation */
-@-webkit-keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-@-moz-keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-.fadeIn {
-  opacity: 0;
-  -webkit-animation: fadeIn ease-in 1;
-  -moz-animation: fadeIn ease-in 1;
-  animation: fadeIn ease-in 1;
-
-  -webkit-animation-fill-mode: forwards;
-  -moz-animation-fill-mode: forwards;
-  animation-fill-mode: forwards;
-
-  -webkit-animation-duration: 1s;
-  -moz-animation-duration: 1s;
-  animation-duration: 1s;
-}
-
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.5s;
-}
-.fade-enter,
-.fade-leave-to {
-  opacity: 0;
+.CodeMirror {
+  border: 1px solid #eee !important;
+  height: auto;
 }
 
 .form-text-areas {
   border-style: solid;
   border: 1px !important;
+  /* border-color: rgb(180, 175, 175) !important; */
   border: 2px solid #dfdada !important;
 }
-
-.close-button {
-  margin-right: 10px;
-  font-size: 18px;
-  border: none;
-  color: "red" !important;
-}
-
-.toolTip {
-  position: relative;
-  display: inline-block;
-}
-
-.toolTip .tooltipText {
-  visibility: hidden;
-  width: 50px;
-  background-color: black;
-  color: #fff;
-  text-align: center;
-  border-radius: 6px;
-  padding: 5px 0;
-
-  /* Position the tooltip */
-  position: absolute;
-  z-index: 1;
-  top: -5px;
-  left: 105%;
-}
-
-/* .toolTip:hover .toolTiptext {
-  visibility: visible;
-} */
 
 /* Styling for adding rows */
 .add-button {
@@ -242,10 +123,6 @@ table th,
   margin-right: 8px;
   padding-top: 1px !important;
 }
-.close-icon {
-  color: "red" !important;
-  font-size: 22px;
-}
 
 .request-tabs {
   margin-top: 10px;
@@ -283,7 +160,6 @@ table th,
   padding-right: 12px;
   padding-bottom: 2px;
   font-family: "Poppins";
-  margin-left: 12px;
 }
 
 #formContent {
@@ -390,256 +266,170 @@ input[type="text"]:placeholder {
 <template>
   <div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/velocity/1.2.3/velocity.min.js"></script>
-    <button id="hiddenButton" style="display:none;" @click="triggerAccept"></button>
+
     <div id="requests">
       <!-- The transition effects for the containers changing -->
       <transition name="fade" mode="in-out">
-        <div>
-          <div v-bind:key="request" class="request-container">
-            <div class="request-tabs">
-              <a
-                @click="switchToCurrentRequestsTab"
-                v-bind:class="{ 'tab-links-active': currentRequestsTab, 'tab-links': !currentRequestsTab }"
-              >Current Requests</a>
+        <div v-bind:key="request" class="request-container">
+          <div class="request-tabs">
+            <a
+              @click="switchToCurrentRequestsTab"
+              v-bind:class="{ 'tab-links-active': currentRequestsTab, 'tab-links': !currentRequestsTab }"
+            >Current Requests</a>
 
-              <!-- (this.$route.query.tab   == 'requestHistory')-->
-              <a
-                v-bind:class="{ 'tab-links-active': requestHistoryTab, 'tab-links': !requestHistoryTab }"
-                @click="switchToRequestHistoryTab"
-              >Request History</a>
+            <!-- (this.$route.query.tab   == 'requestHistory')-->
+            <a
+              v-bind:class="{ 'tab-links-active': requestHistoryTab, 'tab-links': !requestHistoryTab }"
+              @click="switchToRequestHistoryTab"
+            >Request History</a>
+          </div>
+
+          <!--  The first container to show  -->
+          <div v-if="this.currentRequestsTab">
+            <div v-if="this.request === true">
+              <div class="heading-text">My Requests</div>
+
+              <!-- TO DO: make this text dynamic based on user tickets -->
+              <div
+                class="sub-heading-text"
+                style="padding-top:2%;"
+              >You currently have no pending requests.</div>
+
+              <div style="text-align: center;">
+                <button
+                  v-bind:key="request"
+                  @click="changeRequestState"
+                  type="submit"
+                  style="margin-bottom: 20%; width: 40% !important;"
+                  class="fadeIn form-buttons"
+                >
+                  <right-circle />Request a Session
+                </button>
+              </div>
             </div>
 
-            <!--  The first container to show  -->
-            <div v-if="this.currentRequestsTab">
-              <div v-if="this.request === true && openTicket.owner === null && !this.showCountdown">
-                <div class="heading-text">My Requests</div>
+            <!-- Container for filling out the request form -->
+            <div v-if="this.request === false && this.submitRequest === false">
+              <div class="heading-text">Request a Session</div>
+              <div
+                class="sub-heading-text-left"
+                style="padding-top:2%;"
+              >Complete the form below to request assistance from a lab tutor.</div>
 
-                <!-- TO DO: make this text dynamic based on user tickets -->
-                <div
-                  class="sub-heading-text"
-                  style="padding-top:2%;"
-                >You currently have {{ticketNum()}} pending requests.</div>
+              <div class="form-container">
+                <div class="row" style="width: 70%;">
+                  <b-form-select
+                    :options="classes"
+                    v-on:change="getSelectedCourse"
+                    size="sm"
+                    class="mt-3"
+                    placeholder="Please select the class you need help with"
+                  ></b-form-select>
+                </div>
+
+                <div class="row">
+                  <label class="label-format">Please enter a brief one-sentence summary of the issue</label>
+                  <b-form-input v-model="probDes" placeholder class="form-text-areas"></b-form-input>
+                </div>
+
+                <div class="row">
+                  <label class="label-format">Elaborate on the issue, if needed.</label>
+                  <b-form-text-area
+                    id="textarea"
+                    v-model="problem"
+                    placeholder
+                    rows="2"
+                    max-rows="6"
+                  ></b-form-text-area>
+                </div>
+
+                <div class="row">
+                  <label class="label-format">Paste a code snippet, if needed</label>
+                  <!-- removed for now from above :disabled="isDisabled" -->
+                  <!-- <pre class="mt-3 mb-0">{{ code }}</pre> -->
+                </div>
+
+                <div class="row" width=700px>
+                  <codemirror v-model="code" :options="cmOption" />
+                </div>
+
+                <div class="Row">
+                  <label class="label-format">Add a file, if needed</label>
+                </div>
+
+                <table class="table request-table">
+                  <tbody>
+                    <!-- This is where the new questions are inserted -->
+                    <div class="top-row" v-for="(row, index) in rows" v-bind:key="row">
+                      <tr>
+                        <td>
+                          <button class="file-container file-button">
+                            {{row.file.name}}
+                            <input
+                              type="file"
+                              @change="setFilename($event, row)"
+                              :id="index"
+                            />
+                          </button>
+                        </td>
+
+                        <td class="remove-column">
+                          <a
+                            v-on:click="removeElement(index);"
+                            style="cursor: pointer; z-index: 999;"
+                          >Remove</a>
+                        </td>
+                      </tr>
+                    </div>
+                  </tbody>
+                </table>
+
+                <span class="add-button" @click="addRow">
+                  <plus-circle />
+                </span>
 
                 <div style="text-align: center;">
+                  <!--  On select, the state of request is changed, forcing a transition effect and
+                  changing what is rendered on the page-->
                   <button
-                    v-bind:key="request"
-                    @click="changeRequestState"
+                    v-bind:key="submitRequest"
                     type="submit"
-                    style="margin-bottom: 20%; width: 40% !important;"
+                    style="margin-bottom: 10px; margin margin-top: 10px;"
                     class="fadeIn form-buttons"
+                    @click="changeRequestState"
                   >
-                    <right-circle />Request a Session
+                    <right-circle style="margin-right:4px" />Submit Request
                   </button>
                 </div>
               </div>
+            </div>
 
-              <!-- Container for filling out the request form -->
+            <div v-if="this.submitRequest === true" v-bind:key="submitRequest">
+              <div class="heading-text">Request submitted</div>
               <div
-                v-if="this.request === false && this.submitRequest === false && !this.showCountdown"
-              >
-                <div class="heading-text">Request a Session</div>
-                <div
-                  class="sub-heading-text-left"
-                  style="padding-top:2%;"
-                >Complete the form below to request assistance from a lab tutor.</div>
+                class="sub-heading-text"
+                style="padding-top:2%;"
+              >The current wait time is approximately 1 minute.</div>
+            </div>
 
-                <div class="form-container">
-                  <div class="row" style="width: 70%;">
-                    <b-form-select
-                      :options="classes"
-                      v-on:change="getSelectedCourse"
-                      size="sm"
-                      class="mt-3"
-                      placeholder="Please select the class you need help with"
-                    ></b-form-select>
-                  </div>
+            <div style="text-align: center;" :hidden="openTicket.owner === null">
+              <md-card>
+                <md-card-header>
+                  <div class="md-title">Ticket</div>
+                </md-card-header>
 
-                  <div class="row">
-                    <label
-                      class="label-format"
-                    >Please enter a brief one-sentence summary of the issue</label>
-                    <b-form-input v-model="probDes" placeholder class="form-text-areas"></b-form-input>
-                  </div>
-
-                  <div class="row">
-                    <label class="label-format">Elaborate on the issue, if needed.</label>
-                    <b-form-text-area
-                      id="textarea"
-                      v-model="problem"
-                      placeholder
-                      rows="2"
-                      max-rows="6"
-                    ></b-form-text-area>
-                  </div>
-
-                  <div class="row">
-                    <label class="label-format">Paste a code snippet, if needed</label>
-                    <b-form-text-area
-                      id="textarea"
-                      v-model="code"
-                      placeholder
-                      rows="1"
-                      max-rows="30"
-                    ></b-form-text-area>
-                    <!-- removed for now from above :disabled="isDisabled" -->
-                    <!-- <pre class="mt-3 mb-0">{{ code }}</pre> -->
-                  </div>
-
-                  <div class="Row">
-                    <label class="label-format">Add a file, if needed</label>
-                  </div>
-
-                  <table class="table request-table">
-                    <tbody>
-                      <!-- This is where the new questions are inserted -->
-                      <div class="top-row" v-for="(row, index) in rows" v-bind:key="row">
-                        <tr>
-                          <td>
-                            <button class="file-container file-button">
-                              {{row.file.name}}
-                              <input
-                                type="file"
-                                @change="setFilename($event, row)"
-                                :id="index"
-                              />
-                            </button>
-                          </td>
-
-                          <td class="remove-column">
-                            <a
-                              v-on:click="removeElement(index);"
-                              style="cursor: pointer; z-index: 999;"
-                            >Remove</a>
-                          </td>
-                        </tr>
-                      </div>
-                    </tbody>
-                  </table>
-
-                  <span class="add-button" @click="addRow">
-                    <plus-circle />
-                  </span>
-
-                  <div style="text-align: center;">
-                    <!--  On select, the state of request is changed, forcing a transition effect and
-                    changing what is rendered on the page-->
-                    <div v-if="this.problem && this.probDes && this.selectedCourse">
-                      <button
-                        v-on:click="submit"
-                        v-bind:key="submitRequest"
-                        type="submit"
-                        style="margin-bottom: 20%; width: 40% !important;"
-                        class="fadeIn form-buttons"
-                        @click="changeRequestState"
-                      >
-                        <right-circle style="margin-right:4px" />Submit Request
-                      </button>
-                    </div>
-                  </div>
+                <div class="md-card-content">
+                  <strong>Status:</strong>
+                  {{ openTicket.status }}
                 </div>
-              </div>
-
-              <div
-                v-if="this.submitRequest && !this.showCountdown && !this.studentAcceptedSession"
-                v-bind:key="submitRequest"
-              >
-                <div class="heading-text">Your Request Was Submitted</div>
-                <div
-                  class="sub-heading-text"
-                  style="padding-top:2%;"
-                >The current wait time is approximately 1 minute.</div>
-              </div>
-
-              <div v-if="this.showCountdown && !this.studentAcceptedSession">
-                <div class="request-container">
-                  <div class="heading-text">Accept your session</div>
-
-                  <div class="sub-heading-text-left" style="padding-top:2%;">
-                    A TA is available.
-                    <strong>Please accept the session before the timer runs out to continue.</strong>
-                  </div>
-                  <div
-                    class="sub-heading-text-left-italic"
-                  >If you do not accept in time, your request will be removed, and placed in your request history for resubmission.</div>
-
-                  <div style="text-align: center;">
-                    <circular-count-down-timer
-                      :initial-value="60"
-                      :steps="60"
-                      :seconds-stroke-color="'#7fe3d4'"
-                      :second-label="''"
-                      @finish="finished"
-                    ></circular-count-down-timer>
-
-                    <button
-                      v-bind:key="acceptSession"
-                      @click="acceptSession"
-                      type="submit"
-                      style="margin-bottom: 20%;"
-                      class="fadeIn form-buttons"
-                    >
-                      <right-circle />Accept the Session
-                    </button>
-                  </div>
+                <div class="md-card-content">
+                  <strong>Issue:</strong>
+                  {{ openTicket.oneLineOverview }}
                 </div>
-              </div>
-
-              <div v-if="this.studentAcceptedSession">
-                <div v-bind:key="session" class="request-container-two">
-                  <div class="heading-text">Begin your session</div>
-
-                  <div class="sub-heading-text">Click the link to open your Zoom session</div>
-                  <div class="sub-heading-text-larger" style="margin-top: 15px;">
-                    <a target="_blank" href="https://zoom.us/">https://zoom.us/</a>
-                  </div>
+                <div class="md-card-content">
+                  <button type="button" v-on:click="closeTicket(openTicket)">Close Request</button>
                 </div>
-              </div>
-
-              <div
-                style="text-align: center; margin-top: 12px;"
-                :hidden="openTicket.owner === null"
-              >
-                <md-card>
-                  <div
-                    style="float: right; margin-top: 6px; margin-left: 0px; margin-right: 10px; "
-                  >
-                    <button
-                      class="close-button"
-                      style="margin-top: 5px;"
-                      v-on:click="closeTicket(openTicket)"
-                    >
-                      <div class="toolTip">
-                        <close
-                          style="color: red !important; margin-bottom: 0px; padding-bottom: 0px;"
-                          class="close-icon"
-                        />
-                        <!-- <span class="toolTipText">Cancel Request</span> -->
-                      </div>
-                    </button>
-                  </div>
-
-                  <md-card-header style="display: in-line-block;">
-                    <div
-                      style="justify-content: center; text-align: center; margin-top: 30px;"
-                      class="md-title"
-                    >Requested Session</div>
-                  </md-card-header>
-
-                  <div class="md-card-content">
-                    <strong>Status:</strong>
-                    {{ openTicket.status }}
-                  </div>
-                  <div class="md-card-content">
-                    <strong>Issue:</strong>
-                    {{ openTicket.oneLineOverview }}
-                  </div>
-                  <div v-if="openTicket.attachments" class="md-card-content">
-                    <strong>Attachments:</strong>
-                    {{ openTicket.attachments.length }}
-                  </div>
-                  <div class="md-card-content"></div>
-                </md-card>
-              </div>
+              </md-card>
             </div>
           </div>
         </div>
@@ -668,27 +458,55 @@ input[type="text"]:placeholder {
   </div>
 </template>
   
-<script src="https://cdn.ably.io/lib/ably.min-1.js"/>
+<script src="https://cdn.ably.io/lib/ably.min-1.js"></script>
 <script>
-var firebaseConfig = {
-  apiKey: process.env.FB_API_KEY,
-  authDomain: process.env.FB_AUTH_DOMAIN,
-  databaseURL: process.env.FB_DATABASE_URL,
-  projectId: process.env.FB_PROJECT_ID,
-  storageBucket: process.env.FB_STORAGE_BUCKET,
-  messagingSenderId: process.env.FB_MESSAGING_SENDER_ID,
-  appId: process.env.FB_APP_ID
-};
-// Initialize Firebase
-if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig);
-}
-const userId = "5ec5f90d81b13d23065ead3e";
-const client = new Ably.Realtime(process.env.ABLY_KEY);
+const userId = "5eb86452ed2ee55868633193";
 
+//import AblyKey from "../../realtimeKey";
+  // base style
+import 'codemirror/lib/codemirror.css'
+
+// theme css
+import 'codemirror/theme/base16-dark.css'
+
+// language
+import 'codemirror/mode/vue/vue.js'
+
+// active-line.js
+import 'codemirror/addon/selection/active-line.js'
+
+// styleSelectedText
+import 'codemirror/addon/selection/mark-selection.js'
+import 'codemirror/addon/search/searchcursor.js'
+
+// highlightSelectionMatches
+import 'codemirror/addon/scroll/annotatescrollbar.js'
+import 'codemirror/addon/search/matchesonscrollbar.js'
+import 'codemirror/addon/search/searchcursor.js'
+import 'codemirror/addon/search/match-highlighter.js'
+
+// keyMap
+import 'codemirror/mode/clike/clike.js'
+import 'codemirror/addon/edit/matchbrackets.js'
+import 'codemirror/addon/comment/comment.js'
+import 'codemirror/addon/dialog/dialog.js'
+import 'codemirror/addon/dialog/dialog.css'
+import 'codemirror/addon/search/searchcursor.js'
+import 'codemirror/addon/search/search.js'
+import 'codemirror/keymap/sublime.js'
+
+// foldGutter
+import 'codemirror/addon/fold/foldgutter.css'
+import 'codemirror/addon/fold/brace-fold.js'
+import 'codemirror/addon/fold/comment-fold.js'
+import 'codemirror/addon/fold/foldcode.js'
+import 'codemirror/addon/fold/foldgutter.js'
+import 'codemirror/addon/fold/indent-fold.js'
+import 'codemirror/addon/fold/markdown-fold.js'
+import 'codemirror/addon/fold/xml-fold.js'
 import Vue from "vue";
-import firebase from "firebase";
 import axios from "~/plugins/axios";
+import { codemirror } from 'vue-codemirror';
 import * as Ably from "ably";
 import {
   BFormInput,
@@ -702,7 +520,8 @@ export default {
     "b-form-input": BFormInput,
     "b-form-select": BFormSelect,
     "b-form-checkbox": BFormCheckbox,
-    "b-form-text-area": BFormTextarea
+    "b-form-text-area": BFormTextarea,
+    codemirror
   },
 
   computed: {
@@ -710,9 +529,34 @@ export default {
       return !this.selected;
     }
   },
+
   data() {
     return {
       el: "#requests",
+      code:"Paste your code here",
+      cmOption: {
+          tabSize: 4,
+          styleActiveLine: false,
+          lineNumbers: true,
+          styleSelectedText: false,
+          line: true,
+          foldGutter: true,
+          gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
+          highlightSelectionMatches: { showToken: /\w/, annotateScrollbar: true },
+          mode: 'text/javascript',
+          // hint.js options
+          hintOptions:{
+            completeSingle: false
+          },
+          keyMap: "sublime",
+          matchBrackets: true,
+          showCursorWhenSelecting: true,
+          theme: "monokai",
+          extraKeys: { "Ctrl": "autocomplete" }
+        },
+
+      // Hard coded user
+      currentUserId: "5eb75ab2779eb66e27e4fad0",
       currentRequestsTab: true,
       requestHistoryTab: false,
       show: true,
@@ -735,15 +579,7 @@ export default {
         status: null,
         oneLineOverview: null
       },
-      otherTickets: [{ owner: null, status: null, oneLineOverview: null }],
-      session: null,
-      zoomLink: null,
-      showCountdown: false,
-      studentAcceptedSession: false,
-      studentChannel: client.channels.get(userId),
-      ticketChannel: client.channels.get("tickets"),
-      currentFile: null,
-      fileUrls: []
+      otherTickets: [{ owner: null, status: null, oneLineOverview: null }]
     };
   },
   methods: {
@@ -758,37 +594,6 @@ export default {
         }
       });
     },
-    async uploadFile() {
-      if (this.rows) {
-        for (var i = 0; i < this.rows.length; i++) {
-          var fileToUpload = this.rows[i].file;
-          this.currentFile = null;
-          const storageRef = firebase
-            .storage()
-            .ref(fileToUpload.name)
-            .put(fileToUpload);
-          storageRef.on(
-            `state_changed`,
-            snapshot => {
-              this.uploadValue =
-                (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-            },
-            error => {
-              console.log(error.message);
-            },
-            () => {
-              this.uploadValue = 100;
-              storageRef.snapshot.ref.getDownloadURL().then(url => {
-                this.currentFile = url;
-                this.fileUrls.push(this.currentFile);
-                console.log(this.fileUrls);
-              });
-            }
-          );
-        }
-        console.log("submitting");
-      }
-    },
     switchToCurrentRequestsTab: function() {
       this.currentRequestsTab = true;
       this.requestHistoryTab = false;
@@ -801,21 +606,6 @@ export default {
       this.scrollToTop();
       return this.requestHistoryTab;
     },
-
-    acceptSession: function() {
-      this.scrollToTop();
-      this.showCountdown = false;
-      this.studentAcceptedSession = true;
-      console.log("in accept session and zoomLink is " + this.zoomLink);
-
-      this.finished();
-      console.log("accepted session : " + this.studentAcceptedSession);
-      // Publish an event to the  channel
-      this.studentChannel.publish("studentAcceptedSession", userId);
-    },
-    triggerAccept: function() {
-      this.showCountdown = true;
-    },
     removeElement: function(index) {
       this.rows.splice(index, 1);
     },
@@ -823,42 +613,32 @@ export default {
       var file = event.target.files[0];
       row.file = file;
     },
-    async loadClasses(classSelected) {
-      if (classSelected) {
-        let classes = await axios.get("../../api/courses/" + classSelected._id);
-        this.classes.push({
-          value: classes.data._id,
-          text: classes.data.dep + classes.data.courseNum
-        });
-      }
+
+    // Not yet working
+    loadClasses: function(classSelected) {
+      // var text = classSelected.dep + " " + classSelected.courseNum;
+      // this.classes.push({ value: classSelected._id, text: text });
     },
     getSelectedCourse: function(course) {
       this.selectedCourse = course;
       console.log(course);
     },
-
-    async startSubscribe() {
-      console.log("subscribing to staff");
-      // The student's ticket was accepted by the staff
-      this.studentChannel.subscribe("staffAcceptedTicket", function(message) {
-        this.zoomLink = message.data;
-
-        console.log("zoomLink " + this.zoomLink);
-        document.getElementById("hiddenButton").click();
-      });
-    },
-    finished: () => {
-      console.log("in finished");
-    },
-
     changeRequestState: function() {
       if (this.request === true && this.submitRequest === false) {
         this.request = false;
         return this.request;
       } else {
+        // ABLY KEY HERE
+        var client = new Ably.Realtime(process.env.ABLY_KEY);
+        var channel = client.channels.get('staff');
+        // Publish a message to the test channel
+        channel.publish("ticketUpdate", "ticket updated");
         this.submitRequest = true;
         this.scrollToTop();
-        this.startSubscribe();
+        // HARD CODING A REDIRECT TEMPORARILY
+        // setTimeout(function() {
+        //   window.location.href = "studentCountdown";
+        // }, 8000);
         return this.request;
       }
     },
@@ -883,34 +663,34 @@ export default {
         text: classes.data.dep + classes.data.courseNum
       });
     },
-    // async loadUser(user) {
-    // this.student = user.data._id;
-    // this.student = userId;
-    // },
+    async loadUser(user) {
+      // this.student = user.data._id;
+      this.student = userId;
+    },
 
+    // NOT INSERTED YET: file
     async submit() {
-      // Upload to firebase
-      await this.uploadFile();
-      console.log('after upload file')
-      console.log(this.fileUrls)
-      let ticket = await axios.post("../../api/insertTicket", {
-        status: "Open",
-        owner: {
-          _id: userId
-        },
-        course: {
-          _id: this.selectedCourse
-        },
-        oneLineOverview: this.probDes,
-        longerDescription: this.problem,
-        codeSnippet: this.code,
-        createdAt: new Date().toString(),
-        attachments: this.fileUrls
-      });
-      this.openTicket = ticket.data;
-
-      // sends ticket to staff
-      this.ticketChannel.publish("ticketUpdate", this.openTicket);
+      if (this.problem != "" && this.probDes != "") {
+        console.log("Submitting");
+        let ticket = await axios.post("../../api/insertTicket", {
+          status: "Open",
+          owner: {
+            _id: this.student
+          },
+          course: {
+            _id: this.selectedCourse
+          },
+          oneLineOverview: this.probDes,
+          longerDescription: this.problem,
+          codeSnippet: this.code,
+          createdAt: new Date().toString()
+        });
+        this.openTicket = ticket.data;
+        this.waitforStaff(this.openTicket._id);
+      } else {
+        // TODO: Tell the student they need to fill this out
+        console.log("not submitted");
+      }
     },
 
     async waitforStaff(id) {
@@ -918,14 +698,13 @@ export default {
         let ticket = await axios.get("../../api/ticket/" + id);
         if (ticket.data.status === "In Progress") {
           clearInterval(x);
-          // window.location.href = "/students/studentCountdown";
+          window.location.href = "/students/studentCountdown";
         }
         if (ticket.data.status === "Closed") {
           clearInterval(x);
         }
       }, 10000);
     },
-
     async closeTicket(ticket) {
       this.openTicket.status = "Closed";
       this.otherTickets.push(this.openTicket);
@@ -938,33 +717,23 @@ export default {
       await axios.put("../../api/updateTicket/" + ticket._id, {
         status: "Closed"
       });
-
-      // Reloading gets rid of the begin session text for now
-      window.location.reload();
-
-      this.showCountdown = false;
-
       this.scrollToTop();
     }
   },
 
-  mounted() {},
-
   beforeMount() {
     this.scrollToTop();
-    // this.loadClasses();
+    this.loadClasses();
   },
   async created() {
     this.scrollToTop();
     // let student = await axios.get("../../api/users/" + this.$route.params.id);
-    // this.loadUser(student);
-    this.student = userId;
-
     let student = await axios.get("../../api/users/" + userId);
 
     student.data.classes.forEach(element => {
       this.loadClasses(element);
     });
+    this.loadUser(student);
 
     let tickets = await axios.get("../../api/tickets");
     // this.otherTickets = tickets.data.filter(ticket => (ticket.owner._id === this.$route.params.id) )
