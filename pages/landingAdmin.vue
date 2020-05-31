@@ -3,6 +3,240 @@
 <!-- TODO:  Check that email doesnt already exist in system -->
 <!-- TODO:  Save information for staff name, role, classes -->
 <!-- TODO: Check and process removed emails -->
+<style>
+.add-email-row {
+  margin-top: 10px;
+  /* float: left !important; */
+}
+
+.small-column {
+  margin-left: 4%;
+}
+
+.remove-button {
+  cursor: pointer;
+  z-index: 999;
+  size: 8px;
+  margin-top: 14px;
+  padding-top: 14px;
+}
+
+.email-input {
+  float: left !important;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s;
+}
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
+}
+
+/* Styling for adding newStaffEmails */
+.add-button {
+  align-items: left;
+  font-size: 30px;
+  color: rgb(154, 224, 231);
+  cursor: pointer;
+  padding-top: 10px !important;
+}
+
+.top-row {
+  border-top: 1px solid #dee2e6;
+}
+
+.table {
+  text-align: center;
+}
+
+table th,
+.table td {
+  border-top: none;
+}
+
+.request-container {
+  position: relative;
+  padding-left: px;
+  padding-right: 10px;
+  margin-left: 15%;
+  margin-right: 15%;
+  margin-top: 6%;
+  margin-bottom: 2%;
+  font-family: "Poppins";
+  min-width: 200px;
+  border: solid 1px #ddd;
+  padding-left: 2%;
+  padding-right: 2%;
+  padding-bottom: 10px;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+/* TABS */
+
+h2.inactive {
+  color: #cccccc;
+}
+
+h2.active {
+  color: #0d0d0d;
+  /* border-bottom: 2px solid #5fbae9; */
+}
+
+input[type="text"] {
+  padding-top: 6px !important;
+  color: #0d0d0d;
+  text-align: left;
+  overflow: hidden;
+  display: inline-block;
+  font-size: 16px;
+  width: 100% !important;
+  /* margin: 5px; */
+  /* border: 2px solid #f6f6f6; */
+  -webkit-transition: all 0.5s ease-in-out;
+  -moz-transition: all 0.5s ease-in-out;
+  -ms-transition: all 0.5s ease-in-out;
+  -o-transition: all 0.5s ease-in-out;
+  transition: all 0.5s ease-in-out;
+  -webkit-border-radius: 5px 5px 5px 5px;
+  border-radius: 5px 5px 5px 5px;
+}
+
+input[type="text"]:focus {
+  /* border-bottom: 2px solid #5fbae9; */
+}
+
+input[type="text"]:placeholder {
+  color: #cccccc;
+}
+
+/* ANIMATIONS */
+/* Simple CSS3 Fade-in-down Animation */
+.fadeInDown {
+  -webkit-animation-name: fadeInDown;
+  animation-name: fadeInDown;
+  -webkit-animation-duration: 0.1s;
+  animation-duration: 0.1s;
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
+}
+
+@-webkit-keyframes fadeInDown {
+  0% {
+    opacity: 0;
+    -webkit-transform: translate3d(0, -100%, 0);
+    transform: translate3d(0, -100%, 0);
+  }
+  100% {
+    opacity: 1;
+    -webkit-transform: none;
+    transform: none;
+  }
+}
+
+/* Simple CSS3 Fade-in Animation */
+@-webkit-keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@-moz-keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.fadeIn {
+  opacity: 0;
+  -webkit-animation: fadeIn ease-in 1;
+  -moz-animation: fadeIn ease-in 1;
+  animation: fadeIn ease-in 1;
+
+  -webkit-animation-fill-mode: forwards;
+  -moz-animation-fill-mode: forwards;
+  animation-fill-mode: forwards;
+
+  -webkit-animation-duration: 1s;
+  -moz-animation-duration: 1s;
+  animation-duration: 1s;
+}
+
+.underlineHover:after {
+  display: block;
+  left: 0;
+  bottom: -10px;
+  width: 0;
+  height: 2px;
+  font-weight: 300 !important;
+  background-color: #56baed;
+  content: "";
+  transition: width 0.2s;
+}
+
+.underlineHover:hover:after {
+  width: 100%;
+  font-weight: 300 !important;
+}
+
+.card-text {
+  word-wrap: break-word;
+  word-break: break-all;
+}
+.tab-links {
+  display: inline-block;
+  margin-left: 4%;
+  margin-right: 4%;
+  font-size: 17px;
+  /* margin-left: 15px;
+  margin-right: 15px; */
+  cursor: pointer;
+  opacity: 0.8;
+  font-weight: 200;
+}
+
+.tab-links-active {
+  margin-left: 4%;
+  margin-right: 4%;
+  display: inline-block;
+  font-size: 18px;
+  cursor: pointer;
+  font-weight: 400 !important;
+  text-decoration: underline !important;
+  color: #0286a0 !important;
+}
+
+.request-staff-buttons {
+  width: 40% !important;
+  opacity: 0.9;
+}
+.request-tabs {
+  margin-top: 10px;
+  margin-bottom: 6px;
+  width: 100%;
+  display: inline-block;
+  text-align: center;
+}
+
+.md-subhead {
+  justify-content: left;
+}
+</style>
+
 
 <template>
   <div>
@@ -342,238 +576,3 @@ export default {
   }
 };
 </script>
-
-
-<style>
-.add-email-row {
-  margin-top: 10px;
-  /* float: left !important; */
-}
-
-.small-column {
-  margin-left: 4%;
-}
-
-.remove-button {
-  cursor: pointer;
-  z-index: 999;
-  size: 8px;
-  margin-top: 14px;
-  padding-top: 14px;
-}
-
-.email-input {
-  float: left !important;
-}
-
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.5s;
-}
-.fade-enter,
-.fade-leave-to {
-  opacity: 0;
-}
-
-/* Styling for adding newStaffEmails */
-.add-button {
-  align-items: left;
-  font-size: 30px;
-  color: rgb(154, 224, 231);
-  cursor: pointer;
-  padding-top: 10px !important;
-}
-
-.top-row {
-  border-top: 1px solid #dee2e6;
-}
-
-.table {
-  text-align: center;
-}
-
-table th,
-.table td {
-  border-top: none;
-}
-
-.request-container {
-  position: relative;
-  padding-left: px;
-  padding-right: 10px;
-  margin-left: 15%;
-  margin-right: 15%;
-  margin-top: 6%;
-  margin-bottom: 2%;
-  font-family: "Poppins";
-  min-width: 200px;
-  border: solid 1px #ddd;
-  padding-left: 2%;
-  padding-right: 2%;
-  padding-bottom: 10px;
-  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.05);
-}
-
-/* TABS */
-
-h2.inactive {
-  color: #cccccc;
-}
-
-h2.active {
-  color: #0d0d0d;
-  /* border-bottom: 2px solid #5fbae9; */
-}
-
-input[type="text"] {
-  padding-top: 6px !important;
-  color: #0d0d0d;
-  text-align: left;
-  overflow: hidden;
-  display: inline-block;
-  font-size: 16px;
-  width: 100% !important;
-  /* margin: 5px; */
-  /* border: 2px solid #f6f6f6; */
-  -webkit-transition: all 0.5s ease-in-out;
-  -moz-transition: all 0.5s ease-in-out;
-  -ms-transition: all 0.5s ease-in-out;
-  -o-transition: all 0.5s ease-in-out;
-  transition: all 0.5s ease-in-out;
-  -webkit-border-radius: 5px 5px 5px 5px;
-  border-radius: 5px 5px 5px 5px;
-}
-
-input[type="text"]:focus {
-  /* border-bottom: 2px solid #5fbae9; */
-}
-
-input[type="text"]:placeholder {
-  color: #cccccc;
-}
-
-/* ANIMATIONS */
-/* Simple CSS3 Fade-in-down Animation */
-.fadeInDown {
-  -webkit-animation-name: fadeInDown;
-  animation-name: fadeInDown;
-  -webkit-animation-duration: 0.1s;
-  animation-duration: 0.1s;
-  -webkit-animation-fill-mode: both;
-  animation-fill-mode: both;
-}
-
-@-webkit-keyframes fadeInDown {
-  0% {
-    opacity: 0;
-    -webkit-transform: translate3d(0, -100%, 0);
-    transform: translate3d(0, -100%, 0);
-  }
-  100% {
-    opacity: 1;
-    -webkit-transform: none;
-    transform: none;
-  }
-}
-
-/* Simple CSS3 Fade-in Animation */
-@-webkit-keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-@-moz-keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-.fadeIn {
-  opacity: 0;
-  -webkit-animation: fadeIn ease-in 1;
-  -moz-animation: fadeIn ease-in 1;
-  animation: fadeIn ease-in 1;
-
-  -webkit-animation-fill-mode: forwards;
-  -moz-animation-fill-mode: forwards;
-  animation-fill-mode: forwards;
-
-  -webkit-animation-duration: 1s;
-  -moz-animation-duration: 1s;
-  animation-duration: 1s;
-}
-
-.underlineHover:after {
-  display: block;
-  left: 0;
-  bottom: -10px;
-  width: 0;
-  height: 2px;
-  font-weight: 300 !important;
-  background-color: #56baed;
-  content: "";
-  transition: width 0.2s;
-}
-
-.underlineHover:hover:after {
-  width: 100%;
-  font-weight: 300 !important;
-}
-
-.card-text {
-  word-wrap: break-word;
-  word-break: break-all;
-}
-.tab-links {
-  display: inline-block;
-  margin-left: 4%;
-  margin-right: 4%;
-  font-size: 17px;
-  /* margin-left: 15px;
-  margin-right: 15px; */
-  cursor: pointer;
-  opacity: 0.8;
-  font-weight: 200;
-}
-
-.tab-links-active {
-  margin-left: 4%;
-  margin-right: 4%;
-  display: inline-block;
-  font-size: 18px;
-  cursor: pointer;
-  font-weight: 400 !important;
-  text-decoration: underline !important;
-  color: #0286a0 !important;
-}
-
-.request-staff-buttons {
-  width: 40% !important;
-  opacity: 0.9;
-}
-.request-tabs {
-  margin-top: 10px;
-  margin-bottom: 6px;
-  width: 100%;
-  display: inline-block;
-  text-align: center;
-}
-
-.md-subhead {
-  justify-content: left;
-}
-</style>

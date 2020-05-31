@@ -510,7 +510,7 @@ import "vue-material/dist/vue-material.min.css";
 import "vue-material/dist/theme/default.css";
 import { BFormInput, BFormSelect, BButton, BFormCheckbox } from "bootstrap-vue";
 
-const staffId = "5ecafc0f5219c55528efe03f";
+const staffId = "5eade47047da2706382d53e6";
 
 Vue.use(VueMaterial);
 import * as Ably from "ably";
@@ -624,11 +624,11 @@ export default {
           "/api/getStudentsById/" + ticketOwnerId
         );
         if (studentResponse) {
-          if (studentResponse.data.name.firstname) {
+          if (studentResponse.data.name.firstName) {
             studentName =
-              studentResponse.data.name.firstname +
+              studentResponse.data.name.firstName +
               " " +
-              studentResponse.data.name.lastname;
+              studentResponse.data.name.lastName;
             // document.getElementById('studentName').innerHTML = studentName;
             this.$set(ticket, "ownerName", studentName);
           }

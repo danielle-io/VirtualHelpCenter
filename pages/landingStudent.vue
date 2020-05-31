@@ -1005,10 +1005,10 @@ if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
 // const userId = "5ec0858d7971d22628fd7e0d";
-const userId = "5ecafbcd5219c55528efe03e";
+const userId = "5ed30b9ae2cb7f76b8bb3937";
 
 // DELETE THIS: FOR TESTING ADDING CLOSED TICKETS ONLY
-const staffId = "5ecafc0f5219c55528efe03f";
+const staffId = "5eade47047da2706382d53e6";
 
 const client = new Ably.Realtime(process.env.ABLY_KEY);
 // const userId = "5eb86452ed2ee55868633193";
@@ -1430,7 +1430,7 @@ export default {
       if (!this.openTicket) {
         console.log("inserting " + this.fileObjects);
         let ticket = await axios.post("/api/insertTicket", {
-          status: "Open",
+          status: "Closed",
           owner: {
             _id: userId
           },
@@ -1444,7 +1444,7 @@ export default {
           attachments: this.fileObjects,
           rating: 0,
           ratingExplanation: "",
-          wasRated: 0
+          wasRated: 0,
           // This is only for testing Closed tickets
           // acceptedBy: {
           //   _id: staffId
