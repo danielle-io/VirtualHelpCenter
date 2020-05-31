@@ -1296,7 +1296,7 @@ export default {
         console.log("staff accepted ticket");
         this.zoomLink = message.data.zoomLink;
         this.openTicket.updatedAt = message.data.date;
-
+        this.showCountdown = true;
         //document.getElementById("hiddenButton").click();
       });
     },

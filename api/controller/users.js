@@ -1,7 +1,7 @@
-var UserModel = require('../model/users');
-
 const {Router} = require('express');
 const router = Router();
+
+let UserModel = require('../model/users');
 
 // //GET User Listing
 // router.get('/users',(req,res,next) => {
