@@ -43,6 +43,14 @@ router.get('/tickets/getTickets', function(req,res,next){
     })
 })
 
+router.get('/tickets/getTicketsByUser/:id', function(req,res,next){
+    const id = req.params.id;
+    Ticket.find({'owner._id' : id}, (err, tickets)=>{
+        console.log(tickets);
+        res.send(tickets)
+    })
+})
+
 //Deleting Ticket
 router.delete('/deleteTicket/:id', function(req, res, next) {
     const id = req.params.id;

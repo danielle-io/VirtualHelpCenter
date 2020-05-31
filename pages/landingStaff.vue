@@ -795,15 +795,16 @@ export default {
 
       console.log("ticket is " + JSON.stringify(this.currentTicket));
 
-      // Get the students user id from the ticket
-      this.studentChannel = client.channels.get(this.currentTicket.owner._id);
-      this.studentChannel.publish("staffAcceptedTicket", {
-        zoomLink: this.zoomLink,
-        date: ticketTime
-      });
+   // Get the students user id from the ticket
+      // this.studentChannel = client.channels.get(this.currentTicket.owner._id);
+      // this.studentChannel.publish("staffAcceptedTicket", {
+      //   zoomLink: this.zoomLink,
+      //   date: ticketTime
+      // });
+
 
       //remove the ticket from open tickets
-      this.ticketChannel.publish("ticketClosed", this.currentTicket);
+      // this.ticketChannel.publish("ticketClosed", this.currentTicket);
 
       // Show connection screen once student receives countdown
       this.connecting = true;
@@ -825,12 +826,12 @@ export default {
       }, this.countdownTime(ticketTime));
 
       // Subscribe to an event on studentChannel to see if they accepted ticket
-      this.studentChannel.subscribe("studentAcceptedSession", function(message) {
-        document.getElementById("hiddenButton").click();
-        this.studentAccepted = true;
-        console.log("student accepted");
-        clearTimeout(x);
-      });
+      //    this.studentChannel.subscribe("studentAcceptedSession", function(message) {
+      //   document.getElementById("hiddenButton").click();
+      //   this.studentAccepted = true;
+      //   console.log("student accepted");
+      //   clearTimeout(x);
+      // });
 
     },
     countdownTime(ticketTime) {
@@ -909,27 +910,22 @@ export default {
       this.course = course.value
     }
   },
-  beforeMount() {
+ beforeMount() {
     this.staffCourses.push({ value: null, text: "Show All Courses" });
     
     // This gets ANY ticket submitted by ANY student
-    this.ticketChannel.subscribe("ticketUpdate", message => {
-      console.log("ticket was added");
-
+    // this.ticketChannel.subscribe("ticketUpdate", message => {
+    //   console.log("ticket was added");
       //add new ticket to existing tickets
-      this.getStudentName(message.data, message.data.owner._id)
-      this.tickets.push(message.data);
-    });
-
-    this.ticketChannel.subscribe("ticketClosed", message => {
-      console.log("ticket was deleted");
-
+    //   this.getStudentName(message.data, message.data.owner._id)
+    //   this.tickets.push(message.data);
+    // });
+    // this.ticketChannel.subscribe("ticketClosed", message => {
+    //   console.log("ticket was deleted");
       //ticket will be deleted from being displayed
-      this.removeTicket(message.data._id);
-    });
-
+    //   this.removeTicket(message.data._id);
+    // });
     this.scrollToTop();
-
   }
   // computed: {
   //   studentAccepted() {
