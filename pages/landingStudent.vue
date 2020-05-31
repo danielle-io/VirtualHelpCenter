@@ -441,7 +441,7 @@ input[type="text"]:placeholder {
         >Request History</a>
       </div>
 
-      <transition name="modal">
+      <!-- <transition name="modal">
         <div class="modal-mask">
           <div class="modal-wrapper">
             <div class="modal-container">
@@ -462,7 +462,7 @@ input[type="text"]:placeholder {
             </div>
           </div>
         </div>
-      </transition>
+      </transition> -->
 
       <transition name="fade" mode="in-out">
         <!-- <div style="text-align: center;"> -->
@@ -564,9 +564,8 @@ input[type="text"]:placeholder {
               </div>
 
               <div
-                v-if="this.openTicket"
+                v-if="showTicket"
                 style="text-align: center; margin-top: 12px;"
-                :hidden="!this.openTicket"
               >
                 <!-- TODO: show a modal on clicking close asking if they are sure -->
                 <md-card style="padding-top: 15px; padding-bottom: 10px;">
@@ -1020,14 +1019,10 @@ var firebaseConfig = {
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
-// const userId = "5ec0858d7971d22628fd7e0d";
-const userId = "5ed30b9ae2cb7f76b8bb3937";
 
-// DELETE THIS: FOR TESTING ADDING CLOSED TICKETS ONLY
-const staffId = "5eade47047da2706382d53e6";
+const userId = "5ed34dbd99e64f3cc0b49397";
 
 const client = new Ably.Realtime(process.env.ABLY_KEY);
-// const userId = "5eb86452ed2ee55868633193";
 
 // base style
 // import "codemirror/lib/codemirror.css";
@@ -1151,6 +1146,7 @@ export default {
       ],
       zoomLink: null,
       showCountdown: false,
+      showTicket: false,
       studentAcceptedSession: false,
       studentChannel: client.channels.get(userId),
       ticketChannel: client.channels.get("tickets"),
@@ -1322,7 +1318,6 @@ export default {
         this.zoomLink = message.data.zoomLink;
         this.openTicket.updatedAt = message.data.date;
         this.showCountdown = true;
-        //document.getElementById("hiddenButton").click();
       });
     },
     countdownTime: function() {
@@ -1343,16 +1338,16 @@ export default {
         (currentTime.getMinutes() * 60 + currentTime.getSeconds())
       );
     },
-    finished: studentChannel => {
-      console.log("in finished");
-
-      //tell staff student did not accept session
-      // studentChannel.publish("studentDidNotAcceptSession", userId);
-
+    finished: function (){
+      //when countdown is over, take them back to the other page
+      this.showCountdown = false;
+      this.requestLandingPage = true;
+      this.showTicket = false;
       this.openTicket.status = "Unresolved";
       this.ticketHistory.push(this.openTicket);
       this.unresolvedTicket = true;
-      this.openTicket = null;
+      this.openTicket = null; 
+      this.submitRequest = false;
     },
 
     reSubmitTicket: function(ticket) {
@@ -1376,13 +1371,15 @@ export default {
       this.openTicket.createdAt = new Date().toString();
 
       this.getTickets();
+      this.showTicket = true;
 
       // sends ticket to staff
-      // this.ticketChannel.publish("ticketUpdate", this.openTicket);
+      this.ticketChannel.publish("ticketUpdate", this.openTicket);
     },
 
     changeRequestState: function() {
       if (this.requestLandingPage === true && this.submitRequest === false) {
+        this.clearForm();
         this.requestLandingPage = false;
         return this.requestLandingPage;
       } else {
@@ -1448,7 +1445,7 @@ export default {
       }
 
       if (!this.openTicket) {
-        console.log("inserting " + this.fileObjects);
+        console.log("inserting ", this.fileObjects);
         let ticket = await axios.post("/api/insertTicket", {
           status: "Open",
           owner: {
@@ -1472,6 +1469,7 @@ export default {
         });
 
         this.openTicket = ticket.data;
+        this.showTicket = true;
         console.log("Open ticket below");
         console.log(this.openTicket);
 
@@ -1487,18 +1485,16 @@ export default {
       });
 
       this.ticketHistory = tickets.data.filter(
-        ticket => ticket.status !== "Open"
+        ticket => ticket.status !== "Open" && ticket.owner._id == userId
       );
 
       this.openTickets = tickets.data.filter(
-        ticket => ticket.status === "Open"
+        ticket => ticket.status === "Open" && ticket.owner._id == userId
       );
 
-      if (this.openTickets) {
+      if (this.openTickets.length>0) {
         this.openTicket = this.openTickets[0];
-        if (this.openTicket) {
-          console.log(this.openTicket);
-        }
+        this.showTicket = true;
       }
     },
 
@@ -1534,9 +1530,11 @@ export default {
             this.openTicket = null;
           });
 
-        this.clearForm();
-        window.location.reload();
+        this.requestLandingPage = true;
+        this.openTicket = null;
+        this.submitRequest = false;
         this.scrollToTop();
+        this.showTicket = false;
       }
     }
   },
@@ -1548,18 +1546,5 @@ export default {
     this.getStudentInfo();
     this.startSubscribe();
   },
-
-  async created() {},
-  computed: {
-    isDisabled: function() {
-      return !this.selected;
-    }
-    // studentSession() {
-    //   return this.studentAcceptedSession
-    // },
-    // showCountdown() {
-    //   return this.showCountdown
-    // }
-  }
 };
 </script>

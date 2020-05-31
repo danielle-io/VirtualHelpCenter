@@ -639,12 +639,21 @@ export default {
   },
   methods: {
     filterOpenTickets(status) {
+      // if (this.tickets) {
+      //   this.filteredTickets = this.tickets.filter(
+      //     ticket => ticket.status === status
+      //   );
+      //   return this.filteredTickets;
+      // } else {
+      //   this.filteredTickets = [];
+      //   return;
+      // }
       if (this.tickets) {
-        this.filteredTickets = this.tickets.filter(
-          ticket => ticket.status === status
-        );
-        return this.filteredTickets;
-      } else {
+        console.log("filtering open tickets")
+        return this.tickets.filter(ticket => ticket.status === status);
+      }
+  
+      else {
         this.filteredTickets = [];
         return;
       }
@@ -701,7 +710,7 @@ export default {
       var studentName = "";
       if (ticketOwnerId && ticket) {
         let studentResponse = await axios.get(
-          "/api/getStudentsById/" + ticketOwnerId
+          "/api/users/" + ticketOwnerId
         );
         if (studentResponse) {
           if (studentResponse.data.name.firstName) {
@@ -793,33 +802,36 @@ export default {
         date: ticketTime
       });
 
+      //remove the ticket from open tickets
+      this.ticketChannel.publish("ticketClosed", this.currentTicket);
+
       // Show connection screen once student receives countdown
       this.connecting = true;
-
-      console.log("waiting on acceptance");
-      // Subscribe to an event on studentChannel to see if they accepted ticket
-      this.studentChannel.subscribe("studentAcceptedSession", (message) => {
-        //document.getElementById("hiddenButton").click();
-        this.studentAccepted = true;
-        console.log("student accepted");
-      });
-
-      let x = setTimeout(function() {
+      
+      //If the student does not accept the session in time return to beginning
+      let x = setTimeout(() => {
         // Right here we let it know the student did not accept
         console.log("student did not accept in time");
         axios.put("/api/updateTicket/" + this.currentTicketId, {
           status: "Unresolved"
         });
+        this.connecting = false;
+        this.zoomLinkForm = false;
+        this.selectedTicketIndex = -1;
+        this.startingIndex = 0;
+        this.endingIndex = 3;
+        this.currentTicket = null;
+        this.currentTicketId = null;
       }, this.countdownTime(ticketTime));
 
-      //student did not accept the ticket
-      // this.studentChannel.subscribe("studentDidNotAcceptSession", function(
-      //   message
-      // ) {
-      //   console.log("student did not accept session, moving on");
-      //not sure if the timeout is cleared when we move on
-      clearTimeout(x);
-      // });
+      // Subscribe to an event on studentChannel to see if they accepted ticket
+      this.studentChannel.subscribe("studentAcceptedSession", function(message) {
+        document.getElementById("hiddenButton").click();
+        this.studentAccepted = true;
+        console.log("student accepted");
+        clearTimeout(x);
+      });
+
     },
     countdownTime(ticketTime) {
       //read updated time
@@ -838,6 +850,9 @@ export default {
           (currentTime.getMinutes() * 60 + currentTime.getSeconds())) *
         1000
       );
+    },
+    removeTicket(id){
+      this.tickets = this.tickets.filter(ticket => ticket.status === "Open" && ticket._id != id);
     },
     expandCard: function() {},
     async acceptTicket() {
@@ -890,23 +905,19 @@ export default {
       staff.data.classes.forEach(element => {
         this.loadClasses(element);
       });
-      let course = staff.data.classes[0];
-      let staffcourse = course._id;
-      this.course = staffcourse;
-      // this.loadUser(staff);
-
-      //      if (staff) {
-      //   this.staff = user.data._id;
-      //   console.log("user loaded");
-      // }
+      let course = this.staffCourses[0];
+      this.course = course.value
     }
   },
   beforeMount() {
     this.staffCourses.push({ value: null, text: "Show All Courses" });
-
+    
     // This gets ANY ticket submitted by ANY student
     this.ticketChannel.subscribe("ticketUpdate", message => {
+      console.log("ticket was added");
+
       //add new ticket to existing tickets
+      this.getStudentName(message.data, message.data.owner._id)
       this.tickets.push(message.data);
     });
 
@@ -914,7 +925,7 @@ export default {
       console.log("ticket was deleted");
 
       //ticket will be deleted from being displayed
-      this.removeTicket(message.data);
+      this.removeTicket(message.data._id);
     });
 
     this.scrollToTop();
