@@ -562,13 +562,6 @@ input[type="text"]:placeholder {
                     </button>
                   </div>
 
-                  <!-- <md-card-header style="display: in-line-block;">
-                    <div
-                      style="justify-content: center; font-size: 18px; text-align: center; margin-top: 20px;"
-                      class="md-title"
-                    ></div>
-                  </md-card-header>-->
-
                   <div class="card-line">
                     <div class="row">
                       <span class="card-categories col-sm-3">
@@ -1005,7 +998,7 @@ if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
 // const userId = "5ec0858d7971d22628fd7e0d";
-const userId = "5ecafbcd5219c55528efe03e";
+const userId = "5ed30b9ae2cb7f76b8bb3937";
 
 // DELETE THIS: FOR TESTING ADDING CLOSED TICKETS ONLY
 const staffId = "5ecafc0f5219c55528efe03f";
