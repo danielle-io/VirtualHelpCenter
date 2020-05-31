@@ -441,7 +441,7 @@ input[type="text"]:placeholder {
         >Request History</a>
       </div>
 
-      <transition name="modal">
+      <!-- <transition name="modal">
         <div class="modal-mask">
           <div class="modal-wrapper">
             <div class="modal-container">
@@ -462,7 +462,7 @@ input[type="text"]:placeholder {
             </div>
           </div>
         </div>
-      </transition>
+      </transition> -->
 
       <transition name="fade" mode="in-out">
         <!-- <div style="text-align: center;"> -->
@@ -1020,8 +1020,9 @@ var firebaseConfig = {
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
-// const userId = "5ec0858d7971d22628fd7e0d";
-const userId = "5ed30b9ae2cb7f76b8bb3937";
+const userId = "5eb88b493b46ff146caf250c";
+
+// const userId = "5ec5f90d81b13d23065ead3e";
 
 // DELETE THIS: FOR TESTING ADDING CLOSED TICKETS ONLY
 const staffId = "5eade47047da2706382d53e6";
@@ -1260,7 +1261,7 @@ export default {
       // this.finished();
 
       // Publish an event to the  channel
-      this.studentChannel.publish("studentAcceptedSession", userId);
+      // this.studentChannel.publish("studentAcceptedSession", userId);
     },
     triggerAccept: function() {
       this.showCountdown = true;
@@ -1317,13 +1318,13 @@ export default {
     startSubscribe() {
       console.log("subscribing to staff");
       // The student's ticket was accepted by the staff
-      this.studentChannel.subscribe("staffAcceptedTicket", message => {
-        console.log("staff accepted ticket");
-        this.zoomLink = message.data.zoomLink;
-        this.openTicket.updatedAt = message.data.date;
-        this.showCountdown = true;
+      // this.studentChannel.subscribe("staffAcceptedTicket", message => {
+      //   console.log("staff accepted ticket");
+      //   this.zoomLink = message.data.zoomLink;
+      //   this.openTicket.updatedAt = message.data.date;
+      //   this.showCountdown = true;
         //document.getElementById("hiddenButton").click();
-      });
+      // });
     },
     countdownTime: function() {
       //read updated time
@@ -1386,11 +1387,11 @@ export default {
         this.requestLandingPage = false;
         return this.requestLandingPage;
       } else {
-        var client = new Ably.Realtime(process.env.ABLY_KEY);
-        var channel = client.channels.get("staff");
+        // var client = new Ably.Realtime(process.env.ABLY_KEY);
+        // var channel = client.channels.get("staff");
        
        // Publish a message to the test channel
-        channel.publish("ticketUpdate", "ticket updated");
+        // channel.publish("ticketUpdate", "ticket updated");
 
         this.submitRequest = true;
         this.scrollToTop();
@@ -1450,7 +1451,7 @@ export default {
       if (!this.openTicket) {
         console.log("inserting " + this.fileObjects);
         let ticket = await axios.post("/api/insertTicket", {
-          status: "Open",
+          status: "Closed",
           owner: {
             _id: userId
           },
@@ -1464,11 +1465,11 @@ export default {
           attachments: this.fileObjects,
           rating: 0,
           ratingExplanation: "",
-          wasRated: 0
+          wasRated: 0,
           // This is only for testing Closed tickets
-          // acceptedBy: {
-          //   _id: staffId
-          // }
+          acceptedBy: {
+            _id: staffId
+          }
         });
 
         this.openTicket = ticket.data;
@@ -1476,14 +1477,13 @@ export default {
         console.log(this.openTicket);
 
         // sends ticket to staff
-        this.ticketChannel.publish("ticketUpdate", this.openTicket);
+        // this.ticketChannel.publish("ticketUpdate", this.openTicket);
       }
     },
     async getTickets() {
       console.log("in get tickets");
 
-      let tickets = await axios.get("/api/tickets/getTickets", {
-        "owner._id": userId
+      let tickets = await axios.get("/api/tickets/getTicketsByUser/" + userId, {
       });
 
       this.ticketHistory = tickets.data.filter(
@@ -1518,7 +1518,7 @@ export default {
       if (this.openTicket) {
         console.log("closing ticket " + this.openTicket._id);
 
-        this.ticketChannel.publish("ticketClosed", this.openTicket);
+        // this.ticketChannel.publish("ticketClosed", this.openTicket);
 
         this.openTicket.status = "Unresolved";
         this.ticketHistory.push(this.openTicket);
