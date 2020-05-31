@@ -1,10 +1,18 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-const TutorSchema = new Schema({
+let TutorSchema = null;
+
+const tutor = new Schema({
     email: String,
 
 },
 {collection: 'tutor'})
 
-module.exports = mongoose.model('tutor', TutorSchema);
+try {
+    TutorSchema = mongoose.model('tutor', tutor);
+} catch (e) {
+    TutorSchema = mongoose.model('tutor');
+}
+
+module.exports = TutorSchema;

@@ -1,12 +1,14 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
+let UserSchema = null;
+
 const userOptions = {
     discriminatorKey: 'usertype',
     collection: 'User'
 };
 
-const UserSchema = new Schema({
+const user = new Schema({
     name: {
         firstName: String,
         lastName: String
@@ -17,4 +19,10 @@ const UserSchema = new Schema({
     userOptions
 );
 
-module.exports = mongoose.model('User', UserSchema);
+try {
+    UserSchema = mongoose.model('User', user);
+} catch (e) {
+    UserSchema = mongoose.model('User');
+}
+
+module.exports = UserSchema;

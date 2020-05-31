@@ -1,11 +1,9 @@
-// 'use strict';
 var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
 
-mongoose.models = {};
-mongoose.modelSchemas = {};
+let TicketSchema = null;
 
-var ticketSchema = new Schema(
+var ticket = new Schema(
   {
     status: {
       type: String,
@@ -44,4 +42,10 @@ var ticketSchema = new Schema(
   { collection: "Ticket" }
 );
 
-module.exports = mongoose.model("Ticket", ticketSchema);
+try {
+  TicketSchema = mongoose.model('Ticket', ticket);
+} catch (e) {
+  TicketSchema = mongoose.model('Ticket');
+}
+
+module.exports = TicketSchema;
