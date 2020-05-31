@@ -1293,7 +1293,6 @@ export default {
         this.zoomLink = message.data.zoomLink;
         this.openTicket.updatedAt = message.data.date;
         this.showCountdown = true;
-        //document.getElementById("hiddenButton").click();
       });
     },
     countdownTime: function() {
@@ -1308,24 +1307,20 @@ export default {
           (currentTime.getMinutes() * 60 + currentTime.getSeconds())
       );
 
-      // return (
-      //   ticketTime.getMinutes() * 60 +
-      //   ticketTime.getSeconds() -
-      //   (currentTime.getMinutes() * 60 + currentTime.getSeconds())
-      // );
-      return 5;
+      return (
+        ticketTime.getMinutes() * 60 +
+        ticketTime.getSeconds() -
+        (currentTime.getMinutes() * 60 + currentTime.getSeconds())
+      );
     },
     finished: function (){
-
-      //tell staff student did not accept session
-
-      // studentChannel.publish("studentDidNotAcceptSession", userId);
+      //when countdown is over, take them back to the other page
       this.showCountdown = false;
       this.requestLandingPage = true;
-      
+      this.showTicket = false;
       this.openTicket.status = "Unresolved";
       this.ticketHistory.push(this.openTicket);
-      // this.unresolvedTicket = true;
+      this.unresolvedTicket = true;
       this.openTicket = null; 
       this.submitRequest = false;
     },

@@ -822,7 +822,7 @@ export default {
         this.endingIndex = 3;
         this.currentTicket = null;
         this.currentTicketId = null;
-      }, 5000);
+      }, this.countdownTime(ticketTime));
 
       // Subscribe to an event on studentChannel to see if they accepted ticket
       this.studentChannel.subscribe("studentAcceptedSession", function(message) {
