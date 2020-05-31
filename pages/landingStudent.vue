@@ -561,13 +561,6 @@ input[type="text"]:placeholder {
                     </button>
                   </div>
 
-                  <!-- <md-card-header style="display: in-line-block;">
-                    <div
-                      style="justify-content: center; font-size: 18px; text-align: center; margin-top: 20px;"
-                      class="md-title"
-                    ></div>
-                  </md-card-header>-->
-
                   <div class="card-line">
                     <div class="row">
                       <span class="card-categories col-sm-3">
@@ -1240,7 +1233,7 @@ export default {
       // this.finished();
 
       // Publish an event to the  channel
-      // this.studentChannel.publish("studentAcceptedSession", userId);
+      this.studentChannel.publish("studentAcceptedSession", userId);
     },
     triggerAccept: function() {
       this.showCountdown = true;
@@ -1292,16 +1285,15 @@ export default {
       this.selectedCourse = course;
       console.log(course);
     },
-    async startSubscribe() {
+    startSubscribe() {
       console.log("subscribing to staff");
       // The student's ticket was accepted by the staff
       this.studentChannel.subscribe("staffAcceptedTicket", message => {
         console.log("staff accepted ticket");
         this.zoomLink = message.data.zoomLink;
         this.openTicket.updatedAt = message.data.date;
-        this.showTicket = false;
-        
-        document.getElementById("hiddenButton").click();
+        this.showCountdown = true;
+        //document.getElementById("hiddenButton").click();
       });
     },
     countdownTime: function() {
@@ -1371,9 +1363,11 @@ export default {
         this.requestLandingPage = false;
         return this.requestLandingPage;
       } else {
-        // var client = new Ably.Realtime(process.env.ABLY_KEY);
-        // var channel = client.channels.get("staff");
-        // channel.publish("ticketUpdate", "ticket updated");
+        var client = new Ably.Realtime(process.env.ABLY_KEY);
+        var channel = client.channels.get("staff");
+       
+       // Publish a message to the test channel
+        channel.publish("ticketUpdate", "ticket updated");
 
         this.submitRequest = true;
         this.scrollToTop();

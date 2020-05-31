@@ -1,7 +1,8 @@
-var Ticket = require('../model/tickets.js');
-
 const { Router } = require('express')
-const router = Router()
+const router = Router();
+
+let Ticket = require('../model/tickets');
+
 
 /* GET tickets listing. */
 router.get('/tickets', function (req, res, next) {

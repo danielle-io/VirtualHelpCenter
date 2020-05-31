@@ -1,7 +1,7 @@
-var TutorModel = require('../model/tutors');
-
 const{Router} = require('express');
 const router = Router();
+
+let TutorModel = require('../model/tutors');
 
 //GET Tutor Listing
 router.get('/tutors', (req,res,next) =>{
