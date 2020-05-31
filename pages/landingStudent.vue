@@ -1,4 +1,39 @@
 <style>
+.md-dialog {
+  position: fixed;
+  z-index: 9999;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  display: flex;
+  transition-duration: 0.2s;
+
+  /* z-index: 11; */
+}
+
+.dialog-showing {
+  opacity: 0.9;
+}
+
+.dialog-hidden {
+  opacity: 1;
+}
+
+.md-dialog-container.md-theme-default {
+  width: 50% !important;
+}
+
+.md-button {
+}
+
+.md-primary {
+  /* color: red !important; */
+}
+
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.5s;
@@ -195,6 +230,18 @@ table th,
   padding: 0.4em;
   position: relative;
   border-radius: 10px 10px 10px 10px;
+}
+
+.md-button.md-theme-default {
+  color: rgba(0, 0, 0, 0.87);
+  color: rgba(0, 0, 0, 0.87);
+  color: var(
+    --md-theme-default-text-primary-on-background,
+    rgba(0, 0, 0, 0.87)
+  );
+  border: none !important;
+  background: none !important;
+  box-shadow: none;
 }
 
 .tab-links-active {
@@ -423,6 +470,19 @@ input[type="text"]:placeholder {
 
 <template>
   <div>
+    <no-ssr>
+      <md-dialog-confirm
+        style="margin-left: 20px; margin-right: 20px;"
+        :md-active.sync="showDeleteRequestModal"
+        md-title="Are you sure you would like to cancel this request?"
+        md-content="If you choose to cancel, you can re-submit from your Request History tab, but you will be moved to the end of the line."
+        md-confirm-text="Yes, remove request"
+        md-cancel-text="No"
+        clickOutsideToClose="true"
+        @md-cancel="onCancel"
+        @md-confirm="cancelTicket"
+      />
+    </no-ssr>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/velocity/1.2.3/velocity.min.js"></script>
 
     <div id="requests">
@@ -441,36 +501,15 @@ input[type="text"]:placeholder {
         >Request History</a>
       </div>
 
-      <!-- <transition name="modal">
-        <div class="modal-mask">
-          <div class="modal-wrapper">
-            <div class="modal-container">
-              <div class="modal-header">
-                <slot name="header">default header</slot>
-              </div>
-
-              <div class="modal-body">
-                <slot name="body">default body</slot>
-              </div>
-
-              <div class="modal-footer">
-                <slot name="footer">
-                  default footer
-                  <button class="modal-default-button" @click="$emit('close')">OK</button>
-                </slot>
-              </div>
-            </div>
-          </div>
-        </div>
-      </transition> -->
-
       <transition name="fade" mode="in-out">
         <!-- <div style="text-align: center;"> -->
 
-        <div v-bind:key="requestLandingPage" class="request-container">
+        <div v-bind:key="requestLandingPage" class="request-container" v-bind:class="{ 'dialog-showing': showDeleteRequestModal, 'dialog-hidden': !showDeleteRequestModal }">
           <div v-if="!this.requestLandingPage && !this.submitRequest" class="side-border-line" />
 
           <div class="container-body">
+            <!-- <md-button class="md-primary md-raised" @click=" = true">Confirm</md-button> -->
+
             <div v-if="this.currentRequestsTab">
               <div v-if="this.studentAcceptedSession">
                 <div class="request-container-two">
@@ -563,10 +602,7 @@ input[type="text"]:placeholder {
                 </div>
               </div>
 
-              <div
-                v-if="showTicket"
-                style="text-align: center; margin-top: 12px;"
-              >
+              <div v-if="showTicket" style="text-align: center; margin-top: 12px;">
                 <!-- TODO: show a modal on clicking close asking if they are sure -->
                 <md-card style="padding-top: 15px; padding-bottom: 10px;">
                   <div
@@ -575,7 +611,7 @@ input[type="text"]:placeholder {
                     <button
                       class="close-button"
                       style="margin-top: 5px;"
-                      v-on:click="cancelTicket()"
+                      v-on:click="showDeleteRequestModal = true"
                     >
                       <close
                         style="color: red !important; margin-bottom: 0px; padding-bottom: 0px;"
@@ -920,7 +956,8 @@ input[type="text"]:placeholder {
                       <div v-if="ticket.wasRated === 1" class="card-line-history">
                         <div style="display: inline-block" class="row">
                           <span style="padding-left:6px; margin-right: 8px;" class="rating-title">
-                            <check style="margin-right: 6px;" />Rating Submitted
+                            <check />
+                            <span style="padding-left:6px">Rating Submitted</span>
                           </span>
                         </div>
                       </div>
@@ -1020,8 +1057,8 @@ if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
 
-const userId = "5ed34dbd99e64f3cc0b49397";
-// const userId = "5eb88b493b46ff146caf250c";
+// const userId = "5ed34dbd99e64f3cc0b49397";
+const userId = "5eb88b493b46ff146caf250c";
 
 // const userId = "5ec5f90d81b13d23065ead3e";
 
@@ -1082,6 +1119,12 @@ import {
   BFormRadio,
   BFormRadioGroup
 } from "bootstrap-vue";
+
+import VueMaterial from "vue-material";
+import "vue-material/dist/vue-material.min.css";
+import "vue-material/dist/theme/default.css";
+
+Vue.use(VueMaterial);
 
 //UI store imports
 import Ticket from "../ui/models/Ticket";
@@ -1160,7 +1203,9 @@ export default {
       selectedCourse: null,
       enrolledCourses: [],
       expandChevron: true,
-      collapseChevron: false
+      collapseChevron: false,
+      showDeleteRequestModal: false,
+      value: null
     };
   },
   methods: {
@@ -1175,6 +1220,9 @@ export default {
         }
       });
     },
+    // onCancel() {
+    //   this.
+    // },
     uploadFile() {
       if (this.rows.length > 0) {
         for (var i = 0; i < this.rows.length; i++) {
@@ -1343,7 +1391,7 @@ export default {
         (currentTime.getMinutes() * 60 + currentTime.getSeconds())
       );
     },
-    finished: function (){
+    finished: function() {
       //when countdown is over, take them back to the other page
       this.showCountdown = false;
       this.requestLandingPage = true;
@@ -1351,7 +1399,7 @@ export default {
       this.openTicket.status = "Unresolved";
       this.ticketHistory.push(this.openTicket);
       this.unresolvedTicket = true;
-      this.openTicket = null; 
+      this.openTicket = null;
       this.submitRequest = false;
     },
 
@@ -1390,8 +1438,8 @@ export default {
       } else {
         // var client = new Ably.Realtime(process.env.ABLY_KEY);
         // var channel = client.channels.get("staff");
-       
-       // Publish a message to the test channel
+
+        // Publish a message to the test channel
         // channel.publish("ticketUpdate", "ticket updated");
 
         this.submitRequest = true;
@@ -1466,7 +1514,7 @@ export default {
           attachments: this.fileObjects,
           rating: 0,
           ratingExplanation: "",
-          wasRated: 0,
+          wasRated: 0
           // This is only for testing Closed tickets
           // acceptedBy: {
           //   _id: staffId
@@ -1485,8 +1533,10 @@ export default {
     async getTickets() {
       console.log("in get tickets");
 
-      let tickets = await axios.get("/api/tickets/getTicketsByUser/" + userId, {
-      });
+      let tickets = await axios.get(
+        "/api/tickets/getTicketsByUser/" + userId,
+        {}
+      );
 
       this.ticketHistory = tickets.data.filter(
         ticket => ticket.status !== "Open" && ticket.owner._id == userId
@@ -1496,7 +1546,7 @@ export default {
         ticket => ticket.status === "Open" && ticket.owner._id == userId
       );
 
-      if (this.openTickets.length>0) {
+      if (this.openTickets.length > 0) {
         this.openTicket = this.openTickets[0];
         this.showTicket = true;
       }
@@ -1549,6 +1599,6 @@ export default {
     this.scrollToTop();
     this.getStudentInfo();
     this.startSubscribe();
-  },
+  }
 };
 </script>
