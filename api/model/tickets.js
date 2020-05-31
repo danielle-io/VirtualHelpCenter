@@ -9,7 +9,7 @@ var ticketSchema = new Schema(
   {
     status: {
       type: String,
-      enum: ["Open", "Closed", "In Progress", "Unresolved", "Void"],
+      enum: ["Open", "Closed", "In Progress", "Pending", "Unresolved", "Void"],
     },
     owner: {
       _id: {

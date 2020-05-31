@@ -18,8 +18,8 @@ export default class Ticket extends Model {
       user_id: this.string(null).nullable(),
       title: this.string(''),
       createdAt: this.attr(''),
-      course: this.attr('').nullable()
-      // acceptedBy: this.belongsTo(User, 'user_id')
+      course: this.attr('').nullable(),
+      acceptedBy: this.belongsTo(User, 'user_id')
     }
   }
 }

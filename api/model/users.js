@@ -8,8 +8,8 @@ const userOptions = {
 
 const UserSchema = new Schema({
     name: {
-        firstname: String,
-        lastname: String
+        firstName: String,
+        lastName: String
     },
     email: String,
     ucinetid: String,
