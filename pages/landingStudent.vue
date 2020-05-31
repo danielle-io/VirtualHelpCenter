@@ -495,9 +495,8 @@ input[type="text"]:placeholder {
               </div>
 
               <div
-                v-if="this.openTicket"
+                v-if="showTicket"
                 style="text-align: center; margin-top: 12px;"
-                :hidden="!this.openTicket"
               >
                 <!-- TODO: show a modal on clicking close asking if they are sure -->
                 <md-card style="padding-top: 15px; padding-bottom: 10px;">
@@ -1019,6 +1018,7 @@ export default {
       ],
       zoomLink: null,
       showCountdown: false,
+      showTicket: false,
       studentAcceptedSession: false,
       studentChannel: client.channels.get(userId),
       ticketChannel: client.channels.get("tickets"),
@@ -1165,7 +1165,8 @@ export default {
         console.log("staff accepted ticket");
         this.zoomLink = message.data.zoomLink;
         this.openTicket.updatedAt = message.data.date;
-
+        this.showTicket = false;
+        
         document.getElementById("hiddenButton").click();
       });
     },
@@ -1181,22 +1182,26 @@ export default {
           (currentTime.getMinutes() * 60 + currentTime.getSeconds())
       );
 
-      return (
-        ticketTime.getMinutes() * 60 +
-        ticketTime.getSeconds() -
-        (currentTime.getMinutes() * 60 + currentTime.getSeconds())
-      );
+      // return (
+      //   ticketTime.getMinutes() * 60 +
+      //   ticketTime.getSeconds() -
+      //   (currentTime.getMinutes() * 60 + currentTime.getSeconds())
+      // );
+      return 5;
     },
     finished: function (){
 
       //tell staff student did not accept session
 
       // studentChannel.publish("studentDidNotAcceptSession", userId);
-
+      this.showCountdown = false;
+      this.requestLandingPage = true;
+      
       this.openTicket.status = "Unresolved";
       this.ticketHistory.push(this.openTicket);
-      this.unresolvedTicket = true;
+      // this.unresolvedTicket = true;
       this.openTicket = null; 
+      this.submitRequest = false;
     },
 
     reSubmitTicket: function(ticket) {
@@ -1220,13 +1225,15 @@ export default {
       this.openTicket.createdAt = new Date().toString();
 
       this.getTickets();
+      this.showTicket = true;
 
       // sends ticket to staff
-      // this.ticketChannel.publish("ticketUpdate", this.openTicket);
+      this.ticketChannel.publish("ticketUpdate", this.openTicket);
     },
 
     changeRequestState: function() {
       if (this.requestLandingPage === true && this.submitRequest === false) {
+        this.clearForm();
         this.requestLandingPage = false;
         return this.requestLandingPage;
       } else {
@@ -1293,10 +1300,12 @@ export default {
           createdAt: new Date().toString(),
           attachments: this.fileObjects,
           rating: 0,
-          ratingExplanation: ""
+          ratingExplanation: "",
+          wasRated: 0
         });
 
         this.openTicket = ticket.data;
+        this.showTicket = true;
         console.log("Open ticket below");
         console.log(this.openTicket);
 
@@ -1319,11 +1328,9 @@ export default {
         ticket => ticket.status === "Open" && ticket.owner._id == userId
       );
 
-      if (this.openTickets) {
+      if (this.openTickets.length>0) {
         this.openTicket = this.openTickets[0];
-        if (this.openTicket) {
-          console.log(this.openTicket);
-        }
+        this.showTicket = true;
       }
     },
 
@@ -1343,7 +1350,7 @@ export default {
       if (this.openTicket) {
         console.log("closing ticket " + this.openTicket._id);
 
-        // this.ticketChannel.publish("ticketClosed", this.openTicket);
+        this.ticketChannel.publish("ticketClosed", this.openTicket);
 
         this.openTicket.status = "Unresolved";
         this.ticketHistory.push(this.openTicket);
@@ -1359,9 +1366,11 @@ export default {
             this.openTicket = null;
           });
 
-        this.clearForm();
-        window.location.reload();
+        this.requestLandingPage = true;
+        this.openTicket = null;
+        this.submitRequest = false;
         this.scrollToTop();
+        this.showTicket = false;
       }
     }
   },

@@ -706,34 +706,37 @@ export default {
       });
 
       // Show connection screen once student receives countdown
+      this.ticketChannel.publish("ticketClosed", this.tickets[this.selectedTicketIndex]);
+
       this.connecting = true;
 
       console.log("waiting on acceptance");
       // Subscribe to an event on studentChannel to see if they accepted ticket
-      this.studentChannel.subscribe("studentAcceptedSession", function(
-        message
-      ) {
-        document.getElementById("hiddenButton").click();
-      this.studentAccepted = true;
-      console.log("student accepted");
-      });
+      
 
-      let x = setTimeout(function() {
+      let x = setTimeout(() => {
         // Right here we let it know the student did not accept
         console.log("student did not accept in time");
         axios.put("/api/updateTicket/" + this.currentTicketId, {
           status: "Unresolved"
         });
-      }, this.countdownTime(ticketTime));
+        this.connecting = false;
+        this.zoomLinkForm = false;
+        this.selectedTicketIndex = -1;
+        this.startingIndex = 0;
+        this.endingIndex = 3;
+        this.currentTicket = null;
+        this.currentTicketId = null;
+        
+      }, 5000);
 
-      //student did not accept the ticket
-      // this.studentChannel.subscribe("studentDidNotAcceptSession", function(
-      //   message
-      // ) {
-      //   console.log("student did not accept session, moving on");
-      //not sure if the timeout is cleared when we move on
-      clearTimeout(x);
-      // });
+      this.studentChannel.subscribe("studentAcceptedSession", function(message) {
+        document.getElementById("hiddenButton").click();
+        this.studentAccepted = true;
+        console.log("student accepted");
+        clearTimeout(x);
+      });
+
     },
     countdownTime(ticketTime) {
       //read updated time
@@ -752,6 +755,9 @@ export default {
           (currentTime.getMinutes() * 60 + currentTime.getSeconds())) *
         1000
       );
+    },
+    removeTicket(id){
+      this.tickets = this.tickets.filter(ticket => ticket.status === "Open" && ticket._id != id);
     },
     expandCard: function() {},
     async acceptTicket() {
@@ -817,7 +823,7 @@ export default {
       console.log("ticket was deleted");
 
       //ticket will be deleted from being displayed
-      this.removeTicket(message.data);
+      this.removeTicket(message.data._id);
     });
 
     this.scrollToTop();
