@@ -1004,7 +1004,7 @@ if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
 
-const userId = "5ecafc0f5219c55528efe03f";
+const userId = "5ed34dbd99e64f3cc0b49397";
 
 const client = new Ably.Realtime(process.env.ABLY_KEY);
 
@@ -1433,7 +1433,7 @@ export default {
       if (!this.openTicket) {
         console.log("inserting ", this.fileObjects);
         let ticket = await axios.post("/api/insertTicket", {
-          status: "Closed",
+          status: "Open",
           owner: {
             _id: userId
           },

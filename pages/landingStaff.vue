@@ -713,15 +713,13 @@ export default {
         date: ticketTime
       });
 
+      //remove the ticket from open tickets
+      this.ticketChannel.publish("ticketClosed", this.currentTicket);
+
       // Show connection screen once student receives countdown
-      this.ticketChannel.publish("ticketClosed", this.tickets[this.selectedTicketIndex]);
-
       this.connecting = true;
-
-      console.log("waiting on acceptance");
-      // Subscribe to an event on studentChannel to see if they accepted ticket
       
-
+      //If the student does not accept the session in time return to beginning
       let x = setTimeout(() => {
         // Right here we let it know the student did not accept
         console.log("student did not accept in time");
@@ -735,9 +733,9 @@ export default {
         this.endingIndex = 3;
         this.currentTicket = null;
         this.currentTicketId = null;
-        
       }, 5000);
 
+      // Subscribe to an event on studentChannel to see if they accepted ticket
       this.studentChannel.subscribe("studentAcceptedSession", function(message) {
         document.getElementById("hiddenButton").click();
         this.studentAccepted = true;
@@ -817,12 +815,6 @@ export default {
       let course = staff.data.classes[0];
       let staffcourse = course._id;
       this.course = staffcourse;
-      // this.loadUser(staff);
-
-      //      if (staff) {
-      //   this.staff = user.data._id;
-      //   console.log("user loaded");
-      // }
     }
   },
   beforeMount() {
@@ -830,6 +822,8 @@ export default {
     
     // This gets ANY ticket submitted by ANY student
     this.ticketChannel.subscribe("ticketUpdate", message => {
+      console.log("ticket was added");
+
       //add new ticket to existing tickets
       this.getStudentName(message.data, message.data.owner._id)
       this.tickets.push(message.data);
