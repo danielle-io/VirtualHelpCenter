@@ -441,6 +441,29 @@ input[type="text"]:placeholder {
         >Request History</a>
       </div>
 
+      <transition name="modal">
+        <div class="modal-mask">
+          <div class="modal-wrapper">
+            <div class="modal-container">
+              <div class="modal-header">
+                <slot name="header">default header</slot>
+              </div>
+
+              <div class="modal-body">
+                <slot name="body">default body</slot>
+              </div>
+
+              <div class="modal-footer">
+                <slot name="footer">
+                  default footer
+                  <button class="modal-default-button" @click="$emit('close')">OK</button>
+                </slot>
+              </div>
+            </div>
+          </div>
+        </div>
+      </transition>
+
       <transition name="fade" mode="in-out">
         <!-- <div style="text-align: center;"> -->
 
@@ -848,23 +871,23 @@ input[type="text"]:placeholder {
                             style="padding-left:6px; margin-left: 16px; margin-right: 8px;"
                             class="rating-title"
                           >Rate Your Session:</span>
-                         
+
                           <span
                             style="margin-right: 4px !important;"
-                            v-for="ratingIndex in ticket.rating"
-                            :key="ratingIndex"
+                            v-for="ratingIndexClosed in ticket.rating"
+                            :key="ratingIndexClosed"
                           >
-                            <a @click="setRating(ticket, ticket.rating - 1)">
+                            <a @click="setRating(ticket, ticket.rating, 1)">
                               <star-filled class="star-filled" />
                             </a>
                           </span>
 
                           <span
                             style="margin-right: 4px !important;"
-                            v-for="ratingIndex in (5 - ticket.rating)"
-                            :key="ratingIndex"
+                            v-for="ratingIndexOpen in (5 - ticket.rating)"
+                            :key="ratingIndexOpen"
                           >
-                            <a @click="setRating(ticket, ratingIndex)">
+                            <a @click="setRating(ticket, ratingIndexOpen, 0)">
                               <star-outline class="star-outline" />
                             </a>
                           </span>
@@ -1258,11 +1281,13 @@ export default {
         this.collapseChevron = false;
       }
     },
-    setRating: function(ticket, clickedRating) {
+    setRating: function(ticket, clickedRating, starKind) {
       console.log("clicked: " + clickedRating);
-      console.log("changing rating on ticket" + JSON.stringify(ticket));
-
-      ticket.rating = clickedRating;
+      if (starKind === 1) {
+        ticket.rating = clickedRating - 1;
+      } else {
+        ticket.rating = clickedRating;
+      }
       console.log("ticket rating is now " + ticket.rating);
     },
     removeElement: function(index) {
@@ -1437,7 +1462,7 @@ export default {
           attachments: this.fileObjects,
           rating: 0,
           ratingExplanation: "",
-          wasRated: 0,
+          wasRated: 0
           // This is only for testing Closed tickets
           // acceptedBy: {
           //   _id: staffId
