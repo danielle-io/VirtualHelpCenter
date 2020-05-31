@@ -1,4 +1,3 @@
-
 // TO DO: figure out where to put this for MDL to run better
 {/* <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:400,500,700,400italic|Material+Icons"></link> */}
 
@@ -9,29 +8,6 @@ const morgan = require("morgan");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
-const Ably = require('ably');
-
-// Create Ably client 
-//const restClient = new Ably.Rest({ key: ''});
-
-// Create express instance
-const app = express();
-
-// app.post('/auth', (req, res) => {
-//   console.log(req.body)
-//   const clientId = req.body.name;
-
-//   restClient.auth.createTokenRequest({ clientId, }, (err, tokenRequest) => {
-//     console.log(`Authorization completed for client "${clientId}"`);
-//     if(err) {
-//       res.status(500);
-//       res.send(err);
-//     }
-//     else {
-//       res.send(tokenRequest);
-//     }
-//   });
-// });
 
 // Configure database and mongoose
 mongoose.set("useCreateIndex", true);
@@ -44,6 +20,24 @@ mongoose
     console.log({ database_error: err });
   });
 
+require('./model/Users');
+require('./model/students');
+require('./model/staffs');
+require('./model/Courses');
+require('./model/tickets');
+require('./model/tutors');
+
+// Require API routes
+const users = require('./controller/users');
+const students = require('./controller/students');
+const staffs = require('./controller/staffs');
+const courses = require('./controller/courses');
+const tickets = require('./controller/tickets');
+const tutors = require('./controller/tutors');
+
+// Create express instance
+const app = express();
+
 // Registering cors
 app.use(cors());
 
@@ -54,19 +48,10 @@ app.use(bodyParser.json());
 // Configure morgan
 app.use(morgan("dev"));
 
-// Require API routes
-const users = require('./controller/users');
-const students = require('./controller/students');
-const staffs = require('./controller/staffs');
-const courses = require('./controller/courses');
-const tickets = require('./controller/tickets');
-const tutors = require('./controller/tutors');
-
-
 // Import API Routes
+app.use(courses);
 app.use(users);
 app.use(students);
-app.use(courses);
 app.use(staffs);
 app.use(tickets);
 app.use(tutors);

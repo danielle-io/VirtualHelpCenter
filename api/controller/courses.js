@@ -1,7 +1,7 @@
-var CourseModel = require('../model/courses');
-
 const{Router} = require('express');
 const router = Router();
+
+let CourseModel = require('../model/courses');
 
 //GET Course Listing
 router.get('/courses', (req,res,next) =>{
