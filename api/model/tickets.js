@@ -28,6 +28,7 @@ var ticketSchema = new Schema(
       enum: [ 0, 1, 2, 3, 4, 5],
     },
     ratingExplanation: String,
+    wasRated: Number,
     codeSnippet: String,
     oneLineOverview: String,
     longerDescription: String,

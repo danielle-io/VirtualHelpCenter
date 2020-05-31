@@ -893,7 +893,9 @@ if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
 
-const userId = "5ecafc0f5219c55528efe03f";
+// const userId = "5ecafc0f5219c55528efe03f";
+// const userId = "5eade3645c59ce0914789c38";
+const userId = "5eade33d5c59ce0914789c37";
 
 const client = new Ably.Realtime(process.env.ABLY_KEY);
 
@@ -1293,7 +1295,8 @@ export default {
           createdAt: new Date().toString(),
           attachments: this.fileObjects,
           rating: 0,
-          ratingExplanation: ""
+          ratingExplanation: "",
+          wasRated: 0
         });
 
         this.openTicket = ticket.data;

@@ -537,7 +537,6 @@ export default {
       expandChevron: true,
       collapseChevron: false,
       color: "#7e6694",
-      // course: {},
       course: {},
       selected: "",
       staffClass: "none",
@@ -837,17 +836,8 @@ export default {
   
       let course = this.staffCourses[0];
       this.course = course.value
-   
-
-      console.log("this.course")
-      console.log(this.course)
-
-
-    this.loadUser(staff);
-      // let course = staff.data.classes[0];
-      // let staffcourse = course._id;
-      // this.course = staffcourse;
-      // this.loadUser(staff);
+      this.loadUser(staff);
+     
     }
   },
   beforeMount() {
