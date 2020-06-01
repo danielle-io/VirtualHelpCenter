@@ -4,13 +4,38 @@
   margin-top: 3px;
 }
 
+.md-dialog-container.md-theme-default {
+  width: 50% !important;
+}
+
 .md-button .md-ripple {
   padding: 0 8px;
   display: flex;
   justify-content: center;
   align-items: center;
-  background: white;
-  box-shadow: 0 10px 30px 0 white;
+  background: white !important;
+  box-shadow: 0 10px 30px 0 white !important;
+}
+
+.md-button.md-theme-default {
+  color: rgba(0, 0, 0, 0.87);
+  color: rgba(0, 0, 0, 0.87);
+  color: var(
+    --md-theme-default-text-primary-on-background,
+    rgba(0, 0, 0, 0.87)
+  );
+  border: none !important;
+  background: none !important;
+  box-shadow: 0 10px 30px 0 white !important;
+}
+
+.md-ripple {
+  padding: 0 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: none !important;
+  box-shadow: 0 10px 30px 0 white !important;
 }
 
 .md-dialog-container.md-theme-default {
@@ -26,7 +51,7 @@
 
 .md-dialog {
   position: fixed;
-  z-index: 9999;
+  z-index: 9999 !important;
   top: 0;
   left: 0;
   right: 0;
@@ -36,6 +61,9 @@
   pointer-events: none;
   display: flex;
   transition-duration: 0.2s;
+}
+.md-dialog-alert{
+    z-index: 9999;
 }
 
 .disabled-button {
@@ -142,7 +170,7 @@
 
 .staff-container {
   position: relative;
-  z-index: 999;
+  z-index: 900;
   margin-left: auto;
   margin-right: auto;
   border: 1px solid #dadce0;
@@ -250,11 +278,47 @@ input[type="text"]:placeholder {
   cursor: dafualt !important;
   background-color: #d3d3d3 !important;
 }
+
+button[type="submit"] {
+  background-color: #fff !important;
+}
+
+
 </style>
 
 
 <template>
+<div>
+
+   <no-ssr>
+      <md-dialog-confirm
+        style="z-index: 9999; padding-left: 50px; padding-right:50px"
+        :md-active.sync="showCloseSessionDialog"
+        md-title="Mark Session Complete"
+        md-content="Are you ready to close the session?"
+        md-confirm-text="Yes, mark complete"
+        md-cancel-text="No"
+        clickOutsideToClose="true"
+        @md-cancel="showCloseSessionDialog = false;"
+        @md-confirm="closeTicket()"
+      />
+    </no-ssr>
+
+      <no-ssr>
+      <md-dialog
+        style="margin-left: 200px; margin-right: 200px;"
+        :md-active.sync="showCanceledRequestDialog"
+        md-title="Request Canceled"
+        md-content="Due to missing the acceptance window, the student's request has been removed from the queue. You may select a new request to complete, if one is available."
+        md-confirm-text="Okay"
+        clickOutsideToClose="true"
+        class="accept-button"
+        @md-confirm="showCanceledRequestDialog = false;"
+      />
+    </no-ssr>
+    
   <div id="requests" style="position: relative;">
+
     <button id="hiddenButton" style="display:none;" @click="triggerAccept"></button>
 
     <div class="request-tabs">
@@ -269,24 +333,13 @@ input[type="text"]:placeholder {
       >Request History</a>
     </div>
 
-    <no-ssr>
-      <md-dialog-alert
-        style="margin-left: 20px; margin-right: 20px;"
-        :md-active.sync="showCanceledRequestDialog"
-        md-title="Request Canceled"
-        md-content="Due to missing the acceptance window, the student's request has been removed from the queue. You may select a new request to complete, if one is available."
-        md-confirm-text="Okay"
-        clickOutsideToClose="true"
-        @md-confirm="showCanceledRequestDialog = false;"
-      />
-    </no-ssr>
 
     <div
       class="staff-container"
-      v-bind:class="{ 'dialog-showing': showCanceledRequestDialog, 'dialog-hidden': !showCanceledRequestDialog}"
+      v-bind:class="{ 'dialog-showing': showCanceledRequestDialog || showCloseSessionDialog, 'dialog-hidden': !showCanceledRequestDialog && !showCloseSessionDialog}"
     >
       <div v-if="!this.connecting && !this.zoomLinkForm">
-        <div class="requests-heading">
+        <!-- <div class="requests-heading"> -->
           <div v-if="this.openRequestTab" class="row" style="margin-bottom: 12px;">
             <span style="margin: auto;" v-if="this.selectedTicketIndex === -1 && this.tickets">
               <!-- TODO: instead of tickets.length, get the filtered tickets length to hide message when no tickets show -->
@@ -318,7 +371,7 @@ input[type="text"]:placeholder {
               ></b-form-select>
             </div>
           </span>
-        </div>
+        <!-- </div> -->
 
         <div v-if="this.openRequestTab">
           <div style="margin-top: 30px;" class="ticket-container">
@@ -647,7 +700,6 @@ input[type="text"]:placeholder {
       </div>
 
       <div v-if="this.connecting">
-      
         <div v-if="!this.studentAccepted">
           <div class="heading-two-text">Awaiting Student Acceptance</div>
 
@@ -740,7 +792,21 @@ input[type="text"]:placeholder {
             </div>
           </md-card>
         </div>
-      </div>
+
+          <div v-if="this.studentAccepted">
+        <md-card>
+          <div
+            style="padding-top:12px; padding-bottom: 18px; justify-content: center; text-align: center; align-items: center;"
+          >
+          <span style="font-size: 28px; color: #53a59e;  justify-content: center;
+  align-items: center; cursor:pointer;">
+          <check-circle @click="showCloseSessionDialog = true"
+ style="height: 1.4em !important;"/></span>
+ 
+ <span style="margin-bottom: 10px;" class="sub-heading-text">Mark session complete</span></div>
+        </md-card>
+        </div>
+       </div>
 
       <div
         v-if="this.zoomLinkForm && !this.connecting"
@@ -780,6 +846,7 @@ input[type="text"]:placeholder {
         </div>
       </div>
     </div>
+  </div>
   </div>
 </template>
       
@@ -842,7 +909,8 @@ export default {
       studentAccepted: false,
       ticketChannel: client.channels.get("tickets"),
       ticketHistory: [],
-      showCanceledRequestDialog: false
+      showCanceledRequestDialog: false,
+      showCloseSessionDialog: false,
     };
   },
   methods: {
@@ -881,7 +949,6 @@ export default {
       console.log(this.openTicket);
       console.log(attachmentUrl);
       window.open(attachmentUrl, "_blank");
-      // location.href = attachmentUrl;
     },
     filterCourseTickets(status, course) {
       // console.log(this.tickets);
@@ -913,7 +980,6 @@ export default {
               studentResponse.data.name.firstName +
               " " +
               studentResponse.data.name.lastName;
-            // document.getElementById('studentName').innerHTML = studentName;
             this.$set(ticket, "ownerName", studentName);
           }
         }
@@ -1028,8 +1094,8 @@ export default {
       ) {
         console.log("accepted session");
         document.getElementById("hiddenButton").click();
-        // this.studentAccepted = true;
         this.triggerAccept();
+        clearTimeout(x);
       });
 
       //read updated time
@@ -1046,6 +1112,7 @@ export default {
           ticketTime.getSeconds() -
           (currentTime.getMinutes() * 60 + currentTime.getSeconds())) *
         1000
+        
       );
     },
     removeTicket(id) {
@@ -1053,12 +1120,28 @@ export default {
         ticket => ticket.status === "Open" && ticket._id != id
       );
     },
+    closeTicket(){
+      if (this.currentTicket){
+        console.log(this.currentTicket);
+        var id = this.currentTicket._id;
+        this.showCloseSessionDialog = false;
+      console.log("close ticket");
+      this.removeTicket(id);
+      this.studentAccepted = false;
+      this.connecting = false;
+      this.zoomLinkForm = false;
+
+      axios.put("/api/updateTicket/" + id, {
+        status: "Closed",
+      });
+      }
+    },
     expandCard: function() {},
     async acceptTicket() {
       this.getZoomLink();
-      // axios.put("/api/updateTicket/" + this.currentTicketId, {
-      //   status: "Pending"
-      // });
+      axios.put("/api/updateTicket/" + this.currentTicketId, {
+        status: "Pending"
+      });
     },
     // async loadUser(user) {
     //   if (user) {
@@ -1131,7 +1214,7 @@ export default {
     this.scrollToTop();
   },
   computed: {
-    isDisbaled() {
+    isDisabled() {
       return this.zoomLink !== null;
     }
   }

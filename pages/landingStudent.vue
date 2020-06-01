@@ -13,6 +13,18 @@
   transition-duration: 0.2s;
 }
 
+.md-button.md-theme-default {
+  color: rgba(0, 0, 0, 0.87);
+  color: rgba(0, 0, 0, 0.87);
+  color: var(
+    --md-theme-default-text-primary-on-background,
+    rgba(0, 0, 0, 0.87)
+  );
+  border: none !important;
+  background: none !important;
+  box-shadow: none;
+}
+
 .dialog-showing {
   opacity: 0.9;
 }
@@ -23,13 +35,6 @@
 
 .md-dialog-container.md-theme-default {
   width: 50% !important;
-}
-
-.md-button {
-}
-
-.md-primary {
-  /* color: red !important; */
 }
 
 .fade-enter-active,
@@ -228,18 +233,6 @@ table th,
   padding: 0.4em;
   position: relative;
   border-radius: 10px 10px 10px 10px;
-}
-
-.md-button.md-theme-default {
-  color: rgba(0, 0, 0, 0.87);
-  color: rgba(0, 0, 0, 0.87);
-  color: var(
-    --md-theme-default-text-primary-on-background,
-    rgba(0, 0, 0, 0.87)
-  );
-  border: none !important;
-  background: none !important;
-  box-shadow: none;
 }
 
 .tab-links-active {
@@ -492,7 +485,7 @@ Request History tab."
         md-confirm-text="Yes, remove request"
         md-cancel-text="No"
         clickOutsideToClose="true"
-        @md-cancel="onCancel"
+        @md-cancel="showDeleteRequestModal = false;"
         @md-confirm="cancelTicket"
       />
     </no-ssr>
@@ -528,6 +521,7 @@ Request History tab."
             <!-- <md-button class="md-primary md-raised" @click=" = true">Confirm</md-button> -->
 
             <div v-if="this.currentRequestsTab">
+             
               <div v-if="this.studentAcceptedSession">
                 <div class="request-container-two">
                   <div class="heading-text">Begin your session</div>
@@ -576,7 +570,7 @@ Request History tab."
                   <circular-count-down-timer
                     :initial-value="countdownTime()"
                     :steps="countdownTime()"
-                    :seconds-stroke-color="'#7fe3d4'"
+                    :seconds-stroke-color="'#53a59e'"
                     :second-label="''"
                     :padding="0"
                     :size="100"
@@ -611,9 +605,9 @@ Request History tab."
                 </div>
               </div>
 
-              <div v-if="showTicket" style="text-align: center; margin-top: 12px;">
+              <div v-if="showTicket" style="text-align: center;">
                 <!-- TODO: show a modal on clicking close asking if they are sure -->
-                <md-card style="padding-top: 15px; padding-bottom: 10px;">
+                <md-card style="padding-top: 8px; padding-bottom: 10px;">
                   <div
                     style="float: right; margin-top: 6px; margin-left: 0px; margin-right: 10px; "
                   >
@@ -1149,11 +1143,11 @@ export default {
     // codemirror
   },
 
-  computed: {
-    isDisabled: function() {
-      return !this.selected;
-    }
-  },
+  // computed: {
+  //   isDisabled: function() {
+  //     return !this.selected;
+  //   }
+  // },
 
   data() {
     return {
@@ -1229,9 +1223,6 @@ export default {
         }
       });
     },
-    // onCancel() {
-    //   this.
-    // },
     uploadFile() {
       if (this.rows.length > 0) {
         for (var i = 0; i < this.rows.length; i++) {
