@@ -4,15 +4,24 @@
   margin-top: 3px;
 }
 
+.md-button .md-ripple {
+  padding: 0 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: white;
+  box-shadow: 0 10px 30px 0 white;
+}
+
 .md-dialog-container.md-theme-default {
   width: 50% !important;
 }
 
 .md-button.md-theme-default.md-primary {
-    color: #448aff !important;
-    background: none;
-    box-shadow: none;
-    color: var(--md-theme-default-primary-on-background, #448aff);
+  color: #448aff !important;
+  background: none !important;
+  box-shadow: none !important;
+  color: var(--md-theme-default-primary-on-background, #448aff);
 }
 
 .md-dialog {
@@ -246,6 +255,8 @@ input[type="text"]:placeholder {
 
 <template>
   <div id="requests" style="position: relative;">
+    <button id="hiddenButton" style="display:none;" @click="triggerAccept"></button>
+
     <div class="request-tabs">
       <a
         @click="switchToOpenRequestTab"
@@ -487,13 +498,18 @@ input[type="text"]:placeholder {
                   placeholder="Enter your Zoom Session link here"
                 ></b-form-input>
               </div>
-              
+
               <div v-if="!this.zoomLink">
-                <button type="disabled" disabled="true" class="form-buttons-disabled" @click="sendZoomLink">
+                <button
+                  type="disabled"
+                  disabled="true"
+                  class="form-buttons-disabled"
+                  @click="sendZoomLink"
+                >
                   <right-circle />Send Link
                 </button>
               </div>
-              
+
               <div v-if="this.zoomLink">
                 <button type="submit" class="form-buttons" @click="sendZoomLink">
                   <right-circle />Send Link
@@ -631,10 +647,11 @@ input[type="text"]:placeholder {
       </div>
 
       <div v-if="this.connecting">
+      
         <div v-if="!this.studentAccepted">
           <div class="heading-two-text">Awaiting Student Acceptance</div>
 
-          <div v-if="!this.studentAccepted" class="loading-dots">
+          <div class="loading-dots">
             <beat-loader :color="color"></beat-loader>
           </div>
 
@@ -649,7 +666,6 @@ input[type="text"]:placeholder {
           <div class="sub-heading-two-text">Please go to Zoom to begin your session.</div>
         </div>
 
-        <!-- <div class="row justify-content-center"> -->
         <div v-if="this.currentTicket">
           <md-card
             style="border: 1px solid #dde0e681; margin-bottom: 10px; padding-bottom: 8px; border-radius: 8px; padding-top:8px; box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.05);"
@@ -795,7 +811,7 @@ export default {
     "b-form-select": BFormSelect,
     "b-button": BButton,
     "b-form-input": BFormInput,
-    "b-form-select": BFormSelect,
+    "b-form-select": BFormSelect
     // codemirror
   },
   data() {
@@ -831,15 +847,6 @@ export default {
   },
   methods: {
     filterOpenTickets(status) {
-      // if (this.tickets) {
-      //   this.filteredTickets = this.tickets.filter(
-      //     ticket => ticket.status === status
-      //   );
-      //   return this.filteredTickets;
-      // } else {
-      //   this.filteredTickets = [];
-      //   return;
-      // }
       if (this.tickets) {
         console.log("filtering open tickets");
         return this.tickets.filter(ticket => ticket.status === status);
@@ -1016,10 +1023,13 @@ export default {
     },
     countdownTime(ticketTime) {
       this.studentChannel = client.channels.get(this.currentTicket.owner._id);
-      this.studentChannel.subscribe("studentAcceptedSession", function(message) {
-        // document.getElementById("hiddenButton").click();
-        this.studentAccepted = true;
-        console.log("student accepted");
+      this.studentChannel.subscribe("studentAcceptedSession", function(
+        message
+      ) {
+        console.log("accepted session");
+        document.getElementById("hiddenButton").click();
+        // this.studentAccepted = true;
+        this.triggerAccept();
       });
 
       //read updated time
@@ -1114,7 +1124,7 @@ export default {
     });
     this.ticketChannel.subscribe("ticketClosed", message => {
       console.log("ticket was closed");
-      // ticket will be deleted from being displayed
+      // ticket will be remove from being displayed
       this.removeTicket(message.data._id);
     });
 

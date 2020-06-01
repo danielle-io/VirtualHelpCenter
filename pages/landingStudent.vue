@@ -542,7 +542,7 @@ Request History tab."
                               margin-left: 6px;"
                       target="_blank"
                       href="zoom.us"
-                    > <open-in-new-window style="margin-right:8px !important; padding-right: 5px;" />{{this.zoomLink}}</a>
+                    > <open-in-new-window style="margin-right:8px !important; padding-right: 5px;" /><span style="margin-left: 10px;">{{this.zoomLink}}</span></a>
                   </div>
                 </div>
               </div>
