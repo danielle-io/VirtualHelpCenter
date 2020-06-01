@@ -139,11 +139,26 @@
   color: #c94d4d;
 }
 
+.close-button:hover {
+  transform: scale(1.1, 1.1);
+}
+
+.edit-button:hover {
+  transform: scale(1.1, 1.1);
+}
+
 .close-button-black {
   margin-right: 10px;
   font-size: 22px;
   border: none;
   color: #444343;
+}
+
+.edit-button {
+  margin-right: 10px;
+  font-size: 22px;
+  border: none;
+  color: #43afc2;
 }
 
 .reSubmit-button {
@@ -463,7 +478,7 @@ input[type="text"]:placeholder {
   <div>
     <!-- <div class="sub-heading-text" style="padding-top:2%;"> -->
 
-    <no-ssr>
+    <client-only>
       <md-dialog-alert
         style="margin-left: 20px; margin-right: 20px;"
         :md-active.sync="unresolvedTicket"
@@ -474,9 +489,9 @@ Request History tab."
         clickOutsideToClose="true"
         @md-confirm="unresolvedTicket = false;"
       />
-    </no-ssr>
+    </client-only>
 
-    <no-ssr>
+    <client-only>
       <md-dialog-confirm
         style="margin-left: 20px; margin-right: 20px;"
         :md-active.sync="showDeleteRequestModal"
@@ -488,7 +503,7 @@ Request History tab."
         @md-cancel="showDeleteRequestModal = false;"
         @md-confirm="cancelTicket"
       />
-    </no-ssr>
+    </client-only>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/velocity/1.2.3/velocity.min.js"></script>
 
     <div id="requests">
@@ -496,6 +511,7 @@ Request History tab."
 
       <div class="request-tabs">
         <a
+          id="landingTab"
           @click="switchToCurrentRequestsTab"
           v-bind:class="{ 'tab-links-active': currentRequestsTab, 'tab-links': !currentRequestsTab }"
         >Current Requests</a>
@@ -521,7 +537,6 @@ Request History tab."
             <!-- <md-button class="md-primary md-raised" @click=" = true">Confirm</md-button> -->
 
             <div v-if="this.currentRequestsTab">
-             
               <div v-if="this.studentAcceptedSession">
                 <div class="request-container-two">
                   <div class="heading-text">Begin your session</div>
@@ -536,12 +551,17 @@ Request History tab."
                               margin-left: 6px;"
                       target="_blank"
                       href="zoom.us"
-                    > <open-in-new-window style="margin-right:8px !important; padding-right: 5px;" /><span style="margin-left: 10px;">{{this.zoomLink}}</span></a>
+                    >
+                      <open-in-new-window style="margin-right:8px !important; padding-right: 5px;" />
+                      <span style="margin-left: 10px;">{{this.zoomLink}}</span>
+                    </a>
                   </div>
                 </div>
               </div>
 
-              <div v-if="this.requestLandingPage === true && !this.showCountdown && !this.studentAcceptedSession">
+              <div
+                v-if="this.requestLandingPage === true && !this.showCountdown && !this.studentAcceptedSession"
+              >
                 <div class="top-border-line" />
 
                 <!-- This moves the MY Requests page down if there's no requests so that it's more centered -->
@@ -605,21 +625,23 @@ Request History tab."
                 </div>
               </div>
 
-              <div v-if="showTicket" style="text-align: center;">
+              <div v-if="showTicket && !this.editingRequest" style="text-align: center;">
                 <!-- TODO: show a modal on clicking close asking if they are sure -->
                 <md-card style="padding-top: 8px; padding-bottom: 10px;">
                   <div
                     style="float: right; margin-top: 6px; margin-left: 0px; margin-right: 10px; "
                   >
+                    <button class="edit-button" style="margin-top: 5px;" v-on:click="editRequest">
+                      <edit style=" margin-bottom: 0px; padding-bottom: 0px;" />
+                    </button>
+
                     <button
-                      class="close-button"
+                      v
                       style="margin-top: 5px;"
                       v-on:click="showDeleteRequestModal = true"
+                      class="close-button"
                     >
-                      <close
-                        style="color: red !important; margin-bottom: 0px; padding-bottom: 0px;"
-                        class="close-icon"
-                      />
+                      <close style="margin-bottom: 0px; padding-bottom: 0px;" />
                     </button>
                   </div>
 
@@ -729,6 +751,7 @@ Request History tab."
                     <close class="close-icon" />
                   </button>
                 </div>
+
                 <div class="heading-text" style="padding-top: 18px;">Request a Session</div>
 
                 <div style="margin-left: 8px;" class="form-container">
@@ -845,7 +868,8 @@ Request History tab."
                         class="fadeIn form-buttons"
                         @click="changeRequestState"
                       >
-                        <right-circle style="margin-right:4px" />Submit Request
+                        <right-circle style="margin-right:4px" />
+                        {{this.getButtonText()}}
                       </button>
                     </div>
                   </div>
@@ -859,7 +883,8 @@ Request History tab."
                       background-color: #d3d3d3 !important;"
                         class="form-buttons-disabled"
                       >
-                        <right-circle style="margin-right:4px" />Submit Request
+                        <right-circle style="margin-right:4px" />
+                        {{this.getButtonText()}}
                       </button>
                     </div>
                   </div>
@@ -1208,7 +1233,8 @@ export default {
       expandChevron: true,
       collapseChevron: false,
       showDeleteRequestModal: false,
-      value: null
+      value: null,
+      editingRequest: false
     };
   },
   methods: {
@@ -1222,6 +1248,30 @@ export default {
           name: "Choose File"
         }
       });
+    },
+    saveEditChanges() {
+      console.log("saving changes");
+      var id = this.openTicket._id;
+      
+      axios
+        .put("/api/updateTicket/" + id, {
+          course: {
+            _id: this.selectedCourse
+          },
+          oneLineOverview: this.oneLineOverview,
+          longerDescription: this.probDes,
+          codeSnippet: this.code,
+          attachments: this.fileObjects
+        })
+        .then(() => {
+          console.log("resetting ticket");
+        });
+      this.openTicket.oneLineOverview = this.oneLineOverview,
+      this.openTicket.longerDescription = this.longerDescription,
+      this.openTicket.codeSnippet = this.code,
+      this.editingRequest = false;
+      this.submitRequest = true;
+      this.requestLandingPage = true;
     },
     uploadFile() {
       if (this.rows.length > 0) {
@@ -1253,14 +1303,20 @@ export default {
                       filePath: this.fileUrls[i]
                     });
                   }
-                  this.submit();
+                  if (!this.editingRequest) {
+                    this.submit();
+                  } else {
+                    this.saveEditChanges();
+                  }
                 }
               });
             }
           );
         }
-      } else {
+      } else if (!this.editingRequest) {
         this.submit();
+      } else {
+        this.saveEditChanges();
       }
     },
     getOpenTicketStatus: function() {
@@ -1296,6 +1352,13 @@ export default {
       this.scrollToTop();
       return this.requestHistoryTab;
     },
+    getButtonText: function() {
+      if (this.editingRequest) {
+        return "Save Changes";
+      } else {
+        return "Submit Changes";
+      }
+    },
     openPage: function(attachmentUrl, attachmentName) {
       console.log(this.openTicket);
       window.open(attachmentUrl, "_blank");
@@ -1306,10 +1369,8 @@ export default {
       this.studentAcceptedSession = true;
       console.log("in accept session and zoomLink is " + this.zoomLink);
 
-      // this.finished();
-
       // Publish an event to the  channel
-      this.studentChannel.publish("studentAcceptedSession", userId);
+      // this.studentChannel.publish("studentAcceptedSession", userId);
     },
     triggerAccept: function() {
       this.showCountdown = true;
@@ -1366,20 +1427,19 @@ export default {
     startSubscribe() {
       console.log("subscribing to staff");
       // The student's ticket was accepted by the staff
-      this.studentChannel.subscribe("staffAcceptedTicket", message => {
-        console.log("staff accepted ticket");
-        this.zoomLink = message.data.zoomLink;
-        this.openTicket.updatedAt = message.data.date;
-        this.showCountdown = true;
-      });
+      // this.studentChannel.subscribe("staffAcceptedTicket", message => {
+      //   console.log("staff accepted ticket");
+      //   this.zoomLink = message.data.zoomLink;
+      //   this.openTicket.updatedAt = message.data.date;
+      //   this.showCountdown = true;
+      // });
 
-      this.studentChannel.subscribe("ticketMarkedClosed", message => {
-              this.openTicket.status = "Closed";
-            this.clearTicketWhenCanceledOrComplete();
+      //   this.studentChannel.subscribe("ticketMarkedClosed", message => {
+      //           this.openTicket.status = "Closed";
+      //         this.clearTicketWhenCanceledOrComplete();
 
-      console.log("ticket was closed by staff");
-      // add new ticket to existing tickets
-    });
+      //   console.log("ticket was closed by staff");
+      // });
     },
     countdownTime: function() {
       //read updated time
@@ -1401,7 +1461,6 @@ export default {
     },
     finished: function() {
       //when countdown is over, take them back to the other page
-     
       this.openTicket.status = "Unresolved";
       this.unresolvedTicket = true;
       this.clearTicketWhenCanceledOrComplete();
@@ -1409,14 +1468,12 @@ export default {
 
     clearTicketWhenCanceledOrComplete: function() {
       this.showCountdown = false;
-            this.ticketHistory.push(this.openTicket);
-       this.requestLandingPage = true;
+      this.ticketHistory.push(this.openTicket);
+      this.requestLandingPage = true;
       this.showTicket = false;
       this.submitRequest = false;
       this.openTicket = null;
       this.studentAcceptedSession = false;
-
-
     },
 
     reSubmitTicket: function(ticket) {
@@ -1432,18 +1489,21 @@ export default {
         .then(() => {
           console.log("resetting ticket");
           this.openTicket = ticket;
-          this.switchToCurrentRequestsTab();
         });
 
       this.openTicket = ticket;
       this.openTicket.status = "Open";
       this.openTicket.createdAt = new Date().toString();
-
+      this.probDes = ticket.longerDescription;
+      this.oneLineOverview = ticket.oneLineOverview;
+      this.selectedCourse = ticket.course._id;
+      // TODO: Add in the file attachments as well
       this.getTickets();
       this.showTicket = true;
 
       // sends ticket to staff
-      this.ticketChannel.publish("ticketUpdate", this.openTicket);
+      // this.ticketChannel.publish("ticketUpdate", this.openTicket);
+      document.getElementById("landingTab").click();
     },
 
     changeRequestState: function() {
@@ -1455,13 +1515,19 @@ export default {
         var channel = client.channels.get("staff");
 
         // Publish a message to the test channel
-        channel.publish("ticketUpdate", "ticket updated");
+        // channel.publish("ticketUpdate", "ticket updated");
 
         this.submitRequest = true;
         this.scrollToTop();
 
         return this.requestLandingPage;
       }
+    },
+    editRequest: function() {
+      console.log("in edit request");
+      this.editingRequest = true;
+      this.submitRequest = false;
+      this.requestLandingPage = false;
     },
     closeRequestForm: function() {
       this.requestLandingPage = true;
@@ -1542,7 +1608,7 @@ export default {
         console.log(this.openTicket);
 
         // sends ticket to staff
-        this.ticketChannel.publish("ticketUpdate", this.openTicket);
+        // this.ticketChannel.publish("ticketUpdate", this.openTicket);
       }
     },
     async getTickets() {
@@ -1564,6 +1630,11 @@ export default {
       if (this.openTickets.length > 0) {
         this.openTicket = this.openTickets[0];
         this.showTicket = true;
+        this.openTicket.status = "Open";
+        this.openTicket.createdAt = this.openTicket.createdAt;
+        this.probDes = this.openTicket.longerDescription;
+        this.oneLineOverview = this.openTicket.oneLineOverview;
+        this.selectedCourse = this.openTicket.course._id;
       }
     },
 
@@ -1583,7 +1654,7 @@ export default {
       if (this.openTicket) {
         console.log("closing ticket " + this.openTicket._id);
 
-        this.ticketChannel.publish("ticketClosed", this.openTicket);
+        // this.ticketChannel.publish("ticketClosed", this.openTicket);
 
         this.openTicket.status = "Unresolved";
         this.ticketHistory.push(this.openTicket);

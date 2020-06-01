@@ -31,7 +31,7 @@ import StarFilled from "vue-material-design-icons/Star.vue";
 import StarHalf from "vue-material-design-icons/StarHalfFull.vue";
 import AccountType from "vue-material-design-icons/AccountSupervisor.vue";
 import ReSubmit from "vue-material-design-icons/Update.vue";
-import Edit from "vue-material-design-icons/FileEdit.vue";
+import Edit from "vue-material-design-icons/Pencil.vue";
 import Attachment from "vue-material-design-icons/Attachment.vue";
 import LongDescription from "vue-material-design-icons/Text.vue";
 import ShortDescription from "vue-material-design-icons/TextShort.vue";

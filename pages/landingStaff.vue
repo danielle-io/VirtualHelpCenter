@@ -1055,14 +1055,14 @@ export default {
       console.log("ticket is " + JSON.stringify(this.currentTicket));
 
       // Get the students user id from the ticket
-      this.studentChannel = client.channels.get(this.currentTicket.owner._id);
-      this.studentChannel.publish("staffAcceptedTicket", {
-        zoomLink: this.zoomLink,
-        date: ticketTime
-      });
+      // this.studentChannel = client.channels.get(this.currentTicket.owner._id);
+      // this.studentChannel.publish("staffAcceptedTicket", {
+      //   zoomLink: this.zoomLink,
+      //   date: ticketTime
+      // });
 
       //remove the ticket from open tickets
-      this.ticketChannel.publish("ticketInProgress", this.currentTicket);
+      // this.ticketChannel.publish("ticketInProgress", this.currentTicket);
 
       // Show connection screen once student receives countdown
       this.connecting = true;
@@ -1105,15 +1105,15 @@ export default {
     },
 
     countdownTime(ticketTime) {
-      this.studentChannel = client.channels.get(this.currentTicket.owner._id);
-      this.studentChannel.subscribe("studentAcceptedSession", function(
-        message
-      ) {
-        console.log("accepted session");
-        document.getElementById("hiddenButton").click();
-        this.triggerAccept();
-        clearTimeout(x);
-      });
+      // this.studentChannel = client.channels.get(this.currentTicket.owner._id);
+      // this.studentChannel.subscribe("studentAcceptedSession", function(
+      //   message
+      // ) {
+      //   console.log("accepted session");
+      //   document.getElementById("hiddenButton").click();
+      //   this.triggerAccept();
+      //   clearTimeout(x);
+      // });
 
       //read updated time
       let currentTime = new Date();
@@ -1139,9 +1139,9 @@ export default {
             this.showCloseSessionDialog = false;
 
       console.log("confirm close session");
-           this.studentChannel = client.channels.get(this.currentTicket.owner._id);
-      this.studentChannel.publish("ticketMarkedClosed", { 
-});
+          //  this.studentChannel = client.channels.get(this.currentTicket.owner._id);
+//       this.studentChannel.publish("ticketMarkedClosed", { 
+// });
       this.resetBackToOpenTicketsDisplay();
 
       // Update the ticket status to closed in the db
@@ -1217,17 +1217,17 @@ export default {
     this.staffCourses.push({ value: null, text: "Show All Courses" });
 
     // This gets ANY ticket submitted by ANY student
-    this.ticketChannel.subscribe("ticketUpdate", message => {
-      console.log("ticket was added");
-      // add new ticket to existing tickets
-      this.getStudentName(message.data, message.data.owner._id);
-      this.tickets.push(message.data);
-    });
-    this.ticketChannel.subscribe("ticketInProgress", message => {
-      console.log("ticket was closed");
-      // ticket will be remove from being displayed
-      this.removeTicketFromTicketUI(message.data._id);
-    });
+    // this.ticketChannel.subscribe("ticketUpdate", message => {
+    //   console.log("ticket was added");
+    //   // add new ticket to existing tickets
+    //   this.getStudentName(message.data, message.data.owner._id);
+    //   this.tickets.push(message.data);
+    // });
+    // this.ticketChannel.subscribe("ticketInProgress", message => {
+    //   console.log("ticket was closed");
+    //   // ticket will be remove from being displayed
+    //   this.removeTicketFromTicketUI(message.data._id);
+    // });
 
     this.scrollToTop();
   },
