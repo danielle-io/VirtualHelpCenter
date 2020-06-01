@@ -159,7 +159,8 @@ footer {
     color: "red" !important;
 } */
 
-button[type="button"], button[type="submit"] {
+
+button[type="submit"] {
     background: linear-gradient( 333deg, rgba(167, 115, 215, 0.72) 21%, rgba(169, 235, 244, 1) 75%);
     /* border: none; */
     color: white;
@@ -184,9 +185,6 @@ button[type="button"], button[type="submit"] {
     transition: all 0.3s ease-in-out;
 }
 
-button[type="button"]:hover, button[type="submit"]:hover, button[type="reset"]:hover {
-    background-color: #987cb3;
-}
 
 button[type="button"]:active, button[type="submit"]:active, button[type="reset"]:active {
     -moz-transform: scale(0.95);
