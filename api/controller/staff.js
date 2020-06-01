@@ -1,10 +1,10 @@
 const {Router} = require('express');
 const router = Router();
 
-let Staff = require('../model/staffs')
+let Staff = require('../model/staff')
 
 //GET Staff Listing
-router.get('/staffs', (req,res,next) =>{
+router.get('/staff', (req,res,next) =>{
     Staff.find({}, (err, staff) => {
         if(err) return console.log(err);
         res.send(staff);
@@ -12,7 +12,7 @@ router.get('/staffs', (req,res,next) =>{
 });
 
 //GET staff by id
-router.get('/staffs/:id', (req, res, next) => {
+router.get('/staff/:id', (req, res, next) => {
     const ids = req.params.id;
     Staff.findById(ids, (err, staff)=>{
         res.send(staff);

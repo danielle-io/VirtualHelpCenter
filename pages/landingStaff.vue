@@ -4,13 +4,38 @@
   margin-top: 3px;
 }
 
+.md-dialog-container.md-theme-default {
+  width: 50% !important;
+}
+
 .md-button .md-ripple {
   padding: 0 8px;
   display: flex;
   justify-content: center;
   align-items: center;
-  background: white;
-  box-shadow: 0 10px 30px 0 white;
+  background: white !important;
+  box-shadow: 0 10px 30px 0 white !important;
+}
+
+.md-button.md-theme-default {
+  color: rgba(0, 0, 0, 0.87);
+  color: rgba(0, 0, 0, 0.87);
+  color: var(
+    --md-theme-default-text-primary-on-background,
+    rgba(0, 0, 0, 0.87)
+  );
+  border: none !important;
+  background: none !important;
+  box-shadow: 0 10px 30px 0 white !important;
+}
+
+.md-ripple {
+  padding: 0 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: none !important;
+  box-shadow: 0 10px 30px 0 white !important;
 }
 
 .md-dialog-container.md-theme-default {
@@ -26,7 +51,7 @@
 
 .md-dialog {
   position: fixed;
-  z-index: 9999;
+  z-index: 9999 !important;
   top: 0;
   left: 0;
   right: 0;
@@ -36,6 +61,9 @@
   pointer-events: none;
   display: flex;
   transition-duration: 0.2s;
+}
+.md-dialog-alert{
+    z-index: 9999;
 }
 
 .disabled-button {
@@ -142,7 +170,7 @@
 
 .staff-container {
   position: relative;
-  z-index: 999;
+  z-index: 900;
   margin-left: auto;
   margin-right: auto;
   border: 1px solid #dadce0;
@@ -250,11 +278,47 @@ input[type="text"]:placeholder {
   cursor: dafualt !important;
   background-color: #d3d3d3 !important;
 }
+
+button[type="submit"] {
+  background-color: #fff !important;
+}
+
+
 </style>
 
 
 <template>
+<div>
+
+   <client-only>
+      <md-dialog-confirm
+        style="z-index: 9999; padding-left: 50px; padding-right:50px"
+        :md-active.sync="showCloseSessionDialog"
+        md-title="Mark Session Complete"
+        md-content="Are you ready to close the session?"
+        md-confirm-text="Yes, mark complete"
+        md-cancel-text="No"
+        clickOutsideToClose="true"
+        @md-cancel="showCloseSessionDialog = false;"
+        @md-confirm="confirmCloseSession()"
+      />
+    </client-only>
+
+      <no-ssr>
+      <md-dialog
+        style="margin-left: 200px; margin-right: 200px;"
+        :md-active.sync="showCanceledRequestDialog"
+        md-title="Request Canceled"
+        md-content="Due to missing the acceptance window, the student's request has been removed from the queue. You may select a new request to complete, if one is available."
+        md-confirm-text="Okay"
+        clickOutsideToClose="true"
+        class="accept-button"
+        @md-confirm="showCanceledRequestDialog = false;"
+      />
+    </no-ssr>
+    
   <div id="requests" style="position: relative;">
+
     <button id="hiddenButton" style="display:none;" @click="triggerAccept"></button>
 
     <div class="request-tabs">
@@ -269,24 +333,13 @@ input[type="text"]:placeholder {
       >Request History</a>
     </div>
 
-    <no-ssr>
-      <md-dialog-alert
-        style="margin-left: 20px; margin-right: 20px;"
-        :md-active.sync="showCanceledRequestDialog"
-        md-title="Request Canceled"
-        md-content="Due to missing the acceptance window, the student's request has been removed from the queue. You may select a new request to complete, if one is available."
-        md-confirm-text="Okay"
-        clickOutsideToClose="true"
-        @md-confirm="showCanceledRequestDialog = false;"
-      />
-    </no-ssr>
 
     <div
       class="staff-container"
-      v-bind:class="{ 'dialog-showing': showCanceledRequestDialog, 'dialog-hidden': !showCanceledRequestDialog}"
+      v-bind:class="{ 'dialog-showing': showCanceledRequestDialog || showCloseSessionDialog, 'dialog-hidden': !showCanceledRequestDialog && !showCloseSessionDialog}"
     >
       <div v-if="!this.connecting && !this.zoomLinkForm">
-        <div class="requests-heading">
+        <!-- <div class="requests-heading"> -->
           <div v-if="this.openRequestTab" class="row" style="margin-bottom: 12px;">
             <span style="margin: auto;" v-if="this.selectedTicketIndex === -1 && this.tickets">
               <!-- TODO: instead of tickets.length, get the filtered tickets length to hide message when no tickets show -->
@@ -318,7 +371,6 @@ input[type="text"]:placeholder {
               ></b-form-select>
             </div>
           </span>
-        </div>
 
         <div v-if="this.openRequestTab">
           <div style="margin-top: 30px;" class="ticket-container">
@@ -647,13 +699,12 @@ input[type="text"]:placeholder {
       </div>
 
       <div v-if="this.connecting">
-      
         <div v-if="!this.studentAccepted">
 
           <div class="heading-two-text">Awaiting Student Acceptance</div>
 
           <div class="loading-dots">
-            <beat-loader :color="color"></beat-loader>
+            <beat-loader :color=connectingColor></beat-loader>
           </div>
 
           <div
@@ -741,7 +792,21 @@ input[type="text"]:placeholder {
             </div>
           </md-card>
         </div>
-      </div>
+
+          <div v-if="this.studentAccepted">
+        <md-card>
+          <div
+            style="padding-top:12px; padding-bottom: 18px; justify-content: center; text-align: center; align-items: center;"
+          >
+          <span style="font-size: 28px; color: #53a59e;  justify-content: center;
+  align-items: center; cursor:pointer;">
+          <check-circle @click="showCloseSessionDialog = true"
+ style="height: 1.4em !important;"/></span>
+ 
+ <span style="margin-bottom: 10px; cursor:pointer;" @click="showCloseSessionDialog = true" class="sub-heading-text">Mark session complete</span></div>
+        </md-card>
+        </div>
+       </div>
 
       <div
         v-if="this.zoomLinkForm && !this.connecting"
@@ -782,6 +847,7 @@ input[type="text"]:placeholder {
       </div>
     </div>
   </div>
+  </div>
 </template>
       
 
@@ -804,7 +870,7 @@ const client = new Ably.Realtime(process.env.ABLY_KEY);
 export default {
   head() {
     return {
-      title: "Tickets"
+      title: "Staff"
     };
   },
   components: {
@@ -819,6 +885,7 @@ export default {
     return {
       el: "#requests",
       connecting: false,
+      connectingColor: '#7e6694',
       staff: null,
       zoomLinkForm: false,
       openRequestTab: true,
@@ -826,10 +893,8 @@ export default {
       selectedTicket: false,
       expandChevron: true,
       collapseChevron: false,
-      color: "#7e6694",
       course: {},
       selected: "",
-      staffClass: "none",
       zoomLink: null,
       selectedTicketIndex: -1,
       startingIndex: 0,
@@ -843,7 +908,8 @@ export default {
       studentAccepted: false,
       ticketChannel: client.channels.get("tickets"),
       ticketHistory: [],
-      showCanceledRequestDialog: false
+      showCanceledRequestDialog: false,
+      showCloseSessionDialog: false,
     };
   },
   methods: {
@@ -912,7 +978,6 @@ export default {
       console.log(this.openTicket);
       console.log(attachmentUrl);
       window.open(attachmentUrl, "_blank");
-      // location.href = attachmentUrl;
     },
     filterCourseTickets(status, course) {
       // console.log(this.tickets);
@@ -944,7 +1009,6 @@ export default {
               studentResponse.data.name.firstName +
               " " +
               studentResponse.data.name.lastName;
-            // document.getElementById('studentName').innerHTML = studentName;
             this.$set(ticket, "ownerName", studentName);
           }
         }
@@ -1024,7 +1088,6 @@ export default {
     sendZoomLink() {
       console.log("ticket id is " + this.currentTicketId);
       let ticketTime = new Date();
-
       console.log("ticket is " + JSON.stringify(this.currentTicket));
 
       // Get the students user id from the ticket
@@ -1034,10 +1097,16 @@ export default {
         date: ticketTime
       });
 
+      // //remove the ticket from open tickets
+      // this.ticketChannel.publish("ticketInProgress", this.currentTicket);
+
       // Show connection screen once student receives countdown
       this.connecting = true;
 
+      console.log(this.connecting);
+
       //If the student does not accept the session in time return to beginning
+      // while (!this.studentAccepted){
       let x = setTimeout(() => {
         // The student did not accept in time
         console.log("student did not accept in time");
@@ -1045,6 +1114,22 @@ export default {
         axios.put("/api/updateTicket/" + this.currentTicketId, {
           status: "Unresolved"
         });
+
+        this.resetBackToOpenTicketsDisplay();
+       
+      }, this.countdownTime(ticketTime));
+      // }
+    },
+    resetBackToOpenTicketsDisplay(){
+      console.log("going back to open tickets display");
+
+      if (this.currentTicket){
+        console.log("current ticket exists: removing current ticket " + JSON.stringify(this.currentTicket));
+        var id = this.currentTicket._id;
+        this.removeTicketFromTicketUI(id)
+      }
+
+      this.studentAccepted = true;
         this.connecting = false;
         this.zoomLinkForm = false;
         this.selectedTicketIndex = -1;
@@ -1052,8 +1137,9 @@ export default {
         this.endingIndex = 3;
         this.currentTicket = null;
         this.currentTicketId = null;
-      }, this.countdownTime(ticketTime));
+        this.selectedTicket = false;
     },
+
     countdownTime(ticketTime) {
       this.studentChannel = client.channels.get(this.currentTicket.owner._id);
       this.studentChannel.subscribe("studentAcceptedSession", function(
@@ -1061,8 +1147,8 @@ export default {
       ) {
         console.log("accepted session");
         document.getElementById("hiddenButton").click();
-        // this.studentAccepted = true;
         this.triggerAccept();
+        clearTimeout(x);
       });
 
       //read updated time
@@ -1073,7 +1159,6 @@ export default {
           ticketTime.getSeconds() -
           (currentTime.getMinutes() * 60 + currentTime.getSeconds())
       );
-
       return (
         (ticketTime.getMinutes() * 60 +
           ticketTime.getSeconds() -
@@ -1081,12 +1166,31 @@ export default {
         1000
       );
     },
-    removeTicket(id) {
+    removeTicketFromTicketUI(id) {
       this.tickets = this.tickets.filter(
         ticket => ticket.status === "Open" && ticket._id != id
       );
     },
-    expandCard: function() {},
+    confirmCloseSession(){
+            this.showCloseSessionDialog = false;
+
+      console.log("confirm close session");
+           this.studentChannel = client.channels.get(this.currentTicket.owner._id);
+      this.studentChannel.publish("ticketMarkedClosed", { 
+});
+      this.resetBackToOpenTicketsDisplay();
+
+      // Update the ticket status to closed in the db
+       if (this.currentTicket){
+        console.log("current ticket exists: removing current ticket " + JSON.stringify(this.currentTicket));
+        var id = this.currentTicket._id;
+        this.removeTicketFromTicketUI(id)
+
+              axios.put("/api/updateTicket/" + id, {
+        status: "Closed",
+      });
+      }
+    },
     async acceptTicket() {
       this.getZoomLink();
 
@@ -1094,6 +1198,9 @@ export default {
       console.log("removing ticket");
       this.ticketChannel.publish("ticketClosed", this.currentTicket);
  
+      // axios.put("/api/updateTicket/" + this.currentTicketId, {
+      //   status: "Pending"
+      // });
     },
     // async loadUser(user) {
     //   if (user) {
@@ -1117,7 +1224,7 @@ export default {
         this.staffCourses.push({ value: classSelected._id, text: text });
         console.log(this.staffCourses);
       }
-    }
+    },
   },
   async created() {
     let tickets = await axios.get("/api/tickets");
@@ -1162,10 +1269,10 @@ export default {
       this.getStudentName(message.data, message.data.owner._id);
       this.tickets.push(message.data);
     });
-    this.ticketChannel.subscribe("ticketClosed", message => {
+    this.ticketChannel.subscribe("ticketInProgress", message => {
       console.log("ticket was closed");
       // ticket will be remove from being displayed
-      this.removeTicket(message.data._id);
+      this.removeTicketFromTicketUI(message.data._id);
     });
 
     this.ticketChannel.subscribe("reopenTicket", message => {
@@ -1175,10 +1282,5 @@ export default {
 
     this.scrollToTop();
   },
-  computed: {
-    isDisbaled() {
-      return this.zoomLink !== null;
-    }
-  }
 };
 </script>
