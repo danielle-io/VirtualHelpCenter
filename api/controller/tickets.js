@@ -1,7 +1,8 @@
-var Ticket = require('../model/tickets.js');
-
 const { Router } = require('express')
-const router = Router()
+const router = Router();
+
+let Ticket = require('../model/tickets');
+
 
 /* GET tickets listing. */
 router.get('/tickets', function (req, res, next) {
@@ -42,12 +43,12 @@ router.get('/tickets/getTickets', function(req,res,next){
     })
 })
 
-//Deleting Ticket
-router.delete('/deleteTicket/:id', function(req, res, next) {
+router.get('/tickets/getTicketsByUser/:id', function(req,res,next){
     const id = req.params.id;
-    console.log("deleting")
-    Ticket.findByIdAndDelete(id,function(err, res){
-    });
+    Ticket.find({'owner._id' : id}, (err, tickets)=>{
+        console.log(tickets);
+        res.send(tickets)
+    })
 })
 
 //Updating Ticket
