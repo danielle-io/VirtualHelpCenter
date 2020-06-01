@@ -16,7 +16,6 @@ router.get('/users/:id', (req, res, next) => {
     console.log("in user by id");
     const id = req.params.id;
     UserModel.findById(id, (err, user)=>{
-        console.log(user);
         res.send(user);
     });
 })

@@ -37,9 +37,7 @@ router.get('/ticket/:id', function (req, res, next) {
 
 //
 router.get('/tickets/getTickets', function(req,res,next){
-    console.log("inside ticket post request");
     Ticket.find(req.params, (err, tickets)=>{
-        console.log(tickets);
         res.send(tickets)
     })
 })
@@ -49,7 +47,6 @@ router.delete('/deleteTicket/:id', function(req, res, next) {
     const id = req.params.id;
     console.log("deleting")
     Ticket.findByIdAndDelete(id,function(err, res){
-        console.log(res)
     });
 })
 

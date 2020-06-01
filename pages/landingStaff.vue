@@ -223,43 +223,43 @@
                   v-bind:class="{ 'selected-card': selectedTicketIndex === index}"
                 >
                   <div style="cursor: pointer;" @click="clickCard(ticket, index, ticket._id)">
-                      <div class="card-line">
-                        <span class="row">
-                          <span class="ticket-categories col-sm-3">
-                            <student />
-                            <strong>Student:</strong>
-                          </span>
-                          <span class="col">{{ " " + ticket.ownerName }}</span>
+                    <div class="card-line">
+                      <span class="row">
+                        <span class="ticket-categories col-sm-3">
+                          <student />
+                          <strong>Student:</strong>
                         </span>
-                      </div>
+                        <span class="col">{{ " " + ticket.ownerName }}</span>
+                      </span>
+                    </div>
 
-                      <div class="card-line">
-                        <span class="row">
-                          <span class="ticket-categories col-sm-3">
-                            <clock />
-                            <strong>Time:</strong>
-                          </span>
-                          <span
-                            style="margin-left:0px;"
-                            class="col"
-                          >{{ " " + (ticket.createdAt.split('T')[1]).substring(0,5)}}</span>
+                    <div class="card-line">
+                      <span class="row">
+                        <span class="ticket-categories col-sm-3">
+                          <clock />
+                          <strong>Time:</strong>
                         </span>
-                      </div>
+                        <span
+                          style="margin-left:0px;"
+                          class="col"
+                        >{{ " " + (ticket.createdAt.split('T')[1]).substring(0,5)}}</span>
+                      </span>
+                    </div>
 
-                      <div class="card-line">
-                        <span class="row">
-                          <span class="ticket-categories col-sm-3">
-                            <date />
-                            <strong>Date:</strong>
-                          </span>
-                          <span
-                            style="margin-left:0px;"
-                            class="col"
-                          >{{ (ticket.createdAt.split('T')[0].split('-')[1] + '-' + ticket.createdAt.split('T')[0].split('-')[2] + '-' + ticket.createdAt.split('T')[0].split('-')[0])}}</span>
+                    <div class="card-line">
+                      <span class="row">
+                        <span class="ticket-categories col-sm-3">
+                          <date />
+                          <strong>Date:</strong>
                         </span>
-                      </div>
+                        <span
+                          style="margin-left:0px;"
+                          class="col"
+                        >{{ (ticket.createdAt.split('T')[0].split('-')[1] + '-' + ticket.createdAt.split('T')[0].split('-')[2] + '-' + ticket.createdAt.split('T')[0].split('-')[0])}}</span>
+                      </span>
+                    </div>
 
-                      <!-- <div class="card-line">
+                    <!-- <div class="card-line">
                       <span class="row">
                         <span class="ticket-categories col-sm-3">
                           <bell class="label-icons-smaller" />
@@ -267,17 +267,17 @@
                         </span>
                         <span style="margin-left:0px;" class="col-sm-6">{{ " " + ticket.status }}</span>
                       </span>
-                      </div>-->
+                    </div>-->
 
-                      <div class="card-line">
-                        <span class="row">
-                          <span class="ticket-categories col-sm-3">
-                            <short-description />
-                            <strong>Overview:</strong>
-                          </span>
-                          <span class="col">{{ " " + ticket.oneLineOverview}}</span>
+                    <div class="card-line">
+                      <span class="row">
+                        <span class="ticket-categories col-sm-3">
+                          <short-description />
+                          <strong>Overview:</strong>
                         </span>
-                      </div>
+                        <span class="col">{{ " " + ticket.oneLineOverview}}</span>
+                      </span>
+                    </div>
                   </div>
 
                   <div
@@ -373,7 +373,6 @@
 
               <div style="padding-top: 30px;">
                 <input
-                  width="90%"
                   type="text"
                   v-bind:value="zoomLink"
                   v-on:input="zoomLink = $event.target.value"
@@ -413,6 +412,7 @@
 
       <div v-if="this.connecting">
         <div v-if="!this.studentAccepted">
+
           <div class="heading-two-text">Awaiting Student Acceptance</div>
 
           <div v-if="!this.studentAccepted" class="loading-dots">
@@ -511,6 +511,8 @@ import "vue-material/dist/vue-material.min.css";
 import "vue-material/dist/theme/default.css";
 import { BFormInput, BFormSelect, BButton, BFormCheckbox } from "bootstrap-vue";
 
+const staffId = "5eade47047da2706382d53e6";
+
 Vue.use(VueMaterial);
 import * as Ably from "ably";
 const client = new Ably.Realtime(process.env.ABLY_KEY);
@@ -530,6 +532,7 @@ export default {
     return {
       el: "#requests",
       connecting: false,
+      staff: null,
       zoomLinkForm: false,
       openRequestTab: true,
       requestHistoryTab: false,
@@ -540,7 +543,6 @@ export default {
       course: {},
       selected: "",
       staffClass: "none",
-      staff: "5ecafc0f5219c55528efe03f",
       zoomLink: null,
       selectedTicketIndex: -1,
       startingIndex: 0,
@@ -592,9 +594,17 @@ export default {
 
     triggerAccept: function() {
       console.log("in triggerAccept");
-      console.log("accepted " + this.studentAccepted);
       this.studentAccepted = true;
       console.log("accepted " + this.studentAccepted);
+
+      axios.put("/api/updateTicket/" + this.currentTicketId, {
+        status: "In Progress",
+        acceptedBy: {
+          _id: staffId
+        }
+      });
+
+      // Add the staff member to the ticket
     },
     getFilterClass(status, course) {
       // console.log("filtering course")
@@ -645,11 +655,12 @@ export default {
           "/api/users/" + ticketOwnerId
         );
         if (studentResponse) {
-          if (studentResponse.data.name.firstname) {
+          if (studentResponse.data.name.firstName) {
             studentName =
-              studentResponse.data.name.firstname +
+              studentResponse.data.name.firstName +
               " " +
-              studentResponse.data.name.lastname;
+              studentResponse.data.name.lastName;
+            // document.getElementById('studentName').innerHTML = studentName;
             this.$set(ticket, "ownerName", studentName);
           }
         }
@@ -714,16 +725,14 @@ export default {
     },
     cancelZoomLink: function() {
       this.zoomLinkForm = false;
+      axios.put("/api/updateTicket/" + this.currentTicketId, {
+        status: "Open"
+      });
     },
 
     // This is where the link is stored
     sendZoomLink() {
       console.log("ticket id is " + this.currentTicketId);
-      axios.put("/api/updateTicket/" + this.currentTicketId, {
-        status: "In Progress",
-        accepted: this.staff
-      });
-
       let ticketTime = new Date();
 
       console.log("ticket is " + JSON.stringify(this.currentTicket));
@@ -735,36 +744,38 @@ export default {
         date: ticketTime
       });
 
+      //remove the ticket from open tickets
+      this.ticketChannel.publish("ticketClosed", this.currentTicket);
+
       // Show connection screen once student receives countdown
       this.connecting = true;
-
-      console.log("waiting on acceptance");
-      // Subscribe to an event on studentChannel to see if they accepted ticket
-      this.studentChannel.subscribe("studentAcceptedSession", function(
-        message
-      ) {
-        document.getElementById("hiddenButton").click();
-      this.studentAccepted = true;
-      console.log("student accepted");
-      });
-
-      let x = setTimeout(function() {
+      
+      //If the student does not accept the session in time return to beginning
+      let x = setTimeout(() => {
         // Right here we let it know the student did not accept
         console.log("student did not accept in time");
         axios.put("/api/updateTicket/" + this.currentTicketId, {
           status: "Unresolved"
         });
-      }, this.countdownTime(ticketTime));
+        this.connecting = false;
+        this.zoomLinkForm = false;
+        this.selectedTicketIndex = -1;
+        this.startingIndex = 0;
+        this.endingIndex = 3;
+        this.currentTicket = null;
+        this.currentTicketId = null;
+      }, 5000);
 
-      //student did not accept the ticket
-      // this.studentChannel.subscribe("studentDidNotAcceptSession", function(
-      //   message
-      // ) {
-      //   console.log("student did not accept session, moving on");
-      //not sure if the timeout is cleared when we move on
-      clearTimeout(x);
-      // });
+      // Subscribe to an event on studentChannel to see if they accepted ticket
+      this.studentChannel.subscribe("studentAcceptedSession", function(message) {
+        document.getElementById("hiddenButton").click();
+        this.studentAccepted = true;
+        console.log("student accepted");
+        clearTimeout(x);
+      });
+
     },
+
     countdownTime(ticketTime) {
       //read updated time
 
@@ -783,16 +794,22 @@ export default {
         1000
       );
     },
+    removeTicket(id){
+      this.tickets = this.tickets.filter(ticket => ticket.status === "Open" && ticket._id != id);
+    },
     expandCard: function() {},
     async acceptTicket() {
       this.getZoomLink();
+      axios.put("/api/updateTicket/" + this.currentTicketId, {
+        status: "Pending"
+      });
     },
-    async loadUser(user) {
-      if (user) {
-        this.staff = user.data._id;
-        console.log("user loaded");
-      }
-    },
+    // async loadUser(user) {
+    //   if (user) {
+    //     this.staff = user.data._id;
+    //     console.log("user loaded");
+    //   }
+    // },
     // Sets the class to filter by based on dropdown
     async setClass(course) {
       console.log("setting class")
@@ -825,7 +842,7 @@ export default {
         }
       }
     }
-    let staff = await axios.get("/api/users/" + this.staff);
+    let staff = await axios.get("/api/users/" + staffId);
 
     if (staff) {
       staff.data.classes.forEach(element => {
@@ -836,8 +853,11 @@ export default {
   
       let course = this.staffCourses[0];
       this.course = course.value
-      this.loadUser(staff);
+      // this.loadUser(staff);
      
+      // let course = staff.data.classes[0];
+      // let staffcourse = course._id;
+      // this.course = staffcourse;
     }
   },
   beforeMount() {
@@ -847,6 +867,8 @@ export default {
     
     // This gets ANY ticket submitted by ANY student
     this.ticketChannel.subscribe("ticketUpdate", message => {
+      console.log("ticket was added");
+
       //add new ticket to existing tickets
       this.getStudentName(message.data, message.data.owner._id)
       this.tickets.push(message.data);
@@ -856,7 +878,7 @@ export default {
       console.log("ticket was deleted");
 
       //ticket will be deleted from being displayed
-      this.removeTicket(message.data);
+      this.removeTicket(message.data._id);
     });
 
     this.scrollToTop();

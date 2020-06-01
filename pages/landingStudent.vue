@@ -22,6 +22,22 @@
   /* max-width: 25%; */
 }
 
+.star-outline {
+  margin-right: 6px;
+  font-size: 20px;
+  color: #624b77;
+  height: 0.8em;
+  cursor: pointer;
+}
+
+.star-filled {
+  margin-right: 6px;
+  font-size: 20px;
+  color: #624b77;
+  height: 0.8em;
+  cursor: pointer;
+}
+
 .card-line-history {
   margin-bottom: 4px;
   font-size: 16px;
@@ -69,6 +85,11 @@
   font-weight: 500;
 }
 
+.rating-title {
+  color: #624b77;
+  font-weight: 500;
+}
+
 .text-body {
   flex-wrap: wrap;
 }
@@ -78,6 +99,13 @@
   font-size: 22px;
   border: none;
   color: #c94d4d;
+}
+
+.close-button-black {
+  margin-right: 10px;
+  font-size: 22px;
+  border: none;
+  color: #444343;
 }
 
 .reSubmit-button {
@@ -112,6 +140,22 @@
   width: 40% !important;
   cursor: dafualt !important;
   background-color: #d3d3d3 !important;
+}
+
+.disabled-submit-rating {
+  display: inline-block;
+  color: #595c5f !important;
+  cursor: default;
+}
+
+.disabled-submit-rating :hover {
+  text-decoration: none !important;
+  border-bottom: none !important;
+}
+.submit-rating {
+  display: inline-block;
+  cursor: pointer;
+  color: rgb(45, 58, 130) !important;
 }
 
 .form-buttons-disabled:hover {
@@ -229,6 +273,8 @@ table th,
   position: absolute;
   bottom: -1px;
   width: 6px;
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
 }
 
 .expired-card {
@@ -495,9 +541,8 @@ input[type="text"]:placeholder {
               </div>
 
               <div
-                v-if="this.openTicket"
+                v-if="showTicket"
                 style="text-align: center; margin-top: 12px;"
-                :hidden="!this.openTicket"
               >
                 <!-- TODO: show a modal on clicking close asking if they are sure -->
                 <md-card style="padding-top: 15px; padding-bottom: 10px;">
@@ -624,7 +669,12 @@ input[type="text"]:placeholder {
 
               <!-- Container for filling out the request form -->
               <div v-if="!this.requestLandingPage && !this.submitRequest">
-                <div class="heading-text">Request a Session</div>
+                <div style="float: right;">
+                  <button class="close-button-black" v-on:click="closeRequestForm()">
+                    <close class="close-icon" />
+                  </button>
+                </div>
+                <div class="heading-text" style="padding-top: 18px;">Request a Session</div>
 
                 <div style="margin-left: 8px;" class="form-container">
                   <div class="row" style="width: 70%;">
@@ -775,7 +825,7 @@ input[type="text"]:placeholder {
             <div class="container-body">
               <div v-for="(ticket) in this.ticketHistory" :key="ticket._id">
                 <md-card
-                  style="padding-bottom: 8px; border-radius: 8px; padding-top:8px; box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.05);"
+                  style="border: 1px solid #dde0e681; margin-bottom: 10px; padding-bottom: 8px; border-radius: 8px; padding-top:8px; box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.05);"
                 >
                   <!-- Show resubmit button if there's no open ticket -->
                   <div
@@ -797,13 +847,75 @@ input[type="text"]:placeholder {
                   </div>
 
                   <div class="md-card-content" style="margin-bottom:20px;">
+                    <div v-if="ticket.status === 'Closed'">
+                      <div v-if="ticket.wasRated === 0">
+                        <div style="display: inline-block" class="row">
+                          <span
+                            style="padding-left:6px; margin-left: 16px; margin-right: 8px;"
+                            class="rating-title"
+                          >Rate Your Session:</span>
+                         
+                          <span
+                            style="margin-right: 4px !important;"
+                            v-for="ratingIndex in ticket.rating"
+                            :key="ratingIndex"
+                          >
+                            <a @click="setRating(ticket, ticket.rating - 1)">
+                              <star-filled class="star-filled" />
+                            </a>
+                          </span>
+
+                          <span
+                            style="margin-right: 4px !important;"
+                            v-for="ratingIndex in (5 - ticket.rating)"
+                            :key="ratingIndex"
+                          >
+                            <a @click="setRating(ticket, ratingIndex)">
+                              <star-outline class="star-outline" />
+                            </a>
+                          </span>
+                        </div>
+
+                        <div class="row">
+                          <span class="col" style="display: inline-block;">
+                            <b-form-input
+                              style="font-size: 14px; padding-bottom: 0px; border-radius: 0; !important; padding-top: 0px; border-top: none; border-left: none; border-right: none; margin-top: 0px;"
+                              placeholder="Rating explanation"
+                              v-model="ticket.ratingExplanation"
+                            >
+                              <span v-if="ticket.ratingExplanation.length < 1" class="asterisk">*</span>
+                            </b-form-input>
+                          </span>
+                          <span class="col">
+                            <span
+                              v-on:click="submitRating(ticket);"
+                              v-bind:class="{ 'submit-rating': ticket.ratingExplanation !== '', 'disabled-submit-rating': ticket.ratingExplanation === '' }"
+                              style=" display: inline-block !important; 
+                              z-index: 999; 
+                              text-shadow: none !important;
+                              margin-left: 6px;"
+                              rows="1"
+                              max-rows="5"
+                            >Submit Rating</span>
+                          </span>
+                        </div>
+                      </div>
+
+                      <div v-if="ticket.wasRated === 1" class="card-line-history">
+                        <div style="display: inline-block" class="row">
+                          <span style="padding-left:6px; margin-right: 8px;" class="rating-title">
+                            <check style="margin-right: 6px;" />Rating Submitted
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
                     <div class="card-line-history">
                       <div class="row">
                         <span class="card-categories col-sm-3">
                           <clock class="label-icons" />Date :
                         </span>
                         <span
-                          style="margin-left: 22px;"
                           class="col-sm-9 text-body"
                         >{{ (ticket.createdAt.split('T')[0].split('-')[1] + '-' + ticket.createdAt.split('T')[0].split('-')[2] + '-' + ticket.createdAt.split('T')[0].split('-')[0])}}</span>
                       </div>
@@ -815,7 +927,6 @@ input[type="text"]:placeholder {
                           <date class="label-icons" />Time:
                         </span>
                         <span
-                          style="margin-left: 22px;"
                           class="col-sm-9 text-body"
                         >{{ " " + (ticket.createdAt.split('T')[1]).substring(0,5)}}</span>
                       </div>
@@ -839,19 +950,19 @@ input[type="text"]:placeholder {
                       </div>
                     </div>
 
-                      <div
-                        v-bind:class="{ 'chevron': expandChevron, 'hidden': !expandChevron }"
-                        @click="changeChevronClass"
-                      >
-                        <expand-arrow/>
-                      </div>
+                    <div
+                      v-bind:class="{ 'chevron': expandChevron, 'hidden': !expandChevron }"
+                      @click="changeChevronClass"
+                    >
+                      <expand-arrow />
+                    </div>
 
-                      <div
-                        @click="changeChevronClass"
-                        v-bind:class="{ 'chevron': collapseChevron, 'hidden': !collapseChevron }"
-                      >
-                        <collapse-arrow/>
-                      </div>
+                    <div
+                      @click="changeChevronClass"
+                      v-bind:class="{ 'chevron': collapseChevron, 'hidden': !collapseChevron }"
+                    >
+                      <collapse-arrow />
+                    </div>
 
                     <div
                       v-bind:class="{ 'show-extra-content': collapseChevron, 'hide-extra-content': expandChevron }"
@@ -895,7 +1006,8 @@ if (!firebase.apps.length) {
 
 // const userId = "5ecafc0f5219c55528efe03f";
 // const userId = "5eade3645c59ce0914789c38";
-const userId = "5eade33d5c59ce0914789c37";
+// const userId = "5eade33d5c59ce0914789c37";
+const userId = "5ed34dbd99e64f3cc0b49397";
 
 const client = new Ably.Realtime(process.env.ABLY_KEY);
 
@@ -1021,6 +1133,7 @@ export default {
       ],
       zoomLink: null,
       showCountdown: false,
+      showTicket: false,
       studentAcceptedSession: false,
       studentChannel: client.channels.get(userId),
       ticketChannel: client.channels.get("tickets"),
@@ -1090,6 +1203,21 @@ export default {
       }
       return false;
     },
+    submitRating: function(ticket) {
+      console.log("in submit rating, ticket is is " + ticket._id);
+      if (ticket.ratingExplanation !== "") {
+        axios
+          .put("/api/updateTicket/" + ticket._id, {
+            rating: ticket.rating,
+            ratingExplanation: ticket.ratingExplanation,
+            wasRated: 1
+          })
+          .then(() => {
+            console.log("submitted rating");
+          });
+        ticket.wasRated = 1;
+      }
+    },
     switchToCurrentRequestsTab: function() {
       this.currentRequestsTab = true;
       this.requestHistoryTab = false;
@@ -1136,6 +1264,13 @@ export default {
         this.collapseChevron = false;
       }
     },
+    setRating: function(ticket, clickedRating) {
+      console.log("clicked: " + clickedRating);
+      console.log("changing rating on ticket" + JSON.stringify(ticket));
+
+      ticket.rating = clickedRating;
+      console.log("ticket rating is now " + ticket.rating);
+    },
     removeElement: function(index) {
       this.rows.splice(index, 1);
     },
@@ -1167,7 +1302,8 @@ export default {
         console.log("staff accepted ticket");
         this.zoomLink = message.data.zoomLink;
         this.openTicket.updatedAt = message.data.date;
-
+        this.showTicket = false;
+        
         document.getElementById("hiddenButton").click();
       });
     },
@@ -1183,22 +1319,26 @@ export default {
           (currentTime.getMinutes() * 60 + currentTime.getSeconds())
       );
 
-      return (
-        ticketTime.getMinutes() * 60 +
-        ticketTime.getSeconds() -
-        (currentTime.getMinutes() * 60 + currentTime.getSeconds())
-      );
+      // return (
+      //   ticketTime.getMinutes() * 60 +
+      //   ticketTime.getSeconds() -
+      //   (currentTime.getMinutes() * 60 + currentTime.getSeconds())
+      // );
+      return 5;
     },
     finished: function (){
 
       //tell staff student did not accept session
 
       // studentChannel.publish("studentDidNotAcceptSession", userId);
-
+      this.showCountdown = false;
+      this.requestLandingPage = true;
+      
       this.openTicket.status = "Unresolved";
       this.ticketHistory.push(this.openTicket);
-      this.unresolvedTicket = true;
+      // this.unresolvedTicket = true;
       this.openTicket = null; 
+      this.submitRequest = false;
     },
 
     reSubmitTicket: function(ticket) {
@@ -1222,13 +1362,15 @@ export default {
       this.openTicket.createdAt = new Date().toString();
 
       this.getTickets();
+      this.showTicket = true;
 
       // sends ticket to staff
-      // this.ticketChannel.publish("ticketUpdate", this.openTicket);
+      this.ticketChannel.publish("ticketUpdate", this.openTicket);
     },
 
     changeRequestState: function() {
       if (this.requestLandingPage === true && this.submitRequest === false) {
+        this.clearForm();
         this.requestLandingPage = false;
         return this.requestLandingPage;
       } else {
@@ -1242,6 +1384,9 @@ export default {
         return this.requestLandingPage;
       }
     },
+    closeRequestForm: function() {
+      this.requestLandingPage = true;
+    },
     getNumberOfPendingTickets: function() {
       if (this.openTicket) {
         return "1";
@@ -1253,6 +1398,15 @@ export default {
         return "requests";
       }
       return "request";
+    },
+    changeStarClass: function() {
+      // if (this.expandChevron) {
+      //   this.collapseChevron = true;
+      //   this.expandChevron = false;
+      // } else {
+      //   this.expandChevron = true;
+      //   this.collapseChevron = false;
+      // }
     },
     clearForm: function() {
       console.log("clearing form");
@@ -1300,6 +1454,7 @@ export default {
         });
 
         this.openTicket = ticket.data;
+        this.showTicket = true;
         console.log("Open ticket below");
         console.log(this.openTicket);
 
@@ -1322,11 +1477,9 @@ export default {
         ticket => ticket.status === "Open" && ticket.owner._id == userId
       );
 
-      if (this.openTickets) {
+      if (this.openTickets.length>0) {
         this.openTicket = this.openTickets[0];
-        if (this.openTicket) {
-          console.log(this.openTicket);
-        }
+        this.showTicket = true;
       }
     },
 
@@ -1346,7 +1499,7 @@ export default {
       if (this.openTicket) {
         console.log("closing ticket " + this.openTicket._id);
 
-        // this.ticketChannel.publish("ticketClosed", this.openTicket);
+        this.ticketChannel.publish("ticketClosed", this.openTicket);
 
         this.openTicket.status = "Unresolved";
         this.ticketHistory.push(this.openTicket);
@@ -1362,14 +1515,18 @@ export default {
             this.openTicket = null;
           });
 
-        this.clearForm();
-        window.location.reload();
+        this.requestLandingPage = true;
+        this.openTicket = null;
+        this.submitRequest = false;
         this.scrollToTop();
+        this.showTicket = false;
       }
     }
   },
 
   beforeMount() {
+    // let staff = await axios.get("/api/users/" + this.staff);
+
     this.scrollToTop();
     this.getStudentInfo();
     this.startSubscribe();
