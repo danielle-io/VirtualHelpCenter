@@ -11,8 +11,18 @@
   pointer-events: none;
   display: flex;
   transition-duration: 0.2s;
+}
 
-  /* z-index: 11; */
+.md-button.md-theme-default {
+  color: rgba(0, 0, 0, 0.87);
+  color: rgba(0, 0, 0, 0.87);
+  color: var(
+    --md-theme-default-text-primary-on-background,
+    rgba(0, 0, 0, 0.87)
+  );
+  border: none !important;
+  background: none !important;
+  box-shadow: none;
 }
 
 .dialog-showing {
@@ -25,13 +35,6 @@
 
 .md-dialog-container.md-theme-default {
   width: 50% !important;
-}
-
-.md-button {
-}
-
-.md-primary {
-  /* color: red !important; */
 }
 
 .fade-enter-active,
@@ -173,7 +176,7 @@
 
 .form-buttons-disabled {
   width: 40% !important;
-  cursor: dafualt !important;
+  cursor: default !important;
   background-color: #d3d3d3 !important;
 }
 
@@ -230,18 +233,6 @@ table th,
   padding: 0.4em;
   position: relative;
   border-radius: 10px 10px 10px 10px;
-}
-
-.md-button.md-theme-default {
-  color: rgba(0, 0, 0, 0.87);
-  color: rgba(0, 0, 0, 0.87);
-  color: var(
-    --md-theme-default-text-primary-on-background,
-    rgba(0, 0, 0, 0.87)
-  );
-  border: none !important;
-  background: none !important;
-  box-shadow: none;
 }
 
 .tab-links-active {
@@ -470,6 +461,21 @@ input[type="text"]:placeholder {
 
 <template>
   <div>
+    <!-- <div class="sub-heading-text" style="padding-top:2%;"> -->
+
+    <no-ssr>
+      <md-dialog-alert
+        style="margin-left: 20px; margin-right: 20px;"
+        :md-active.sync="unresolvedTicket"
+        md-title="Request Canceled"
+        md-content="Due to missing the acceptance window, your request has been removed from the queue. You may resubmit your request for assistance by accessing it in the
+Request History tab."
+        md-confirm-text="Okay"
+        clickOutsideToClose="true"
+        @md-confirm="unresolvedTicket = false;"
+      />
+    </no-ssr>
+
     <no-ssr>
       <md-dialog-confirm
         style="margin-left: 20px; margin-right: 20px;"
@@ -479,7 +485,7 @@ input[type="text"]:placeholder {
         md-confirm-text="Yes, remove request"
         md-cancel-text="No"
         clickOutsideToClose="true"
-        @md-cancel="onCancel"
+        @md-cancel="showDeleteRequestModal = false;"
         @md-confirm="cancelTicket"
       />
     </no-ssr>
@@ -504,13 +510,18 @@ input[type="text"]:placeholder {
       <transition name="fade" mode="in-out">
         <!-- <div style="text-align: center;"> -->
 
-        <div v-bind:key="requestLandingPage" class="request-container" v-bind:class="{ 'dialog-showing': showDeleteRequestModal, 'dialog-hidden': !showDeleteRequestModal }">
+        <div
+          v-bind:key="requestLandingPage"
+          class="request-container"
+          v-bind:class="{ 'dialog-showing': showDeleteRequestModal || unresolvedTicket, 'dialog-hidden': !showDeleteRequestModal && !unresolvedTicket }"
+        >
           <div v-if="!this.requestLandingPage && !this.submitRequest" class="side-border-line" />
 
           <div class="container-body">
             <!-- <md-button class="md-primary md-raised" @click=" = true">Confirm</md-button> -->
 
             <div v-if="this.currentRequestsTab">
+             
               <div v-if="this.studentAcceptedSession">
                 <div class="request-container-two">
                   <div class="heading-text">Begin your session</div>
@@ -521,15 +532,16 @@ input[type="text"]:placeholder {
                       style="cursor: pointer; color: rgb(45, 58, 130) !important; z-index: 999; 
                               text-shadow: none !important;
                               margin-top: 4px;
+                              font-size: 20px;
                               margin-left: 6px;"
                       target="_blank"
                       href="zoom.us"
-                    >{{this.zoomLink}}</a>
+                    > <open-in-new-window style="margin-right:8px !important; padding-right: 5px;" /><span style="margin-left: 10px;">{{this.zoomLink}}</span></a>
                   </div>
                 </div>
               </div>
 
-              <div v-if="this.requestLandingPage === true && !this.showCountdown">
+              <div v-if="this.requestLandingPage === true && !this.showCountdown && !this.studentAcceptedSession">
                 <div class="top-border-line" />
 
                 <!-- This moves the MY Requests page down if there's no requests so that it's more centered -->
@@ -543,50 +555,41 @@ input[type="text"]:placeholder {
                 >You currently have {{getNumberOfPendingTickets()}} pending {{getRequestOrRequestsText()}}.</div>
               </div>
 
-              <div v-if="this.unresolvedTicket">
-                <div style="margin-top:18px" class="heading-text">My Requests</div>
-
-                <div class="sub-heading-text" style="padding-top:2%;">
-                  Due to missing the acceptance window, your request has been removed from the queue. You may resubmit your request for assistance by accessing it in the
-                  <strong>Request History</strong> tab.
-                </div>
-              </div>
-
               <div v-if="this.showCountdown && !this.studentAcceptedSession">
-                <div class="request-container">
-                  <div class="heading-text">Accept your session</div>
+                <div class="heading-text">Accept your session</div>
 
-                  <div class="sub-heading-text-left" style="padding-top:2%;">
-                    A TA is available.
-                    <strong>Please accept the session before the timer runs out to continue.</strong>
-                  </div>
-                  <div
-                    class="sub-heading-text-left-italic"
-                  >If you do not accept in time, your request will be removed, and placed in your request history for resubmission.</div>
+                <div class="sub-heading-text-left" style="padding-top:2%;">
+                  A TA is available.
+                  <strong>Please accept the session before the timer runs out to continue.</strong>
+                </div>
+                <div
+                  class="sub-heading-text-left-italic"
+                >If you do not accept in time, your request will be removed, and placed in your request history for resubmission.</div>
 
-                  <div style="text-align: center;">
-                    <circular-count-down-timer
-                      :initial-value="countdownTime()"
-                      :steps="countdownTime()"
-                      :seconds-stroke-color="'#7fe3d4'"
-                      :second-label="''"
-                      @finish="finished(studentChannel)"
-                    ></circular-count-down-timer>
+                <div style="text-align: center; justify-content: center;">
+                  <circular-count-down-timer
+                    :initial-value="countdownTime()"
+                    :steps="countdownTime()"
+                    :seconds-stroke-color="'#53a59e'"
+                    :second-label="''"
+                    :padding="0"
+                    :size="100"
+                    @finish="finished(studentChannel)"
+                  ></circular-count-down-timer>
 
-                    <button
-                      v-bind:key="acceptSession"
-                      @click="acceptSession"
-                      type="submit"
-                      style="margin-bottom: 20%;"
-                      class="fadeIn form-buttons"
-                    >
-                      <right-circle />Accept the Session
-                    </button>
-                  </div>
+                  <button
+                    v-bind:key="acceptSession"
+                    @click="acceptSession"
+                    type="submit"
+                    style="margin-bottom: 20%;"
+                    class="fadeIn form-buttons"
+                  >
+                    <right-circle />Accept the Session
+                  </button>
                 </div>
               </div>
 
-              <div v-if="this.requestLandingPage && !this.openTicket  && !this.showCountdown">
+              <div v-if="this.requestLandingPage && !this.openTicket && !this.showCountdown">
                 <div style="text-align: center;">
                   <button
                     v-bind:key="requestLandingPage"
@@ -602,9 +605,9 @@ input[type="text"]:placeholder {
                 </div>
               </div>
 
-              <div v-if="showTicket" style="text-align: center; margin-top: 12px;">
+              <div v-if="showTicket" style="text-align: center;">
                 <!-- TODO: show a modal on clicking close asking if they are sure -->
-                <md-card style="padding-top: 15px; padding-bottom: 10px;">
+                <md-card style="padding-top: 8px; padding-bottom: 10px;">
                   <div
                     style="float: right; margin-top: 6px; margin-left: 0px; margin-right: 10px; "
                   >
@@ -970,7 +973,7 @@ input[type="text"]:placeholder {
                         </span>
                         <span
                           class="col-sm-9 text-body"
-                        >{{ (ticket.createdAt.split('T')[0].split('-')[1] + '-' + ticket.createdAt.split('T')[0].split('-')[2] + '-' + ticket.createdAt.split('T')[0].split('-')[0])}}</span>
+                        >{{ (ticket.updatedAt.split('T')[0].split('-')[1] + '-' + ticket.updatedAt.split('T')[0].split('-')[2] + '-' + ticket.updatedAt.split('T')[0].split('-')[0])}}</span>
                       </div>
                     </div>
 
@@ -981,7 +984,7 @@ input[type="text"]:placeholder {
                         </span>
                         <span
                           class="col-sm-9 text-body"
-                        >{{ " " + (ticket.createdAt.split('T')[1]).substring(0,5)}}</span>
+                        >{{ " " + (ticket.updatedAt.split('T')[1]).substring(0,5)}}</span>
                       </div>
                     </div>
 
@@ -1057,12 +1060,13 @@ if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
 
+
 // const userId = "5ed34dbd99e64f3cc0b49397";
-const userId = "5eb88b493b46ff146caf250c";
 
 // const userId = "5ec5f90d81b13d23065ead3e";
+const userId = "5ec5f90d81b13d23065ead3e";
 
-// const userId = "5ed34dbd99e64f3cc0b49397";
+
 
 const client = new Ably.Realtime(process.env.ABLY_KEY);
 
@@ -1140,11 +1144,11 @@ export default {
     // codemirror
   },
 
-  computed: {
-    isDisabled: function() {
-      return !this.selected;
-    }
-  },
+  // computed: {
+  //   isDisabled: function() {
+  //     return !this.selected;
+  //   }
+  // },
 
   data() {
     return {
@@ -1220,9 +1224,6 @@ export default {
         }
       });
     },
-    // onCancel() {
-    //   this.
-    // },
     uploadFile() {
       if (this.rows.length > 0) {
         for (var i = 0; i < this.rows.length; i++) {
@@ -1309,7 +1310,7 @@ export default {
       // this.finished();
 
       // Publish an event to the  channel
-      // this.studentChannel.publish("studentAcceptedSession", userId);
+      this.studentChannel.publish("studentAcceptedSession", userId);
     },
     triggerAccept: function() {
       this.showCountdown = true;
@@ -1366,12 +1367,21 @@ export default {
     startSubscribe() {
       console.log("subscribing to staff");
       // The student's ticket was accepted by the staff
-      // this.studentChannel.subscribe("staffAcceptedTicket", message => {
-      //   console.log("staff accepted ticket");
-      //   this.zoomLink = message.data.zoomLink;
-      //   this.openTicket.updatedAt = message.data.date;
-      //   this.showCountdown = true;
-      // });
+      this.studentChannel.subscribe("staffAcceptedTicket", message => {
+        console.log("staff accepted ticket");
+        this.zoomLink = message.data.zoomLink;
+        this.openTicket.updatedAt = message.data.date;
+        this.showCountdown = true;
+        this.showTicket = false;
+      });
+
+      this.studentChannel.subscribe("ticketMarkedClosed", message => {
+              this.openTicket.status = "Closed";
+            this.clearTicketWhenCanceledOrComplete();
+
+      console.log("ticket was closed by staff");
+      // add new ticket to existing tickets
+    });
     },
     countdownTime: function() {
       //read updated time
@@ -1393,14 +1403,22 @@ export default {
     },
     finished: function() {
       //when countdown is over, take them back to the other page
-      this.showCountdown = false;
-      this.requestLandingPage = true;
-      this.showTicket = false;
+     
       this.openTicket.status = "Unresolved";
-      this.ticketHistory.push(this.openTicket);
       this.unresolvedTicket = true;
-      this.openTicket = null;
+      this.clearTicketWhenCanceledOrComplete();
+    },
+
+    clearTicketWhenCanceledOrComplete: function() {
+      this.showCountdown = false;
+            this.ticketHistory.push(this.openTicket);
+       this.requestLandingPage = true;
+      this.showTicket = false;
       this.submitRequest = false;
+      this.openTicket = null;
+      this.studentAcceptedSession = false;
+
+
     },
 
     reSubmitTicket: function(ticket) {
@@ -1427,7 +1445,7 @@ export default {
       this.showTicket = true;
 
       // sends ticket to staff
-      // this.ticketChannel.publish("ticketUpdate", this.openTicket);
+      this.ticketChannel.publish("ticketUpdate", this.openTicket);
     },
 
     changeRequestState: function() {
@@ -1436,11 +1454,10 @@ export default {
         this.requestLandingPage = false;
         return this.requestLandingPage;
       } else {
-        // var client = new Ably.Realtime(process.env.ABLY_KEY);
-        // var channel = client.channels.get("staff");
+        var channel = client.channels.get("staff");
 
         // Publish a message to the test channel
-        // channel.publish("ticketUpdate", "ticket updated");
+        channel.publish("ticketUpdate", "ticket updated");
 
         this.submitRequest = true;
         this.scrollToTop();
@@ -1487,11 +1504,19 @@ export default {
       this.fileObjects = [];
       this.openTicket = null;
     },
+    compareTicketsRev(ticketA, ticketB){
+      if(ticketA.updatedAt>ticketB.updatedAt){
+        return -1;
+      }
+      else if(ticketA.updatedAt<ticketB.updatedAt){
+        return 1
+      }
+      return 0;
+    },
     async loadUser(user) {
       this.student = userId;
     },
 
-    // NOT INSERTED YET: file
     async submit() {
       if (this.selectedCourse === null) {
         this.selectedCourse = this.enrolledCourses[0].value;
@@ -1527,7 +1552,7 @@ export default {
         console.log(this.openTicket);
 
         // sends ticket to staff
-        // this.ticketChannel.publish("ticketUpdate", this.openTicket);
+        this.ticketChannel.publish("ticketUpdate", this.openTicket);
       }
     },
     async getTickets() {
@@ -1537,6 +1562,8 @@ export default {
         "/api/tickets/getTicketsByUser/" + userId,
         {}
       );
+
+      tickets.data.sort(this.compareTicketsRev);
 
       this.ticketHistory = tickets.data.filter(
         ticket => ticket.status !== "Open" && ticket.owner._id == userId
@@ -1568,10 +1595,12 @@ export default {
       if (this.openTicket) {
         console.log("closing ticket " + this.openTicket._id);
 
-        // this.ticketChannel.publish("ticketClosed", this.openTicket);
+        this.ticketChannel.publish("ticketClosed", this.openTicket);
 
         this.openTicket.status = "Unresolved";
-        this.ticketHistory.push(this.openTicket);
+
+        // this.ticketHistory = [this.openTicket] + this.ticketHistory
+        this.ticketHistory.unshift(this.openTicket);
 
         var id = this.openTicket._id;
 
