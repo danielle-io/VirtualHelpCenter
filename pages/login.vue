@@ -138,11 +138,14 @@ input[type="password"]:placeholder {
           />
 
           <div style= "text-align: center; margin: auto;">
-            <nuxt-link to="landingStudent" value="Continue">
-              <button type="submit" value="Continue">
+            <!-- <nuxt-link value="Continue">
+              <button type="submit" value="Continue" @click="submit">
                 <right-circle />Continue
               </button>
-            </nuxt-link>
+            </nuxt-link> -->
+            <v-btn value="Continue" @click="$auth.loginWith('social')">
+                <right-circle />Continue
+              </v-btn>
           </div>
         </form>
       </div>
@@ -161,12 +164,19 @@ export default {
   methods: {
     scrollToTop() {
       document.getElementById("tabs").scrollIntoView();
+    },
+    submit() {
+      console.log('cliked')
+      this.$auth.loginWith('social');
     }
   },
   beforeMount() {
     this.scrollToTop();
+    //console.log(this.$auth)
   },
-  mounted() {}
+  mounted() {
+    console.log(this.$auth)
+  }
 };
 </script>
 

@@ -1019,16 +1019,11 @@ var firebaseConfig = {
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
-<<<<<<< HEAD
-
-const userId = "5ed34dbd99e64f3cc0b49397";
-=======
 const userId = "5eb88b493b46ff146caf250c";
 
 // const userId = "5ec5f90d81b13d23065ead3e";
 
 // const userId = "5ed34dbd99e64f3cc0b49397";
->>>>>>> danielle
 
 const client = new Ably.Realtime(process.env.ABLY_KEY);
 
@@ -1321,21 +1316,12 @@ export default {
     startSubscribe() {
       console.log("subscribing to staff");
       // The student's ticket was accepted by the staff
-<<<<<<< HEAD
-      this.studentChannel.subscribe("staffAcceptedTicket", message => {
-        console.log("staff accepted ticket");
-        this.zoomLink = message.data.zoomLink;
-        this.openTicket.updatedAt = message.data.date;
-        this.showCountdown = true;
-      });
-=======
       // this.studentChannel.subscribe("staffAcceptedTicket", message => {
       //   console.log("staff accepted ticket");
       //   this.zoomLink = message.data.zoomLink;
       //   this.openTicket.updatedAt = message.data.date;
       //   this.showCountdown = true;
       // });
->>>>>>> danielle
     },
     countdownTime: function() {
       //read updated time

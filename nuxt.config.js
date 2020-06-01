@@ -62,5 +62,22 @@ module.exports = {
     // API middleware
     '~/api/server.js'
 
-  ]
+  ],
+  auth: {
+    strategies: {
+      social: {
+        _scheme: 'oauth2',
+        authorization_endpoint: 'https://zoom.us/oauth/authorize',
+        access_type: 'offline',
+        access_token_endpoint: 'https://zoom.us/oauth/token',
+        scope: 'user:read',
+        response_type: 'code',
+        token_type: 'Bearer',
+        redirect_uri: 'http://f8036b79620d.ngrok.io',
+        client_id: '9VOpD0zSSS2CoDAsbZxFTA',
+        token_key: 'access_token',
+        state: 'UNIQUE_AND_NON_GUESSABLE'
+      }
+    }
+  }
 }
