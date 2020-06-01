@@ -290,7 +290,7 @@ button[type="submit"] {
 <template>
 <div>
 
-   <no-ssr>
+   <client-only>
       <md-dialog-confirm
         style="z-index: 9999; padding-left: 50px; padding-right:50px"
         :md-active.sync="showCloseSessionDialog"
@@ -300,9 +300,9 @@ button[type="submit"] {
         md-cancel-text="No"
         clickOutsideToClose="true"
         @md-cancel="showCloseSessionDialog = false;"
-        @md-confirm="closeTicket()"
+        @md-confirm="confirmCloseSession()"
       />
-    </no-ssr>
+    </client-only>
 
       <no-ssr>
       <md-dialog
@@ -371,7 +371,6 @@ button[type="submit"] {
               ></b-form-select>
             </div>
           </span>
-        <!-- </div> -->
 
         <div v-if="this.openRequestTab">
           <div style="margin-top: 30px;" class="ticket-container">
@@ -704,7 +703,7 @@ button[type="submit"] {
           <div class="heading-two-text">Awaiting Student Acceptance</div>
 
           <div class="loading-dots">
-            <beat-loader :color="color"></beat-loader>
+            <beat-loader :color=connectingColor></beat-loader>
           </div>
 
           <div
@@ -803,7 +802,7 @@ button[type="submit"] {
           <check-circle @click="showCloseSessionDialog = true"
  style="height: 1.4em !important;"/></span>
  
- <span style="margin-bottom: 10px;" class="sub-heading-text">Mark session complete</span></div>
+ <span style="margin-bottom: 10px; cursor:pointer;" @click="showCloseSessionDialog = true" class="sub-heading-text">Mark session complete</span></div>
         </md-card>
         </div>
        </div>
@@ -870,7 +869,7 @@ const client = new Ably.Realtime(process.env.ABLY_KEY);
 export default {
   head() {
     return {
-      title: "Tickets"
+      title: "Staff"
     };
   },
   components: {
@@ -885,6 +884,7 @@ export default {
     return {
       el: "#requests",
       connecting: false,
+      connectingColor: '#7e6694',
       staff: null,
       zoomLinkForm: false,
       openRequestTab: true,
@@ -892,10 +892,8 @@ export default {
       selectedTicket: false,
       expandChevron: true,
       collapseChevron: false,
-      color: "#7e6694",
       course: {},
       selected: "",
-      staffClass: "none",
       zoomLink: null,
       selectedTicketIndex: -1,
       startingIndex: 0,
@@ -1054,7 +1052,6 @@ export default {
     sendZoomLink() {
       console.log("ticket id is " + this.currentTicketId);
       let ticketTime = new Date();
-
       console.log("ticket is " + JSON.stringify(this.currentTicket));
 
       // Get the students user id from the ticket
@@ -1065,12 +1062,15 @@ export default {
       });
 
       //remove the ticket from open tickets
-      this.ticketChannel.publish("ticketClosed", this.currentTicket);
+      this.ticketChannel.publish("ticketInProgress", this.currentTicket);
 
       // Show connection screen once student receives countdown
       this.connecting = true;
 
+      console.log(this.connecting);
+
       //If the student does not accept the session in time return to beginning
+      // while (!this.studentAccepted){
       let x = setTimeout(() => {
         // The student did not accept in time
         console.log("student did not accept in time");
@@ -1078,6 +1078,22 @@ export default {
         axios.put("/api/updateTicket/" + this.currentTicketId, {
           status: "Unresolved"
         });
+
+        this.resetBackToOpenTicketsDisplay();
+       
+      }, this.countdownTime(ticketTime));
+      // }
+    },
+    resetBackToOpenTicketsDisplay(){
+      console.log("going back to open tickets display");
+
+      if (this.currentTicket){
+        console.log("current ticket exists: removing current ticket " + JSON.stringify(this.currentTicket));
+        var id = this.currentTicket._id;
+        this.removeTicketFromTicketUI(id)
+      }
+
+      this.studentAccepted = true;
         this.connecting = false;
         this.zoomLinkForm = false;
         this.selectedTicketIndex = -1;
@@ -1085,8 +1101,9 @@ export default {
         this.endingIndex = 3;
         this.currentTicket = null;
         this.currentTicketId = null;
-      }, this.countdownTime(ticketTime));
+        this.selectedTicket = false;
     },
+
     countdownTime(ticketTime) {
       this.studentChannel = client.channels.get(this.currentTicket.owner._id);
       this.studentChannel.subscribe("studentAcceptedSession", function(
@@ -1106,37 +1123,35 @@ export default {
           ticketTime.getSeconds() -
           (currentTime.getMinutes() * 60 + currentTime.getSeconds())
       );
-
       return (
         (ticketTime.getMinutes() * 60 +
           ticketTime.getSeconds() -
           (currentTime.getMinutes() * 60 + currentTime.getSeconds())) *
         1000
-        
       );
     },
-    removeTicket(id) {
+    removeTicketFromTicketUI(id) {
       this.tickets = this.tickets.filter(
         ticket => ticket.status === "Open" && ticket._id != id
       );
     },
-    closeTicket(){
-      if (this.currentTicket){
-        console.log(this.currentTicket);
-        var id = this.currentTicket._id;
-        this.showCloseSessionDialog = false;
-      console.log("close ticket");
-      this.removeTicket(id);
-      this.studentAccepted = false;
-      this.connecting = false;
-      this.zoomLinkForm = false;
+    confirmCloseSession(){
+      console.log("confirm close session");
+      this.showCloseSessionDialog = false;
+      this.resetBackToOpenTicketsDisplay();
 
-      axios.put("/api/updateTicket/" + id, {
+      // Update the ticket status to closed in the db
+       if (this.currentTicket){
+        console.log("current ticket exists: removing current ticket " + JSON.stringify(this.currentTicket));
+        var id = this.currentTicket._id;
+        this.removeTicketFromTicketUI(id)
+              axios.put("/api/updateTicket/" + id, {
         status: "Closed",
       });
       }
-    },
-    expandCard: function() {},
+
+
+      },
     async acceptTicket() {
       this.getZoomLink();
       axios.put("/api/updateTicket/" + this.currentTicketId, {
@@ -1162,7 +1177,7 @@ export default {
         var text = course.data.dep + " " + course.data.courseNum;
         this.staffCourses.push({ value: classSelected._id, text: text });
       }
-    }
+    },
   },
   async created() {
     let tickets = await axios.get("/api/tickets");
@@ -1205,18 +1220,13 @@ export default {
       this.getStudentName(message.data, message.data.owner._id);
       this.tickets.push(message.data);
     });
-    this.ticketChannel.subscribe("ticketClosed", message => {
+    this.ticketChannel.subscribe("ticketInProgress", message => {
       console.log("ticket was closed");
       // ticket will be remove from being displayed
-      this.removeTicket(message.data._id);
+      this.removeTicketFromTicketUI(message.data._id);
     });
 
     this.scrollToTop();
   },
-  computed: {
-    isDisabled() {
-      return this.zoomLink !== null;
-    }
-  }
 };
 </script>
