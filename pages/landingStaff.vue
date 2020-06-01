@@ -145,6 +145,52 @@
   height: 0px;
   display: none;
 }
+
+.zoom-link-field {
+  color: #0d0d0d;
+  text-align: left;
+  display: inline-block;
+  font-size: 16px;
+  margin: 5px;
+  width: 100%;
+  -webkit-transition: all 0.5s ease-in-out;
+  -moz-transition: all 0.5s ease-in-out;
+  -ms-transition: all 0.5s ease-in-out;
+  -o-transition: all 0.5s ease-in-out;
+  transition: all 0.5s ease-in-out;
+  -webkit-border-radius: 5px 5px 5px 5px;
+  border-radius: 5px 5px 5px 5px;
+}
+
+input[type="text"] {
+  color: #0d0d0d;
+  text-align: left;
+  display: inline-block;
+  font-size: 16px;
+  margin: 5px;
+  width: 100%;
+  -webkit-transition: all 0.5s ease-in-out;
+  -moz-transition: all 0.5s ease-in-out;
+  -ms-transition: all 0.5s ease-in-out;
+  -o-transition: all 0.5s ease-in-out;
+  transition: all 0.5s ease-in-out;
+  -webkit-border-radius: 5px 5px 5px 5px;
+  border-radius: 5px 5px 5px 5px;
+}
+
+input[type="text"]:focus {
+  border-bottom: 2px solid #5fbae9;
+}
+
+input[type="text"]:placeholder {
+  color: #cccccc;
+}
+
+.form-buttons-disabled {
+  width: 40% !important;
+  cursor: dafualt !important;
+  background-color: #d3d3d3 !important;
+}
 </style>
 
 
@@ -372,15 +418,22 @@
               </div>
 
               <div style="padding-top: 30px;">
-                <input
+                <div class="sub-heading-text-left">Please enter your zoom session link</div>
+                <b-form-input
+                  class="zoom-link-field"
                   type="text"
-                  v-bind:value="zoomLink"
-                  v-on:input="zoomLink = $event.target.value"
+                  v-model="zoomLink"
+                  required
                   placeholder="Enter your Zoom Session link here"
-                />
+                ></b-form-input>
+              </div>
+              <div v-if="!this.zoomLink">
+                <button type="disabled" disabled="true" class="form-buttons-disabled" @click="sendZoomLink">
+                  <right-circle />Send Link
+                </button>
               </div>
               <div v-if="this.zoomLink">
-                <button type="submit" class="request-staff-buttons" @click="sendZoomLink">
+                <button type="submit" class="form-buttons" @click="sendZoomLink">
                   <right-circle />Send Link
                 </button>
               </div>
@@ -588,7 +641,7 @@ import axios from "~/plugins/axios";
 import VueMaterial from "vue-material";
 import "vue-material/dist/vue-material.min.css";
 import "vue-material/dist/theme/default.css";
-import { BFormInput, BFormSelect, BButton, BFormCheckbox } from "bootstrap-vue";
+import { BFormInput, BFormSelect, BButton, BFormCheckbox, BFormTextarea, BFormRadio, BFormRadioGroup } from "bootstrap-vue";
 
 const staffId = "5eade47047da2706382d53e6";
 
@@ -605,7 +658,14 @@ export default {
     "b-form-input": BFormInput,
     "b-form-select": BFormSelect,
     "b-button": BButton,
-    "b-form-checkbox": BFormCheckbox
+    "b-form-checkbox": BFormCheckbox,
+    "b-form-input": BFormInput,
+    "b-form-select": BFormSelect,
+    "b-form-checkbox": BFormCheckbox,
+    "b-form-text-area": BFormTextarea,
+    "b-form-radio": BFormRadio,
+    "b-form-radio-group": BFormRadioGroup
+    // codemirror
   },
   data() {
     return {
@@ -926,11 +986,11 @@ export default {
     //   this.removeTicket(message.data._id);
     // });
     this.scrollToTop();
+  },
+  computed: {
+    isDisbaled() {
+      return this.zoomLink !== null;
+    }
   }
-  // computed: {
-  //   studentAccepted() {
-  //     return this.studentAccepted;
-  //   }
-  // }
 };
 </script>

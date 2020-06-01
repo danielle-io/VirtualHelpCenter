@@ -132,6 +132,9 @@ export default {
     return {
       title: "Users"
     };
+  },
+  mounted() {
+    console.log(this.$auth)
   }
 };
 </script>
