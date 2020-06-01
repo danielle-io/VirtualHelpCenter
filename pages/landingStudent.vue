@@ -973,7 +973,7 @@ Request History tab."
                         </span>
                         <span
                           class="col-sm-9 text-body"
-                        >{{ (ticket.createdAt.split('T')[0].split('-')[1] + '-' + ticket.createdAt.split('T')[0].split('-')[2] + '-' + ticket.createdAt.split('T')[0].split('-')[0])}}</span>
+                        >{{ (ticket.updatedAt.split('T')[0].split('-')[1] + '-' + ticket.updatedAt.split('T')[0].split('-')[2] + '-' + ticket.updatedAt.split('T')[0].split('-')[0])}}</span>
                       </div>
                     </div>
 
@@ -984,7 +984,7 @@ Request History tab."
                         </span>
                         <span
                           class="col-sm-9 text-body"
-                        >{{ " " + (ticket.createdAt.split('T')[1]).substring(0,5)}}</span>
+                        >{{ " " + (ticket.updatedAt.split('T')[1]).substring(0,5)}}</span>
                       </div>
                     </div>
 
@@ -1372,6 +1372,7 @@ export default {
         this.zoomLink = message.data.zoomLink;
         this.openTicket.updatedAt = message.data.date;
         this.showCountdown = true;
+        this.showTicket = false;
       });
 
       this.studentChannel.subscribe("ticketMarkedClosed", message => {
@@ -1503,11 +1504,19 @@ export default {
       this.fileObjects = [];
       this.openTicket = null;
     },
+    compareTicketsRev(ticketA, ticketB){
+      if(ticketA.updatedAt>ticketB.updatedAt){
+        return -1;
+      }
+      else if(ticketA.updatedAt<ticketB.updatedAt){
+        return 1
+      }
+      return 0;
+    },
     async loadUser(user) {
       this.student = userId;
     },
 
-    // NOT INSERTED YET: file
     async submit() {
       if (this.selectedCourse === null) {
         this.selectedCourse = this.enrolledCourses[0].value;
@@ -1554,6 +1563,8 @@ export default {
         {}
       );
 
+      tickets.data.sort(this.compareTicketsRev);
+
       this.ticketHistory = tickets.data.filter(
         ticket => ticket.status !== "Open" && ticket.owner._id == userId
       );
@@ -1587,7 +1598,9 @@ export default {
         this.ticketChannel.publish("ticketClosed", this.openTicket);
 
         this.openTicket.status = "Unresolved";
-        this.ticketHistory.push(this.openTicket);
+
+        // this.ticketHistory = [this.openTicket] + this.ticketHistory
+        this.ticketHistory.unshift(this.openTicket);
 
         var id = this.openTicket._id;
 

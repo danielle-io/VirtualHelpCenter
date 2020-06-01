@@ -861,7 +861,7 @@ import "vue-material/dist/vue-material.min.css";
 import "vue-material/dist/theme/default.css";
 Vue.use(VueMaterial);
 
-const staffId = "5eade47047da2706382d53e6";
+const staffId = "5ed4b8c5795a6165ecab989f";
 
 // const staffId = "5eb7cbad0b1eca66dccba36a";
 
@@ -959,20 +959,30 @@ export default {
       // Add the staff member to the ticket
     },
     getFilterClass(status, course) {
+<<<<<<< HEAD
       // console.log("filtering course")
       // console.log(course);
       // if (course === null) {
       //   console.log("open tickets");
       //   return this.filterAllTickets(status);
       //   // return this.filterOpenTickets(status);
+=======
+      let tickets;
+>>>>>>> 47486576f844a6fbb00762112c975f4c04928658
       // console.log(course);
       if (course === null) {
         // console.log("open tickets");
-        return this.filterOpenTickets(status);
+        tickets =  this.filterOpenTickets(status);
       } else {
+<<<<<<< HEAD
         console.log("filtering here")
         return this.filterCourseTickets(status, course);
+=======
+        tickets = this.filterCourseTickets(status, course);
+>>>>>>> 47486576f844a6fbb00762112c975f4c04928658
       }
+
+      return tickets;
     },
     openPage: function(attachmentUrl) {
       console.log(this.openTicket);
@@ -1099,6 +1109,7 @@ export default {
 
       // //remove the ticket from open tickets
       // this.ticketChannel.publish("ticketInProgress", this.currentTicket);
+    
 
       // Show connection screen once student receives countdown
       this.connecting = true;
@@ -1171,6 +1182,15 @@ export default {
         ticket => ticket.status === "Open" && ticket._id != id
       );
     },
+    compareTicketsRev(ticketA, ticketB){
+      if(ticketA.updatedAt>ticketB.updatedAt){
+        return 1;
+      }
+      else if(ticketA.updatedAt<ticketB.updatedAt){
+        return -1
+      }
+      return 0;
+    },
     confirmCloseSession(){
             this.showCloseSessionDialog = false;
 
@@ -1228,25 +1248,26 @@ export default {
   },
   async created() {
     let tickets = await axios.get("/api/tickets");
-    if (this.tickets) {
+
+    //dont think this is neccessary
+    // if (this.tickets) {
       this.tickets = tickets.data;
+      this.tickets.sort(this.compareTickets);
+
       // console.log(this.tickets);
       for (var i = 0; i < this.tickets.length; i++) {
         // Add the name to the open tickets
-        if (this.tickets[i].status === "Open") {
-          await this.getStudentName(this.tickets[i], this.tickets[i].owner._id);
-        }
-        if (this.tickets[i].status === "Closed" && this.tickets[i].acceptedBy) {
-          if (this.tickets[i].acceptedBy._id === staffId) {
-            await this.getStudentName(
-              this.tickets[i],
-              this.tickets[i].owner._id
-            );
+        await this.getStudentName(this.tickets[i], this.tickets[i].owner._id);
+
+        //add closed ticket to history
+        if (this.tickets[i].status === "Closed" && this.tickets[i].acceptedBy === staffId) {
             this.ticketHistory.push(this.tickets[i]);
-          }
         }
-      }
+      // }
     }
+
+    this.ticketHistory.reverse();
+
     let staff = await axios.get("/api/users/" + staffId);
 
     if (staff) {
