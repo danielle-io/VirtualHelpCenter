@@ -1136,8 +1136,12 @@ export default {
       );
     },
     confirmCloseSession(){
+            this.showCloseSessionDialog = false;
+
       console.log("confirm close session");
-      this.showCloseSessionDialog = false;
+           this.studentChannel = client.channels.get(this.currentTicket.owner._id);
+      this.studentChannel.publish("ticketMarkedClosed", { 
+});
       this.resetBackToOpenTicketsDisplay();
 
       // Update the ticket status to closed in the db
@@ -1145,13 +1149,12 @@ export default {
         console.log("current ticket exists: removing current ticket " + JSON.stringify(this.currentTicket));
         var id = this.currentTicket._id;
         this.removeTicketFromTicketUI(id)
+
               axios.put("/api/updateTicket/" + id, {
         status: "Closed",
       });
       }
-
-
-      },
+    },
     async acceptTicket() {
       this.getZoomLink();
       axios.put("/api/updateTicket/" + this.currentTicketId, {

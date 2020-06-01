@@ -22,7 +22,7 @@ mongoose
 
 require('./model/Users');
 require('./model/students');
-require('./model/staffs');
+require('./model/staff');
 require('./model/Courses');
 require('./model/tickets');
 require('./model/tutors');
@@ -30,7 +30,7 @@ require('./model/tutors');
 // Require API routes
 const users = require('./controller/users');
 const students = require('./controller/students');
-const staffs = require('./controller/staffs');
+const staff = require('./controller/staff');
 const courses = require('./controller/courses');
 const tickets = require('./controller/tickets');
 const tutors = require('./controller/tutors');
@@ -52,7 +52,7 @@ app.use(morgan("dev"));
 app.use(courses);
 app.use(users);
 app.use(students);
-app.use(staffs);
+app.use(staff);
 app.use(tickets);
 app.use(tutors);
 

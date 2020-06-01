@@ -1372,6 +1372,14 @@ export default {
         this.openTicket.updatedAt = message.data.date;
         this.showCountdown = true;
       });
+
+      this.studentChannel.subscribe("ticketMarkedClosed", message => {
+              this.openTicket.status = "Closed";
+            this.clearTicketWhenCanceledOrComplete();
+
+      console.log("ticket was closed by staff");
+      // add new ticket to existing tickets
+    });
     },
     countdownTime: function() {
       //read updated time
@@ -1393,14 +1401,22 @@ export default {
     },
     finished: function() {
       //when countdown is over, take them back to the other page
-      this.showCountdown = false;
-      this.requestLandingPage = true;
-      this.showTicket = false;
+     
       this.openTicket.status = "Unresolved";
-      this.ticketHistory.push(this.openTicket);
       this.unresolvedTicket = true;
-      this.openTicket = null;
+      this.clearTicketWhenCanceledOrComplete();
+    },
+
+    clearTicketWhenCanceledOrComplete: function() {
+      this.showCountdown = false;
+            this.ticketHistory.push(this.openTicket);
+       this.requestLandingPage = true;
+      this.showTicket = false;
       this.submitRequest = false;
+      this.openTicket = null;
+      this.studentAcceptedSession = false;
+
+
     },
 
     reSubmitTicket: function(ticket) {
@@ -1436,7 +1452,6 @@ export default {
         this.requestLandingPage = false;
         return this.requestLandingPage;
       } else {
-        var client = new Ably.Realtime(process.env.ABLY_KEY);
         var channel = client.channels.get("staff");
 
         // Publish a message to the test channel
