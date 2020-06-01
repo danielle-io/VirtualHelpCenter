@@ -11,8 +11,6 @@
   pointer-events: none;
   display: flex;
   transition-duration: 0.2s;
-
-  /* z-index: 11; */
 }
 
 .dialog-showing {
@@ -173,7 +171,7 @@
 
 .form-buttons-disabled {
   width: 40% !important;
-  cursor: dafualt !important;
+  cursor: default !important;
   background-color: #d3d3d3 !important;
 }
 
@@ -470,6 +468,21 @@ input[type="text"]:placeholder {
 
 <template>
   <div>
+    <!-- <div class="sub-heading-text" style="padding-top:2%;"> -->
+
+    <no-ssr>
+      <md-dialog-alert
+        style="margin-left: 20px; margin-right: 20px;"
+        :md-active.sync="unresolvedTicket"
+        md-title="Request Canceled"
+        md-content="Due to missing the acceptance window, your request has been removed from the queue. You may resubmit your request for assistance by accessing it in the
+Request History tab."
+        md-confirm-text="Okay"
+        clickOutsideToClose="true"
+        @md-confirm="unresolvedTicket = false;"
+      />
+    </no-ssr>
+
     <no-ssr>
       <md-dialog-confirm
         style="margin-left: 20px; margin-right: 20px;"
@@ -504,7 +517,11 @@ input[type="text"]:placeholder {
       <transition name="fade" mode="in-out">
         <!-- <div style="text-align: center;"> -->
 
-        <div v-bind:key="requestLandingPage" class="request-container" v-bind:class="{ 'dialog-showing': showDeleteRequestModal, 'dialog-hidden': !showDeleteRequestModal }">
+        <div
+          v-bind:key="requestLandingPage"
+          class="request-container"
+          v-bind:class="{ 'dialog-showing': showDeleteRequestModal || unresolvedTicket, 'dialog-hidden': !showDeleteRequestModal && !unresolvedTicket }"
+        >
           <div v-if="!this.requestLandingPage && !this.submitRequest" class="side-border-line" />
 
           <div class="container-body">
@@ -521,15 +538,16 @@ input[type="text"]:placeholder {
                       style="cursor: pointer; color: rgb(45, 58, 130) !important; z-index: 999; 
                               text-shadow: none !important;
                               margin-top: 4px;
+                              font-size: 20px;
                               margin-left: 6px;"
                       target="_blank"
                       href="zoom.us"
-                    >{{this.zoomLink}}</a>
+                    > <open-in-new-window style="margin-right:8px !important; padding-right: 5px;" />{{this.zoomLink}}</a>
                   </div>
                 </div>
               </div>
 
-              <div v-if="this.requestLandingPage === true && !this.showCountdown">
+              <div v-if="this.requestLandingPage === true && !this.showCountdown && !this.studentAcceptedSession">
                 <div class="top-border-line" />
 
                 <!-- This moves the MY Requests page down if there's no requests so that it's more centered -->
@@ -543,50 +561,41 @@ input[type="text"]:placeholder {
                 >You currently have {{getNumberOfPendingTickets()}} pending {{getRequestOrRequestsText()}}.</div>
               </div>
 
-              <div v-if="this.unresolvedTicket">
-                <div style="margin-top:18px" class="heading-text">My Requests</div>
-
-                <div class="sub-heading-text" style="padding-top:2%;">
-                  Due to missing the acceptance window, your request has been removed from the queue. You may resubmit your request for assistance by accessing it in the
-                  <strong>Request History</strong> tab.
-                </div>
-              </div>
-
               <div v-if="this.showCountdown && !this.studentAcceptedSession">
-                <div class="request-container">
-                  <div class="heading-text">Accept your session</div>
+                <div class="heading-text">Accept your session</div>
 
-                  <div class="sub-heading-text-left" style="padding-top:2%;">
-                    A TA is available.
-                    <strong>Please accept the session before the timer runs out to continue.</strong>
-                  </div>
-                  <div
-                    class="sub-heading-text-left-italic"
-                  >If you do not accept in time, your request will be removed, and placed in your request history for resubmission.</div>
+                <div class="sub-heading-text-left" style="padding-top:2%;">
+                  A TA is available.
+                  <strong>Please accept the session before the timer runs out to continue.</strong>
+                </div>
+                <div
+                  class="sub-heading-text-left-italic"
+                >If you do not accept in time, your request will be removed, and placed in your request history for resubmission.</div>
 
-                  <div style="text-align: center;">
-                    <circular-count-down-timer
-                      :initial-value="countdownTime()"
-                      :steps="countdownTime()"
-                      :seconds-stroke-color="'#7fe3d4'"
-                      :second-label="''"
-                      @finish="finished(studentChannel)"
-                    ></circular-count-down-timer>
+                <div style="text-align: center; justify-content: center;">
+                  <circular-count-down-timer
+                    :initial-value="countdownTime()"
+                    :steps="countdownTime()"
+                    :seconds-stroke-color="'#7fe3d4'"
+                    :second-label="''"
+                    :padding="0"
+                    :size="100"
+                    @finish="finished(studentChannel)"
+                  ></circular-count-down-timer>
 
-                    <button
-                      v-bind:key="acceptSession"
-                      @click="acceptSession"
-                      type="submit"
-                      style="margin-bottom: 20%;"
-                      class="fadeIn form-buttons"
-                    >
-                      <right-circle />Accept the Session
-                    </button>
-                  </div>
+                  <button
+                    v-bind:key="acceptSession"
+                    @click="acceptSession"
+                    type="submit"
+                    style="margin-bottom: 20%;"
+                    class="fadeIn form-buttons"
+                  >
+                    <right-circle />Accept the Session
+                  </button>
                 </div>
               </div>
 
-              <div v-if="this.requestLandingPage && !this.openTicket  && !this.showCountdown">
+              <div v-if="this.requestLandingPage && !this.openTicket && !this.showCountdown">
                 <div style="text-align: center;">
                   <button
                     v-bind:key="requestLandingPage"
@@ -1058,9 +1067,9 @@ if (!firebase.apps.length) {
 }
 
 // const userId = "5ed34dbd99e64f3cc0b49397";
-const userId = "5eb88b493b46ff146caf250c";
+// const userId = "5eb88b493b46ff146caf250c";
 
-// const userId = "5ec5f90d81b13d23065ead3e";
+const userId = "5ec5f90d81b13d23065ead3e";
 
 // const userId = "5ed34dbd99e64f3cc0b49397";
 
@@ -1309,7 +1318,7 @@ export default {
       // this.finished();
 
       // Publish an event to the  channel
-      // this.studentChannel.publish("studentAcceptedSession", userId);
+      this.studentChannel.publish("studentAcceptedSession", userId);
     },
     triggerAccept: function() {
       this.showCountdown = true;
@@ -1366,12 +1375,12 @@ export default {
     startSubscribe() {
       console.log("subscribing to staff");
       // The student's ticket was accepted by the staff
-      // this.studentChannel.subscribe("staffAcceptedTicket", message => {
-      //   console.log("staff accepted ticket");
-      //   this.zoomLink = message.data.zoomLink;
-      //   this.openTicket.updatedAt = message.data.date;
-      //   this.showCountdown = true;
-      // });
+      this.studentChannel.subscribe("staffAcceptedTicket", message => {
+        console.log("staff accepted ticket");
+        this.zoomLink = message.data.zoomLink;
+        this.openTicket.updatedAt = message.data.date;
+        this.showCountdown = true;
+      });
     },
     countdownTime: function() {
       //read updated time
@@ -1427,7 +1436,7 @@ export default {
       this.showTicket = true;
 
       // sends ticket to staff
-      // this.ticketChannel.publish("ticketUpdate", this.openTicket);
+      this.ticketChannel.publish("ticketUpdate", this.openTicket);
     },
 
     changeRequestState: function() {
@@ -1436,11 +1445,11 @@ export default {
         this.requestLandingPage = false;
         return this.requestLandingPage;
       } else {
-        // var client = new Ably.Realtime(process.env.ABLY_KEY);
-        // var channel = client.channels.get("staff");
+        var client = new Ably.Realtime(process.env.ABLY_KEY);
+        var channel = client.channels.get("staff");
 
         // Publish a message to the test channel
-        // channel.publish("ticketUpdate", "ticket updated");
+        channel.publish("ticketUpdate", "ticket updated");
 
         this.submitRequest = true;
         this.scrollToTop();
@@ -1527,7 +1536,7 @@ export default {
         console.log(this.openTicket);
 
         // sends ticket to staff
-        // this.ticketChannel.publish("ticketUpdate", this.openTicket);
+        this.ticketChannel.publish("ticketUpdate", this.openTicket);
       }
     },
     async getTickets() {
@@ -1568,7 +1577,7 @@ export default {
       if (this.openTicket) {
         console.log("closing ticket " + this.openTicket._id);
 
-        // this.ticketChannel.publish("ticketClosed", this.openTicket);
+        this.ticketChannel.publish("ticketClosed", this.openTicket);
 
         this.openTicket.status = "Unresolved";
         this.ticketHistory.push(this.openTicket);
