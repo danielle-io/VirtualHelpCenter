@@ -959,7 +959,6 @@ export default {
           _id: staffId
         }
       });
-
       // Add the staff member to the ticket
     },
     getFilterClass(status, course) {

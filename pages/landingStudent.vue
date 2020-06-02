@@ -788,10 +788,10 @@ Request History tab."
                     <label class="label-format">
                       <long-description class="label-icons" />Detailed Problem Description
                     </label>
-                    <span v-if="!this.probDes" class="asterisk">*</span>
+                    <span v-if="!this.longerDescription" class="asterisk">*</span>
                     <b-form-text-area
                       id="textarea"
-                      v-model="probDes"
+                      v-model="longerDescription"
                       placeholder="Explain your issue in detail."
                       rows="2"
                       required
@@ -806,7 +806,7 @@ Request History tab."
 
                     <b-form-text-area
                       id="textarea"
-                      v-model="code"
+                      v-model="codeSnippet"
                       rows="1"
                       placeholder="Paste code here, if needed."
                       max-rows="6"
@@ -858,7 +858,9 @@ Request History tab."
                     <plus-circle />
                   </span>-->
 
-                  <div v-if="this.selectedCourse && this.oneLineOverview  && this.probDes">
+                  <div
+                    v-if="this.selectedCourse && this.oneLineOverview  && this.longerDescription"
+                  >
                     <div style="text-align: center;">
                       <button
                         v-on:click="uploadFile"
@@ -874,7 +876,9 @@ Request History tab."
                     </div>
                   </div>
 
-                  <div v-if="!this.selectedCourse || !this.oneLineOverview  || !this.probDes">
+                  <div
+                    v-if="!this.selectedCourse || !this.oneLineOverview  || !this.longerDescription"
+                  >
                     <div style="text-align: center;">
                       <button
                         type="disabled"
@@ -896,7 +900,6 @@ Request History tab."
           <div v-if="!this.currentRequestsTab">
             <div style="margin-top:20px;" class="heading-text">My Requests</div>
 
-            <!-- TO DO: make this text dynamic based on user tickets -->
             <div
               class="sub-heading-text"
               style="padding-top:2%;"
@@ -912,11 +915,9 @@ Request History tab."
                     :hidden="getOpenTicketStatus()"
                     style="display: in-line-block; padding-bottom: 12px; float: right;"
                   >
-                    <!-- <span style="margin-bottom:8px;"> -->
                     <span
                       style="font-size: 9px; color: rgb(92, 99, 92); margin-right: 6px;"
                     >Re-submit</span>
-                    <!-- </span> -->
                     <button
                       class="reSubmit-button"
                       style="margin-top: 5px; height: .8em !important; margin-bottom: 12px;"
@@ -1080,18 +1081,15 @@ var firebaseConfig = {
   messagingSenderId: process.env.FB_MESSAGING_SENDER_ID,
   appId: process.env.FB_APP_ID
 };
+
 // Initialize Firebase
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
 
-
 // const userId = "5ed34dbd99e64f3cc0b49397";
-
 // const userId = "5ec5f90d81b13d23065ead3e";
 const userId = "5ec5f90d81b13d23065ead3e";
-
-
 
 const client = new Ably.Realtime(process.env.ABLY_KEY);
 
@@ -1169,16 +1167,10 @@ export default {
     // codemirror
   },
 
-  // computed: {
-  //   isDisabled: function() {
-  //     return !this.selected;
-  //   }
-  // },
-
   data() {
     return {
       el: "#requests",
-      code: null,
+      codeSnippet: null,
       cmOption: {
         tabSize: 4,
         styleActiveLine: false,
@@ -1189,7 +1181,6 @@ export default {
         gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
         highlightSelectionMatches: { showToken: /\w/, annotateScrollbar: true },
         mode: "text/javascript",
-        // hint.js options
         hintOptions: {
           completeSingle: false
         },
@@ -1208,7 +1199,7 @@ export default {
       oneLineOverview: "",
       requestLandingPage: true,
       submitRequest: false,
-      probDes: "",
+      longerDescription: "",
       file: null,
       student: null,
       openTicket: null,
@@ -1253,26 +1244,29 @@ export default {
     saveEditChanges() {
       console.log("saving changes");
       var id = this.openTicket._id;
-      
+
       axios
         .put("/api/updateTicket/" + id, {
           course: {
             _id: this.selectedCourse
           },
           oneLineOverview: this.oneLineOverview,
-          longerDescription: this.probDes,
-          codeSnippet: this.code,
+          longerDescription: this.longerDescription,
+          codeSnippet: this.codeSnippet,
           attachments: this.fileObjects
         })
         .then(() => {
           console.log("resetting ticket");
         });
-      this.openTicket.oneLineOverview = this.oneLineOverview,
-      this.openTicket.longerDescription = this.longerDescription,
-      this.openTicket.codeSnippet = this.code,
-      this.editingRequest = false;
+      (this.openTicket.oneLineOverview = this.oneLineOverview),
+        (this.openTicket.longerDescription = this.longerDescription),
+        (this.openTicket.codeSnippet = this.codeSnippet),
+        (this.editingRequest = false);
       this.submitRequest = true;
       this.requestLandingPage = true;
+
+      // Publish edited ticket
+      this.ticketChannel.publish("ticketUpdate", this.openTicket);
     },
     uploadFile() {
       if (this.rows.length > 0) {
@@ -1327,7 +1321,6 @@ export default {
       return false;
     },
     submitRating: function(ticket) {
-      console.log("in submit rating, ticket is is " + ticket._id);
       if (ticket.ratingExplanation !== "") {
         axios
           .put("/api/updateTicket/" + ticket._id, {
@@ -1361,7 +1354,6 @@ export default {
       }
     },
     openPage: function(attachmentUrl, attachmentName) {
-      console.log(this.openTicket);
       window.open(attachmentUrl, "_blank");
     },
     acceptSession: function() {
@@ -1443,7 +1435,7 @@ export default {
       // });
     },
     countdownTime: function() {
-      //read updated time
+      // Read updated time
       let ticketTime = new Date(this.openTicket.updatedAt);
 
       let currentTime = new Date();
@@ -1461,7 +1453,7 @@ export default {
       );
     },
     finished: function() {
-      //when countdown is over, take them back to the other page
+      // When countdown is over, take them back to the other page
       this.openTicket.status = "Unresolved";
       this.unresolvedTicket = true;
       this.clearTicketWhenCanceledOrComplete();
@@ -1478,43 +1470,63 @@ export default {
     },
 
     reSubmitTicket: function(ticket) {
-      // To remove ticket from the history
       console.log("in resubmit " + ticket._id);
       var id = ticket._id;
 
-      axios
-        .put("/api/updateTicket/" + id, {
+      if (ticket.status !== "Closed") {
+        axios
+          .put("/api/updateTicket/" + id, {
+            status: "Open",
+            createdAt: new Date().toString()
+          })
+          .then(() => {});
+      }
+      // Ticket was worked on in a session and keeps its rating,
+      // so create a new one with the same data but with a new time stamp
+      else {
+        axios.post("/api/insertTicket", {
           status: "Open",
-          createdAt: new Date().toString()
-        })
-        .then(() => {
-          console.log("resetting ticket");
-          this.openTicket = ticket;
+          owner: {
+            _id: userId
+          },
+          course: {
+            _id: ticket.course._id
+          },
+          oneLineOverview: ticket.oneLineOverview,
+          longerDescription: ticket.longerDescription,
+          codeSnippet: ticket.codeSnippet,
+          createdAt: new Date().toString(),
+          attachments: ticket.attachments,
+          rating: 0,
+          ratingExplanation: "",
+          wasRated: 0
         });
+      }
 
-      this.openTicket = ticket;
-      this.openTicket.status = "Open";
-      this.openTicket.createdAt = new Date().toString();
-      this.probDes = ticket.longerDescription;
-      this.oneLineOverview = ticket.oneLineOverview;
-      this.selectedCourse = ticket.course._id;
-      // TODO: Add in the file attachments as well
-      this.getTickets();
+      // this.openTicket.status = "Open";
+
+      // this.openTickets = null;
+      // this.file = null;
+      // this.fileUrls = [];
+      // this.rows = [];
+      // this.fileObjects = [];
       this.showTicket = true;
+      this.openTicket = ticket;
+      this.openTicket.createdAt = new Date().toString();
+      this.getTickets();
+      document.getElementById("landingTab").click();
 
       // sends ticket to staff
       // this.ticketChannel.publish("ticketUpdate", this.openTicket);
-      document.getElementById("landingTab").click();
     },
 
     changeRequestState: function() {
       if (this.requestLandingPage === true && this.submitRequest === false) {
-        this.clearForm();
+        this.fileObjects = [];
         this.requestLandingPage = false;
         return this.requestLandingPage;
       } else {
         var channel = client.channels.get("staff");
-
         // Publish a message to the test channel
         // channel.publish("ticketUpdate", "ticket updated");
 
@@ -1545,20 +1557,11 @@ export default {
       }
       return "request";
     },
-    changeStarClass: function() {
-      // if (this.expandChevron) {
-      //   this.collapseChevron = true;
-      //   this.expandChevron = false;
-      // } else {
-      //   this.expandChevron = true;
-      //   this.collapseChevron = false;
-      // }
-    },
     clearForm: function() {
       console.log("clearing form");
       this.oneLineOverview = "";
-      this.probDes = "";
-      this.code = "";
+      this.longerDescription = "";
+      this.codeSnippet = "";
       this.openTickets = null;
       this.file = null;
       this.showCountdown = false;
@@ -1569,12 +1572,11 @@ export default {
       this.fileObjects = [];
       this.openTicket = null;
     },
-    compareTicketsRev(ticketA, ticketB){
-      if(ticketA.updatedAt>ticketB.updatedAt){
+    compareTicketsRev(ticketA, ticketB) {
+      if (ticketA.updatedAt > ticketB.updatedAt) {
         return -1;
-      }
-      else if(ticketA.updatedAt<ticketB.updatedAt){
-        return 1
+      } else if (ticketA.updatedAt < ticketB.updatedAt) {
+        return 1;
       }
       return 0;
     },
@@ -1598,8 +1600,8 @@ export default {
             _id: this.selectedCourse
           },
           oneLineOverview: this.oneLineOverview,
-          longerDescription: this.probDes,
-          codeSnippet: this.code,
+          longerDescription: this.longerDescription,
+          codeSnippet: this.codeSnippet,
           createdAt: new Date().toString(),
           attachments: this.fileObjects,
           rating: 0,
@@ -1610,7 +1612,7 @@ export default {
           //   _id: staffId
           // }
         });
-
+        this.requestLandingPage = true;
         this.openTicket = ticket.data;
         this.showTicket = true;
         console.log("Open ticket below");
@@ -1642,9 +1644,10 @@ export default {
         this.openTicket = this.openTickets[0];
         this.showTicket = true;
         this.openTicket.status = "Open";
-        this.openTicket.createdAt = this.openTicket.createdAt;
-        this.probDes = this.openTicket.longerDescription;
+
         this.oneLineOverview = this.openTicket.oneLineOverview;
+        this.longerDescription = this.openTicket.longerDescription;
+        this.codeSnippet = this.openTicket.codeSnippet;
         this.selectedCourse = this.openTicket.course._id;
       }
     },
@@ -1668,7 +1671,6 @@ export default {
         // this.ticketChannel.publish("ticketClosed", this.openTicket);
 
         this.openTicket.status = "Unresolved";
-
         // this.ticketHistory = [this.openTicket] + this.ticketHistory
         this.ticketHistory.unshift(this.openTicket);
 
@@ -1682,7 +1684,7 @@ export default {
             console.log("resetting ticket");
             this.openTicket = null;
           });
-
+        this.clearForm();
         this.requestLandingPage = true;
         this.openTicket = null;
         this.submitRequest = false;
@@ -1693,8 +1695,6 @@ export default {
   },
 
   beforeMount() {
-    // let staff = await axios.get("/api/users/" + this.staff);
-
     this.scrollToTop();
     this.getStudentInfo();
     this.startSubscribe();
