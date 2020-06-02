@@ -19,6 +19,8 @@ module.exports = {
   css: [
     '~/assets/css/stylesheet.css',
     '~/assets/css/background.css',
+    'codemirror/lib/codemirror.css',
+    'codemirror/theme/base16-dark.css',
   ],
   modules: [
     '@nuxtjs/axios',
@@ -27,7 +29,10 @@ module.exports = {
   buildModules: [
     '@nuxtjs/dotenv',
   ],
-  plugins: ['@/plugins/vuex-orm-axios'],
+  plugins: [
+    '@/plugins/vuex-orm-axios',
+    {src: '~plugins/nuxt-code-mirror-plugin', ssr: false}
+  ],
   /*
   ** Add axios globally
   */

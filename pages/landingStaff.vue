@@ -959,27 +959,13 @@ export default {
       // Add the staff member to the ticket
     },
     getFilterClass(status, course) {
-<<<<<<< HEAD
-      // console.log("filtering course")
-      // console.log(course);
-      // if (course === null) {
-      //   console.log("open tickets");
-      //   return this.filterAllTickets(status);
-      //   // return this.filterOpenTickets(status);
-=======
       let tickets;
->>>>>>> 47486576f844a6fbb00762112c975f4c04928658
       // console.log(course);
       if (course === null) {
         // console.log("open tickets");
         tickets =  this.filterOpenTickets(status);
       } else {
-<<<<<<< HEAD
-        console.log("filtering here")
-        return this.filterCourseTickets(status, course);
-=======
         tickets = this.filterCourseTickets(status, course);
->>>>>>> 47486576f844a6fbb00762112c975f4c04928658
       }
 
       return tickets;
