@@ -388,7 +388,7 @@ button[type="submit"] {
                           <span
                             style="margin-left:0px;"
                             class="col"
-                          >{{ " " + (ticket.createdAt.split('T')[1]).substring(0,5)}}</span>
+                          >{{ " " + formatTime((ticket.createdAt.split('T')[1]).substring(0,5))}}</span>
                         </span>
                       </div>
 
@@ -528,7 +528,7 @@ button[type="submit"] {
                   <div class="card-line-history">
                     <div class="row">
                       <span class="card-categories col-sm-3">
-                        <clock class="label-icons" />Date :
+                        <date class="label-icons" />Date :
                       </span>
                       <span
                         class="col-sm-9 text-body"
@@ -539,11 +539,11 @@ button[type="submit"] {
                   <div class="card-line-history">
                     <div class="row">
                       <span class="card-categories col-sm-3">
-                        <date class="label-icons" />Time:
+                        <clock class="label-icons" />Time:
                       </span>
                       <span
                         class="col-sm-9 text-body"
-                      >{{ " " + (ticket.createdAt.split('T')[1]).substring(0,5)}}</span>
+                          >{{ " " + formatTime((ticket.createdAt.split('T')[1]).substring(0,5))}}</span>
                     </div>
                   </div>
 
@@ -849,6 +849,17 @@ export default {
           _id: staffId
         }
       });
+    },
+  formatTime(time) {
+      console.log(time);
+      var timeStr = " AM";
+      var splitTime = time.split(":");
+      if (splitTime[0] > 12) {
+        timeStr = " PM";
+      }
+      var hours = ((splitTime[0] + 11) % 12) + 1;
+      console.log(hours + ":" + splitTime[1]);
+      return hours + ":" + splitTime[1] + timeStr;
     },
     getFilterClass(status, course) {
       // console.log("filtering course")
