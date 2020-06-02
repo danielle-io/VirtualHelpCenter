@@ -167,7 +167,7 @@ export default {
     },
     submit() {
       console.log('cliked')
-      this.$auth.loginWith('social');
+      // this.$auth.loginWith('social');
     }
   },
   beforeMount() {

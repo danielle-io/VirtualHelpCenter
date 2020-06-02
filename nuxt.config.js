@@ -19,6 +19,8 @@ module.exports = {
   css: [
     '~/assets/css/stylesheet.css',
     '~/assets/css/background.css',
+    'codemirror/lib/codemirror.css',
+    'codemirror/theme/base16-dark.css',
   ],
   modules: [
     '@nuxtjs/axios',
@@ -27,7 +29,10 @@ module.exports = {
   buildModules: [
     '@nuxtjs/dotenv',
   ],
-  plugins: ['@/plugins/vuex-orm-axios'],
+  plugins: [
+    '@/plugins/vuex-orm-axios',
+    {src: '~plugins/nuxt-code-mirror-plugin', ssr: false}
+  ],
   /*
   ** Add axios globally
   */
@@ -73,7 +78,7 @@ module.exports = {
         scope: 'user:read',
         response_type: 'code',
         token_type: 'Bearer',
-        redirect_uri: 'http://f8036b79620d.ngrok.io',
+        redirect_uri: 'http://89c268524dda.ngrok.io',
         client_id: '9VOpD0zSSS2CoDAsbZxFTA',
         token_key: 'access_token',
         state: 'UNIQUE_AND_NON_GUESSABLE'

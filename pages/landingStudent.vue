@@ -108,7 +108,7 @@
   background-color: green;
 }
 .CodeMirror-scroll {
-  width: 700px;
+  width: 770px;
   height: 300px;
   overflow-y: hidden;
   overflow-x: auto;
@@ -803,16 +803,16 @@ Request History tab."
                     <label class="label-format">
                       <code-symbol class="label-icons" />Code
                     </label>
-
+<!-- 
                     <b-form-text-area
                       id="textarea"
                       v-model="code"
                       rows="1"
                       placeholder="Paste code here, if needed."
                       max-rows="6"
-                    ></b-form-text-area>
+                    ></b-form-text-area> -->
+                    <Codemirror v-model="code"/>
                   </div>
-
                   <div class="row">
                     <label style="margin-bottom: 0px;" class="label-format">
                       <attachment class="label-icons" />Attachments
@@ -1091,49 +1091,8 @@ if (!firebase.apps.length) {
 // const userId = "5ec5f90d81b13d23065ead3e";
 const userId = "5ec5f90d81b13d23065ead3e";
 
-
-
 const client = new Ably.Realtime(process.env.ABLY_KEY);
 
-// // base style
-// import "codemirror/lib/codemirror.css";
-// import "codemirror/theme/base16-dark.css";
-
-// language
-// import "codemirror/mode/vue/vue.js";
-
-// active-line.js
-// import "codemirror/addon/selection/active-line.js";
-
-// styleSelectedText
-// import "codemirror/addon/selection/mark-selection.js";
-// import "codemirror/addon/search/searchcursor.js";
-
-// highlightSelectionMatches
-// import "codemirror/addon/scroll/annotatescrollbar.js";
-// import "codemirror/addon/search/matchesonscrollbar.js";
-// import "codemirror/addon/search/searchcursor.js";
-// import "codemirror/addon/search/match-highlighter.js";
-
-// keyMap
-// import "codemirror/mode/clike/clike.js";
-// import "codemirror/addon/edit/matchbrackets.js";
-// import "codemirror/addon/comment/comment.js";
-// import "codemirror/addon/dialog/dialog.js";
-// import "codemirror/addon/dialog/dialog.css";
-// import "codemirror/addon/search/searchcursor.js";
-// import "codemirror/addon/search/search.js";
-// import "codemirror/keymap/sublime.js";
-
-// foldGutter
-// import "codemirror/addon/fold/foldgutter.css";
-// import "codemirror/addon/fold/brace-fold.js";
-// import "codemirror/addon/fold/comment-fold.js";
-// import "codemirror/addon/fold/foldcode.js";
-// import "codemirror/addon/fold/foldgutter.js";
-// import "codemirror/addon/fold/indent-fold.js";
-// import "codemirror/addon/fold/markdown-fold.js";
-// import "codemirror/addon/fold/xml-fold.js";
 
 import Vue from "vue";
 import axios from "~/plugins/axios";
@@ -1153,6 +1112,8 @@ import VueMaterial from "vue-material";
 import "vue-material/dist/vue-material.min.css";
 import "vue-material/dist/theme/default.css";
 
+import Codemirror from "../components/Codemirror"
+
 Vue.use(VueMaterial);
 
 //UI store imports
@@ -1165,7 +1126,9 @@ export default {
     "b-form-checkbox": BFormCheckbox,
     "b-form-text-area": BFormTextarea,
     "b-form-radio": BFormRadio,
-    "b-form-radio-group": BFormRadioGroup
+    "b-form-radio-group": BFormRadioGroup,
+    "Codemirror": Codemirror
+
     // codemirror
   },
 
@@ -1179,26 +1142,6 @@ export default {
     return {
       el: "#requests",
       code: null,
-      cmOption: {
-        tabSize: 4,
-        styleActiveLine: false,
-        lineNumbers: true,
-        styleSelectedText: false,
-        line: true,
-        foldGutter: true,
-        gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
-        highlightSelectionMatches: { showToken: /\w/, annotateScrollbar: true },
-        mode: "text/javascript",
-        // hint.js options
-        hintOptions: {
-          completeSingle: false
-        },
-        keyMap: "sublime",
-        matchBrackets: true,
-        showCursorWhenSelecting: true,
-        theme: "monokai",
-        extraKeys: { Ctrl: "autocomplete" }
-      },
       currentRequestsTab: true,
       requestHistoryTab: false,
       show: true,
@@ -1243,6 +1186,7 @@ export default {
       document.getElementById("tabs").scrollIntoView();
     },
     addRow: function() {
+      console.log(this.code)
       var elem = document.createElement("tr");
       this.rows.push({
         file: {
@@ -1402,6 +1346,8 @@ export default {
       console.log("ticket rating is now " + ticket.rating);
     },
     removeElement: function(index) {
+      console.log(this.code == null)
+      console.log("remove")
       this.rows.splice(index, 1);
     },
     setFilename: function(event, row) {

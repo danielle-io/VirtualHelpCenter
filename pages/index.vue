@@ -134,7 +134,6 @@ export default {
     };
   },
   mounted() {
-    console.log(this.$auth)
   }
 };
 </script>
