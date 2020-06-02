@@ -46,6 +46,7 @@ import Filter from "vue-material-design-icons/FilterVariant.vue";
 import Calendar from "vue-material-design-icons/Calendar.vue";
 import Email from "vue-material-design-icons/Email.vue";
 import CheckCircle from "vue-material-design-icons/CheckCircle.vue";
+import Library from "vue-material-design-icons/Library.vue";
 
 import BeatLoader from 'vue-spinner/src/BeatLoader.vue';
 
@@ -79,8 +80,7 @@ Vue.component("filter-icon", Filter);
 Vue.component("date", Calendar);
 Vue.component("email", Email);
 Vue.component("check-circle", CheckCircle);
-
-
+Vue.component("library", Library);
 
 Vue.component('beat-loader', BeatLoader);
 

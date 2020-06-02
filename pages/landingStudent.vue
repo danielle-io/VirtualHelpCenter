@@ -119,28 +119,6 @@
   max-height: 670px;
 }
 
-/* .CodeMirror-focused .cm-matchhighlight {
-  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAFklEQVQI12NgYGBgkKzc8x9CMDAwAAAmhwSbidEoSQAAAABJRU5ErkJggg==);
-  background-position: bottom;
-  background-repeat: repeat-x;
-}
-.cm-matchhighlight {
-  background-color: lightgreen;
-}
-.CodeMirror-selection-highlight-scrollbar {
-  background-color: green;
-}
-.CodeMirror-scroll {
-  width: 770px;
-  height: 300px;
-  overflow-y: hidden;
-  overflow-x: auto;
-}
-.CodeMirror {
-  border: 1px solid #eee !important;
-  height: auto;
-} */
-
 .card-categories {
   color: #53a59e;
   font-weight: 500;
@@ -444,16 +422,6 @@ table th,
   padding-bottom: 2px;
   font-family: "Poppins";
 }
-
-/* #formContent {
-  -webkit-border-radius: 10px 10px 10px 10px;
-  border-radius: 10px 10px 10px 10px;
-  background: #fff;
-  padding: 30px;
-  -webkit-box-shadow: 0 30px 60px 0 rgba(0, 0, 0, 0.3);
-  box-shadow: 0 30px 60px 0 rgba(0, 0, 0, 0.3);
-  text-align: center;
-} */
 
 input[type="text"] {
   color: #0d0d0d;
