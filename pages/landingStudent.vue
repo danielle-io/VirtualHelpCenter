@@ -1,4 +1,9 @@
 <style>
+.CodeMirror {
+  float: left;
+  width: 700px;
+  border: 1px solid rgb(230, 221, 221);
+}
 .md-dialog {
   position: fixed;
   z-index: 9999;
@@ -96,7 +101,7 @@
   max-height: 670px;
 }
 
-.CodeMirror-focused .cm-matchhighlight {
+/* .CodeMirror-focused .cm-matchhighlight {
   background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAFklEQVQI12NgYGBgkKzc8x9CMDAwAAAmhwSbidEoSQAAAABJRU5ErkJggg==);
   background-position: bottom;
   background-repeat: repeat-x;
@@ -116,7 +121,7 @@
 .CodeMirror {
   border: 1px solid #eee !important;
   height: auto;
-}
+} */
 
 .card-categories {
   color: #53a59e;
@@ -507,8 +512,6 @@ Request History tab."
     <script src="https://cdnjs.cloudflare.com/ajax/libs/velocity/1.2.3/velocity.min.js"></script>
 
     <div id="requests">
-      <!-- The transition effects for the containers changing -->
-
       <div class="request-tabs">
         <a
           id="landingTab"
@@ -524,8 +527,6 @@ Request History tab."
       </div>
 
       <transition name="fade" mode="in-out">
-        <!-- <div style="text-align: center;"> -->
-
         <div
           v-bind:key="requestLandingPage"
           class="request-container"
@@ -534,13 +535,12 @@ Request History tab."
           <div v-if="!this.requestLandingPage && !this.submitRequest" class="side-border-line" />
 
           <div class="container-body">
-            <!-- <md-button class="md-primary md-raised" @click=" = true">Confirm</md-button> -->
-
             <div v-if="this.currentRequestsTab">
               <div v-if="this.studentAcceptedSession">
                 <div class="request-container-two">
                   <div class="heading-text">Begin your session</div>
 
+                  <!-- TODO replace href with variable for zoom -->
                   <div class="sub-heading-text">Click the link to open your Zoom session</div>
                   <div class="sub-heading-text-larger" style="margin-top: 15px;">
                     <a
@@ -625,7 +625,10 @@ Request History tab."
                 </div>
               </div>
 
-              <div v-if="showTicket && !this.editingRequest" style="text-align: center;">
+              <div
+                v-if="showTicket && !this.editingRequest && !this.showCountdown"
+                style="text-align: center;"
+              >
                 <!-- TODO: show a modal on clicking close asking if they are sure -->
                 <md-card style="padding-top: 8px; padding-bottom: 10px;">
                   <div
@@ -803,15 +806,10 @@ Request History tab."
                     <label class="label-format">
                       <code-symbol class="label-icons" />Code
                     </label>
-<!-- 
-                    <b-form-text-area
-                      id="textarea"
-                      v-model="codeSnippet"
-                      rows="1"
-                      placeholder="Paste code here, if needed."
-                      max-rows="6"
-                    ></b-form-text-area> -->
-                    <Codemirror v-model="code"/>
+                  </div>
+
+                  <div class="row">
+                    <Codemirror v-model="codeSnippet" />
                   </div>
                   <div class="row">
                     <label style="margin-bottom: 0px;" class="label-format">
@@ -1093,7 +1091,6 @@ const userId = "5ec5f90d81b13d23065ead3e";
 
 const client = new Ably.Realtime(process.env.ABLY_KEY);
 
-
 import Vue from "vue";
 import axios from "~/plugins/axios";
 import firebase from "firebase";
@@ -1112,7 +1109,7 @@ import VueMaterial from "vue-material";
 import "vue-material/dist/vue-material.min.css";
 import "vue-material/dist/theme/default.css";
 
-import Codemirror from "../components/Codemirror"
+import Codemirror from "../components/Codemirror";
 
 Vue.use(VueMaterial);
 
@@ -1127,9 +1124,7 @@ export default {
     "b-form-text-area": BFormTextarea,
     "b-form-radio": BFormRadio,
     "b-form-radio-group": BFormRadioGroup,
-    "Codemirror": Codemirror
-
-    // codemirror
+    Codemirror: Codemirror
   },
 
   data() {
@@ -1180,7 +1175,7 @@ export default {
       document.getElementById("tabs").scrollIntoView();
     },
     addRow: function() {
-      console.log(this.code)
+      console.log(this.code);
       var elem = document.createElement("tr");
       this.rows.push({
         file: {
@@ -1310,7 +1305,7 @@ export default {
       console.log("in accept session and zoomLink is " + this.zoomLink);
 
       // Publish an event to the  channel
-      // this.studentChannel.publish("studentAcceptedSession", userId);
+      this.studentChannel.publish("studentAcceptedSession", userId);
     },
     triggerAccept: function() {
       this.showCountdown = true;
@@ -1341,8 +1336,8 @@ export default {
       console.log("ticket rating is now " + ticket.rating);
     },
     removeElement: function(index) {
-      console.log(this.code == null)
-      console.log("remove")
+      console.log(this.code == null);
+      console.log("remove");
       this.rows.splice(index, 1);
     },
     setFilename: function(event, row) {
@@ -1369,19 +1364,19 @@ export default {
     startSubscribe() {
       console.log("subscribing to staff");
       // The student's ticket was accepted by the staff
-      // this.studentChannel.subscribe("staffAcceptedTicket", message => {
-      //   console.log("staff accepted ticket");
-      //   this.zoomLink = message.data.zoomLink;
-      //   this.openTicket.updatedAt = message.data.date;
-      //   this.showCountdown = true;
-      // });
+      this.studentChannel.subscribe("staffAcceptedTicket", message => {
+        console.log("staff accepted ticket");
+        this.zoomLink = message.data.zoomLink;
+        this.openTicket.updatedAt = message.data.date;
+        this.showCountdown = true;
+      });
 
-      //   this.studentChannel.subscribe("ticketMarkedClosed", message => {
-      //           this.openTicket.status = "Closed";
-      //         this.clearTicketWhenCanceledOrComplete();
+      this.studentChannel.subscribe("ticketMarkedClosed", message => {
+        this.openTicket.status = "Closed";
+        this.clearTicketWhenCanceledOrComplete();
 
-      //   console.log("ticket was closed by staff");
-      // });
+        console.log("ticket was closed by staff");
+      });
     },
     countdownTime: function() {
       // Read updated time
@@ -1452,8 +1447,7 @@ export default {
         });
       }
 
-      // this.openTicket.status = "Open";
-
+      this.openTicket.status = "Open";
       // this.openTickets = null;
       // this.file = null;
       // this.fileUrls = [];
@@ -1466,7 +1460,7 @@ export default {
       document.getElementById("landingTab").click();
 
       // sends ticket to staff
-      // this.ticketChannel.publish("ticketUpdate", this.openTicket);
+      this.ticketChannel.publish("ticketUpdate", this.openTicket);
     },
 
     changeRequestState: function() {
@@ -1477,7 +1471,7 @@ export default {
       } else {
         var channel = client.channels.get("staff");
         // Publish a message to the test channel
-        // channel.publish("ticketUpdate", "ticket updated");
+        channel.publish("ticketUpdate", "ticket updated");
 
         this.submitRequest = true;
         this.scrollToTop();
@@ -1568,7 +1562,7 @@ export default {
         console.log(this.openTicket);
 
         // sends ticket to staff
-        // this.ticketChannel.publish("ticketUpdate", this.openTicket);
+        this.ticketChannel.publish("ticketUpdate", this.openTicket);
       }
     },
     async getTickets() {
@@ -1617,7 +1611,7 @@ export default {
       if (this.openTicket) {
         console.log("closing ticket " + this.openTicket._id);
 
-        // this.ticketChannel.publish("ticketClosed", this.openTicket);
+        this.ticketChannel.publish("ticketClosed", this.openTicket);
 
         this.openTicket.status = "Unresolved";
         // this.ticketHistory = [this.openTicket] + this.ticketHistory

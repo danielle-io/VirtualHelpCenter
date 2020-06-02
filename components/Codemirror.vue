@@ -35,10 +35,10 @@
           lineNumbers: true,
           line: true,
           mode: 'text/x-python',
-          theme: 'base16-dark'
+          theme: 'idea'
         },
         code: dedent`
-          #Paste your code here
+          #Paste your code here, if needed
           def example():
             pass
         `

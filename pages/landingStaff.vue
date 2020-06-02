@@ -233,22 +233,6 @@
   display: none;
 }
 
-.zoom-link-field {
-  color: #0d0d0d;
-  text-align: left;
-  display: inline-block;
-  font-size: 16px;
-  margin: 5px;
-  width: 100%;
-  -webkit-transition: all 0.5s ease-in-out;
-  -moz-transition: all 0.5s ease-in-out;
-  -ms-transition: all 0.5s ease-in-out;
-  -o-transition: all 0.5s ease-in-out;
-  transition: all 0.5s ease-in-out;
-  -webkit-border-radius: 5px 5px 5px 5px;
-  border-radius: 5px 5px 5px 5px;
-}
-
 input[type="text"] {
   color: #0d0d0d;
   text-align: left;
@@ -301,7 +285,7 @@ button[type="submit"] {
       />
     </client-only>
 
-    <no-ssr>
+    <client-only>
       <md-dialog
         style="margin-left: 200px; margin-right: 200px;"
         :md-active.sync="showCanceledRequestDialog"
@@ -312,7 +296,7 @@ button[type="submit"] {
         class="accept-button"
         @md-confirm="showCanceledRequestDialog = false;"
       />
-    </no-ssr>
+    </client-only>
 
     <div id="requests" style="position: relative;">
       <button id="hiddenButton" style="display:none;" @click="triggerAccept"></button>
@@ -333,7 +317,7 @@ button[type="submit"] {
         class="staff-container"
         v-bind:class="{ 'dialog-showing': showCanceledRequestDialog || showCloseSessionDialog, 'dialog-hidden': !showCanceledRequestDialog && !showCloseSessionDialog}"
       >
-        <div v-if="!this.connecting && !this.zoomLinkForm">
+        <div v-if="!this.connecting">
           <!-- <div class="requests-heading"> -->
           <div v-if="this.openRequestTab" class="row" style="margin-bottom: 12px;">
             <span style="margin: auto;" v-if="this.selectedTicketIndex === -1 && this.tickets">
@@ -341,10 +325,7 @@ button[type="submit"] {
               <div v-if="this.tickets.length > 0" class="heading-text-alt">Select an open request</div>
             </span>
 
-            <span
-              style="margin: auto;"
-              v-if="this.selectedTicketIndex != -1 && !this.zoomLinkForm && this.tickets"
-            >
+            <span style="margin: auto;" v-if="this.selectedTicketIndex != -1 && this.tickets">
               <!-- TODO: instead of tickets.length, get the filtered tickets length to hide message when no tickets show -->
               <div v-if="this.tickets.length > 0" class="heading-text-alt">Request Selected</div>
             </span>
@@ -370,13 +351,13 @@ button[type="submit"] {
           <div v-if="this.openRequestTab">
             <div style="margin-top: 30px;" class="ticket-container">
               <div
-                v-if="!this.zoomLinkForm && !this.tickets"
+                v-if="!this.tickets"
                 class="sub-heading-text"
                 style="padding-top:2%;"
               >There are currently no open tickets</div>
 
               <!-- Populate tickets -->
-              <div v-if="!this.zoomLinkForm">
+              <div>
                 <div
                   v-for="(ticket, index) in (getFilterClass('Open', this.course).slice(this.startingIndex, this.endingIndex))"
                   :key="ticket._id"
@@ -519,177 +500,135 @@ button[type="submit"] {
               </div>
 
               <button
-                v-if="this.selectedTicketIndex != -1 && !this.zoomLinkForm"
+                v-if="this.selectedTicketIndex != -1"
                 type="submit"
                 class="request-staff-buttons"
-                @click="getZoomLink"
+                @click="sendZoomLink"
                 v-on:click="acceptTicket()"
               >
                 <right-circle />Begin Session
               </button>
-
-              <div style="margin-top: 30px;" v-if="this.zoomLinkForm">
-                <div style="float: right; margin-right: 10px; ">
-                  <button class="close-button" v-on:click="cancelZoomLink">
-                    <close style="color: red !important;" class="close-icon" />
-                  </button>
-                </div>
-
-                <div style="padding-top: 30px;">
-                  <div class="sub-heading-text-left">Please enter your zoom session link</div>
-                  <b-form-input
-                    class="zoom-link-field"
-                    type="text"
-                    v-model="zoomLink"
-                    required
-                    placeholder="Enter your Zoom Session link here"
-                  ></b-form-input>
-                </div>
-
-                <div v-if="!this.zoomLink">
-                  <button
-                    type="disabled"
-                    disabled="true"
-                    class="form-buttons-disabled"
-                    @click="sendZoomLink"
-                  >
-                    <right-circle />Send Link
-                  </button>
-                </div>
-
-                <div v-if="this.zoomLink">
-                  <button type="submit" class="form-buttons" @click="sendZoomLink">
-                    <right-circle />Send Link
-                  </button>
-                </div>
-              </div>
             </div>
           </div>
+        </div>
 
-          <div v-if="this.requestHistoryTab">
-            <!-- TO DO: make this text dynamic based on user tickets -->
-            <div
-              class="sub-heading-text"
-              style="padding-top:2%;"
-              v-bind:class="{ 'extra-padding': this.ticketHistory.length === 0 }"
-            >You have {{this.ticketHistory.length}} prior requests.</div>
+        <div v-if="this.requestHistoryTab">
+          <div
+            class="sub-heading-text"
+            style="padding-top:2%;"
+            v-bind:class="{ 'extra-padding': this.ticketHistory.length === 0 }"
+          >You have {{this.ticketHistory.length}} prior requests.</div>
 
-            <div class="container-body">
-              <div v-for="(ticket) in this.ticketHistory" :key="ticket._id">
-                <md-card
-                  style="border: 1px solid #dde0e681; margin-bottom: 10px; padding-bottom: 8px; border-radius: 8px; padding-top:8px; box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.05);"
-                >
-                  <div class="md-card-content" style="margin-bottom:20px;">
+          <div class="container-body">
+            <div v-for="(ticket) in this.ticketHistory" :key="ticket._id">
+              <md-card
+                style="border: 1px solid #dde0e681; margin-bottom: 10px; padding-bottom: 8px; border-radius: 8px; padding-top:8px; box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.05);"
+              >
+                <div class="md-card-content" style="margin-bottom:20px;">
+                  <div class="card-line-history">
+                    <div class="row">
+                      <span class="card-categories col-sm-3">
+                        <clock class="label-icons" />Date :
+                      </span>
+                      <span
+                        class="col-sm-9 text-body"
+                      >{{ (ticket.createdAt.split('T')[0].split('-')[1] + '-' + ticket.createdAt.split('T')[0].split('-')[2] + '-' + ticket.createdAt.split('T')[0].split('-')[0])}}</span>
+                    </div>
+                  </div>
+
+                  <div class="card-line-history">
+                    <div class="row">
+                      <span class="card-categories col-sm-3">
+                        <date class="label-icons" />Time:
+                      </span>
+                      <span
+                        class="col-sm-9 text-body"
+                      >{{ " " + (ticket.createdAt.split('T')[1]).substring(0,5)}}</span>
+                    </div>
+                  </div>
+
+                  <div class="card-line-history">
+                    <div class="row">
+                      <span class="card-categories col-sm-3">
+                        <bell class="label-icons" />Status:
+                      </span>
+                      <span class="col-sm-9 text-body">{{ ticket.status }}</span>
+                    </div>
+                  </div>
+
+                  <div class="card-line-history">
+                    <div class="row">
+                      <span class="card-categories col-sm-3">
+                        <short-description class="label-icons" />Overview:
+                      </span>
+                      <span class="col-sm-9 text-body">{{ ticket.oneLineOverview }}</span>
+                    </div>
+                  </div>
+
+                  <div
+                    v-bind:class="{ 'chevron': expandChevron, 'hidden': !expandChevron }"
+                    @click="changeChevronClass"
+                  >
+                    <expand-arrow />
+                  </div>
+
+                  <div
+                    @click="changeChevronClass"
+                    v-bind:class="{ 'chevron': collapseChevron, 'hidden': !collapseChevron }"
+                  >
+                    <collapse-arrow />
+                  </div>
+
+                  <div
+                    v-bind:class="{ 'show-extra-content': collapseChevron, 'hide-extra-content': expandChevron }"
+                  >
                     <div class="card-line-history">
                       <div class="row">
                         <span class="card-categories col-sm-3">
-                          <clock class="label-icons" />Date :
+                          <long-description class="label-icons" />Details:
                         </span>
-                        <span
-                          class="col-sm-9 text-body"
-                        >{{ (ticket.createdAt.split('T')[0].split('-')[1] + '-' + ticket.createdAt.split('T')[0].split('-')[2] + '-' + ticket.createdAt.split('T')[0].split('-')[0])}}</span>
+                        <span class="col-sm-9 text-body">{{ ticket.longerDescription }}</span>
                       </div>
                     </div>
 
                     <div class="card-line-history">
                       <div class="row">
                         <span class="card-categories col-sm-3">
-                          <date class="label-icons" />Time:
+                          <student class="label-icons" />Name:
                         </span>
-                        <span
-                          class="col-sm-9 text-body"
-                        >{{ " " + (ticket.createdAt.split('T')[1]).substring(0,5)}}</span>
+                        <span class="col-sm-9 text-body">{{ ticket.ownerName }}</span>
                       </div>
                     </div>
 
-                    <div class="card-line-history">
-                      <div class="row">
-                        <span class="card-categories col-sm-3">
-                          <bell class="label-icons" />Status:
-                        </span>
-                        <span class="col-sm-9 text-body">{{ ticket.status }}</span>
-                      </div>
-                    </div>
-
-                    <div class="card-line-history">
-                      <div class="row">
-                        <span class="card-categories col-sm-3">
-                          <short-description class="label-icons" />Overview:
-                        </span>
-                        <span class="col-sm-9 text-body">{{ ticket.oneLineOverview }}</span>
-                      </div>
-                    </div>
-
-                    <div
-                      v-bind:class="{ 'chevron': expandChevron, 'hidden': !expandChevron }"
-                      @click="changeChevronClass"
-                    >
-                      <expand-arrow />
-                    </div>
-
-                    <div
-                      @click="changeChevronClass"
-                      v-bind:class="{ 'chevron': collapseChevron, 'hidden': !collapseChevron }"
-                    >
-                      <collapse-arrow />
-                    </div>
-
-                    <div
-                      v-bind:class="{ 'show-extra-content': collapseChevron, 'hide-extra-content': expandChevron }"
-                    >
-                      <div class="card-line-history">
-                        <div class="row">
+                    <div v-if="ticket.attachments.length > 0">
+                      <div class="card-line">
+                        <span class="row">
                           <span class="card-categories col-sm-3">
-                            <long-description class="label-icons" />Details:
+                            <attachment class="label-icons" />Files:
                           </span>
-                          <span class="col-sm-9 text-body">{{ ticket.longerDescription }}</span>
-                        </div>
-                      </div>
 
-                      <div class="card-line-history">
-                        <div class="row">
-                          <span class="card-categories col-sm-3">
-                            <student class="label-icons" />Name:
-                          </span>
-                          <span class="col-sm-9 text-body">{{ ticket.ownerName }}</span>
-                        </div>
-                      </div>
-
-                      <div v-if="ticket.attachments.length > 0">
-                        <div class="card-line">
-                          <span class="row">
-                            <span class="card-categories col-sm-3">
-                              <attachment class="label-icons" />Files:
-                            </span>
-
-                            <span
-                              class="col"
-                              v-for="(attachment, index) in (ticket.attachments)"
-                              :key="index"
-                            >
-                              <a
-                                class="text-body"
-                                style="cursor: pointer; color: rgb(45, 58, 130) !important; z-index: 999; 
+                          <span
+                            class="col"
+                            v-for="(attachment, index) in (ticket.attachments)"
+                            :key="index"
+                          >
+                            <a
+                              class="text-body"
+                              style="cursor: pointer; color: rgb(45, 58, 130) !important; z-index: 999; 
                               text-shadow: none !important; font-size: 14px;@@"
-                                @click="openPage(attachment.filePath, attachment.fileName)"
-                              >
-                                <open-in-new-window />
-                                {{attachment.fileName}}
-                              </a>
-                            </span>
+                              @click="openPage(attachment.filePath, attachment.fileName)"
+                            >
+                              <open-in-new-window />
+                              {{attachment.fileName}}
+                            </a>
                           </span>
-                        </div>
+                        </span>
                       </div>
                     </div>
                   </div>
-                </md-card>
-              </div>
+                </div>
+              </md-card>
             </div>
-            <!-- TO DO: Make this message dynamic -->
-            <!-- <div
-            class="sub-heading-text"
-            style="padding-top:2%;"
-            >You currently have no request history.</div>-->
           </div>
         </div>
 
@@ -811,44 +750,6 @@ button[type="submit"] {
             </md-card>
           </div>
         </div>
-
-        <div
-          v-if="this.zoomLinkForm && !this.connecting"
-          style="margin-top: 16px; padding-bottom: 40px;"
-        >
-          <div style="float: right; margin-bottom: 30px; margin-right: 10px; ">
-            <button class="close-button" v-on:click="cancelZoomLink">
-              <close style="font-size: 15px;" class="close-icon" />
-            </button>
-          </div>
-
-          <div class="heading-text" style="padding-top: 18px;">Send Your Zoom Link</div>
-
-          <div style="padding-top: 30px;">
-            <div style="padding-left: 35px; padding-top: 20px; margin-right: 50px; ">
-              <input
-                placeholder="Enter your Zoom Session link here"
-                type="text"
-                style="padding-left: 5px !important; height: 2.5em; width: 100%; padding-bottom: 4px; font-size: 16px; border-radius: 0; padding-bottom: 25;!important; padding-top: 0px; border-top: none; border-left: none; border-right: none;"
-                v-bind:value="zoomLink"
-                v-on:input="zoomLink = $event.target.value"
-              />
-            </div>
-
-            <div
-              style="justify-content: center; text-align: center; align-items: center; padding-bottom: 20px; padding-top: 15px;"
-            >
-              <button
-                type="submit"
-                class="request-staff-buttons"
-                v-bind:class="{ 'disabled-button': !this.zoomLink }"
-                @click="sendZoomLink"
-              >
-                <right-circle />Send Link
-              </button>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   </div>
@@ -918,13 +819,6 @@ export default {
   },
   methods: {
     filterOpenTickets(status) {
-      // if (this.tickets) {
-      //   this.filteredTickets = this.tickets.filter(
-      //     ticket => ticket.status === status
-      //   );
-      //   console.log("filtering open tickets")
-      //   return this.filteredTickets;
-      // }
       if (this.tickets) {
         console.log("filtering open tickets");
         return this.tickets.filter(ticket => ticket.status === status);
@@ -935,18 +829,14 @@ export default {
     },
 
     filterAllTickets(status) {
-      // this.filteredTickets = [];
-      // this.staffCourses.forEach(element => {
-      return this.tickets.filter(ticket => ticket.status === status);
-      // return this.tickets.filter(ticket => ticket.course._id === status)
-      // this.filteredTickets.push(this.filterCourseTickets(status, element));
-      // //   this.filteredTickets.push(this.filterCourseTickets(status, element));
-      // // // this.loadClasses(element);
-      // });
-
-      // return this.filteredTickets;
-      // return this.filteredTickets;
-      // return this.filterOpenTickets(status)
+      this.filteredTickets = [];
+      this.staffCourses.forEach(element => {
+        return this.tickets.filter(ticket => ticket.course._id === status);
+      });
+      //  this.filteredTickets.push(this.filterCourseTickets(status, element));
+      //       this.filteredTickets.push(this.filterCourseTickets(status, element));
+      //   });
+      return this.filteredTickets;
     },
 
     triggerAccept: function() {
@@ -959,7 +849,6 @@ export default {
           _id: staffId
         }
       });
-      // Add the staff member to the ticket
     },
     getFilterClass(status, course) {
       // console.log("filtering course")
@@ -971,7 +860,6 @@ export default {
       // console.log(course);
       var tickets = [];
       if (course === null) {
-        // console.log("open tickets");
         tickets = this.filterOpenTickets(status);
       } else {
         return this.filterCourseTickets(status, course);
@@ -1072,20 +960,6 @@ export default {
         console.log(JSON.stringify(this.currentTicket));
       }
     },
-    getZoomLink: function() {
-      console.log("zoom link");
-      this.zoomLinkForm = true;
-    },
-    cancelZoomLink: function() {
-      this.zoomLinkForm = false;
-      this.openRequestTab = true;
-
-      this.selectedTicketIndex = -1;
-      this.startingIndex = 0;
-      this.endingIndex = 3;
-      console.log("cancelling acceptance");
-      this.ticketChannel.publish("reopenTicket", this.currentTicket);
-    },
 
     // This is where the link is stored
     sendZoomLink() {
@@ -1094,14 +968,14 @@ export default {
       console.log("ticket is " + JSON.stringify(this.currentTicket));
 
       // Get the students user id from the ticket
-      // this.studentChannel = client.channels.get(this.currentTicket.owner._id);
-      // this.studentChannel.publish("staffAcceptedTicket", {
-      //   zoomLink: this.zoomLink,
-      //   date: ticketTime
-      // });
+      this.studentChannel = client.channels.get(this.currentTicket.owner._id);
+      this.studentChannel.publish("staffAcceptedTicket", {
+        zoomLink: this.zoomLink,
+        date: ticketTime
+      });
 
       // //remove the ticket from open tickets
-      // this.ticketChannel.publish("ticketInProgress", this.currentTicket);
+      this.ticketChannel.publish("ticketInProgress", this.currentTicket);
 
       // Show connection screen once student receives countdown
       this.connecting = true;
@@ -1146,15 +1020,15 @@ export default {
     },
 
     countdownTime(ticketTime) {
-      // this.studentChannel = client.channels.get(this.currentTicket.owner._id);
-      // this.studentChannel.subscribe("studentAcceptedSession", function(
-      //   message
-      // ) {
-      //   console.log("accepted session");
-      //   document.getElementById("hiddenButton").click();
-      //   this.triggerAccept();
-      //   clearTimeout(x);
-      // });
+      this.studentChannel = client.channels.get(this.currentTicket.owner._id);
+      this.studentChannel.subscribe("studentAcceptedSession", function(
+        message
+      ) {
+        console.log("accepted session");
+        document.getElementById("hiddenButton").click();
+        this.triggerAccept();
+        clearTimeout(x);
+      });
 
       //read updated time
       let currentTime = new Date();
@@ -1186,11 +1060,10 @@ export default {
     },
     confirmCloseSession() {
       this.showCloseSessionDialog = false;
-
       console.log("confirm close session");
-      //  this.studentChannel = client.channels.get(this.currentTicket.owner._id);
-      //       this.studentChannel.publish("ticketMarkedClosed", {
-      // });
+
+      this.studentChannel = client.channels.get(this.currentTicket.owner._id);
+      this.studentChannel.publish("ticketMarkedClosed", {});
       this.resetBackToOpenTicketsDisplay();
 
       // Update the ticket status to closed in the db
@@ -1208,15 +1081,13 @@ export default {
       }
     },
     async acceptTicket() {
-      this.getZoomLink();
-
       //remove the ticket from open tickets
       console.log("removing ticket");
       this.ticketChannel.publish("ticketClosed", this.currentTicket);
 
-      // axios.put("/api/updateTicket/" + this.currentTicketId, {
-      //   status: "Pending"
-      // });
+      axios.put("/api/updateTicket/" + this.currentTicketId, {
+        status: "Pending"
+      });
     },
     // async loadUser(user) {
     //   if (user) {
@@ -1224,6 +1095,7 @@ export default {
     //     console.log("user loaded");
     //   }
     // },
+
     // Sets the class to filter by based on dropdown
     async setClass(course) {
       console.log("setting class");
@@ -1245,17 +1117,16 @@ export default {
   async created() {
     let tickets = await axios.get("/api/tickets");
 
-    //dont think this is neccessary
-    // if (this.tickets) {
+    let staff = await axios.get("/api/users/" + staffId);
+    this.zoomLink = staff.data.zoomLink;
+
     this.tickets = tickets.data;
     this.tickets.sort(this.compareTickets);
 
-    // console.log(this.tickets);
     for (var i = 0; i < this.tickets.length; i++) {
-      // Add the name to the open tickets
       await this.getStudentName(this.tickets[i], this.tickets[i].owner._id);
 
-      //add closed ticket to history
+      // Add closed ticket to history
       if (
         this.tickets[i].status === "Closed" &&
         this.tickets[i].acceptedBy._id === staffId
@@ -1263,37 +1134,39 @@ export default {
         console.log("closed");
         this.ticketHistory.push(this.tickets[i]);
       }
+    }
 
-      this.ticketHistory.reverse();
+    this.ticketHistory.reverse();
+    console.log(this.staffCourses);
+    if (staff) {
+      console.log(this.zoomLink);
 
-      let staff = await axios.get("/api/users/" + staffId);
-
-      if (staff) {
-        staff.data.classes.forEach(element => {
-          this.loadClasses(element);
-        });
-        let course = this.staffCourses[0];
-        this.course = course.value;
-      }
+      staff.data.classes.forEach(element => {
+        console.log(element);
+        this.loadClasses(element);
+      });
+      let course = this.staffCourses[0];
+      this.course = course.value;
     }
   },
+
   beforeMount() {
     // var course = {_id = null};
-    console.log("push all");
     this.staffCourses.push({ value: null, text: "Show All Courses" });
 
     // This gets ANY ticket submitted by ANY student
-    // this.ticketChannel.subscribe("ticketUpdate", message => {
-    //   console.log("ticket was added");
-    //   // add new ticket to existing tickets
-    //   this.getStudentName(message.data, message.data.owner._id);
-    //   this.tickets.push(message.data);
-    // });
-    // this.ticketChannel.subscribe("ticketInProgress", message => {
-    //   console.log("ticket was closed");
-    //   // ticket will be remove from being displayed
-    //   this.removeTicketFromTicketUI(message.data._id);
-    // });
+    this.ticketChannel.subscribe("ticketUpdate", message => {
+      console.log("ticket was added");
+
+      // Add new ticket to existing tickets
+      this.getStudentName(message.data, message.data.owner._id);
+      this.tickets.push(message.data);
+    });
+    this.ticketChannel.subscribe("ticketInProgress", message => {
+      console.log("ticket was closed");
+      // ticket will be remove from being displayed
+      this.removeTicketFromTicketUI(message.data._id);
+    });
 
     this.ticketChannel.subscribe("reopenTicket", message => {
       console.log("ticket was reopened");

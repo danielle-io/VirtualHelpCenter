@@ -20,7 +20,9 @@ module.exports = {
     '~/assets/css/stylesheet.css',
     '~/assets/css/background.css',
     'codemirror/lib/codemirror.css',
-    'codemirror/theme/base16-dark.css',
+    // 'codemirror/theme/base16-light.css',
+    'codemirror/theme/idea.css',
+
   ],
   modules: [
     '@nuxtjs/axios',
