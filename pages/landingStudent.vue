@@ -51,6 +51,14 @@
   opacity: 0;
 }
 
+.margin-for-no-requests {
+  margin-top: 60px;
+}
+
+.margin-requests {
+  margin-top: 20px;
+}
+
 .card-line {
   display: in-line-block;
   margin-bottom: 20px;
@@ -94,6 +102,16 @@
 .container-body {
   padding-left: 10px;
   padding-right: 10px;
+  padding-bottom: 8px;
+  margin-left: 8px;
+  margin-right: 8px;
+  overflow-y: scroll;
+  max-height: 670px;
+}
+
+.container-body-accept {
+  padding-left: 20px;
+  padding-right: 20px;
   padding-bottom: 8px;
   margin-left: 8px;
   margin-right: 8px;
@@ -319,7 +337,8 @@ table th,
 }
 
 .side-border-line {
-  background-color: rgb(202, 228, 241);
+  opacity: .5;
+  background-color: rgba(41, 32, 131, 0.493);
   display: -webkit-box;
   display: -webkit-flex;
   display: flex;
@@ -335,22 +354,69 @@ table th,
   border-bottom-left-radius: 8px;
 }
 
-.expired-card {
-  border-width: 1px !important;
-  border-style: solid;
-  border-color: rgb(151, 223, 233) !important;
+.side-border-line-two {
+  background-color: rgba(143, 183, 201, 0.384);
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  height: -webkit-calc(100% + 2px);
+  height: calc(100% + 2px);
+  left: -1px;
+  padding-right: 14px;
+  margin-right: 16px;
+  position: absolute;
+  bottom: -1px;
+  width: 4px;
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+
+.side-border-line-three {
+  background-color: rgba(174, 211, 205, 0.623);
+  opacity: 0.3;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  height: -webkit-calc(100% + 2px);
+  height: calc(100% + 2px);
+  left: -1px;
+  padding-right: 14px;
+  margin-right: 16px;
+  position: absolute;
+  bottom: -1px;
+  width: 4px;
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
 }
 
 .top-border-line {
+  opacity: 0.4;
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
   height: 14px;
-  background-color: rgba(123, 196, 236, 0.322);
-  /* background-color: rgb(202, 228, 241); */
+  background-color: rgba(87, 174, 221, 0.322);
   left: -1px;
   position: absolute;
   top: -1px;
   width: calc(100% + 2px);
+}
+
+.top-border-line-two {
+  opacity: 0.3;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  height: 12px;
+  background-color: rgba(138, 153, 148, 0.342);
+  left: -1px;
+  position: absolute;
+  top: -1px;
+  width: calc(100% + 2px);
+}
+
+.expired-card {
+  border-width: 1px !important;
+  border-style: solid;
+  border-color: rgb(151, 223, 233) !important;
 }
 
 .request-container {
@@ -560,14 +626,16 @@ Request History tab."
               </div>
 
               <div
-                v-if="this.requestLandingPage === true && !this.showCountdown && !this.studentAcceptedSession"
+                v-if="this.requestLandingPage && !this.showCountdown && !this.studentAcceptedSession"
               >
                 <div class="top-border-line" />
 
-                <!-- This moves the MY Requests page down if there's no requests so that it's more centered -->
-                <div v-if="this.getNumberOfPendingTickets() === 'no'" style="margin-top:70px;"></div>
+                <div class="side-border-line-two" />
 
-                <div style="margin-top:20px" class="heading-text">My Requests</div>
+                <div
+                  v-bind:class="{ 'margin-for-no-requests': this.getNumberOfPendingTickets() === 'no', 'margin-requests': this.getNumberOfPendingTickets() !== 'no' }"
+                  class="heading-text"
+                >My Requests</div>
 
                 <div
                   class="sub-heading-text"
@@ -576,36 +644,37 @@ Request History tab."
               </div>
 
               <div v-if="this.showCountdown && !this.studentAcceptedSession">
-                <div class="heading-text">Accept your session</div>
+                <div style="margin-top: 20px;" class="container-body-accept">
+                  <div class="heading-text">Accept your session</div>
 
-                <div class="sub-heading-text-left" style="padding-top:2%;">
-                  A TA is available.
-                  <strong>Please accept the session before the timer runs out to continue.</strong>
-                </div>
-                <div
-                  class="sub-heading-text-left-italic"
-                >If you do not accept in time, your request will be removed, and placed in your request history for resubmission.</div>
+                  <div class="sub-heading-text-left" style="padding-top:2%;">
+                    A TA is available.
+                    <strong>Please accept the session before the timer runs out to continue.</strong>
+                  </div>
+                  <div
+                    class="sub-heading-text-left-italic"
+                  >If you do not accept in time, your request will be removed, and placed in your request history for resubmission.</div>
 
-                <div style="text-align: center; justify-content: center;">
-                  <circular-count-down-timer
-                    :initial-value="countdownTime()"
-                    :steps="countdownTime()"
-                    :seconds-stroke-color="'#53a59e'"
-                    :second-label="''"
-                    :padding="0"
-                    :size="100"
-                    @finish="finished(studentChannel)"
-                  ></circular-count-down-timer>
+                  <div style="text-align: center; justify-content: center;">
+                    <circular-count-down-timer
+                      :initial-value="countdownTime()"
+                      :steps="countdownTime()"
+                      :seconds-stroke-color="'#7acbdf'"
+                      :second-label="''"
+                      :padding="0"
+                      :size="120"
+                      @finish="finished(studentChannel)"
+                    ></circular-count-down-timer>
 
-                  <button
-                    v-bind:key="acceptSession"
-                    @click="acceptSession"
-                    type="submit"
-                    style="margin-bottom: 20%;"
-                    class="fadeIn form-buttons"
-                  >
-                    <right-circle />Accept the Session
-                  </button>
+                    <button
+                      v-bind:key="acceptSession"
+                      @click="acceptSession"
+                      type="submit"
+                      class="fadeIn form-buttons"
+                    >
+                      <right-circle />Accept the Session
+                    </button>
+                  </div>
                 </div>
               </div>
 
@@ -625,12 +694,15 @@ Request History tab."
                 </div>
               </div>
 
+              <!-- The ticket that shows when a request is pending acceptance -->
               <div
                 v-if="showTicket && !this.editingRequest && !this.showCountdown"
                 style="text-align: center;"
               >
                 <!-- TODO: show a modal on clicking close asking if they are sure -->
-                <md-card style="padding-top: 8px; padding-bottom: 10px;">
+                <md-card
+                  style="padding-top: 8px; padding-bottom: 10px; margin-top: 8px; margin-bottom: 10px;"
+                >
                   <div
                     style="float: right; margin-top: 6px; margin-left: 0px; margin-right: 10px; "
                   >
@@ -755,7 +827,7 @@ Request History tab."
                   </button>
                 </div>
 
-                <div class="heading-text" style="padding-top: 18px;">Request a Session</div>
+                <div class="heading-text" style="margin-left: 30px; margin-bottom: 10px; padding-top: 20px; padding-top: 18px;">{{this.getRequestFormHeader()}}</div>
 
                 <div style="margin-left: 8px;" class="form-container">
                   <div class="row" style="width: 70%;">
@@ -896,7 +968,11 @@ Request History tab."
           </div>
 
           <div v-if="!this.currentRequestsTab">
-            <div style="margin-top:20px;" class="heading-text">My Requests</div>
+            <div class="top-border-line-two" />
+
+            <div class="side-border-line-three" />
+
+            <div style="margin-top: 30px;" class="heading-text">Prior Requests</div>
 
             <div
               class="sub-heading-text"
@@ -1064,7 +1140,7 @@ Request History tab."
         </div>
       </transition>
     </div>
-    <button id="hiddenButton" style="display:none;" @click="triggerAccept"></button>
+    <!-- <button id="hiddenButton" style="display:none;" @click="triggerAccept"></button> -->
   </div>
 </template>
   
@@ -1130,7 +1206,7 @@ export default {
   data() {
     return {
       el: "#requests",
-      code: null,
+      codeSnippet: null,
       currentRequestsTab: true,
       requestHistoryTab: false,
       show: true,
@@ -1197,9 +1273,7 @@ export default {
           codeSnippet: this.codeSnippet,
           attachments: this.fileObjects
         })
-        .then(() => {
-          console.log("resetting ticket");
-        });
+        .then(() => {});
       (this.openTicket.oneLineOverview = this.oneLineOverview),
         (this.openTicket.longerDescription = this.longerDescription),
         (this.openTicket.codeSnippet = this.codeSnippet),
@@ -1307,15 +1381,9 @@ export default {
       // Publish an event to the  channel
       this.studentChannel.publish("studentAcceptedSession", userId);
     },
-    triggerAccept: function() {
-      this.showCountdown = true;
-      console.log(
-        "in trigger click AcceptSession :: " +
-          this.studentAcceptedSession +
-          " countdownShowing :: " +
-          this.showCountdown
-      );
-    },
+    // triggerAccept: function() {
+    //   this.showCountdown = true;
+    // },
     changeChevronClass: function() {
       console.log("in change chevron");
       if (this.expandChevron) {
@@ -1325,6 +1393,13 @@ export default {
         this.expandChevron = true;
         this.collapseChevron = false;
       }
+    },
+    getRequestFormHeader: function() {
+      if (!this.editingRequest) {
+        console.log("not");
+        return "Request a Session";
+      }
+      return "Edit Request";
     },
     setRating: function(ticket, clickedRating, starKind) {
       console.log("clicked: " + clickedRating);
@@ -1384,12 +1459,6 @@ export default {
 
       let currentTime = new Date();
       ticketTime.setMinutes(ticketTime.getMinutes() + 1);
-      console.log(
-        ticketTime.getMinutes() * 60 +
-          ticketTime.getSeconds() -
-          (currentTime.getMinutes() * 60 + currentTime.getSeconds())
-      );
-
       return (
         ticketTime.getMinutes() * 60 +
         ticketTime.getSeconds() -
@@ -1447,7 +1516,6 @@ export default {
         });
       }
 
-      this.openTicket.status = "Open";
       // this.openTickets = null;
       // this.file = null;
       // this.fileUrls = [];
@@ -1456,10 +1524,11 @@ export default {
       this.showTicket = true;
       this.openTicket = ticket;
       this.openTicket.createdAt = new Date().toString();
+      this.openTicket.status = "Open";
       this.getTickets();
       document.getElementById("landingTab").click();
 
-      // sends ticket to staff
+      // Sends ticket to staff
       this.ticketChannel.publish("ticketUpdate", this.openTicket);
     },
 
@@ -1486,6 +1555,10 @@ export default {
       this.requestLandingPage = false;
     },
     closeRequestForm: function() {
+      if (this.editingRequest) {
+        this.showTicket = true;
+        this.editingRequest = false;
+      }
       this.requestLandingPage = true;
     },
     getNumberOfPendingTickets: function() {
@@ -1585,13 +1658,12 @@ export default {
 
       if (this.openTickets.length > 0) {
         this.openTicket = this.openTickets[0];
-        this.showTicket = true;
         this.openTicket.status = "Open";
-
         this.oneLineOverview = this.openTicket.oneLineOverview;
         this.longerDescription = this.openTicket.longerDescription;
         this.codeSnippet = this.openTicket.codeSnippet;
         this.selectedCourse = this.openTicket.course._id;
+        this.showTicket = true;
       }
     },
 
@@ -1612,7 +1684,6 @@ export default {
         console.log("closing ticket " + this.openTicket._id);
 
         this.ticketChannel.publish("ticketClosed", this.openTicket);
-
         this.openTicket.status = "Unresolved";
         // this.ticketHistory = [this.openTicket] + this.ticketHistory
         this.ticketHistory.unshift(this.openTicket);
