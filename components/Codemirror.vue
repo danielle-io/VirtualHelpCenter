@@ -1,6 +1,6 @@
 <template>
   <div class="example">
-    <no-ssr>
+    <client-only>
       <codemirror
         class="codemirror"
         :value="codeSnippet"
@@ -12,8 +12,7 @@
         @blur="onCmBlur"
         @input="$emit('input', $event)"
       />
-    </no-ssr>
-    <!-- <pre class="pre">{{ code }}</pre> -->
+    </client-only>
   </div>
 </template>
 
@@ -21,9 +20,6 @@
   import dedent from 'dedent'
   export default {
     name: 'codemirror-example-nuxt',
-    // model: {
-    //     prop: 'value'
-    // },
     props: {
         codeSnippet: {
             type: String
@@ -49,16 +45,12 @@
     },
     methods: {
       onCmCursorActivity(codemirror) {
-        console.debug('onCmCursorActivity', codemirror)
       },
       onCmReady(codemirror) {
-        console.debug('onCmReady', codemirror)
       },
       onCmFocus(codemirror) {
-        console.debug('onCmFocus', codemirror)
       },
       onCmBlur(codemirror) {
-        console.debug('onCmBlur', codemirror)
       }
     }
   }

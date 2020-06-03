@@ -599,12 +599,25 @@ Request History tab."
                 <div
                   v-bind:class="{ 'margin-for-no-requests': this.getNumberOfPendingTickets() === 'no', 'margin-requests': this.getNumberOfPendingTickets() !== 'no' }"
                   class="heading-text"
-                >My Requests</div>
+                >Active Requests</div>
 
                 <div
+                  v-if="!this.openTicket"
                   class="sub-heading-text"
                   style="padding-top:7px;"
                 >You currently have {{getNumberOfPendingTickets()}} pending {{getRequestOrRequestsText()}}.</div>
+
+                <div
+                  v-if="this.allOpenTicketsAmount && this.openTicket"
+                  class="sub-heading-text"
+                  style="padding-top:7px; font-size: 17px;"
+                >
+                  There {{this.getSingleOrPlural()}}
+                  <span
+                    style="font-weight: 600"
+                  >{{this.allOpenTicketsAmount}}</span>
+                  {{this.getSessionOrSessions()}} currently ahead of you. Please wait for the next available TA.
+                </div>
               </div>
 
               <div v-if="this.showCountdown && !this.studentAcceptedSession">
@@ -627,7 +640,7 @@ Request History tab."
                       :second-label="''"
                       :padding="0"
                       :size="120"
-                      @finish="finished(studentChannel)"
+                      @finish="finished()"
                     ></circular-count-down-timer>
 
                     <button
@@ -658,12 +671,10 @@ Request History tab."
                 </div>
               </div>
 
-              <!-- The ticket that shows when a request is pending acceptance -->
               <div
                 v-if="this.showTicket && !this.editingRequest && !this.showCountdown"
                 style="text-align: center;"
               >
-                <!-- TODO: show a modal on clicking close asking if they are sure -->
                 <md-card
                   style="padding-top: 8px; padding-bottom: 10px; margin-top: 8px; margin-bottom: 10px;"
                 >
@@ -684,7 +695,7 @@ Request History tab."
                     </button>
                   </div>
 
-                  <div v-if="this.createdAt" class="card-line">
+                  <div v-if="this.ticketTime" class="card-line">
                     <div class="row">
                       <span class="card-categories col-sm-3">
                         <span style="margin-right: 6px;">
@@ -694,7 +705,7 @@ Request History tab."
                       <span
                         style="padding-left: 35px !important;"
                         class="col-sm-9 text-body"
-                      >{{ " " + formatTime((this.createdAt.split('T')[1]).substring(0,5))}}</span>
+                      >{{this.ticketTime}}</span>
                     </div>
                   </div>
 
@@ -740,7 +751,7 @@ Request History tab."
                     </div>
                   </div>
 
-                  <div v-if="this.attachments.length === 0">
+                  <div v-if="this.attachments && this.attachments.length === 0">
                     <div class="card-line">
                       <div class="row">
                         <span class="card-categories col-sm-3">
@@ -753,7 +764,23 @@ Request History tab."
                     </div>
                   </div>
 
-                  <div v-if="this.attachments.length > 0">
+                  <div v-if="this.codeSnippet">
+                    <div class="card-line">
+                      <div class="row">
+                        <span class="card-categories col-sm-3">
+                          <span style="margin-right: 6px;">
+                            <code-symbol />
+                          </span>Code:
+                        </span>
+                        <!-- <span style="padding-left: 20px !important;" class="col-sm-9 text-body"> -->
+                        <Codemirror v-model="codeSnippet" />
+
+                        <!-- </span> -->
+                      </div>
+                    </div>
+                  </div>
+
+                  <div v-if="this.attachments && this.attachments.length > 0">
                     <div class="card-line">
                       <div class="row">
                         <span class="card-categories col-sm-3">
@@ -848,7 +875,7 @@ Request History tab."
                   </div>
 
                   <div class="row">
-                    <Codemirror v-model="codeSnippet"/>
+                    <Codemirror v-model="codeSnippet" />
                   </div>
                   <div class="row">
                     <label style="margin-bottom: 0px;" class="label-format">
@@ -899,7 +926,7 @@ Request History tab."
                         v-on:click="uploadFile"
                         v-bind:key="submitRequest"
                         type="submit"
-                        style="margin-bottom: 10px; margin margin-top: 10px;"
+                        style="margin-bottom: 10px; margin-top: 0px;"
                         class="fadeIn form-buttons"
                         @click="changeRequestState"
                       >
@@ -916,8 +943,8 @@ Request History tab."
                       <button
                         type="disabled"
                         disabled="true"
-                        style="margin-bottom: 10px; margin margin-top: 10px;
-                      background-color: #d3d3d3 !important;"
+                        style="margin-bottom: 10px;
+                      background-color: #d3d3d3 !important; margin-top: 0px;"
                         class="form-buttons-disabled"
                       >
                         <right-circle style="margin-right:4px" />
@@ -938,6 +965,7 @@ Request History tab."
             <div style="margin-top: 30px;" class="heading-text">Prior Requests</div>
 
             <div
+              v-if="this.ticketHistory"
               class="sub-heading-text"
               style="padding-top:2%;"
             >You have {{this.ticketHistory.length}} prior requests.</div>
@@ -1169,6 +1197,8 @@ export default {
       longerDescription: "",
       selectedCourse: null,
       createdAt: null,
+      ticketTime: null,
+      ticketDate: null,
       currentRequestsTab: true,
       requestHistoryTab: false,
       unresolvedTicket: false,
@@ -1191,7 +1221,6 @@ export default {
       showCountdown: false,
       showTicket: false,
       studentAcceptedSession: false,
-      studentChannel: client.channels.get(this.userId),
       ticketChannel: client.channels.get("tickets"),
       fileUrls: [],
       fileObjects: [],
@@ -1203,6 +1232,7 @@ export default {
       attachments: null,
       userId: null,
       studentName: null,
+      allOpenTicketsAmount: null
     };
   },
   methods: {
@@ -1239,7 +1269,7 @@ export default {
       this.requestLandingPage = true;
 
       // Publish edited ticket
-      // this.ticketChannel.publish("ticketUpdate", this.openTicket);
+      this.ticketChannel.publish("ticketUpdate", this.openTicket);
     },
     uploadFile() {
       if (this.rows.length > 0) {
@@ -1326,6 +1356,12 @@ export default {
         return "Submit Changes";
       }
     },
+    getSingleOrPlural: function() {
+      if (this.allOpenTicketsAmount === 1) {
+        return "is";
+      }
+      return "are";
+    },
     openPage: function(attachmentUrl, attachmentName) {
       window.open(attachmentUrl, "_blank");
     },
@@ -1336,11 +1372,12 @@ export default {
       console.log("in accept session and zoomLink is " + this.zoomLink);
 
       // Publish an event to the  channel
-      // this.studentChannel.publish("studentAcceptedSession", this.userId);
+      var studentChannel = client.channels.get(this.userId);
+      studentChannel.publish("studentAcceptedSession", this.userId);
     },
-    // triggerAccept: function() {
-    //   this.showCountdown = true;
-    // },
+    triggerAccept: function() {
+      this.showCountdown = true;
+    },
     changeChevronClass: function() {
       console.log("in change chevron");
       if (this.expandChevron) {
@@ -1357,6 +1394,12 @@ export default {
         return "Request a Session";
       }
       return "Edit Request";
+    },
+    getSessionOrSessions: function() {
+      if (this.allOpenTicketsAmount === 1) {
+        return "session";
+      }
+      return "sessions";
     },
     setRating: function(ticket, clickedRating, starKind) {
       console.log("clicked: " + clickedRating);
@@ -1396,19 +1439,27 @@ export default {
     startSubscribe() {
       console.log("subscribing to staff");
       // The student's ticket was accepted by the staff
-      // this.studentChannel.subscribe("staffAcceptedTicket", message => {
-      //   console.log("staff accepted ticket");
-      //   this.zoomLink = message.data.zoomLink;
-      //   this.openTicket.updatedAt = message.data.date;
-      //   this.showCountdown = true;
-      // });
+      var studentChannel = client.channels.get(this.userId);
 
-      // this.studentChannel.subscribe("ticketMarkedClosed", message => {
-      //   this.openTicket.status = "Closed";
-      //   this.clearTicketWhenCanceledOrComplete();
+      studentChannel.subscribe("staffAcceptedTicket", message => {
+        console.log("staff accepted ticket");
+        this.zoomLink = message.data.zoomLink;
+        this.openTicket.updatedAt = message.data.date;
+        this.showCountdown = true;
+      });
 
-      //   console.log("ticket was closed by staff");
-      // });
+      console.log("student channel " + this.userId);
+      studentChannel.subscribe("ticketMarkedClosed", message => {
+        this.openTicket.status = "Closed";
+        this.clearTicketWhenCanceledOrComplete();
+
+        console.log("ticket was closed by staff");
+      });
+
+      this.ticketChannel.subscribe("ticketUpdate", message => {
+        console.log("ticket count changed");
+        this.getOpenTicketCount();
+      });
     },
     formatTime(time) {
       var timeStr = " AM";
@@ -1432,6 +1483,8 @@ export default {
       );
     },
     finished: function() {
+      var studentChannel = client.channels.get(this.userId);
+
       // When countdown is over, take them back to the other page
       this.openTicket.status = "Unresolved";
       this.unresolvedTicket = true;
@@ -1449,6 +1502,8 @@ export default {
     },
 
     reSubmitTicket: function(ticket) {
+      var currentDate = new Date().toString();
+
       console.log("in resubmit " + ticket._id);
       var id = ticket._id;
 
@@ -1456,7 +1511,7 @@ export default {
         axios
           .put("/api/updateTicket/" + id, {
             status: "Open",
-            createdAt: new Date().toString()
+            createdAt: currentDate
           })
           .then(() => {});
       }
@@ -1474,7 +1529,7 @@ export default {
           oneLineOverview: ticket.oneLineOverview,
           longerDescription: ticket.longerDescription,
           codeSnippet: ticket.codeSnippet,
-          createdAt: new Date().toString(),
+          createdAt: currentDate,
           attachments: ticket.attachments,
           rating: 0,
           ratingExplanation: "",
@@ -1484,15 +1539,18 @@ export default {
       this.setFieldsFromTicket(ticket);
       this.showTicket = true;
       this.openTicket = ticket;
-      this.openTicket.createdAt = new Date().toString();
-      this.createdAt = new Date().toString();
+      this.openTicket.createdAt = currentDate;
+      this.createdAt = currentDate;
+      this.ticketTime = this.formatTime(
+        currentDate.split("T")[1].substring(0, 5)
+      );
       this.openTicket.status = "Open";
       this.status = "Open";
       this.getTickets();
       document.getElementById("landingTab").click();
 
       // Sends ticket to staff
-      // this.ticketChannel.publish("ticketUpdate", this.openTicket);
+      this.ticketChannel.publish("ticketUpdate", this.openTicket);
     },
     setFieldsFromTicket(ticket) {
       this.longerDescription = ticket.longerDescription;
@@ -1502,6 +1560,8 @@ export default {
       this.attachments = ticket.attachments;
       this.status = ticket.status;
       this.createdAt = ticket.createdAt;
+      this.ticketTime =
+        " " + this.formatTime(ticket.createdAt.split("T")[1].substring(0, 5));
       this.showTicket = true;
     },
     changeRequestState: function() {
@@ -1512,7 +1572,7 @@ export default {
       } else {
         var channel = client.channels.get("staff");
         // Publish a message to the test channel
-        // channel.publish("ticketUpdate", "ticket updated");
+        channel.publish("ticketUpdate", "ticket updated");
 
         this.submitRequest = true;
         this.scrollToTop();
@@ -1551,7 +1611,7 @@ export default {
       this.codeSnippet = "";
       this.createdAt = "";
       this.status = "Open";
-      this.openTickets = null;
+      this.openTickets = [];
       this.file = null;
       this.showCountdown = false;
       this.submitRequest = false;
@@ -1601,15 +1661,20 @@ export default {
           //   _id: staffId
           // }
         });
-        this.requestLandingPage = true;
+
         this.openTicket = ticket.data;
-        this.showTicket = true;
-        console.log(this.openTicket);
+
+        if (ticket) {
+          this.requestLandingPage = true;
+          this.showTicket = true;
+          console.log(this.openTicket);
+        }
 
         // sends ticket to staff
-        // this.ticketChannel.publish("ticketUpdate", this.openTicket);
+        this.ticketChannel.publish("ticketUpdate", this.openTicket);
       }
     },
+
     async getTickets() {
       console.log("in get tickets");
 
@@ -1635,26 +1700,41 @@ export default {
       }
     },
 
+    async getOpenTicketCount() {
+      if (this.openTicket) {
+        console.log("getting open tickets");
+        let allOpenTickets = await axios.get("/api/tickets/getOpenTickets");
+        allOpenTickets = allOpenTickets.data;
+
+        if (allOpenTickets) {
+          allOpenTickets = allOpenTickets.filter(
+            item => item.createdAt < this.openTicket.createdAt
+          );
+          this.allOpenTicketsAmount = allOpenTickets.length;
+        }
+      }
+    },
+
     async getStudentInfo() {
       let student = await axios.get("/api/users/" + this.userId);
       this.student = student.data;
 
       if (this.student) {
         this.studentName =
-          this.student.name.firstName +
-          " " +
-          this.student.name.lastName;
+          this.student.name.firstName + " " + this.student.name.lastName;
       }
       console.log(this.studentName);
       student.data.classes.forEach(element => {
         this.loadCourses(element);
       });
+      this.startSubscribe();
+
       this.getTickets();
     },
 
     async cancelTicket() {
       if (this.openTicket) {
-        // this.ticketChannel.publish("ticketClosed", this.openTicket);
+        this.ticketChannel.publish("ticketClosed", this.openTicket);
         this.openTicket.status = "Unresolved";
         this.ticketHistory.unshift(this.openTicket);
 
@@ -1680,13 +1760,13 @@ export default {
 
   beforeMount() {
     this.scrollToTop();
-    this.startSubscribe();
     const queryString = window.location.search;
     this.userId = queryString.split("=")[1];
     console.log(this.userId);
     if (this.userId) {
       this.getStudentInfo();
     }
+    this.getOpenTicketCount();
   },
   mounted() {}
 };

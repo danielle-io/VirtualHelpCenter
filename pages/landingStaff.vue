@@ -170,18 +170,7 @@
   height: 400px;
   overflow-y: scroll;
 }
-/* .md-card-content {
-  word-wrap: break-word;
-  flex-wrap: wrap;
-  text-align: left;
-}
-.md-card {
-  padding-top: 18px;
-  padding-left: 12px;
-  margin: 14px;
-  display: inline-block;
-  vertical-align: top;
-} */
+
 .selected-card {
   border-width: 1px !important;
   border-style: solid;
@@ -197,7 +186,6 @@
   float: right;
   font-size: 30px;
   cursor: pointer;
-  /* padding-top: 15px !important; */
 }
 .hidden {
   opacity: 0;
@@ -308,7 +296,7 @@ button[type="submit"] {
           <span v-if="this.selectedTicketIndex === -1 && this.staffCourses && this.openRequestTab">
             <div
               class="row"
-              style="font-size: 20px !important; margin-bottom: 14px; margin-left: 15px;"
+              style="font-size: 5px !important; margin-bottom: 14px; margin-left: 15px;"
             >
               <span class="label-format-smaller" style="margin-right:14px;">
                 <filter-icon />Filter:
@@ -323,14 +311,20 @@ button[type="submit"] {
           </span>
 
           <div v-if="this.openRequestTab">
-            <div style="margin-top: 30px;" class="ticket-container">
+            <div style="margin-top: 10px;" class="ticket-container">
               <div
                 v-if="!this.tickets"
                 class="sub-heading-text"
-                style="padding-top:2%;"
-              >There are currently no open tickets</div>
+                style="padding-top: 10px;"
+              >There are currently no open requests</div>
 
-              <!-- Populate tickets -->
+              <div v-if="this.tickets && this.allOpenTicketsAmount" class="sub-heading-text">
+                There {{this.getSingleOrPlural()}} currently
+                <span
+                  style="font-weight: 600"
+                >{{this.allOpenTicketsAmount}}</span>
+                open {{this.getRequestOrRequests()}}.
+              </div>
               <div>
                 <div
                   v-for="(ticket, index) in (getFilterClass('Open', this.course).slice(this.startingIndex, this.endingIndex))"
@@ -504,9 +498,10 @@ button[type="submit"] {
                       <span class="card-categories col-sm-3">
                         <date class="label-icons" />Date :
                       </span>
-                      <span
-                        class="col-sm-9 text-body"
-                      >{{ (ticket.createdAt.split('T')[0].split('-')[1] + '-' + ticket.createdAt.split('T')[0].split('-')[2] + '-' + ticket.createdAt.split('T')[0].split('-')[0])}}</span>
+                      <span class="col-sm-9 text-body">
+                        {{ (ticket.createdAt.split('T')[0].split('-')[1] + '-' + ticket.createdAt.split('T')[0].split('-')[2] + '-' +
+                        ticket.createdAt.split('T')[0].split('-')[0])}}
+                      </span>
                     </div>
                   </div>
 
@@ -633,7 +628,7 @@ button[type="submit"] {
                 <div class="card-line-history">
                   <div class="row">
                     <span class="card-categories col-sm-3">
-                      <clock class="label-icons" />Date :
+                      <date class="label-icons" />Date :
                     </span>
                     <span
                       class="col-sm-9 text-body"
@@ -644,11 +639,11 @@ button[type="submit"] {
                 <div class="card-line-history">
                   <div class="row">
                     <span class="card-categories col-sm-3">
-                      <date class="label-icons" />Time:
+                      <clock class="label-icons" />Time:
                     </span>
                     <span
                       class="col-sm-9 text-body"
-                    >{{ " " + (this.currentTicket.createdAt.split('T')[1]).substring(0,5)}}</span>
+                    >{{ " " + formatTime((this.currentTicket.createdAt.split('T')[1]).substring(0,5))}}</span>
                   </div>
                 </div>
 
@@ -767,7 +762,6 @@ export default {
       connecting: false,
       connectingColor: "#7e6694",
       staff: null,
-      zoomLinkForm: false,
       openRequestTab: true,
       requestHistoryTab: false,
       selectedTicket: false,
@@ -782,15 +776,14 @@ export default {
       tickets: [],
       filteredTickets: [],
       staffCourses: [],
-      studentChannel: null,
       currentTicket: null,
       currentTicketId: null,
       studentAccepted: false,
-      ticketChannel: client.channels.get("tickets"),
       ticketHistory: [],
       showCanceledRequestDialog: false,
       showCloseSessionDialog: false,
       staffId: null,
+      allOpenTicketsAmount: null
     };
   },
   methods: {
@@ -808,9 +801,6 @@ export default {
       this.staffCourses.forEach(element => {
         return this.tickets.filter(ticket => ticket.course._id === status);
       });
-      //  this.filteredTickets.push(this.filterCourseTickets(status, element));
-      //       this.filteredTickets.push(this.filterCourseTickets(status, element));
-      //   });
       return this.filteredTickets;
     },
     triggerAccept: function() {
@@ -823,8 +813,18 @@ export default {
         }
       });
     },
+
+    async getOpenTicketCount() {
+      console.log("getting open tickets");
+      let allOpenTickets = await axios.get("/api/tickets/getOpenTickets");
+      if (allOpenTickets) {
+        console.log(allOpenTickets);
+        console.log(allOpenTickets.data.length);
+        this.allOpenTicketsAmount = allOpenTickets.data.length;
+      }
+    },
+
     formatTime(time) {
-      console.log(time);
       var timeStr = " AM";
       var splitTime = time.split(":");
       if (splitTime[0] > 12) {
@@ -906,7 +906,24 @@ export default {
     //   }
     //   return
     // },
+
+    getRequestOrRequests: function() {
+      if (this.allOpenTicketsAmount === 1) {
+        return "request";
+      }
+      if (this.allOpenTicketsAmount === 0) {
+        return "no";
+      }
+      return "requests";
+    },
+    getSingleOrPlural: function() {
+      if (this.allOpenTicketsAmount === 1) {
+        return "is";
+      }
+      return "are";
+    },
     changeChevronClass: function(id) {
+
       console.log("in change chevron");
       if (this.getExpandChevron(id)) {
         Ticket.update({
@@ -961,22 +978,24 @@ export default {
     },
     // This is where the link is stored
     sendZoomLink() {
-      console.log("ticket id is " + this.currentTicketId);
       let ticketTime = new Date();
-      console.log("ticket is " + JSON.stringify(this.currentTicket));
+
       // Get the students user id from the ticket
-      // this.studentChannel = client.channels.get(this.currentTicket.owner._id);
-      // this.studentChannel.publish("staffAcceptedTicket", {
-      //   zoomLink: this.zoomLink,
-      //   date: ticketTime
-      // });
-      // //remove the ticket from open tickets
-      // this.ticketChannel.publish("ticketInProgress", this.currentTicket);
+      var studentChannel = client.channels.get(this.currentTicket.owner._id);
+      studentChannel.publish("staffAcceptedTicket", {
+        zoomLink: this.zoomLink,
+        date: ticketTime
+      });
+
+      // Remove the ticket from open tickets
+      var ticketChannel = client.channels.get("tickets");
+      ticketChannel.publish("ticketInProgress", this.currentTicket);
+
       // Show connection screen once student receives countdown
       this.connecting = true;
       console.log(this.connecting);
       //If the student does not accept the session in time return to beginning
-      // while (!this.studentAccepted){
+
       let x = setTimeout(() => {
         // The student did not accept in time
         console.log("student did not accept in time");
@@ -986,7 +1005,6 @@ export default {
         });
         this.resetBackToOpenTicketsDisplay();
       }, this.countdownTime(ticketTime));
-      // }
     },
     resetBackToOpenTicketsDisplay() {
       console.log("going back to open tickets display");
@@ -1000,7 +1018,6 @@ export default {
       }
       this.studentAccepted = true;
       this.connecting = false;
-      this.zoomLinkForm = false;
       this.selectedTicketIndex = -1;
       this.startingIndex = 0;
       this.endingIndex = 3;
@@ -1009,15 +1026,16 @@ export default {
       this.selectedTicket = false;
     },
     countdownTime(ticketTime) {
-      // this.studentChannel = client.channels.get(this.currentTicket.owner._id);
-      // this.studentChannel.subscribe("studentAcceptedSession", function(
-      //   message
-      // ) {
-      //   console.log("accepted session");
-      //   document.getElementById("hiddenButton").click();
-      //   this.triggerAccept();
-      //   clearTimeout(x);
-      // });
+      var studentChannel = client.channels.get(this.currentTicket.owner._id);
+      
+      studentChannel.subscribe("studentAcceptedSession", function(
+        message
+      ) {
+        console.log("accepted session");
+        document.getElementById("hiddenButton").click();
+        this.triggerAccept();
+        clearTimeout(x);
+      });
       //read updated time
       let currentTime = new Date();
       ticketTime.setMinutes(ticketTime.getMinutes() + 1);
@@ -1049,8 +1067,8 @@ export default {
     confirmCloseSession() {
       this.showCloseSessionDialog = false;
       console.log("confirm close session");
-      // this.studentChannel = client.channels.get(this.currentTicket.owner._id);
-      // this.studentChannel.publish("ticketMarkedClosed", {});
+      var studentChannel = client.channels.get(this.currentTicket.owner._id);
+      studentChannel.publish("ticketMarkedClosed", {});
       this.resetBackToOpenTicketsDisplay();
       // Update the ticket status to closed in the db
       if (this.currentTicket) {
@@ -1078,17 +1096,14 @@ export default {
     async acceptTicket() {
       //remove the ticket from open tickets
       console.log("removing ticket");
-      // this.ticketChannel.publish("ticketClosed", this.currentTicket);
+      var ticketChannel = client.channels.get("tickets");
+
+      ticketChannel.publish("ticketClosed", this.currentTicket);
       axios.put("/api/updateTicket/" + this.currentTicketId, {
         status: "Pending"
       });
     },
-    // async loadUser(user) {
-    //   if (user) {
-    //     this.staff = user.data._id;
-    //     console.log("user loaded");
-    //   }
-    // },
+
     // Sets the class to filter by based on dropdown
     async setClass(course) {
       console.log("setting class");
@@ -1140,27 +1155,38 @@ export default {
     }
   },
   beforeMount() {
+    this.getOpenTicketCount();
+
     const queryString = window.location.search;
     this.staffId = queryString.split("=")[1];
     console.log(this.staffId);
     if (this.staffId) {
+    
+  
       this.staffCourses.push({ value: null, text: "Show All Courses" });
       // This gets ANY ticket submitted by ANY student
-      // this.ticketChannel.subscribe("ticketUpdate", message => {
-      //   console.log("ticket was added");
-      //   // Add new ticket to existing tickets
-      //   this.getStudentName(message.data, message.data.owner._id);
-      //   this.tickets.push(message.data);
-      // });
-      // this.ticketChannel.subscribe("ticketInProgress", message => {
-      //   console.log("ticket was closed");
-      //   // ticket will be remove from being displayed
-      //   this.removeTicketFromTicketUI(message.data._id);
-      // });
-      // this.ticketChannel.subscribe("reopenTicket", message => {
-      //   console.log("ticket was reopened");
-      //   this.tickets.push(message.data);
-      // });
+      var ticketChannel = client.channels.get("tickets");
+
+      ticketChannel.subscribe("ticketUpdate", message => {
+        console.log("ticket was added");
+        this.getOpenTicketCount();
+
+        // Add new ticket to existing tickets
+        this.getStudentName(message.data, message.data.owner._id);
+        this.tickets.push(message.data);
+      });
+
+      ticketChannel.subscribe("ticketInProgress", message => {
+        console.log("ticket was closed");
+
+        // ticket will be remove from being displayed
+        this.removeTicketFromTicketUI(message.data._id);
+      });
+
+      ticketChannel.subscribe("reopenTicket", message => {
+        console.log("ticket was reopened");
+        this.tickets.push(message.data);
+      });
     }
     this.scrollToTop();
   },
