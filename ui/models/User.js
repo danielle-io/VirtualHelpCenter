@@ -15,7 +15,8 @@ export default class User extends Model {
       name: this.attr(''),
       email: this.attr(''),
       ucinetid: this.attr(''),
-      classes: this.attr('')
+      classes: this.attr(''),
+      deleter: this.attr('')
     }
   }
 }

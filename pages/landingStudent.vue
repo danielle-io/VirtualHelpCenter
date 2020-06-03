@@ -684,7 +684,7 @@ Request History tab."
                     </button>
                   </div>
 
-                  <div class="card-line">
+                  <div v-if="this.createdAt" class="card-line">
                     <div class="row">
                       <span class="card-categories col-sm-3">
                         <span style="margin-right: 6px;">
@@ -1029,7 +1029,7 @@ Request History tab."
                       </div>
                     </div>
 
-                    <div class="card-line-history">
+                    <div v-if="ticket.createdAt" class="card-line-history">
                       <div class="row">
                         <span class="card-categories col-sm-3">
                           <date class="label-icons" />Date:
@@ -1040,7 +1040,7 @@ Request History tab."
                       </div>
                     </div>
 
-                    <div class="card-line-history">
+                    <div v-if="ticket.createdAt" class="card-line-history">
                       <div class="row">
                         <span class="card-categories col-sm-3">
                           <clock class="label-icons" />Time:
@@ -1123,11 +1123,8 @@ var firebaseConfig = {
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
-
 // const userId = "5ed34dbd99e64f3cc0b49397";
 // const userId = "5ec5f90d81b13d23065ead3e";
-const userId = "5ec5f90d81b13d23065ead3e";
-
 const client = new Ably.Realtime(process.env.ABLY_KEY);
 
 import Vue from "vue";
@@ -1194,7 +1191,7 @@ export default {
       showCountdown: false,
       showTicket: false,
       studentAcceptedSession: false,
-      studentChannel: client.channels.get(userId),
+      studentChannel: client.channels.get(this.userId),
       ticketChannel: client.channels.get("tickets"),
       fileUrls: [],
       fileObjects: [],
@@ -1203,7 +1200,9 @@ export default {
       collapseChevron: false,
       showDeleteRequestModal: false,
       editingRequest: false,
-      attachments: null
+      attachments: null,
+      userId: null,
+      studentName: null,
     };
   },
   methods: {
@@ -1240,7 +1239,7 @@ export default {
       this.requestLandingPage = true;
 
       // Publish edited ticket
-      this.ticketChannel.publish("ticketUpdate", this.openTicket);
+      // this.ticketChannel.publish("ticketUpdate", this.openTicket);
     },
     uploadFile() {
       if (this.rows.length > 0) {
@@ -1337,7 +1336,7 @@ export default {
       console.log("in accept session and zoomLink is " + this.zoomLink);
 
       // Publish an event to the  channel
-      this.studentChannel.publish("studentAcceptedSession", userId);
+      // this.studentChannel.publish("studentAcceptedSession", this.userId);
     },
     // triggerAccept: function() {
     //   this.showCountdown = true;
@@ -1397,29 +1396,27 @@ export default {
     startSubscribe() {
       console.log("subscribing to staff");
       // The student's ticket was accepted by the staff
-      this.studentChannel.subscribe("staffAcceptedTicket", message => {
-        console.log("staff accepted ticket");
-        this.zoomLink = message.data.zoomLink;
-        this.openTicket.updatedAt = message.data.date;
-        this.showCountdown = true;
-      });
+      // this.studentChannel.subscribe("staffAcceptedTicket", message => {
+      //   console.log("staff accepted ticket");
+      //   this.zoomLink = message.data.zoomLink;
+      //   this.openTicket.updatedAt = message.data.date;
+      //   this.showCountdown = true;
+      // });
 
-      this.studentChannel.subscribe("ticketMarkedClosed", message => {
-        this.openTicket.status = "Closed";
-        this.clearTicketWhenCanceledOrComplete();
+      // this.studentChannel.subscribe("ticketMarkedClosed", message => {
+      //   this.openTicket.status = "Closed";
+      //   this.clearTicketWhenCanceledOrComplete();
 
-        console.log("ticket was closed by staff");
-      });
+      //   console.log("ticket was closed by staff");
+      // });
     },
     formatTime(time) {
-      console.log(time);
       var timeStr = " AM";
       var splitTime = time.split(":");
       if (splitTime[0] > 12) {
         timeStr = " PM";
       }
       var hours = ((splitTime[0] + 11) % 12) + 1;
-      console.log(hours + ":" + splitTime[1]);
       return hours + ":" + splitTime[1] + timeStr;
     },
     countdownTime: function() {
@@ -1469,7 +1466,7 @@ export default {
         axios.post("/api/insertTicket", {
           status: "Open",
           owner: {
-            _id: userId
+            _id: this.userId
           },
           course: {
             _id: ticket.course._id
@@ -1495,10 +1492,9 @@ export default {
       document.getElementById("landingTab").click();
 
       // Sends ticket to staff
-      this.ticketChannel.publish("ticketUpdate", this.openTicket);
+      // this.ticketChannel.publish("ticketUpdate", this.openTicket);
     },
     setFieldsFromTicket(ticket) {
-      console.log("setting fields");
       this.longerDescription = ticket.longerDescription;
       this.codeSnippet = ticket.codeSnippet;
       this.oneLineOverview = ticket.oneLineOverview;
@@ -1516,7 +1512,7 @@ export default {
       } else {
         var channel = client.channels.get("staff");
         // Publish a message to the test channel
-        channel.publish("ticketUpdate", "ticket updated");
+        // channel.publish("ticketUpdate", "ticket updated");
 
         this.submitRequest = true;
         this.scrollToTop();
@@ -1525,7 +1521,6 @@ export default {
       }
     },
     editRequest: function() {
-      console.log("in edit request");
       this.editingRequest = true;
       this.submitRequest = false;
       this.requestLandingPage = false;
@@ -1575,7 +1570,7 @@ export default {
       return 0;
     },
     async loadUser(user) {
-      this.student = userId;
+      this.student = this.userId;
     },
 
     async submit() {
@@ -1588,7 +1583,7 @@ export default {
         let ticket = await axios.post("/api/insertTicket", {
           status: "Open",
           owner: {
-            _id: userId
+            _id: this.userId
           },
           course: {
             _id: this.selectedCourse
@@ -1609,29 +1604,28 @@ export default {
         this.requestLandingPage = true;
         this.openTicket = ticket.data;
         this.showTicket = true;
-        console.log("Open ticket below");
         console.log(this.openTicket);
 
         // sends ticket to staff
-        this.ticketChannel.publish("ticketUpdate", this.openTicket);
+        // this.ticketChannel.publish("ticketUpdate", this.openTicket);
       }
     },
     async getTickets() {
       console.log("in get tickets");
 
       let tickets = await axios.get(
-        "/api/tickets/getTicketsByUser/" + userId,
+        "/api/tickets/getTicketsByUser/" + this.userId,
         {}
       );
 
       tickets.data.sort(this.compareTicketsRev);
 
       this.ticketHistory = tickets.data.filter(
-        ticket => ticket.status !== "Open" && ticket.owner._id == userId
+        ticket => ticket.status !== "Open" && ticket.owner._id == this.userId
       );
 
       this.openTickets = tickets.data.filter(
-        ticket => ticket.status === "Open" && ticket.owner._id == userId
+        ticket => ticket.status === "Open" && ticket.owner._id == this.userId
       );
 
       if (this.openTickets.length > 0) {
@@ -1642,20 +1636,25 @@ export default {
     },
 
     async getStudentInfo() {
-      console.log("getting student info");
-      let student = await axios.get("/api/users/" + userId);
+      let student = await axios.get("/api/users/" + this.userId);
       this.student = student.data;
 
+      if (this.student) {
+        this.studentName =
+          this.student.name.firstName +
+          " " +
+          this.student.name.lastName;
+      }
+      console.log(this.studentName);
       student.data.classes.forEach(element => {
         this.loadCourses(element);
-        console.log("course is " + element);
       });
       this.getTickets();
     },
 
     async cancelTicket() {
       if (this.openTicket) {
-        this.ticketChannel.publish("ticketClosed", this.openTicket);
+        // this.ticketChannel.publish("ticketClosed", this.openTicket);
         this.openTicket.status = "Unresolved";
         this.ticketHistory.unshift(this.openTicket);
 
@@ -1681,8 +1680,14 @@ export default {
 
   beforeMount() {
     this.scrollToTop();
-    this.getStudentInfo();
     this.startSubscribe();
-  }
+    const queryString = window.location.search;
+    this.userId = queryString.split("=")[1];
+    console.log(this.userId);
+    if (this.userId) {
+      this.getStudentInfo();
+    }
+  },
+  mounted() {}
 };
 </script>

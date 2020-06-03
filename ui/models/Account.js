@@ -7,9 +7,8 @@ export default class Account extends Model {
 
   static fields () {
     return {
-      $id: this.belongsTo(User, 'user_id'),
-			isLoggedIn: this.boolean(false),
-			
+      // $id: this.belongsTo(User, 'user_id'),
+			// isLoggedIn: this.boolean(false),
     }
   }
 }

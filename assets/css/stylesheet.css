@@ -196,6 +196,7 @@ button[type="submit"] {
     transition: all 0.3s ease-in-out;
 }
 
+
 button[type="button"]:active, button[type="submit"]:active, button[type="reset"]:active {
     -moz-transform: scale(0.95);
     -webkit-transform: scale(0.95);

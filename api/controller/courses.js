@@ -10,7 +10,7 @@ router.get("/courses", (req, res, next) => {
   //     res.send(courses);
   // })
 
-  var query = CourseModel.find({ deleted: 0 });
+  var query = CourseModel.find({ deleted: 0 }).sort('dep').sort('courseNum');
 
   query.exec(function(err, courses) {
     if (err) return handleError(err);

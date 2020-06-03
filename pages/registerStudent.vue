@@ -390,7 +390,10 @@ export default {
           deleted: 0
         });
       }
-      window.location.href = "landingStudent";
+      if (user) {
+        var userId = user.data._id;
+        window.location.href = "landingStudent/?userId=" + userId;
+      }
     },
     validateEmail: function() {
       const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;

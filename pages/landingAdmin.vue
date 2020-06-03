@@ -1,12 +1,8 @@
 
 <!-- TODO:  Check that email doesnt already exist in system -->
-<!-- TODO:  Save information for staff name, role, classes -->
-<!-- TODO:  Check that email doesnt already exist in system -->
-<!-- TODO: Add courses -->
 <style>
 .add-email-row {
   margin-top: 10px;
-  /* float: left !important; */
 }
 
 .container-body {
@@ -68,7 +64,6 @@ h2.inactive {
 
 h2.active {
   color: #0d0d0d;
-  /* border-bottom: 2px solid #5fbae9; */
 }
 
 input[type="text"] {
@@ -79,8 +74,6 @@ input[type="text"] {
   display: inline-block;
   font-size: 16px;
   width: 100% !important;
-  /* margin: 5px; */
-  /* border: 2px solid #f6f6f6; */
   -webkit-transition: all 0.5s ease-in-out;
   -moz-transition: all 0.5s ease-in-out;
   -ms-transition: all 0.5s ease-in-out;
@@ -94,8 +87,6 @@ input[type="text"]:placeholder {
   color: #cccccc;
 }
 
-/* ANIMATIONS */
-/* Simple CSS3 Fade-in-down Animation */
 .fadeInDown {
   -webkit-animation-name: fadeInDown;
   animation-name: fadeInDown;
@@ -188,8 +179,6 @@ input[type="text"]:placeholder {
   margin-left: 4%;
   margin-right: 4%;
   font-size: 17px;
-  /* margin-left: 15px;
-  margin-right: 15px; */
   cursor: pointer;
   opacity: 0.8;
   font-weight: 200;
@@ -709,10 +698,6 @@ export default {
       }
 
       this.clearForm();
-
-      //TODO: get insert ID back to add it to the course list
-
-      // )
     },
     switchToRemoveStaffTab: function() {
       this.scrollToTop();

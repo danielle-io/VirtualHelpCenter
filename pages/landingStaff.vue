@@ -766,17 +766,12 @@ import "vue-material/dist/vue-material.min.css";
 import "vue-material/dist/theme/default.css";
 Vue.use(VueMaterial);
 
-// const staffId = "5ed4b8c5795a6165ecab989f";
-
-const staffId = "5eade47047da2706382d53e6";
-
 import * as Ably from "ably";
 const client = new Ably.Realtime(process.env.ABLY_KEY);
 export default {
-  props: ["userId"],
   head() {
     return {
-      title: "Virtual Help Homepage"
+      title: "Staff"
     };
   },
   components: {
@@ -815,7 +810,8 @@ export default {
       ticketChannel: client.channels.get("tickets"),
       ticketHistory: [],
       showCanceledRequestDialog: false,
-      showCloseSessionDialog: false
+      showCloseSessionDialog: false,
+      staffId: null,
     };
   },
   methods: {
@@ -847,7 +843,7 @@ export default {
       axios.put("/api/updateTicket/" + this.currentTicketId, {
         status: "In Progress",
         acceptedBy: {
-          _id: staffId
+          _id: this.staffId
         }
       });
     },
@@ -859,7 +855,6 @@ export default {
         timeStr = " PM";
       }
       var hours = ((splitTime[0] + 11) % 12) + 1;
-      console.log(hours + ":" + splitTime[1]);
       return hours + ":" + splitTime[1] + timeStr;
     },
     getFilterClass(status, course) {
@@ -980,14 +975,14 @@ export default {
       console.log("ticket is " + JSON.stringify(this.currentTicket));
 
       // Get the students user id from the ticket
-      this.studentChannel = client.channels.get(this.currentTicket.owner._id);
-      this.studentChannel.publish("staffAcceptedTicket", {
-        zoomLink: this.zoomLink,
-        date: ticketTime
-      });
+      // this.studentChannel = client.channels.get(this.currentTicket.owner._id);
+      // this.studentChannel.publish("staffAcceptedTicket", {
+      //   zoomLink: this.zoomLink,
+      //   date: ticketTime
+      // });
 
       // //remove the ticket from open tickets
-      this.ticketChannel.publish("ticketInProgress", this.currentTicket);
+      // this.ticketChannel.publish("ticketInProgress", this.currentTicket);
 
       // Show connection screen once student receives countdown
       this.connecting = true;
@@ -1032,15 +1027,15 @@ export default {
     },
 
     countdownTime(ticketTime) {
-      this.studentChannel = client.channels.get(this.currentTicket.owner._id);
-      this.studentChannel.subscribe("studentAcceptedSession", function(
-        message
-      ) {
-        console.log("accepted session");
-        document.getElementById("hiddenButton").click();
-        this.triggerAccept();
-        clearTimeout(x);
-      });
+      // this.studentChannel = client.channels.get(this.currentTicket.owner._id);
+      // this.studentChannel.subscribe("studentAcceptedSession", function(
+      //   message
+      // ) {
+      //   console.log("accepted session");
+      //   document.getElementById("hiddenButton").click();
+      //   this.triggerAccept();
+      //   clearTimeout(x);
+      // });
 
       //read updated time
       let currentTime = new Date();
@@ -1074,8 +1069,8 @@ export default {
       this.showCloseSessionDialog = false;
       console.log("confirm close session");
 
-      this.studentChannel = client.channels.get(this.currentTicket.owner._id);
-      this.studentChannel.publish("ticketMarkedClosed", {});
+      // this.studentChannel = client.channels.get(this.currentTicket.owner._id);
+      // this.studentChannel.publish("ticketMarkedClosed", {});
       this.resetBackToOpenTicketsDisplay();
 
       // Update the ticket status to closed in the db
@@ -1095,7 +1090,7 @@ export default {
     async acceptTicket() {
       //remove the ticket from open tickets
       console.log("removing ticket");
-      this.ticketChannel.publish("ticketClosed", this.currentTicket);
+      // this.ticketChannel.publish("ticketClosed", this.currentTicket);
 
       axios.put("/api/updateTicket/" + this.currentTicketId, {
         status: "Pending"
@@ -1129,7 +1124,7 @@ export default {
   async created() {
     let tickets = await axios.get("/api/tickets");
 
-    let staff = await axios.get("/api/users/" + staffId);
+    let staff = await axios.get("/api/users/" + this.staffId);
     this.zoomLink = staff.data.zoomLink;
 
     this.tickets = tickets.data;
@@ -1141,7 +1136,7 @@ export default {
       // Add closed ticket to history
       if (
         this.tickets[i].status === "Closed" &&
-        this.tickets[i].acceptedBy._id === staffId
+        this.tickets[i].acceptedBy._id === this.staffId
       ) {
         console.log("closed");
         this.ticketHistory.push(this.tickets[i]);
@@ -1163,27 +1158,31 @@ export default {
   },
 
   beforeMount() {
-    // var course = {_id = null};
-    this.staffCourses.push({ value: null, text: "Show All Courses" });
+    const queryString = window.location.search;
+    this.staffId = queryString.split("=")[1];
+    console.log(this.staffId);
+    if (this.staffId) {
+      this.staffCourses.push({ value: null, text: "Show All Courses" });
 
-    // This gets ANY ticket submitted by ANY student
-    this.ticketChannel.subscribe("ticketUpdate", message => {
-      console.log("ticket was added");
+      // This gets ANY ticket submitted by ANY student
+      // this.ticketChannel.subscribe("ticketUpdate", message => {
+      //   console.log("ticket was added");
 
-      // Add new ticket to existing tickets
-      this.getStudentName(message.data, message.data.owner._id);
-      this.tickets.push(message.data);
-    });
-    this.ticketChannel.subscribe("ticketInProgress", message => {
-      console.log("ticket was closed");
-      // ticket will be remove from being displayed
-      this.removeTicketFromTicketUI(message.data._id);
-    });
+      //   // Add new ticket to existing tickets
+      //   this.getStudentName(message.data, message.data.owner._id);
+      //   this.tickets.push(message.data);
+      // });
+      // this.ticketChannel.subscribe("ticketInProgress", message => {
+      //   console.log("ticket was closed");
+      //   // ticket will be remove from being displayed
+      //   this.removeTicketFromTicketUI(message.data._id);
+      // });
 
-    this.ticketChannel.subscribe("reopenTicket", message => {
-      console.log("ticket was reopened");
-      this.tickets.push(message.data);
-    });
+      // this.ticketChannel.subscribe("reopenTicket", message => {
+      //   console.log("ticket was reopened");
+      //   this.tickets.push(message.data);
+      // });
+    }
 
     this.scrollToTop();
   }
