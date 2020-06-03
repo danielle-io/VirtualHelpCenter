@@ -3,13 +3,13 @@
     <no-ssr>
       <codemirror
         class="codemirror"
-        v-model="code"
+        :value="codeSnippet"
         :options="cmOption"
         @cursorActivity="onCmCursorActivity"
         @ready="onCmReady"
         @focus="onCmFocus"
         @blur="onCmBlur"
-        v-on:change="$emit('change', $event.target.pCode)"
+        @input="$emit('input', $event)"
       />
     </no-ssr>
     <!-- <pre class="pre">{{ code }}</pre> -->
@@ -20,12 +20,13 @@
   import dedent from 'dedent'
   export default {
     name: 'codemirror-example-nuxt',
-    model: {
-        prop: 'pCode',
-        event: 'change'
-    },
+    // model: {
+    //     prop: 'value'
+    // },
     props: {
-        pCode: String
+        codeSnippet: {
+            type: String
+        }
     },
     data() {
       return {
