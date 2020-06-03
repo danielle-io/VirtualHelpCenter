@@ -12,7 +12,8 @@ try {
                 type: Schema.Types.ObjectId,
                 ref: 'Course'
             }
-        }]
+        }],
+        zoomlink: ''
     }),
     );
 } catch (e) {
