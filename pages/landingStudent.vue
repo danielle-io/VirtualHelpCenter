@@ -764,6 +764,22 @@ Request History tab."
                     </div>
                   </div>
 
+                  <div v-if="this.codeSnippet">
+                    <div class="card-line">
+                      <div class="row">
+                        <span class="card-categories col-sm-3">
+                          <span style="margin-right: 6px;">
+                            <code-symbol />
+                          </span>Code:
+                        </span>
+                        <!-- <span style="padding-left: 20px !important;" class="col-sm-9 text-body"> -->
+                        <Codemirror id="codeMirrorInput" v-model="codeSnippet" />
+
+                        <!-- </span> -->
+                      </div>
+                    </div>
+                  </div>
+
                   <div v-if="this.attachments && this.attachments.length > 0">
                     <div class="card-line">
                       <div class="row">
@@ -910,7 +926,7 @@ Request History tab."
                         v-on:click="uploadFile"
                         v-bind:key="submitRequest"
                         type="submit"
-                        style="margin-bottom: 10px; margin margin-top: 10px;"
+                        style="margin-bottom: 10px; margin-top: 0px;"
                         class="fadeIn form-buttons"
                         @click="changeRequestState"
                       >
@@ -927,8 +943,8 @@ Request History tab."
                       <button
                         type="disabled"
                         disabled="true"
-                        style="margin-bottom: 10px; margin margin-top: 10px;
-                      background-color: #d3d3d3 !important;"
+                        style="margin-bottom: 10px;
+                      background-color: #d3d3d3 !important; margin-top: 0px;"
                         class="form-buttons-disabled"
                       >
                         <right-circle style="margin-right:4px" />
@@ -1254,7 +1270,7 @@ export default {
       this.requestLandingPage = true;
 
       // Publish edited ticket
-      // this.ticketChannel.publish("ticketUpdate", this.openTicket);
+      this.ticketChannel.publish("ticketUpdate", this.openTicket);
     },
     uploadFile() {
       if (this.rows.length > 0) {
@@ -1357,11 +1373,11 @@ export default {
       console.log("in accept session and zoomLink is " + this.zoomLink);
 
       // Publish an event to the  channel
-      // this.studentChannel.publish("studentAcceptedSession", this.userId);
+      this.studentChannel.publish("studentAcceptedSession", this.userId);
     },
-    // triggerAccept: function() {
-    //   this.showCountdown = true;
-    // },
+    triggerAccept: function() {
+      this.showCountdown = true;
+    },
     changeChevronClass: function() {
       console.log("in change chevron");
       if (this.expandChevron) {
@@ -1423,19 +1439,20 @@ export default {
     startSubscribe() {
       console.log("subscribing to staff");
       // The student's ticket was accepted by the staff
-      // this.studentChannel.subscribe("staffAcceptedTicket", message => {
-      //   console.log("staff accepted ticket");
-      //   this.zoomLink = message.data.zoomLink;
-      //   this.openTicket.updatedAt = message.data.date;
-      //   this.showCountdown = true;
-      // });
+      this.studentChannel.subscribe("staffAcceptedTicket", message => {
+        console.log("staff accepted ticket");
+        this.zoomLink = message.data.zoomLink;
+        this.openTicket.updatedAt = message.data.date;
+        this.showCountdown = true;
+      });
 
-      // this.studentChannel.subscribe("ticketMarkedClosed", message => {
-      //   this.openTicket.status = "Closed";
-      //   this.clearTicketWhenCanceledOrComplete();
+console.log("student channel " + this.userId);
+      this.studentChannel.subscribe("ticketMarkedClosed", message => {
+        this.openTicket.status = "Closed";
+        this.clearTicketWhenCanceledOrComplete();
 
-      //   console.log("ticket was closed by staff");
-      // });
+        console.log("ticket was closed by staff");
+      });
 
       this.ticketChannel.subscribe("ticketUpdate", message => {
         console.log("ticket count changed");
@@ -1481,6 +1498,8 @@ export default {
     },
 
     reSubmitTicket: function(ticket) {
+      var currentDate = new Date().toString();
+
       console.log("in resubmit " + ticket._id);
       var id = ticket._id;
 
@@ -1488,7 +1507,7 @@ export default {
         axios
           .put("/api/updateTicket/" + id, {
             status: "Open",
-            createdAt: new Date().toString()
+            createdAt: currentDate
           })
           .then(() => {});
       }
@@ -1506,7 +1525,7 @@ export default {
           oneLineOverview: ticket.oneLineOverview,
           longerDescription: ticket.longerDescription,
           codeSnippet: ticket.codeSnippet,
-          createdAt: new Date().toString(),
+          createdAt: currentDate,
           attachments: ticket.attachments,
           rating: 0,
           ratingExplanation: "",
@@ -1516,17 +1535,18 @@ export default {
       this.setFieldsFromTicket(ticket);
       this.showTicket = true;
       this.openTicket = ticket;
-      this.openTicket.createdAt = new Date().toString();
-      this.createdAt = new Date().toString();
-      this.ticketTime =
-        " " + this.formatTime(ticket.createdAt.split("T")[1].substring(0, 5));
+      this.openTicket.createdAt = currentDate;
+      this.createdAt = currentDate;
+      this.ticketTime = this.formatTime(
+        currentDate.split("T")[1].substring(0, 5)
+      );
       this.openTicket.status = "Open";
       this.status = "Open";
       this.getTickets();
       document.getElementById("landingTab").click();
 
       // Sends ticket to staff
-      // this.ticketChannel.publish("ticketUpdate", this.openTicket);
+      this.ticketChannel.publish("ticketUpdate", this.openTicket);
     },
     setFieldsFromTicket(ticket) {
       this.longerDescription = ticket.longerDescription;
@@ -1539,6 +1559,25 @@ export default {
       this.ticketTime =
         " " + this.formatTime(ticket.createdAt.split("T")[1].substring(0, 5));
       this.showTicket = true;
+      if (this.codeSnippet) {
+        console.log("code snippet in set fields");
+        // document.getElementById("codeMirrorInput").fromTextArea(document.getElementById("codeMirrorInput"), {
+        //   lineNumbers: true
+        // }).setValue("your code here");
+
+        // var textArea = document.getElementById("codeMirrorInput");
+        // textArea.code = "CODEEE";
+
+        // var editor = document.getElementById("codeMirrorInput").fromTextArea(textArea);
+        // editor.getDoc().setValue('var msg = "Hi";');
+        // console.log("here");
+
+        // var currentValue = document.getElementById("codeMirrorInput").cm.getValue();
+        // console.log(currentValue);
+        // var str = "some new value";
+
+        // document.getElementById("codeMirrorInput").cm.setValue("CODDEEE");
+      }
     },
     changeRequestState: function() {
       if (this.requestLandingPage === true && this.submitRequest === false) {
@@ -1548,7 +1587,7 @@ export default {
       } else {
         var channel = client.channels.get("staff");
         // Publish a message to the test channel
-        // channel.publish("ticketUpdate", "ticket updated");
+        channel.publish("ticketUpdate", "ticket updated");
 
         this.submitRequest = true;
         this.scrollToTop();
@@ -1637,13 +1676,23 @@ export default {
           //   _id: staffId
           // }
         });
-        this.requestLandingPage = true;
+
+        if (this.codeSnippet) {
+          console.log("code snippet here");
+          CodeMirror.fromTextArea(document.getElementById("codeMirrorInput"), {
+            lineNumbers: true
+          }).setValue("your code here");
+        }
         this.openTicket = ticket.data;
-        this.showTicket = true;
-        console.log(this.openTicket);
+
+        if (ticket) {
+          this.requestLandingPage = true;
+          this.showTicket = true;
+          console.log(this.openTicket);
+        }
 
         // sends ticket to staff
-        // this.ticketChannel.publish("ticketUpdate", this.openTicket);
+        this.ticketChannel.publish("ticketUpdate", this.openTicket);
       }
     },
 
@@ -1673,10 +1722,17 @@ export default {
     },
 
     async getOpenTicketCount() {
-      console.log("getting open tickets");
-      let allOpenTickets = await axios.get("/api/tickets/getOpenTickets");
-      if (allOpenTickets) {
-        this.allOpenTicketsAmount = allOpenTickets.data.length;
+      if (this.openTicket) {
+        console.log("getting open tickets");
+        let allOpenTickets = await axios.get("/api/tickets/getOpenTickets");
+        allOpenTickets = allOpenTickets.data;
+
+        if (allOpenTickets) {
+          allOpenTickets = allOpenTickets.filter(
+            item => item.createdAt < this.openTicket.createdAt
+          );
+          this.allOpenTicketsAmount = allOpenTickets.length;
+        }
       }
     },
 
@@ -1692,12 +1748,14 @@ export default {
       student.data.classes.forEach(element => {
         this.loadCourses(element);
       });
+      this.startSubscribe();
+
       this.getTickets();
     },
 
     async cancelTicket() {
       if (this.openTicket) {
-        // this.ticketChannel.publish("ticketClosed", this.openTicket);
+        this.ticketChannel.publish("ticketClosed", this.openTicket);
         this.openTicket.status = "Unresolved";
         this.ticketHistory.unshift(this.openTicket);
 
@@ -1723,14 +1781,13 @@ export default {
 
   beforeMount() {
     this.scrollToTop();
-    this.getOpenTicketCount();
-    this.startSubscribe();
     const queryString = window.location.search;
     this.userId = queryString.split("=")[1];
     console.log(this.userId);
     if (this.userId) {
       this.getStudentInfo();
     }
+    this.getOpenTicketCount();
   },
   mounted() {}
 };
