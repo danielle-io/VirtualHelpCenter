@@ -28,7 +28,7 @@ router.post("/insertUser", function(req, res, next) {
 router.get("/users/getUserByType/:id", function(req, res, next) {
   const id = req.params.id;
     console.log(id);
-  var query = UserModel.find({ 'userType': id }).sort('email');
+  var query = UserModel.find({ 'userType': id, 'deleted': 0 }).sort('email');
 
   query.exec(function(err, users) {
     if (err) return handleError(err);

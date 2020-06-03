@@ -253,7 +253,6 @@ input[type="text"]:placeholder {
         </div>
 
         <div class="container-body">
-         
           <div v-if="this.addStaffTab">
             <div style="margin-left: 12px;" class="form-container">
               <div class="row" style="width: 70%;">
@@ -384,8 +383,6 @@ input[type="text"]:placeholder {
 
           <div v-if="this.removeStaffTab">
             <div style="margin-left: 12px;" class="form-container">
-              
-              
               <div class="row">
                 <label style="margin-top: 0px;" class="label-format-smaller">
                   <email class="label-icons" />Remove By Email
@@ -550,7 +547,7 @@ export default {
       return this.removeStaffTab;
     },
     removeStaffByEmails() {
-        document.getElementById("removedText").className = "sub-heading-text";
+      document.getElementById("removedText").className = "sub-heading-text";
 
       var id = this.staffMemberToRemove;
       this.removed = true;
@@ -567,10 +564,32 @@ export default {
         })
         .then(() => {
           console.log("getting new user list");
-          this.getCurrentStaff();
         });
 
-        this.staffMemberToRemove = null;
+      // var newStaff = [];
+
+      // this.currentStaff.forEach(staff => {
+      //   if (staff._id !== id) {
+      //     newStaff.push({
+      //       value: staff._id,
+      //       text: staff.email
+      //     });
+      //   }
+      // });
+
+      this.currentStaff = this.currentStaff.filter(staff => staff.value !== id);
+
+      console.log("newstaff");
+      // console.log(newStaff);
+
+      // if (newStaff.length === this.currentStaff.length -1){
+      //   console.log(newStaff);
+      //   this.currentStaff = newStaff;
+      // }
+
+      console.log(this.currentStaff);
+
+      this.staffMemberToRemove = null;
     },
     async getCurrentStaff() {
       let staffList = await axios.get("/api/users/getUserByType/" + "Staff");
