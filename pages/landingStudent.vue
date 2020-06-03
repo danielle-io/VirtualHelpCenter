@@ -1239,7 +1239,7 @@ export default {
       this.requestLandingPage = true;
 
       // Publish edited ticket
-      // this.ticketChannel.publish("ticketUpdate", this.openTicket);
+      this.ticketChannel.publish("ticketUpdate", this.openTicket);
     },
     uploadFile() {
       if (this.rows.length > 0) {
@@ -1336,11 +1336,11 @@ export default {
       console.log("in accept session and zoomLink is " + this.zoomLink);
 
       // Publish an event to the  channel
-      // this.studentChannel.publish("studentAcceptedSession", this.userId);
+      this.studentChannel.publish("studentAcceptedSession", this.userId);
     },
-    // triggerAccept: function() {
-    //   this.showCountdown = true;
-    // },
+    triggerAccept: function() {
+      this.showCountdown = true;
+    },
     changeChevronClass: function() {
       console.log("in change chevron");
       if (this.expandChevron) {
@@ -1396,19 +1396,19 @@ export default {
     startSubscribe() {
       console.log("subscribing to staff");
       // The student's ticket was accepted by the staff
-      // this.studentChannel.subscribe("staffAcceptedTicket", message => {
-      //   console.log("staff accepted ticket");
-      //   this.zoomLink = message.data.zoomLink;
-      //   this.openTicket.updatedAt = message.data.date;
-      //   this.showCountdown = true;
-      // });
+      this.studentChannel.subscribe("staffAcceptedTicket", message => {
+        console.log("staff accepted ticket");
+        this.zoomLink = message.data.zoomLink;
+        this.openTicket.updatedAt = message.data.date;
+        this.showCountdown = true;
+      });
 
-      // this.studentChannel.subscribe("ticketMarkedClosed", message => {
-      //   this.openTicket.status = "Closed";
-      //   this.clearTicketWhenCanceledOrComplete();
+      this.studentChannel.subscribe("ticketMarkedClosed", message => {
+        this.openTicket.status = "Closed";
+        this.clearTicketWhenCanceledOrComplete();
 
-      //   console.log("ticket was closed by staff");
-      // });
+        console.log("ticket was closed by staff");
+      });
     },
     formatTime(time) {
       var timeStr = " AM";
@@ -1492,7 +1492,7 @@ export default {
       document.getElementById("landingTab").click();
 
       // Sends ticket to staff
-      // this.ticketChannel.publish("ticketUpdate", this.openTicket);
+      this.ticketChannel.publish("ticketUpdate", this.openTicket);
     },
     setFieldsFromTicket(ticket) {
       this.longerDescription = ticket.longerDescription;
@@ -1512,7 +1512,7 @@ export default {
       } else {
         var channel = client.channels.get("staff");
         // Publish a message to the test channel
-        // channel.publish("ticketUpdate", "ticket updated");
+        channel.publish("ticketUpdate", "ticket updated");
 
         this.submitRequest = true;
         this.scrollToTop();
@@ -1607,7 +1607,7 @@ export default {
         console.log(this.openTicket);
 
         // sends ticket to staff
-        // this.ticketChannel.publish("ticketUpdate", this.openTicket);
+        this.ticketChannel.publish("ticketUpdate", this.openTicket);
       }
     },
     async getTickets() {
@@ -1654,7 +1654,7 @@ export default {
 
     async cancelTicket() {
       if (this.openTicket) {
-        // this.ticketChannel.publish("ticketClosed", this.openTicket);
+        this.ticketChannel.publish("ticketClosed", this.openTicket);
         this.openTicket.status = "Unresolved";
         this.ticketHistory.unshift(this.openTicket);
 
