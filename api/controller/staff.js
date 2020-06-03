@@ -21,6 +21,7 @@ router.get('/staff/:id', (req, res, next) => {
 
 router.post('/insertStaff', function(req, res, next) {
     let staffData = new Staff(req.body);
+    console.log(staffData);
     staffData.save().then(item => {
         res.send(item);
     })

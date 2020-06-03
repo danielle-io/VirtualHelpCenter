@@ -13,6 +13,7 @@ try {
                 ref: 'Course'
             }
         }],
+        zoomLink: String,
     }),
     );
 } catch (e) {

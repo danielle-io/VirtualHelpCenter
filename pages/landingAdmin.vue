@@ -331,26 +331,20 @@ input[type="text"]:placeholder {
               <div class="row">
                 <label class="label-format-smaller">
                   <library class="label-icons" />Courses
+                  <span
+                    v-if="!selectedCourses || selectedCourses.length === 0"
+                    class="asterisk"
+                  >*</span>
                 </label>
               </div>
 
               <div class="row">
-                <b-form-radio-group
-                  v-model="selectedCourse"
+                <b-form-checkbox-group
+                  v-model="selectedCourses"
                   :options="courseList"
-                  required
                   v-on:change="getSelectedCourse"
-                ></b-form-radio-group>
+                ></b-form-checkbox-group>
               </div>
-
-              <!-- <div class="row">
-                  <b-form-radio-group
-                    v-model="selectedCourses"
-                    :options="courseList"
-                    required
-                    v-on:change="getSelectedCourse"
-                  ></b-form-radio-group>
-              </div>-->
             </div>
 
             <div v-if="this.firstName && this.lastName && this.validateEmail()">
@@ -442,19 +436,19 @@ import "vue-material/dist/theme/default.css";
 import {
   BFormInput,
   BFormSelect,
-  BFormCheckbox,
   BFormTextarea,
   BFormRadio,
-  BFormRadioGroup
+  BFormRadioGroup,
+  BFormCheckboxGroup,
+  BFormCheckbox
 } from "bootstrap-vue";
 export default {
   components: {
     "b-form-input": BFormInput,
     "b-form-select": BFormSelect,
-    "b-form-checkbox": BFormCheckbox,
     "b-form-text-area": BFormTextarea,
-    "b-form-radio": BFormRadio,
-    "b-form-radio-group": BFormRadioGroup
+    "b-form-checkbox": BFormCheckbox,
+    "b-form-checkbox-group": BFormCheckboxGroup
   },
 
   head() {
@@ -485,8 +479,7 @@ export default {
         { value: "Reader", text: "Reader" }
       ],
       courseList: [],
-      selectedCourses: [],
-      selectedCourse: null,
+      selectedCourses: null,
       staffMemberToRemove: null,
       zoomLink: "",
       currentStaff: [{ value: null, text: "Select the email to remove" }]
@@ -497,34 +490,48 @@ export default {
       document.getElementById("tabs").scrollIntoView();
     },
     async addStaffClicked() {
-      document.getElementById("submittedText").className = "sub-heading-text";
+      var staffCourseInsert = [];
+      this.selectedCourses.forEach(element => {
+        staffCourseInsert.push({ _id: element, section: 1 });
+      });
 
+      console.log(staffCourseInsert);
+
+      document.getElementById("submittedText").className = "sub-heading-text";
       this.submitted = true;
-      this.clearForm();
 
       setTimeout(function() {
         this.submitted = false;
         document.getElementById("submittedText").className = "hidden-text";
       }, 3000);
       this.scrollToTop();
-      user = await axios.post("/api/insertStaff", {
-        name: {
-          firstName: this.firstName,
-          lastName: this.lastName
-        },
-        email: this.email,
-        ucinetid: this.ucinetid,
-        classes: selectedCourses,
-        zoomLink: this.zoomLink,
-        deleted: 0
-      });
+
+      if (staffCourseInsert) {
+        console.log(this.email);
+        console.log(this.firstName);
+        console.log(staffCourseInsert);
+        console.log(this.zoomLink);
+
+        var user = await axios.post("/api/insertStaff", {
+          name: {
+            firstName: this.firstName,
+            lastName: this.lastName
+          },
+          email: this.email,
+          ucinetid: this.email.split("@")[0],
+          classes: staffCourseInsert,
+          zoomLink: this.zoomLink,
+          deleted: 0
+        });
+      }
+
+      this.clearForm();
     },
     validateEmail: function() {
       const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
       return re.test(String(this.email).toLowerCase());
     },
     getSelectedCourse: function(course) {
-      this.selectedCourse = course;
       console.log(course);
     },
     clearForm: function() {
@@ -533,6 +540,7 @@ export default {
       this.firstName = null;
       this.lastName = null;
       this.zoomLink = "";
+      this.selectedCourses = null;
     },
     switchToAddStaffTab: function() {
       this.addStaffTab = true;
