@@ -3,10 +3,10 @@
         <!-- Name -->
         <div class="row">
             <div class="col">
-                <b-form-input v-model="firstName" placeholder="First name" ></b-form-input>
+                <b-form-input v-model="firstname" placeholder="First name" ></b-form-input>
             </div>
             <div class="col">
-                <b-form-input v-model="lastName" placeholder="Last name" ></b-form-input>
+                <b-form-input v-model="lastname" placeholder="Last name" ></b-form-input>
             </div>
         </div>
 
@@ -22,48 +22,23 @@
             <b-form-input v-model="ucinetid" placeholder="UCInetID" ></b-form-input>
         </div>
 
-        <!-- Staff Student or Both -->
-        <div class="row">
-            <p>Staff:</p>
-            <b-form-checkbox
-            id="checkbox-1"
-            v-model="staff"
-            name="checkbox-1"
-            value="true"
-            unchecked-value="false"
-            style="margin-left: 10px"
-            >
-            </b-form-checkbox>
-        </div>
-
-        <!-- Select Staff Classes -->
-        <div :hidden='studentCheck(staff)'>
-            <div class="row" >
-                <div class="col-6">
-                    <label>Select your class:</label>
-                    <b-form-select v-model="addClassStaff" :options="availableClassesStaff" size="sm" class="mt-3" :select-size="getSize(availableClassesStaff)"></b-form-select>
-                    <b-button v-on:click="staffAdd" size="sm">Add Class</b-button>
-                </div>
-                <div class="col-6">
-                    <label>Selected classes:</label>
-                    <b-form-select v-model="removeClassStaff" :options="pickedClassesStaff" size="sm" class="mt-3" :select-size="getSize(pickedClassesStaff)"></b-form-select>
-                    <b-button v-on:click="removeClass" size="sm">Remove Class</b-button>
-                </div>
+        <div class="row" >
+            <div class="col-6">
+                <label>Select your class:</label>
+                <b-form-select v-model="addClassStaff" :options="availableClassesStaff" size="sm" class="mt-3" :select-size="getSize(availableClassesStaff)"></b-form-select>
+                <b-button v-on:click="staffAdd" size="sm">Add Class</b-button>
+            </div>
+            <div class="col-6">
+                <label>Selected classes:</label>
+                <b-form-select v-model="removeClassStaff" :options="pickedClassesStaff" size="sm" class="mt-3" :select-size="getSize(pickedClassesStaff)"></b-form-select>
+                <b-button v-on:click="removeClass" size="sm">Remove Class</b-button>
+            </div>
+            <div class="col-6">
+                <label>Personal Zoom Link:</label>
+                <b-form-input v-model="zoomlink" placeholder="Zoom Link"></b-form-input>
             </div>
         </div>
 
-        <div class="row">
-            <p>Student:</p>
-            <b-form-checkbox
-            id="checkbox-2"
-            v-model="student"
-            name="checkbox-2"
-            value="true"
-            unchecked-value="false"
-            style="margin-left: 10px"
-            >
-            </b-form-checkbox>
-        </div>
 
         <!-- Select Student Classes -->
         <div :hidden='studentCheck(student)'>
@@ -80,8 +55,6 @@
                 </div>
             </div>
         </div>
-        
-
 
         <div class = "row justify-content-left">
             <label>All fields must be filled in</label>
@@ -99,7 +72,7 @@
 
 <script>
 import vue from 'vue'
-import Course from '../../ui/models/Course'
+import Course from '../ui/models/Course'
 import axios from '~/plugins/axios'
 import {BFormInput, BFormSelect, BButton, BFormCheckbox, } from 'bootstrap-vue'
 
@@ -113,10 +86,11 @@ export default {
     data(){
         return{
             // User input
-            firstName: '',
-            lastName: '',
+            firstname: '',
+            lastname: '',
             email:'',
             ucinetid: '',
+            zoomlink: '', // https://uci.zoom.us/j/8427600525
 
             // Student
             addClass: null,
@@ -140,7 +114,7 @@ export default {
             shown:false,
 
             // Staff/Student checkboxes
-            staff: 'false',
+            staff: 'true',
             student: 'false'
         }
     },
@@ -195,7 +169,7 @@ export default {
             }
         },
         async submit(){
-            if(this.firstName != '' && this.lastName != '' && this.email != '' && this.ucinetid != '' && this.pickedClasses){
+            if(this.firstname != '' && this.lastname != '' && this.email != '' && this.ucinetid != '' && this.pickedClasses){
                 let classesStudent = [];
                 let classesStaff = [];
                 this.pickedClasses.forEach((element)=>{
@@ -209,26 +183,15 @@ export default {
                 if(this.staff === 'true'){
                     user = await axios.post('/api/insertStaff',{
                         name: {
-                            firstName: this.firstName,
-                            lastName: this.lastName
+                            firstname: this.firstname,
+                            lastname: this.lastname
                         },
                         email: this.email,
                         ucinetid: this.ucinetid,
-                        classes: classesStaff
+                        classes: classesStaff,
+                        zoomlink: this.zoomlink
                     })
                     window.location.href = 'landingStaff/' + user.data._id;
-                }
-                if(this.student === 'true'){
-                    user = await axios.post('/api/insertStudent',{
-                        name: {
-                            firstName: this.firstName,
-                            lastName: this.lastName
-                        },
-                        email: this.email,
-                        ucinetid: this.ucinetid,
-                        classes: classesStudent
-                    })
-                    window.location.href = 'landingStudent/' + user.data._id;
                 }
             }
         },

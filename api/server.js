@@ -25,7 +25,7 @@ require('./model/students');
 require('./model/staff');
 require('./model/Courses');
 require('./model/tickets');
-require('./model/tutors');
+require('./model/admin');
 
 // Require API routes
 const users = require('./controller/users');
@@ -33,7 +33,7 @@ const students = require('./controller/students');
 const staff = require('./controller/staff');
 const courses = require('./controller/courses');
 const tickets = require('./controller/tickets');
-const tutors = require('./controller/tutors');
+const admin = require('./controller/admin');
 
 // Create express instance
 const app = express();
@@ -54,7 +54,7 @@ app.use(users);
 app.use(students);
 app.use(staff);
 app.use(tickets);
-app.use(tutors);
+app.use(admin);
 
 
 // Export the server middleware

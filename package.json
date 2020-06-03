@@ -1,7 +1,7 @@
 {
   "name": "virtual_help_center",
   "version": "1.0.0",
-  "description": "UCI INF 117 Spring 2020 project for Prof. Pattis",
+  "description": "Online tutoring queueing system.",
   "author": "Ayato, Brenden, Danielle, Israel, Melayna",
   "private": true,
   "scripts": {
@@ -19,7 +19,6 @@
     "@vuex-orm/plugin-axios": "^0.9.3",
     "@zoomus/websdk": "^1.7.7",
     "ably": "^1.1.24",
-    "agenda": "^3.1.0",
     "axios": "^0.19.2",
     "body-parser": "^1.19.0",
     "bootstrap": "^4.4.1",

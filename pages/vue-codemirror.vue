@@ -27,12 +27,10 @@
           lineNumbers: true,
           line: true,
           mode: 'text/x-python',
-          theme: 'base16-dark'
+          theme: 'idea',
         },
         code: dedent`
-          #Paste your code here
-          def example():
-            pass
+          #Paste code here, if needed
         `
       }
     },

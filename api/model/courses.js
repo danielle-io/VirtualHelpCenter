@@ -5,7 +5,8 @@ let CourseSchema = null;
 
 const course = new Schema({
     dep: String,
-    courseNum: String
+    courseNum: String,
+    deleted: Number,
 },
 {collection: 'Course'})
 

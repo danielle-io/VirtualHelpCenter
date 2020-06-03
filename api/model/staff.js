@@ -12,8 +12,8 @@ try {
                 type: Schema.Types.ObjectId,
                 ref: 'Course'
             }
-            
-        }]
+        }],
+        zoomLink: String,
     }),
     );
 } catch (e) {

@@ -4,7 +4,7 @@ var Schema = mongoose.Schema;
 let UserSchema = null;
 
 const userOptions = {
-    discriminatorKey: 'usertype',
+    discriminatorKey: 'userType',
     collection: 'User'
 };
 
@@ -15,6 +15,7 @@ const user = new Schema({
     },
     email: String,
     ucinetid: String,
+    deleted: Number,
 },
     userOptions
 );
