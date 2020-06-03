@@ -15,6 +15,7 @@ const user = new Schema({
     },
     email: String,
     ucinetid: String,
+    deleted: Number,
 },
     userOptions
 );

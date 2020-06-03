@@ -214,7 +214,9 @@ export default {
                         },
                         email: this.email,
                         ucinetid: this.ucinetid,
-                        classes: classesStaff
+                        classes: classesStaff,
+                        zoomLink: zoomLink,
+                        deleted: 0
                     })
                     window.location.href = 'landingStaff/' + user.data._id;
                 }
@@ -226,7 +228,8 @@ export default {
                         },
                         email: this.email,
                         ucinetid: this.ucinetid,
-                        classes: classesStudent
+                        classes: classesStudent,
+                        deleted: 0,
                     })
                     window.location.href = 'landingStudent/' + user.data._id;
                 }

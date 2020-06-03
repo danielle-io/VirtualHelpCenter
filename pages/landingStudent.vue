@@ -799,7 +799,7 @@ Request History tab."
                 <div style="margin-left: 8px;" class="form-container">
                   <div class="row" style="width: 70%;">
                     <label class="label-format">
-                      <check class="label-icons" />Course Selection
+                      <library class="label-icons" />Course Selection
                     </label>
                     <span v-if="!this.selectedCourse" class="asterisk">*</span>
                   </div>
