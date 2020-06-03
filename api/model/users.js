@@ -4,7 +4,7 @@ var Schema = mongoose.Schema;
 let UserSchema = null;
 
 const userOptions = {
-    discriminatorKey: 'usertype',
+    discriminatorKey: 'userType',
     collection: 'User'
 };
 

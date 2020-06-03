@@ -119,6 +119,15 @@ footer {
     color: #41408a;
 }
 
+.label-format-smaller {
+    margin-top: 12px;
+    margin-bottom: 8px;
+    font-size: 18px;
+    text-align: left;
+    font-family: "Poppins";
+    color: #41408a;
+}
+
 
 .label-format-smaller {
     margin-top: 7px;

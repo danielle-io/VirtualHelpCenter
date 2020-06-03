@@ -72,7 +72,7 @@ h2.active {
 }
 
 input[type="text"] {
-  padding-top: 6px !important;
+  padding-top: 6px;
   color: #0d0d0d;
   text-align: left;
   overflow: hidden;
@@ -237,7 +237,10 @@ input[type="text"]:placeholder {
       </div>
 
       <div class="request-container">
-        <div class="heading-text" style="margin-bottom: 10px;">Administrative Actions</div>
+        <div
+          class="heading-text"
+          style="margin-top: 16px; margin-bottom: 10px;"
+        >Administrative Actions</div>
 
         <div id="submittedText" style="font-size: 16px;" class="hidden-text">
           <check-circle style="height: 1.3em !important;" />
@@ -246,67 +249,87 @@ input[type="text"]:placeholder {
 
         <div class="container-body">
           <div v-if="this.addStaffTab">
-            <div style="margin-left: 8px;" class="form-container">
-              <div style="margin-left: 8px;" class="form-container">
-                <div class="row" style="width: 70%;">
-                  <label class="label-format">
-                    <student class="label-icons" />Name
-                    <span v-if="!firstName || !lastName" class="asterisk">*</span>
-                  </label>
-                </div>
-
-                <div class="row form-line">
-                  <b-form-input
-                    style="margin-right: 140px; border-top: none; border-left:none; border-right:none; border-radius:0;"
-                    placeholder="Enter their First Name"
-                    v-model="firstName"
-                    required
-                  ></b-form-input>
-                </div>
-
-                <div class="row form-line">
-                  <b-form-input
-                    style="margin-right: 140px; border-top: none; border-left:none; border-right:none; border-radius:0;"
-                    placeholder="Enter their Last Name"
-                    v-model="lastName"
-                    required
-                  ></b-form-input>
-                </div>
-
-                <div class="row">
-                  <label class="label-format">
-                    <email class="label-icons" />Email
-                    <span v-if="!validateEmail()" class="asterisk">*</span>
-                  </label>
-                </div>
-
-                <div class="row form-line">
-                  <b-form-input
-                    ref="newStaffEmails"
-                    style="margin-right: 140px; border-top: none; border-left:none; border-right:none; border-radius:0;"
-                    placeholder="Enter their email"
-                    v-model="email"
-                    type="email"
-                    required
-                    class="email-input"
-                  ></b-form-input>
-                </div>
-
-                <div class="row">
-                  <label class="label-format">
-                    <library class="label-icons" />Role
-                  </label>
-                </div>
-
-                <!-- <div class="row form-line"> -->
-                <b-form-select
-                  style="margin-top: 6px; border-radius: 0px; display: in-line-block; border-left:none; border-right:none; border-top: none; width: 30%;"
-                  :options="roles"
-                  size="sm"
-                  class="mt-3"
-                  v-model="role"
-                ></b-form-select>
+            <div style="margin-left: 12px;" class="form-container">
+              <div class="row" style="width: 70%;">
+                <label class="label-format-smaller">
+                  <student class="label-icons" />Name
+                  <span v-if="!firstName || !lastName" class="asterisk">*</span>
+                </label>
               </div>
+
+              <div class="row form-line">
+                <b-form-input
+                  style="margin-right: 140px; border-top: none; border-left:none; border-right:none; border-radius:0;"
+                  placeholder="Enter their First Name"
+                  v-model="firstName"
+                  required
+                ></b-form-input>
+              </div>
+
+              <div class="row form-line">
+                <b-form-input
+                  style="margin-right: 140px; border-top: none; border-left:none; border-right:none; border-radius:0;"
+                  placeholder="Enter their Last Name"
+                  v-model="lastName"
+                  required
+                ></b-form-input>
+              </div>
+
+              <div class="row">
+                <label class="label-format-smaller">
+                  <email class="label-icons" />Email
+                  <span v-if="!validateEmail()" class="asterisk">*</span>
+                </label>
+              </div>
+
+              <div class="row form-line">
+                <b-form-input
+                  ref="newStaffEmails"
+                  style="margin-right: 140px; border-top: none; border-left:none; border-right:none; border-radius:0;"
+                  placeholder="Enter their email"
+                  v-model="email"
+                  type="email"
+                  required
+                  class="email-input"
+                ></b-form-input>
+              </div>
+
+              <div class="row">
+                <label class="label-format-smaller">
+                  <book class="label-icons" />Role
+                </label>
+              </div>
+
+              <b-form-select
+                style="margin-top: 0px; border-radius: 0px; display: in-line-block; border-left:none; border-right:none; border-top: none; width: 30%;"
+                :options="roles"
+                size="sm"
+                class="mt-3"
+                v-model="role"
+              ></b-form-select>
+
+              <div class="row">
+                <label class="label-format-smaller">
+                  <library class="label-icons" />Courses
+                </label>
+              </div>
+
+              <b-form-select
+                style="margin-top: 0px; border-radius: 0px; display: in-line-block; border-left:none; border-right:none; border-top: none; width: 30%;"
+                :options="courseList"
+                size="sm"
+                class="mt-3"
+                v-model="role"
+              ></b-form-select>
+
+              <!-- <div class="row">
+                  <b-form-radio-group
+                    v-model="selectedCourses"
+                    :options="courseList"
+                    required
+                    v-on:change="getSelectedCourse"
+                  ></b-form-radio-group>
+              </div>-->
             </div>
 
             <div v-if="this.firstName && this.lastName && this.validateEmail()">
@@ -336,54 +359,53 @@ input[type="text"]:placeholder {
               </div>
             </div>
           </div>
-        </div>
-        <!-- THE REMOVE STAFF TAB -->
-        <div v-if="this.removeStaffTab">
-          <!-- <div
-                v-if="this.submitForRemovalClicked"
-                id="emailsSubmitted"
-                class="sub-heading-text-larger"
-          >Accounts Removed</div>-->
 
-          <div class="row" style="margin-left: 10px; width: 70%;">
-            <div class="row">
-              <label class="label-format">
-                <email class="label-icons" />Remove By Email
-              </label>
-            </div>
-            <b-form-select
-              style="margin-top: 6px; border-radius: 0px; display: in-line-block; border-left:none; border-right:none; border-top: none; width: 30%;"
-              :options="roles"
-              size="sm"
-              class="mt-3"
-              v-model="role"
-            ></b-form-select>
+          <div v-if="this.removeStaffTab">
+            <div style="margin-left: 12px;" class="form-container">
+              <div class="row">
+                <label class="label-format-smaller">
+                  <book class="label-icons" />Remove By Email
+                </label>
+              </div>
 
-            <b-form-select ref="removeStaffEmails" placeholder="Select the email to remove"></b-form-select>
-          </div>
+              <div class="row" style="margin-left: 10px; width: 80%;">
+                <b-form-select
+                  style="margin-top: 6px; border-radius: 0px; display: in-line-block; border-left:none; border-right:none; border-top: none; width: 30%;"
+                  :options="currentStaff"
+                  size="sm"
+                  class="mt-3"
+                  v-model="staffMemberToRemove"
+                ></b-form-select>
+              </div>
 
-          <div style="text-align: center; margin-top:15px;">
-            <button
-              @click="removeStaffByEmails"
-              type="submit"
-              style="margin-bottom: 10px; margin-top: 10px;"
-              class="fadeIn request-staff-buttons"
-            >
-              <right-circle />Submit Removal
-            </button>
-          </div>
+              <div v-if="this.staffMemberToRemove">
+                <div style="text-align: center; margin-top:15px;">
+                  <button
+                    @click="removeStaffByEmails"
+                    type="submit"
+                    style="margin-bottom: 10px; margin-top: 10px;"
+                    class="fadeIn request-staff-buttons"
+                  >
+                    <right-circle />Submit Removal
+                  </button>
+                </div>
+              </div>
 
-          <!-- <div style="text-align: center;">
-              <button
-                type="disabled"
-                disabled="true"
-                style="margin-bottom: 10px; margin margin-top: 10px;
+              <div v-if="!this.staffMemberToRemove">
+                <div style="text-align: center;">
+                  <button
+                    type="disabled"
+                    disabled="true"
+                    style="margin-bottom: 10px; margin margin-top: 10px;
                       background-color: #d3d3d3 !important;"
-                class="form-buttons-disabled"
-              >
-                <right-circle style="margin-right:4px" />Submit Removal
-              </button>
-          </div>-->
+                    class="form-buttons-disabled"
+                  >
+                    <right-circle style="margin-right:4px" />Submit Removal
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -416,13 +438,7 @@ export default {
     };
   },
 
-  async addAdminUser() {
-    // let student = await axios.get("/api/students/" + this.$route.params.id);
-    // student.data.classes.forEach(element => {
-    //   this.loadClasses(element);
-    // });
-    // this.loadUser(student);
-  },
+  async addAdminUser() {},
 
   data() {
     return {
@@ -443,7 +459,9 @@ export default {
         { value: "TA", text: "TA" },
         { value: "Reader", text: "Reader" }
       ],
-      removenewStaffEmails: [],
+      courseList: [],
+      selectedCourses: [],
+      staffMemberToRemove: null,
       currentStaff: [{ value: null, text: "Select the email to remove" }]
     };
   },
@@ -461,17 +479,21 @@ export default {
         this.submitted = false;
         document.getElementById("submittedText").className = "hidden-text";
       }, 3000);
-      // this.scrollToTop();
-      //   axios.post("/api/insertTutor", {
-      //     email: this.email,
-      //     firstName: this.firstName,
-      //     lastName: this.lastName
-      //   });
-      // }
+      this.scrollToTop();
+      axios.post("/api/insertTutor", {
+        email: this.email,
+        firstName: this.firstName,
+        lastName: this.lastName,
+        ucinetid: this.email.split("@")[0]
+      });
     },
-    validateEmail() {
+    validateEmail: function() {
       const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
       return re.test(String(this.email).toLowerCase());
+    },
+    getSelectedCourse: function(course) {
+      this.selectedCourse = course;
+      console.log(course);
     },
     clearForm: function() {
       console.log("clearing form");
@@ -491,16 +513,51 @@ export default {
       this.scrollToTop();
       return this.removeStaffTab;
     },
-    // TODO: this will populate this.currentStaff with the current
-    // staff emails an admin can select from
-    getCurrentStaff() {}
-  },
-  async removeStaffClicked() {
-    this.removed = true;
+    removeStaffByEmails() {
+      this.removed = true;
+
+       axios
+          .put("/api/users/updateUser/" + id, {
+            status: "Unresolved"
+          })
+          .then(() => {
+            console.log("resetting ticket");
+            this.openTicket = null;
+          });
+    },
+    async getCurrentStaff() {
+      let staffList = await axios.get("/api/users/getUserByType/" + "Staff");
+      console.log(staffList);
+
+      if (staffList.data) {
+        console.log("courses ");
+        staffList.data.forEach(staff => {
+          this.currentStaff.push({
+            value: staff._id,
+            text: staff.email
+          });
+        });
+      }
+    },
+    async loadCourses() {
+      let courses = await axios.get("/api/courses/");
+      console.log(courses.data);
+
+      if (courses.data) {
+        console.log("courses ");
+        courses.data.forEach(course => {
+          this.courseList.push({
+            value: course._id,
+            text: course.dep + course.courseNum
+          });
+        });
+      }
+    }
   },
   beforeMount() {
     this.scrollToTop();
     this.getCurrentStaff();
+    this.loadCourses();
   }
 };
 </script>

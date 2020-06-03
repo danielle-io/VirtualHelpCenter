@@ -12,7 +12,6 @@ try {
                 type: Schema.Types.ObjectId,
                 ref: 'Course'
             }
-            
         }]
     }),
     );
