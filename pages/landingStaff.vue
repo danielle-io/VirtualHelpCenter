@@ -190,18 +190,7 @@
   height: 400px;
   overflow-y: scroll;
 }
-/* .md-card-content {
-  word-wrap: break-word;
-  flex-wrap: wrap;
-  text-align: left;
-}
-.md-card {
-  padding-top: 18px;
-  padding-left: 12px;
-  margin: 14px;
-  display: inline-block;
-  vertical-align: top;
-} */
+
 .selected-card {
   border-width: 1px !important;
   border-style: solid;
@@ -218,7 +207,6 @@
   float: right;
   font-size: 30px;
   cursor: pointer;
-  /* padding-top: 15px !important; */
 }
 .hidden {
   opacity: 0;
@@ -334,7 +322,7 @@ button[type="submit"] {
           <span v-if="this.selectedTicketIndex === -1 && this.staffCourses && this.openRequestTab">
             <div
               class="row"
-              style="font-size: 20px !important; margin-bottom: 14px; margin-left: 15px;"
+              style="font-size: 5px !important; margin-bottom: 14px; margin-left: 15px;"
             >
               <span class="label-format-smaller" style="margin-right:14px;">
                 <filter-icon />Filter:
@@ -349,14 +337,19 @@ button[type="submit"] {
           </span>
 
           <div v-if="this.openRequestTab">
-            <div style="margin-top: 30px;" class="ticket-container">
+            <div style="margin-top: 10px;" class="ticket-container">
+             
               <div
                 v-if="!this.tickets"
                 class="sub-heading-text"
-                style="padding-top:2%;"
-              >There are currently no open tickets</div>
+                style="padding-top: 10px;"
+              >There are currently no open requests</div>
 
-              <!-- Populate tickets -->
+              <div v-if="this.tickets && this.allOpenTicketsAmount" class="sub-heading-text">
+                There {{this.getSingleOrPlural()}} currently
+                <span style="font-weight: 600">{{this.allOpenTicketsAmount}}</span>
+                open {{this.getRequestOrRequests()}}.
+              </div>
               <div>
                 <div
                   v-for="(ticket, index) in (getFilterClass('Open', this.course).slice(this.startingIndex, this.endingIndex))"
@@ -530,9 +523,10 @@ button[type="submit"] {
                       <span class="card-categories col-sm-3">
                         <date class="label-icons" />Date :
                       </span>
-                      <span
-                        class="col-sm-9 text-body"
-                      >{{ (ticket.createdAt.split('T')[0].split('-')[1] + '-' + ticket.createdAt.split('T')[0].split('-')[2] + '-' + ticket.createdAt.split('T')[0].split('-')[0])}}</span>
+                      <span class="col-sm-9 text-body">
+                        {{ (ticket.createdAt.split('T')[0].split('-')[1] + '-' + ticket.createdAt.split('T')[0].split('-')[2] + '-' +
+                        ticket.createdAt.split('T')[0].split('-')[0])}}
+                      </span>
                     </div>
                   </div>
 
@@ -659,7 +653,7 @@ button[type="submit"] {
                 <div class="card-line-history">
                   <div class="row">
                     <span class="card-categories col-sm-3">
-                      <clock class="label-icons" />Date :
+                      <date class="label-icons" />Date :
                     </span>
                     <span
                       class="col-sm-9 text-body"
@@ -670,11 +664,11 @@ button[type="submit"] {
                 <div class="card-line-history">
                   <div class="row">
                     <span class="card-categories col-sm-3">
-                      <date class="label-icons" />Time:
+                      <clock class="label-icons" />Time:
                     </span>
                     <span
                       class="col-sm-9 text-body"
-                    >{{ " " + (this.currentTicket.createdAt.split('T')[1]).substring(0,5)}}</span>
+                    >{{ " " + formatTime((this.currentTicket.createdAt.split('T')[1]).substring(0,5))}}</span>
                   </div>
                 </div>
 
@@ -812,6 +806,7 @@ export default {
       showCanceledRequestDialog: false,
       showCloseSessionDialog: false,
       staffId: null,
+      allOpenTicketsAmount: null
     };
   },
   methods: {
@@ -830,9 +825,6 @@ export default {
       this.staffCourses.forEach(element => {
         return this.tickets.filter(ticket => ticket.course._id === status);
       });
-      //  this.filteredTickets.push(this.filterCourseTickets(status, element));
-      //       this.filteredTickets.push(this.filterCourseTickets(status, element));
-      //   });
       return this.filteredTickets;
     },
 
@@ -847,8 +839,18 @@ export default {
         }
       });
     },
+
+    async getOpenTicketCount() {
+      console.log("getting open tickets");
+      let allOpenTickets = await axios.get("/api/tickets/getOpenTickets");
+      if (allOpenTickets) {
+        console.log(allOpenTickets);
+        console.log(allOpenTickets.data.length);
+        this.allOpenTicketsAmount = allOpenTickets.data.length;
+      }
+    },
+
     formatTime(time) {
-      console.log(time);
       var timeStr = " AM";
       var splitTime = time.split(":");
       if (splitTime[0] > 12) {
@@ -932,6 +934,21 @@ export default {
     //   }
     //   return
     // },
+    getRequestOrRequests: function() {
+      if (this.allOpenTicketsAmount === 1) {
+        return "request";
+      }
+       if (this.allOpenTicketsAmount === 0) {
+        return "no";
+      }
+      return "requests";
+    },
+      getSingleOrPlural: function() {
+      if (this.allOpenTicketsAmount === 1) {
+        return "is";
+      }
+      return "are";
+    },
     changeChevronClass: function() {
       console.log("in change chevron");
       if (this.expandChevron) {
@@ -1158,6 +1175,8 @@ export default {
   },
 
   beforeMount() {
+    this.getOpenTicketCount();
+
     const queryString = window.location.search;
     this.staffId = queryString.split("=")[1];
     console.log(this.staffId);
@@ -1165,23 +1184,24 @@ export default {
       this.staffCourses.push({ value: null, text: "Show All Courses" });
 
       // This gets ANY ticket submitted by ANY student
-      // this.ticketChannel.subscribe("ticketUpdate", message => {
-      //   console.log("ticket was added");
+      this.ticketChannel.subscribe("ticketUpdate", message => {
+        console.log("ticket was added");
+        this.getOpenTicketCount();
 
-      //   // Add new ticket to existing tickets
-      //   this.getStudentName(message.data, message.data.owner._id);
-      //   this.tickets.push(message.data);
-      // });
-      // this.ticketChannel.subscribe("ticketInProgress", message => {
-      //   console.log("ticket was closed");
-      //   // ticket will be remove from being displayed
-      //   this.removeTicketFromTicketUI(message.data._id);
-      // });
+        //   // Add new ticket to existing tickets
+        this.getStudentName(message.data, message.data.owner._id);
+        this.tickets.push(message.data);
+      });
+      this.ticketChannel.subscribe("ticketInProgress", message => {
+        console.log("ticket was closed");
+        // ticket will be remove from being displayed
+        this.removeTicketFromTicketUI(message.data._id);
+      });
 
-      // this.ticketChannel.subscribe("reopenTicket", message => {
-      //   console.log("ticket was reopened");
-      //   this.tickets.push(message.data);
-      // });
+      this.ticketChannel.subscribe("reopenTicket", message => {
+        console.log("ticket was reopened");
+        this.tickets.push(message.data);
+      });
     }
 
     this.scrollToTop();

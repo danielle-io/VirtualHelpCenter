@@ -27,11 +27,19 @@ router.get('/ticket/:id', function (req, res, next) {
   });
 })
 
-//
+
 router.get('/tickets/getTickets', function(req,res,next){
     Ticket.find(req.params, (err, tickets)=>{
         res.send(tickets)
     })
+})
+
+router.get('/tickets/getOpenTickets', function(req,res,next){
+    var query = Ticket.find({ 'status': 'Open'}).sort('-createdAt');
+    query.exec(function(err, tickets) {
+      if (err) return handleError(err);
+      res.send(tickets);
+    });
 })
 
 router.get('/tickets/getTicketsByUser/:id', function(req,res,next){
