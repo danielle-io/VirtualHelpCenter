@@ -640,7 +640,7 @@ Request History tab."
                       :second-label="''"
                       :padding="0"
                       :size="120"
-                      @finish="finished(studentChannel)"
+                      @finish="finished()"
                     ></circular-count-down-timer>
 
                     <button
@@ -1221,7 +1221,6 @@ export default {
       showCountdown: false,
       showTicket: false,
       studentAcceptedSession: false,
-      studentChannel: client.channels.get(this.userId),
       ticketChannel: client.channels.get("tickets"),
       fileUrls: [],
       fileObjects: [],
@@ -1373,7 +1372,8 @@ export default {
       console.log("in accept session and zoomLink is " + this.zoomLink);
 
       // Publish an event to the  channel
-      this.studentChannel.publish("studentAcceptedSession", this.userId);
+      var studentChannel = client.channels.get(this.userId);
+      studentChannel.publish("studentAcceptedSession", this.userId);
     },
     triggerAccept: function() {
       this.showCountdown = true;
@@ -1439,15 +1439,17 @@ export default {
     startSubscribe() {
       console.log("subscribing to staff");
       // The student's ticket was accepted by the staff
-      this.studentChannel.subscribe("staffAcceptedTicket", message => {
+      var studentChannel = client.channels.get(this.userId);
+
+      studentChannel.subscribe("staffAcceptedTicket", message => {
         console.log("staff accepted ticket");
         this.zoomLink = message.data.zoomLink;
         this.openTicket.updatedAt = message.data.date;
         this.showCountdown = true;
       });
 
-console.log("student channel " + this.userId);
-      this.studentChannel.subscribe("ticketMarkedClosed", message => {
+      console.log("student channel " + this.userId);
+      studentChannel.subscribe("ticketMarkedClosed", message => {
         this.openTicket.status = "Closed";
         this.clearTicketWhenCanceledOrComplete();
 
@@ -1481,6 +1483,8 @@ console.log("student channel " + this.userId);
       );
     },
     finished: function() {
+      var studentChannel = client.channels.get(this.userId);
+
       // When countdown is over, take them back to the other page
       this.openTicket.status = "Unresolved";
       this.unresolvedTicket = true;

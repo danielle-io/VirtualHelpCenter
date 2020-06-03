@@ -60,7 +60,7 @@ button[type="disabled-button"]{
     transition: all 0.3s ease-in-out;
 }
 
-button[type="button"] {
+button[type="button-color"] {
     background: linear-gradient( 333deg, rgba(167, 115, 215, 0.72) 21%, rgba(169, 235, 244, 1) 75%);
     /* border: none; */
     color: white;
@@ -205,7 +205,7 @@ button[type="button"] {
               <div style="text-align: center;">
                 <button
                   @click="submitData()"
-                  type="button"
+                  type="button-color"
                   style="margin-bottom: 10px; margin margin-top: 10px;"
                   class="fadeIn request-staff-buttons"
                 >
