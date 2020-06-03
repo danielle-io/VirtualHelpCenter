@@ -401,21 +401,21 @@ button[type="submit"] {
                     </div>
 
                     <div
-                      v-bind:class="{ 'chevron': expandChevron, 'hidden': !expandChevron }"
-                      @click="changeChevronClass"
+                      v-bind:class="{ 'chevron': getExpandChevron(ticket._id), 'hidden': !getExpandChevron(ticket._id) }"
+                      @click="changeChevronClass(ticket._id)"
                     >
                       <expand-arrow />
                     </div>
 
                     <div
-                      @click="changeChevronClass"
-                      v-bind:class="{ 'chevron': collapseChevron, 'hidden': !collapseChevron }"
+                      @click="changeChevronClass(ticket._id)"
+                      v-bind:class="{ 'chevron': getCollapseChevron(ticket._id), 'hidden': !getCollapseChevron(ticket._id) }"
                     >
                       <collapse-arrow />
                     </div>
 
                     <div
-                      v-bind:class="{ 'show-extra-content': collapseChevron, 'hide-extra-content': expandChevron }"
+                      v-bind:class="{ 'show-extra-content': getCollapseChevron(ticket._id), 'hide-extra-content': getExpandChevron(ticket._id) }"
                     >
                       <div class="card-line">
                         <span class="row">
@@ -738,10 +738,16 @@ import { BFormInput, BFormSelect, BFormTextarea, BButton } from "bootstrap-vue";
 import VueMaterial from "vue-material";
 import "vue-material/dist/vue-material.min.css";
 import "vue-material/dist/theme/default.css";
+
+import Ticket from "../ui/models/Ticket";
+
 Vue.use(VueMaterial);
 import * as Ably from "ably";
 const client = new Ably.Realtime(process.env.ABLY_KEY);
 export default {
+  // async fetch() {
+  //   //const tickets = await Ticket.api().get('/tickets');
+  // },
   head() {
     return {
       title: "Staff"
@@ -900,15 +906,34 @@ export default {
     //   }
     //   return
     // },
-    changeChevronClass: function() {
+    changeChevronClass: function(id) {
       console.log("in change chevron");
-      if (this.expandChevron) {
-        this.collapseChevron = true;
-        this.expandChevron = false;
+      if (this.getExpandChevron(id)) {
+        Ticket.update({
+          where: (ticket) => {
+            return ticket._id == id
+          },
+          data: {
+            expandChevron: false,
+            collapseChevron: true
+          }
+        })
+        // this.collapseChevron = true;
+        // this.expandChevron = false;
       } else {
-        this.expandChevron = true;
-        this.collapseChevron = false;
+        Ticket.update({
+          where: (ticket) => {
+            return ticket._id == id
+          },
+          data: {
+            expandChevron: true,
+            collapseChevron: false
+          }
+        })
       }
+    },
+    chevronToggle: function(ticketId){
+      return 
     },
     clickCard: function(ticket, index, id) {
       // selectedTicketIndex = the same as the index passed in means
@@ -1039,6 +1064,16 @@ export default {
           status: "Closed"
         });
       }
+      },
+    getCollapseChevron(id){
+      let tickets = Ticket.query().where('_id', id).get()
+      console.log(tickets[0].collapseChevron)
+      return tickets[0].collapseChevron
+    },
+     getExpandChevron(id){
+      let tickets = Ticket.query().where('_id', id).get()
+      console.log(tickets[0].expandChevron)
+      return tickets[0].expandChevron
     },
     async acceptTicket() {
       //remove the ticket from open tickets
@@ -1074,7 +1109,9 @@ export default {
   },
   async created() {
     let tickets = await axios.get("/api/tickets");
-    let staff = await axios.get("/api/users/" + this.staffId);
+    Ticket.insert(tickets);
+    //let staff = await axios.get("/api/users/" + this.staffId);
+    let staff = await axios.get("/api/users/" + "5eade47047da2706382d53e6");
     this.zoomLink = staff.data.zoomLink;
     this.tickets = tickets.data;
     this.tickets.sort(this.compareTickets);
@@ -1097,7 +1134,8 @@ export default {
         console.log(element);
         this.loadClasses(element);
       });
-      let course = this.staffCourses[0];
+      //let course = this.staffCourses[0];
+      let course = staff.data.classes[0]
       this.course = course.value;
     }
   },
@@ -1125,6 +1163,12 @@ export default {
       // });
     }
     this.scrollToTop();
+  },
+  computed: {
+    chevron(id) {
+      let tickets = Ticket.query().where('_id', id).get()
+      console.log(tickets)
+    }
   }
 };
 </script>
