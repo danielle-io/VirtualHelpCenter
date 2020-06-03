@@ -264,7 +264,7 @@ input[type="text"]:placeholder {
 
         <div id="courseRemovedText" style="font-size: 16px;" class="hidden-text">
           <check-circle style="height: 1.3em !important;" />
-          <span style="margin-left:10px;">Staff Member Removed</span>
+          <span style="margin-left:10px;">Course Removed</span>
         </div>
 
         <div class="container-body">
@@ -353,8 +353,8 @@ input[type="text"]:placeholder {
                 </label>
               </div>
 
-              <div class="row">
-                <b-form-checkbox-group v-model="selectedCourses" :options="courseList"></b-form-checkbox-group>
+              <div class="row" style="margin-left: 20px; !important">
+                <b-form-checkbox-group  v-model="selectedCourses" :options="courseList"></b-form-checkbox-group>
               </div>
             </div>
 
@@ -460,7 +460,7 @@ input[type="text"]:placeholder {
                 ></b-form-input>
               </div>
 
-              <div v-if="this.newCourseDep || this.newCourseNum">
+              <div v-if="this.newCourseDep && this.newCourseNum">
                 <div style="text-align: center;">
                   <button
                     @click="insertNewCourse()"
@@ -646,6 +646,16 @@ export default {
       return re.test(String(this.email).toLowerCase());
     },
     removeCourse() {
+      var id = this.courseToRemove;
+      console.log(id);
+
+      document.getElementById("courseRemovedText").className =
+        "sub-heading-text";
+
+      setTimeout(function() {
+        this.submitted = false;
+        document.getElementById("courseRemovedText").className = "hidden-text";
+      }, 3000);
       axios
         .put("/api/courses/updateCourse/" + id, {
           deleted: 1
@@ -657,7 +667,7 @@ export default {
       this.courseList = this.courseList.filter(course => course.value !== id);
       this.courseToRemove = null;
 
-      clearForm();
+      this.clearForm();
     },
     clearForm: function() {
       this.email = "";
@@ -679,20 +689,29 @@ export default {
       return this.addStaffTab;
     },
     async insertNewCourse() {
+      document.getElementById("submittedText").className = "sub-heading-text";
+
+      setTimeout(function() {
+        this.submitted = false;
+        document.getElementById("submittedText").className = "hidden-text";
+      }, 3000);
+
       let newCourse = await axios.post("/api/insertCourse", {
         dep: this.newCourseDep,
         courseNum: this.newCourseNum,
         deleted: 0
       });
       if (newCourse) {
-        console.log("NEW COURSE " + JSON.stringify(newCourse));
+        this.courseList.push({
+          value: newCourse.data._id,
+          text: newCourse.data.dep + newCourse.data.courseNum
+        });
       }
 
+      this.clearForm();
+
       //TODO: get insert ID back to add it to the course list
-      // this.courseList.push({
-      //   value: this.newCourseNum._id,
-      //   text: this.newCourseDep.dep + this.newCourseNum
-      // }
+
       // )
     },
     switchToRemoveStaffTab: function() {
