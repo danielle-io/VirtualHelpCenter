@@ -62,6 +62,26 @@
         </md-card-actions>
       </md-card>
 
+
+            <md-card>
+        <md-card-header>
+          <md-card-header-text>
+            <div class="md-title">Student Registration</div>
+            <div
+              class="md-subhead"
+            >If a student tries to login and has not yet made an account</div>
+          </md-card-header-text>
+        </md-card-header>
+
+        <md-card-actions>
+          <nuxt-link
+            style="cursor: pointer; color: #56a2b1  !important; z-index: 999; 
+                              text-shadow: none !important;"
+            to="/registerStudent"
+          >Student Registration</nuxt-link>
+        </md-card-actions>
+      </md-card>
+
       <md-card>
         <md-card-header>
           <md-card-header-text>

@@ -218,12 +218,12 @@ export default {
         if (user.data.userType === "Staff") {
           console.log("staff");
           window.location.href = "landingStaff";
-        }
-        if (user.data.userType === "Student") {
+        } else if (user.data.userType === "Student") {
           window.location.href = "landingStudent";
-        }
-        if (user.data.userType === "Admin") {
+        } else if (user.data.userType === "Admin") {
           window.location.href = "landingAdmin";
+        } else {
+          window.location.href = "registerStudent";
         }
 
         console.log(this.userId);
