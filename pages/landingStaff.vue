@@ -543,7 +543,7 @@ button[type="submit"] {
                       </span>
                       <span
                         class="col-sm-9 text-body"
-                          >{{ " " + formatTime((ticket.createdAt.split('T')[1]).substring(0,5))}}</span>
+                      >{{ " " + formatTime((ticket.createdAt.split('T')[1]).substring(0,5))}}</span>
                     </div>
                   </div>
 
@@ -773,9 +773,10 @@ const staffId = "5eade47047da2706382d53e6";
 import * as Ably from "ably";
 const client = new Ably.Realtime(process.env.ABLY_KEY);
 export default {
+  props: ["userId"],
   head() {
     return {
-      title: "Staff"
+      title: "Virtual Help Homepage"
     };
   },
   components: {
@@ -850,7 +851,7 @@ export default {
         }
       });
     },
-  formatTime(time) {
+    formatTime(time) {
       console.log(time);
       var timeStr = " AM";
       var splitTime = time.split(":");

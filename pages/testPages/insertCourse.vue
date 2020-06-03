@@ -23,7 +23,8 @@ export default {
     async submit() {
       await axios.post("/api/insertCourse", {
         dept: "Information and Computer Science",
-        courseNum: "32"
+        courseNum: "32",
+        deleted: 0,
       });
       console.log("Inserted course");
     }

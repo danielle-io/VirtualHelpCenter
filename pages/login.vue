@@ -123,29 +123,65 @@ input[type="password"]:placeholder {
 <template>
   <div style="margin-top: 5%;">
     <div style="font-size: 34px;" class="fadeIn heading-text">Welcome.</div>
-    <div class="sub-heading-text" style="margin-top: 18px; font-size: 15px; color:white;">Please log in to continue.</div>
+    <div
+      class="sub-heading-text"
+      style="margin-top: 18px; font-size: 15px; color:white;"
+    >Please log in to continue.</div>
 
     <div class="login-container">
       <div>
         <form class="login-form">
-          <input class="login-fields" type="text" id="login-tab" name="email" placeholder="email" />
-          <input
-            type="password"
-            class="login-fields"
-            id="password"
-            name="password"
-            placeholder="password"
-          />
+          <span style="display: flex;">
+            <input
+              style="padding-left: 5px;"
+              class="login-fields"
+              v-model="email"
+              type="email"
+              name="email"
+              placeholder="email"
+            />
+            <span v-if="!validateEmail()" class="asterisk">*</span>
+          </span>
 
-          <div style= "text-align: center; margin: auto;">
-            <!-- <nuxt-link value="Continue">
-              <button type="submit" value="Continue" @click="submit">
-                <right-circle />Continue
-              </button>
-            </nuxt-link> -->
-            <v-btn value="Continue" @click="$auth.loginWith('social')">
-                <right-circle />Continue
-              </v-btn>
+          <span style="display: flex;">
+            <input
+              style="padding-left: 5px;"
+              type="password"
+              class="login-fields"
+              name="password"
+              placeholder="password"
+              v-model="password"
+            />
+            <span v-if="!this.password" class="asterisk">*</span>
+          </span>
+
+          <div style="text-align: center; margin: auto;">
+            <div v-if="this.validateEmail() && this.password">
+              <div style="text-align: center;">
+                <button
+                  @click="submitData()"
+                  type="submit"
+                  style="margin-bottom: 10px; margin margin-top: 10px;"
+                  class="fadeIn request-staff-buttons"
+                >
+                  <right-circle />Submit
+                </button>
+              </div>
+            </div>
+
+            <div v-if="!this.validateEmail || !this.password">
+              <div style="text-align: center;">
+                <button
+                  type="disabled"
+                  disabled="true"
+                  style="margin-bottom: 10px; margin margin-top: 10px;
+                      background-color: #d3d3d3 !important;"
+                  class="form-buttons-disabled"
+                >
+                  <right-circle style="margin-right:4px" />Submit
+                </button>
+              </div>
+            </div>
           </div>
         </form>
       </div>
@@ -159,24 +195,48 @@ import axios from "~/plugins/axios";
 
 export default {
   data() {
-    return {};
+    return {
+      password: null,
+      email: null,
+      userId: null,
+      userType: null
+    };
   },
   methods: {
     scrollToTop() {
       document.getElementById("tabs").scrollIntoView();
     },
-    submit() {
-      console.log('cliked')
-      // this.$auth.loginWith('social');
+    async submitData() {
+      let user = await axios.get("/api/users/getUserByEmail/" + this.email);
+
+      if (user) {
+        console.log(user.data);
+        this.userId = user.data._id;
+        this.userType = user.data.userType;
+        console.log(this.userType);
+
+        if (user.data.userType === "Staff") {
+          console.log("staff");
+          window.location.href = "landingStaff";
+        }
+          if (user.data.userType === "Student") {
+          window.location.href = "landingStudent";
+        }
+
+        console.log(this.userId);
+      }
+    },
+    validateEmail: function() {
+      const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      return re.test(String(this.email).toLowerCase());
     }
+
+    // let userList = await axios.get("/api/users/getUserByType/" + userType);
   },
   beforeMount() {
     this.scrollToTop();
-    //console.log(this.$auth)
   },
-  mounted() {
-    console.log(this.$auth)
-  }
+  mounted() {}
 };
 </script>
 

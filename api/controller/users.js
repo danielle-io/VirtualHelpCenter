@@ -25,6 +25,16 @@ router.post("/insertUser", function(req, res, next) {
   userData.save();
 });
 
+router.get("/users/getUserByEmail/:id", function(req, res, next) {
+  const id = req.params.id;
+  var query = UserModel.findOne({ 'email': id, 'deleted': 0 });
+
+  query.exec(function(err, users) {
+    if (err) return handleError(err);
+    res.send(users);
+  });
+});
+
 router.get("/users/getUserByType/:id", function(req, res, next) {
   const id = req.params.id;
     console.log(id);

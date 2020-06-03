@@ -133,8 +133,7 @@ export default {
       title: "Users"
     };
   },
-  mounted() {
-  }
+  mounted() {}
 };
 </script>
 

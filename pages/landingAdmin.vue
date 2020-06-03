@@ -228,12 +228,22 @@ input[type="text"]:placeholder {
         <a
           @click="switchToAddStaffTab"
           v-bind:class="{ 'tab-links-active': addStaffTab, 'tab-links': !addStaffTab }"
-        >Add a Tutor</a>
+        >Add Staff</a>
 
         <a
           v-bind:class="{ 'tab-links-active': removeStaffTab, 'tab-links': !removeStaffTab }"
           @click="switchToRemoveStaffTab"
-        >Remove a Tutor</a>
+        >Remove Staff</a>
+
+        <a
+          v-bind:class="{ 'tab-links-active': addCourseTab, 'tab-links': !addCourseTab }"
+          @click="switchToAddCourseTab"
+        >Add Course</a>
+
+        <a
+          v-bind:class="{ 'tab-links-active': removeCourseTab, 'tab-links': !removeCourseTab }"
+          @click="switchToRemoveCourseTab"
+        >Remove Course</a>
       </div>
 
       <div style="padding-top: 16px;" class="request-container">
@@ -247,7 +257,12 @@ input[type="text"]:placeholder {
           <span style="margin-left:10px;">Submitted!</span>
         </div>
 
-        <div id="removedText" style="font-size: 16px;" class="hidden-text">
+        <div id="staffRemovedText" style="font-size: 16px;" class="hidden-text">
+          <check-circle style="height: 1.3em !important;" />
+          <span style="margin-left:10px;">Staff Member Removed</span>
+        </div>
+
+        <div id="courseRemovedText" style="font-size: 16px;" class="hidden-text">
           <check-circle style="height: 1.3em !important;" />
           <span style="margin-left:10px;">Staff Member Removed</span>
         </div>
@@ -339,11 +354,7 @@ input[type="text"]:placeholder {
               </div>
 
               <div class="row">
-                <b-form-checkbox-group
-                  v-model="selectedCourses"
-                  :options="courseList"
-                  v-on:change="getSelectedCourse"
-                ></b-form-checkbox-group>
+                <b-form-checkbox-group v-model="selectedCourses" :options="courseList"></b-form-checkbox-group>
               </div>
             </div>
 
@@ -378,8 +389,8 @@ input[type="text"]:placeholder {
           <div v-if="this.removeStaffTab">
             <div style="margin-left: 12px;" class="form-container">
               <div class="row">
-                <label style="margin-top: 0px;" class="label-format-smaller">
-                  <email class="label-icons" />Remove By Email
+                <label style="margin-top: 15px;" class="label-format-smaller">
+                  <email class="label-icons" />Remove Staff By Email
                 </label>
               </div>
 
@@ -416,6 +427,109 @@ input[type="text"]:placeholder {
                     class="form-buttons-disabled"
                   >
                     <right-circle style="margin-right:4px" />Submit Removal
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div v-if="this.addCourseTab">
+            <div style="margin-left: 12px;" class="form-container">
+              <div class="row" style="width: 70%;">
+                <label class="label-format-smaller">
+                  <library class="label-icons" />Add a Course
+                  <span v-if="!newCourseDep || !newCourseNum" class="asterisk">*</span>
+                </label>
+              </div>
+
+              <div class="row form-line">
+                <b-form-input
+                  style="margin-right: 140px; border-top: none; border-left:none; border-right:none; border-radius:0;"
+                  placeholder="Enter the course department (ex: ICS)"
+                  v-model="newCourseDep"
+                  class="email-input"
+                ></b-form-input>
+              </div>
+
+              <div class="row form-line">
+                <b-form-input
+                  style="margin-right: 140px; border-top: none; border-left:none; border-right:none; border-radius:0;"
+                  placeholder="Enter the course number (ex: 32)"
+                  v-model="newCourseNum"
+                  class="email-input"
+                ></b-form-input>
+              </div>
+
+              <div v-if="this.newCourseDep || this.newCourseNum">
+                <div style="text-align: center;">
+                  <button
+                    @click="insertNewCourse()"
+                    type="submit"
+                    style="margin-bottom: 10px; margin margin-top: 10px;"
+                    class="fadeIn request-staff-buttons"
+                  >
+                    <right-circle />Submit
+                  </button>
+                </div>
+              </div>
+
+              <div v-if="!this.newCourseDep || !this.newCourseNum">
+                <div style="text-align: center;">
+                  <button
+                    type="disabled"
+                    disabled="true"
+                    style="margin-bottom: 10px; margin margin-top: 10px;
+                      background-color: #d3d3d3 !important;"
+                    class="form-buttons-disabled"
+                  >
+                    <right-circle style="margin-right:4px" />Submit
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div v-if="this.removeCourseTab">
+            <div style="margin-left: 12px;" class="form-container">
+              <div class="row">
+                <label style="margin-top: 15px;" class="label-format-smaller">
+                  <book class="label-icons" />Remove a Course
+                </label>
+              </div>
+
+              <div class="row" style="margin-left: 10px;">
+                <b-form-select
+                  style="margin-top: 6px; border-radius: 0px; display: in-line-block; border-left:none; border-right:none; border-top: none; width: 40%;"
+                  :options="courseList"
+                  size="sm"
+                  class="mt-3"
+                  v-model="courseToRemove"
+                ></b-form-select>
+              </div>
+
+              <div v-if="this.courseToRemove">
+                <div style="text-align: center; margin-top:15px;">
+                  <button
+                    @click="removeCourse"
+                    type="submit"
+                    style="margin-bottom: 10px; margin margin-top: 10px;"
+                    class="fadeIn request-staff-buttons"
+                  >
+                    <right-circle />Submit
+                  </button>
+                </div>
+              </div>
+
+              <div v-if="!this.courseToRemove">
+                <div style="text-align: center;">
+                  <button
+                    type="disabled"
+                    disabled="true"
+                    style="margin-bottom: 10px; margin margin-top: 10px;
+                      background-color: #d3d3d3 !important;"
+                    class="form-buttons-disabled"
+                  >
+                    <right-circle style="margin-right:4px" />Submit
                   </button>
                 </div>
               </div>
@@ -465,6 +579,9 @@ export default {
       removeStaffEmails: [],
       addStaffTab: true,
       removeStaffTab: false,
+      addCourseTab: false,
+      removeCourseTab: false,
+      courseToRemove: null,
       color: "#7e6694",
       submitted: false,
       removed: false,
@@ -482,7 +599,9 @@ export default {
       selectedCourses: null,
       staffMemberToRemove: null,
       zoomLink: "",
-      currentStaff: [{ value: null, text: "Select the email to remove" }]
+      currentStaff: [{ value: null, text: "Select the email to remove" }],
+      newCourseNum: null,
+      newCourseDep: null
     };
   },
   methods: {
@@ -507,11 +626,6 @@ export default {
       this.scrollToTop();
 
       if (staffCourseInsert) {
-        console.log(this.email);
-        console.log(this.firstName);
-        console.log(staffCourseInsert);
-        console.log(this.zoomLink);
-
         var user = await axios.post("/api/insertStaff", {
           name: {
             firstName: this.firstName,
@@ -531,39 +645,91 @@ export default {
       const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
       return re.test(String(this.email).toLowerCase());
     },
-    getSelectedCourse: function(course) {
-      console.log(course);
+    removeCourse() {
+      axios
+        .put("/api/courses/updateCourse/" + id, {
+          deleted: 1
+        })
+        .then(() => {
+          console.log("getting new user list");
+        });
+
+      this.courseList = this.courseList.filter(course => course.value !== id);
+      this.courseToRemove = null;
+
+      clearForm();
     },
     clearForm: function() {
-      console.log("clearing form");
       this.email = "";
       this.firstName = null;
       this.lastName = null;
       this.zoomLink = "";
       this.selectedCourses = null;
+      this.newCourseDep = null;
+      this.newCourseNum = null;
     },
     switchToAddStaffTab: function() {
       this.addStaffTab = true;
       this.removeStaffTab = false;
+      this.addCourseTab = false;
+
+      this.removeCourseTab = false;
+
       this.scrollToTop();
       return this.addStaffTab;
     },
+    async insertNewCourse() {
+      let newCourse = await axios.post("/api/insertCourse", {
+        dep: this.newCourseDep,
+        courseNum: this.newCourseNum,
+        deleted: 0
+      });
+      if (newCourse) {
+        console.log("NEW COURSE " + JSON.stringify(newCourse));
+      }
+
+      //TODO: get insert ID back to add it to the course list
+      // this.courseList.push({
+      //   value: this.newCourseNum._id,
+      //   text: this.newCourseDep.dep + this.newCourseNum
+      // }
+      // )
+    },
     switchToRemoveStaffTab: function() {
+      this.scrollToTop();
       this.addStaffTab = false;
       this.removeStaffTab = true;
-      this.scrollToTop();
+      this.addCourseTab = false;
+      this.removeCourseTab = false;
+
       return this.removeStaffTab;
     },
+    switchToAddCourseTab: function() {
+      this.scrollToTop();
+      this.addCourseTab = true;
+      this.removeCourseTab = false;
+      this.addStaffTab = false;
+      this.removeStaffTab = false;
+      return this.addCourseTab;
+    },
+    switchToRemoveCourseTab: function() {
+      this.scrollToTop();
+      this.removeCourseTab = true;
+      this.addCourseTab = false;
+      this.addStaffTab = false;
+      this.removeStaffTab = false;
+      return this.removeCourseTab;
+    },
     removeStaffByEmails() {
-      document.getElementById("removedText").className = "sub-heading-text";
+      document.getElementById("staffRemovedText").className =
+        "sub-heading-text";
 
       var id = this.staffMemberToRemove;
       this.removed = true;
-      console.log(this.staffMemberToRemove);
 
       setTimeout(function() {
         this.removed = false;
-        document.getElementById("removedText").className = "hidden-text";
+        document.getElementById("staffRemovedText").className = "hidden-text";
       }, 3000);
 
       axios
@@ -574,29 +740,7 @@ export default {
           console.log("getting new user list");
         });
 
-      // var newStaff = [];
-
-      // this.currentStaff.forEach(staff => {
-      //   if (staff._id !== id) {
-      //     newStaff.push({
-      //       value: staff._id,
-      //       text: staff.email
-      //     });
-      //   }
-      // });
-
       this.currentStaff = this.currentStaff.filter(staff => staff.value !== id);
-
-      console.log("newstaff");
-      // console.log(newStaff);
-
-      // if (newStaff.length === this.currentStaff.length -1){
-      //   console.log(newStaff);
-      //   this.currentStaff = newStaff;
-      // }
-
-      console.log(this.currentStaff);
-
       this.staffMemberToRemove = null;
     },
     async getCurrentStaff() {
@@ -604,7 +748,6 @@ export default {
       console.log(staffList);
 
       if (staffList.data) {
-        console.log("courses ");
         staffList.data.forEach(staff => {
           this.currentStaff.push({
             value: staff._id,
@@ -615,10 +758,8 @@ export default {
     },
     async loadCourses() {
       let courses = await axios.get("/api/courses/");
-      console.log(courses.data);
 
       if (courses.data) {
-        console.log("courses ");
         courses.data.forEach(course => {
           this.courseList.push({
             value: course._id,
@@ -632,6 +773,11 @@ export default {
     this.scrollToTop();
     this.getCurrentStaff();
     this.loadCourses();
+  },
+  mounted() {
+    if (this.roles) {
+      this.role = this.roles[0].value;
+    }
   }
 };
 </script>
