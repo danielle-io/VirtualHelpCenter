@@ -13,7 +13,6 @@
         @input="$emit('input', $event)"
       />
     </client-only>
-    <!-- <pre class="pre">{{ code }}</pre> -->
   </div>
 </template>
 

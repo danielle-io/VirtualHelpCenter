@@ -773,7 +773,7 @@ Request History tab."
                           </span>Code:
                         </span>
                         <!-- <span style="padding-left: 20px !important;" class="col-sm-9 text-body"> -->
-                        <Codemirror id="codeMirrorInput" v-model="codeSnippet" />
+                        <Codemirror v-model="codeSnippet" />
 
                         <!-- </span> -->
                       </div>
@@ -1563,25 +1563,6 @@ export default {
       this.ticketTime =
         " " + this.formatTime(ticket.createdAt.split("T")[1].substring(0, 5));
       this.showTicket = true;
-      if (this.codeSnippet) {
-        console.log("code snippet in set fields");
-        // document.getElementById("codeMirrorInput").fromTextArea(document.getElementById("codeMirrorInput"), {
-        //   lineNumbers: true
-        // }).setValue("your code here");
-
-        // var textArea = document.getElementById("codeMirrorInput");
-        // textArea.code = "CODEEE";
-
-        // var editor = document.getElementById("codeMirrorInput").fromTextArea(textArea);
-        // editor.getDoc().setValue('var msg = "Hi";');
-        // console.log("here");
-
-        // var currentValue = document.getElementById("codeMirrorInput").cm.getValue();
-        // console.log(currentValue);
-        // var str = "some new value";
-
-        // document.getElementById("codeMirrorInput").cm.setValue("CODDEEE");
-      }
     },
     changeRequestState: function() {
       if (this.requestLandingPage === true && this.submitRequest === false) {
@@ -1681,12 +1662,6 @@ export default {
           // }
         });
 
-        if (this.codeSnippet) {
-          console.log("code snippet here");
-          CodeMirror.fromTextArea(document.getElementById("codeMirrorInput"), {
-            lineNumbers: true
-          }).setValue("your code here");
-        }
         this.openTicket = ticket.data;
 
         if (ticket) {
