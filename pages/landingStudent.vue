@@ -1210,7 +1210,7 @@ export default {
       document.getElementById("tabs").scrollIntoView();
     },
     addRow: function() {
-      console.log(this.code);
+      console.log(this.codeSnippet);
       var elem = document.createElement("tr");
       this.rows.push({
         file: {
