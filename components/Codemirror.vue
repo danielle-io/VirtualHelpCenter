@@ -5,6 +5,7 @@
         class="codemirror"
         :value="codeSnippet"
         :options="cmOption"
+        v-model="code"
         @cursorActivity="onCmCursorActivity"
         @ready="onCmReady"
         @focus="onCmFocus"
@@ -26,9 +27,14 @@
     props: {
         codeSnippet: {
             type: String
+        },
+        initialCode: {
+            type: String
         }
     },
     data() {
+
+        console.log(this.initialCode)
       return {
         cmOption: {
           tabSize: 4,
@@ -38,11 +44,7 @@
           mode: 'text/x-python',
           theme: 'idea'
         },
-        code: dedent`
-          #Paste your code here, if needed
-          def example():
-            pass
-        `
+        code: this.initialCode
       }
     },
     methods: {

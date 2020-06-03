@@ -3,11 +3,9 @@
   margin-right: 10px !important;
   margin-top: 3px;
 }
-
 .md-dialog-container.md-theme-default {
   width: 50% !important;
 }
-
 .md-button .md-ripple {
   padding: 0 8px;
   display: flex;
@@ -16,7 +14,6 @@
   background: white !important;
   box-shadow: 0 10px 30px 0 white !important;
 }
-
 .md-button.md-theme-default {
   color: rgba(0, 0, 0, 0.87);
   color: rgba(0, 0, 0, 0.87);
@@ -28,7 +25,6 @@
   background: none !important;
   box-shadow: 0 10px 30px 0 white !important;
 }
-
 .md-ripple {
   padding: 0 8px;
   display: flex;
@@ -37,18 +33,15 @@
   background: none !important;
   box-shadow: 0 10px 30px 0 white !important;
 }
-
 .md-dialog-container.md-theme-default {
   width: 50% !important;
 }
-
 .md-button.md-theme-default.md-primary {
   color: #448aff !important;
   background: none !important;
   box-shadow: none !important;
   color: var(--md-theme-default-primary-on-background, #448aff);
 }
-
 .md-dialog {
   position: fixed;
   z-index: 9999 !important;
@@ -65,14 +58,12 @@
 .md-dialog-alert {
   z-index: 9999;
 }
-
 .disabled-button {
   width: 40% !important;
   cursor: default !important;
   background-color: #d3d3d3 !important;
   opacity: 0.2;
 }
-
 .tab-links {
   display: inline-block;
   margin-left: 4%;
@@ -82,45 +73,36 @@
   opacity: 0.8;
   font-weight: 200;
 }
-
 .extra-padding {
   font-size: 20px;
   padding-top: 100px;
   padding-bottom: 100px;
 }
-
 .dialog-showing {
   opacity: 0.9;
 }
-
 .dialog-hidden {
   opacity: 1;
 }
-
 .ticket-categories {
   color: #41408a;
 }
-
 .col-sm-3 {
   flex-wrap: wrap;
   flex: 0 0 20%;
 }
-
 .col {
   word-break: keep-all;
 }
-
 .requests-heading {
   border-bottom: 1px solid #b8b7c081;
 }
-
 /* The drop down styling */
 .custom-select {
   border-color: white;
   width: 50%;
   border-bottom: 1px solid #ced4da;
 }
-
 .close-button {
   margin-right: 10px;
   font-size: 18px;
@@ -130,7 +112,6 @@
   color: #53a59e;
   font-weight: 500;
 }
-
 .tab-links-active {
   margin-left: 4%;
   margin-right: 4%;
@@ -167,7 +148,6 @@
   display: inline-block;
   text-align: center;
 }
-
 .staff-container {
   position: relative;
   z-index: 900;
@@ -207,7 +187,6 @@
   border-style: solid;
   border-color: rgb(151, 223, 233) !important;
 }
-
 .title {
   margin-top: 30px;
 }
@@ -232,7 +211,6 @@
   height: 0px;
   display: none;
 }
-
 input[type="text"] {
   color: #0d0d0d;
   text-align: left;
@@ -248,21 +226,17 @@ input[type="text"] {
   -webkit-border-radius: 5px 5px 5px 5px;
   border-radius: 5px 5px 5px 5px;
 }
-
 input[type="text"]:focus {
   border-bottom: 2px solid #5fbae9;
 }
-
 input[type="text"]:placeholder {
   color: #cccccc;
 }
-
 .form-buttons-disabled {
   width: 40% !important;
   cursor: dafualt !important;
   background-color: #d3d3d3 !important;
 }
-
 button[type="submit"] {
   background-color: #fff !important;
 }
@@ -765,7 +739,6 @@ import VueMaterial from "vue-material";
 import "vue-material/dist/vue-material.min.css";
 import "vue-material/dist/theme/default.css";
 Vue.use(VueMaterial);
-
 import * as Ably from "ably";
 const client = new Ably.Realtime(process.env.ABLY_KEY);
 export default {
@@ -824,7 +797,6 @@ export default {
         return;
       }
     },
-
     filterAllTickets(status) {
       this.filteredTickets = [];
       this.staffCourses.forEach(element => {
@@ -835,11 +807,9 @@ export default {
       //   });
       return this.filteredTickets;
     },
-
     triggerAccept: function() {
       this.studentAccepted = true;
       console.log("accepted " + this.studentAccepted);
-
       axios.put("/api/updateTicket/" + this.currentTicketId, {
         status: "In Progress",
         acceptedBy: {
@@ -897,7 +867,6 @@ export default {
     scrollToTop() {
       document.getElementById("tabs").scrollIntoView();
     },
-
     async getStudentName(ticket, ticketOwnerId) {
       var studentName = "";
       if (ticketOwnerId && ticket) {
@@ -928,7 +897,6 @@ export default {
     },
     // getAttachments: function(attachments){
     //   for (var i = 0; i < attachments.length; i++){
-
     //   }
     //   return
     // },
@@ -954,7 +922,6 @@ export default {
         this.currentTicket = null;
         this.currentTicketId = null;
       }
-
       // The card already selected was replaced by another selection,
       // or a card is selected for the first time
       else {
@@ -967,28 +934,22 @@ export default {
         console.log(JSON.stringify(this.currentTicket));
       }
     },
-
     // This is where the link is stored
     sendZoomLink() {
       console.log("ticket id is " + this.currentTicketId);
       let ticketTime = new Date();
       console.log("ticket is " + JSON.stringify(this.currentTicket));
-
       // Get the students user id from the ticket
       // this.studentChannel = client.channels.get(this.currentTicket.owner._id);
       // this.studentChannel.publish("staffAcceptedTicket", {
       //   zoomLink: this.zoomLink,
       //   date: ticketTime
       // });
-
       // //remove the ticket from open tickets
       // this.ticketChannel.publish("ticketInProgress", this.currentTicket);
-
       // Show connection screen once student receives countdown
       this.connecting = true;
-
       console.log(this.connecting);
-
       //If the student does not accept the session in time return to beginning
       // while (!this.studentAccepted){
       let x = setTimeout(() => {
@@ -998,14 +959,12 @@ export default {
         axios.put("/api/updateTicket/" + this.currentTicketId, {
           status: "Unresolved"
         });
-
         this.resetBackToOpenTicketsDisplay();
       }, this.countdownTime(ticketTime));
       // }
     },
     resetBackToOpenTicketsDisplay() {
       console.log("going back to open tickets display");
-
       if (this.currentTicket) {
         console.log(
           "current ticket exists: removing current ticket " +
@@ -1014,7 +973,6 @@ export default {
         var id = this.currentTicket._id;
         this.removeTicketFromTicketUI(id);
       }
-
       this.studentAccepted = true;
       this.connecting = false;
       this.zoomLinkForm = false;
@@ -1025,7 +983,6 @@ export default {
       this.currentTicketId = null;
       this.selectedTicket = false;
     },
-
     countdownTime(ticketTime) {
       // this.studentChannel = client.channels.get(this.currentTicket.owner._id);
       // this.studentChannel.subscribe("studentAcceptedSession", function(
@@ -1036,7 +993,6 @@ export default {
       //   this.triggerAccept();
       //   clearTimeout(x);
       // });
-
       //read updated time
       let currentTime = new Date();
       ticketTime.setMinutes(ticketTime.getMinutes() + 1);
@@ -1068,11 +1024,9 @@ export default {
     confirmCloseSession() {
       this.showCloseSessionDialog = false;
       console.log("confirm close session");
-
       // this.studentChannel = client.channels.get(this.currentTicket.owner._id);
       // this.studentChannel.publish("ticketMarkedClosed", {});
       this.resetBackToOpenTicketsDisplay();
-
       // Update the ticket status to closed in the db
       if (this.currentTicket) {
         console.log(
@@ -1081,7 +1035,6 @@ export default {
         );
         var id = this.currentTicket._id;
         this.removeTicketFromTicketUI(id);
-
         axios.put("/api/updateTicket/" + id, {
           status: "Closed"
         });
@@ -1091,7 +1044,6 @@ export default {
       //remove the ticket from open tickets
       console.log("removing ticket");
       // this.ticketChannel.publish("ticketClosed", this.currentTicket);
-
       axios.put("/api/updateTicket/" + this.currentTicketId, {
         status: "Pending"
       });
@@ -1102,7 +1054,6 @@ export default {
     //     console.log("user loaded");
     //   }
     // },
-
     // Sets the class to filter by based on dropdown
     async setClass(course) {
       console.log("setting class");
@@ -1123,16 +1074,12 @@ export default {
   },
   async created() {
     let tickets = await axios.get("/api/tickets");
-
     let staff = await axios.get("/api/users/" + this.staffId);
     this.zoomLink = staff.data.zoomLink;
-
     this.tickets = tickets.data;
     this.tickets.sort(this.compareTickets);
-
     for (var i = 0; i < this.tickets.length; i++) {
       await this.getStudentName(this.tickets[i], this.tickets[i].owner._id);
-
       // Add closed ticket to history
       if (
         this.tickets[i].status === "Closed" &&
@@ -1142,12 +1089,10 @@ export default {
         this.ticketHistory.push(this.tickets[i]);
       }
     }
-
     this.ticketHistory.reverse();
     console.log(this.staffCourses);
     if (staff) {
       console.log(this.zoomLink);
-
       staff.data.classes.forEach(element => {
         console.log(element);
         this.loadClasses(element);
@@ -1156,18 +1101,15 @@ export default {
       this.course = course.value;
     }
   },
-
   beforeMount() {
     const queryString = window.location.search;
     this.staffId = queryString.split("=")[1];
     console.log(this.staffId);
     if (this.staffId) {
       this.staffCourses.push({ value: null, text: "Show All Courses" });
-
       // This gets ANY ticket submitted by ANY student
       // this.ticketChannel.subscribe("ticketUpdate", message => {
       //   console.log("ticket was added");
-
       //   // Add new ticket to existing tickets
       //   this.getStudentName(message.data, message.data.owner._id);
       //   this.tickets.push(message.data);
@@ -1177,13 +1119,11 @@ export default {
       //   // ticket will be remove from being displayed
       //   this.removeTicketFromTicketUI(message.data._id);
       // });
-
       // this.ticketChannel.subscribe("reopenTicket", message => {
       //   console.log("ticket was reopened");
       //   this.tickets.push(message.data);
       // });
     }
-
     this.scrollToTop();
   }
 };

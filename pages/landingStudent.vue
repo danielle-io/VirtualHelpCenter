@@ -848,7 +848,7 @@ Request History tab."
                   </div>
 
                   <div class="row">
-                    <Codemirror v-model="codeSnippet" />
+                    <Codemirror v-model="codeSnippet"/>
                   </div>
                   <div class="row">
                     <label style="margin-bottom: 0px;" class="label-format">
