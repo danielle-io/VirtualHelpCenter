@@ -250,7 +250,7 @@ input[type="text"]:placeholder {
         <div
           class="heading-text"
           style="margin-top: 16px; margin-bottom: 10px;"
-        >Administrative Actions</div>
+        >{{this.getTitle()}}</div>
 
         <div id="submittedText" style="font-size: 16px;" class="hidden-text">
           <check-circle style="height: 1.3em !important;" />
@@ -738,6 +738,12 @@ export default {
       this.addStaffTab = false;
       this.removeStaffTab = false;
       return this.removeCourseTab;
+    },
+    getTitle(){
+      if(this.removeCourseTab){return "Remove a Course From System"} 
+      if(this.addCourseTab){return "Add a Course To System"}
+      if(this.addStaffTab){return "Add a New Staff Member"}
+      if(this.removeStaffTab){return "Remove a Staff Member"}
     },
     removeStaffByEmails() {
       document.getElementById("staffRemovedText").className =

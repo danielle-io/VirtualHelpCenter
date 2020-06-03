@@ -5,7 +5,7 @@ var Schema = mongoose.Schema;
 let Admin = null;
 
 try {
-    Staff = User.discriminator('Admin', new Schema({
+    Admin = User.discriminator('Admin', new Schema({
     }),
     );
 } catch (e) {

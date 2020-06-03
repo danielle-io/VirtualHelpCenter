@@ -24,6 +24,25 @@
         </md-card-actions>
       </md-card>
 
+            <md-card>
+        <md-card-header>
+          <md-card-header-text>
+            <div class="md-title">Create User</div>
+            <div
+              class="md-subhead"
+            >Add an Admin User</div>
+          </md-card-header-text>
+        </md-card-header>
+
+        <md-card-actions>
+          <nuxt-link
+            style="cursor: pointer; color: #56a2b1  !important; z-index: 999; 
+                              text-shadow: none !important;"
+            to="/internalAddAdmin"
+          >Add an Admin User</nuxt-link>
+        </md-card-actions>
+      </md-card>
+
       <md-card>
         <md-card-header>
           <md-card-header-text>

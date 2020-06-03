@@ -219,8 +219,11 @@ export default {
           console.log("staff");
           window.location.href = "landingStaff";
         }
-          if (user.data.userType === "Student") {
+        if (user.data.userType === "Student") {
           window.location.href = "landingStudent";
+        }
+        if (user.data.userType === "Admin") {
+          window.location.href = "landingAdmin";
         }
 
         console.log(this.userId);
