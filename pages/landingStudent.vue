@@ -1057,25 +1057,25 @@ Request History tab."
                       </div>
                     </div>
 
-                    <div v-if="ticket.createdAt" class="card-line-history">
+                    <div v-if="ticket.updatedAt" class="card-line-history">
                       <div class="row">
                         <span class="card-categories col-sm-3">
                           <date class="label-icons" />Date:
                         </span>
                         <span
                           class="col-sm-9 text-body"
-                        >{{ (ticket.createdAt.split('T')[0].split('-')[1] + '-' + ticket.createdAt.split('T')[0].split('-')[2] + '-' + ticket.createdAt.split('T')[0].split('-')[0])}}</span>
+                        >{{ ticket.updatedAt.toLocaleDateString().replace('/','-').replace('/','-')}}</span>
                       </div>
                     </div>
 
-                    <div v-if="ticket.createdAt" class="card-line-history">
+                    <div v-if="ticket.updatedAt" class="card-line-history">
                       <div class="row">
                         <span class="card-categories col-sm-3">
                           <clock class="label-icons" />Time:
                         </span>
                         <span
                           class="col-sm-9 text-body"
-                        >{{ " " + formatTime((ticket.createdAt.split('T')[1]).substring(0,5))}}</span>
+                        >{{ " " + ticket.updatedAt.toLocaleTimeString()}}</span>
                       </div>
                     </div>
 
@@ -1541,9 +1541,7 @@ export default {
       this.openTicket = ticket;
       this.openTicket.createdAt = currentDate;
       this.createdAt = currentDate;
-      this.ticketTime = this.formatTime(
-        currentDate.split("T")[1].substring(0, 5)
-      );
+      this.ticketTime = ticket.updatedAt.toLocaleTimeString();
       this.openTicket.status = "Open";
       this.status = "Open";
       this.getTickets();
@@ -1560,8 +1558,7 @@ export default {
       this.attachments = ticket.attachments;
       this.status = ticket.status;
       this.createdAt = ticket.createdAt;
-      this.ticketTime =
-        " " + this.formatTime(ticket.createdAt.split("T")[1].substring(0, 5));
+      this.ticketTime = ticket.updatedAt.toLocaleTimeString();;
       this.showTicket = true;
     },
     changeRequestState: function() {
@@ -1683,6 +1680,10 @@ export default {
         {}
       );
 
+      tickets.data.forEach(ticket=>{
+        ticket.updatedAt = new Date(ticket.updatedAt);
+      })
+
       tickets.data.sort(this.compareTicketsRev);
 
       this.ticketHistory = tickets.data.filter(
@@ -1693,7 +1694,10 @@ export default {
         ticket => ticket.status === "Open" && ticket.owner._id == this.userId
       );
 
+
+
       if (this.openTickets.length > 0) {
+        console.log("setting fields")
         this.openTicket = this.openTickets[0];
         this.setFieldsFromTicket(this.openTicket);
         this.showTicket = true;

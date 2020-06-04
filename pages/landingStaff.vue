@@ -356,7 +356,7 @@ button[type="submit"] {
                           <span
                             style="margin-left:0px;"
                             class="col"
-                          >{{ " " + formatTime((ticket.createdAt.split('T')[1]).substring(0,5))}}</span>
+                          >{{ ticket.updatedAt.toLocaleTimeString()}}</span>
                         </span>
                       </div>
 
@@ -369,7 +369,7 @@ button[type="submit"] {
                           <span
                             style="margin-left:0px;"
                             class="col"
-                          >{{ (ticket.createdAt.split('T')[0].split('-')[1] + '-' + ticket.createdAt.split('T')[0].split('-')[2] + '-' + ticket.createdAt.split('T')[0].split('-')[0])}}</span>
+                          >{{ ticket.updatedAt.toLocaleDateString().replace('/','-').replace('/','-')}}</span>
                         </span>
                       </div>
 
@@ -978,6 +978,13 @@ export default {
         });
         this.resetBackToOpenTicketsDisplay();
       }, this.countdownTime(ticketTime));
+
+      studentChannel.subscribe("studentAcceptedSession", (message) => {
+        console.log("accepted session");
+        document.getElementById("hiddenButton").click();
+        this.triggerAccept();
+        clearTimeout(x);
+      });
     },
     resetBackToOpenTicketsDisplay() {
       console.log("going back to open tickets display");
@@ -999,16 +1006,6 @@ export default {
       this.selectedTicket = false;
     },
     countdownTime(ticketTime) {
-      var studentChannel = client.channels.get(this.currentTicket.owner._id);
-      
-      studentChannel.subscribe("studentAcceptedSession", function(
-        message
-      ) {
-        console.log("accepted session");
-        document.getElementById("hiddenButton").click();
-        this.triggerAccept();
-        clearTimeout(x);
-      });
       //read updated time
       let currentTime = new Date();
       ticketTime.setMinutes(ticketTime.getMinutes() + 1);
@@ -1091,9 +1088,12 @@ export default {
     this.zoomLink = staff.data.zoomLink;
     this.tickets = tickets.data;
     this.tickets.sort(this.compareTickets);
+
     for (var i = 0; i < this.tickets.length; i++) {
       await this.getStudentName(this.tickets[i], this.tickets[i].owner._id);
       // Add closed ticket to history
+        this.tickets[i].updatedAt = new Date(this.tickets[i].updatedAt);
+
       if (
         this.tickets[i].status === "Closed" &&
         this.tickets[i].acceptedBy._id === this.staffId
