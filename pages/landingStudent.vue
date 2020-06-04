@@ -1098,21 +1098,21 @@ Request History tab."
                     </div>
 
                     <div
-                      v-bind:class="{ 'chevron': expandChevron, 'hidden': !expandChevron }"
-                      @click="changeChevronClass"
+                      v-bind:class="{ 'chevron': ticket.expandChevron, 'hidden': !ticket.expandChevron }"
+                      @click="changeChevronClass(ticket)"
                     >
                       <expand-arrow />
                     </div>
 
                     <div
-                      @click="changeChevronClass"
-                      v-bind:class="{ 'chevron': collapseChevron, 'hidden': !collapseChevron }"
+                      @click="changeChevronClass(ticket)"
+                      v-bind:class="{ 'chevron': ticket.collapseChevron, 'hidden': !ticket.collapseChevron }"
                     >
                       <collapse-arrow />
                     </div>
 
                     <div
-                      v-bind:class="{ 'show-extra-content': collapseChevron, 'hide-extra-content': expandChevron }"
+                      v-bind:class="{ 'show-extra-content': ticket.collapseChevron, 'hide-extra-content': ticket.expandChevron }"
                     >
                       <div class="card-line-history">
                         <div class="row">
@@ -1378,14 +1378,13 @@ export default {
     triggerAccept: function() {
       this.showCountdown = true;
     },
-    changeChevronClass: function() {
-      console.log("in change chevron");
-      if (this.expandChevron) {
-        this.collapseChevron = true;
-        this.expandChevron = false;
+    changeChevronClass: function(ticket) {
+      if (ticket.expandChevron) {
+        ticket.expandChevron = false;
+        ticket.collapseChevron = true;
       } else {
-        this.expandChevron = true;
-        this.collapseChevron = false;
+        ticket.expandChevron = true;
+        ticket.collapseChevron = false;
       }
     },
     getRequestFormHeader: function() {
@@ -1563,6 +1562,10 @@ export default {
       this.ticketTime =
         " " + this.formatTime(ticket.createdAt.split("T")[1].substring(0, 5));
       this.showTicket = true;
+      this.$set(ticket, "expandChevron", true);
+      this.$set(ticket, "collapseChevron", false);
+      this.expandChevron = true;
+      this.collapseChevron = false;
     },
     changeRequestState: function() {
       if (this.requestLandingPage === true && this.submitRequest === false) {
@@ -1684,6 +1687,11 @@ export default {
       );
 
       tickets.data.sort(this.compareTicketsRev);
+
+      tickets.data.forEach(element => {
+        this.$set(element, "expandChevron", true);
+        this.$set(element, "collapseChevron", false);
+      });
 
       this.ticketHistory = tickets.data.filter(
         ticket => ticket.status !== "Open" && ticket.owner._id == this.userId

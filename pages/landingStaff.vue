@@ -395,21 +395,21 @@ button[type="submit"] {
                     </div>
 
                     <div
-                      v-bind:class="{ 'chevron': getExpandChevron(ticket._id), 'hidden': !getExpandChevron(ticket._id) }"
-                      @click="changeChevronClass(ticket._id)"
+                      v-bind:class="{ 'chevron': ticket.expandChevron, 'hidden': !ticket.expandChevron }"
+                      @click="changeChevronClass(ticket)"
                     >
                       <expand-arrow />
                     </div>
 
                     <div
-                      @click="changeChevronClass(ticket._id)"
-                      v-bind:class="{ 'chevron': getCollapseChevron(ticket._id), 'hidden': !getCollapseChevron(ticket._id) }"
+                      @click="changeChevronClass(ticket)"
+                      v-bind:class="{ 'chevron': ticket.collapseChevron, 'hidden': !ticket.collapseChevron }"
                     >
                       <collapse-arrow />
                     </div>
 
                     <div
-                      v-bind:class="{ 'show-extra-content': getCollapseChevron(ticket._id), 'hide-extra-content': getExpandChevron(ticket._id) }"
+                      v-bind:class="{ 'show-extra-content': ticket.collapseChevron, 'hide-extra-content': !ticket.collapseChevron }"
                     >
                       <div class="card-line">
                         <span class="row">
@@ -535,21 +535,21 @@ button[type="submit"] {
                   </div>
 
                   <div
-                    v-bind:class="{ 'chevron': expandChevron, 'hidden': !expandChevron }"
-                    @click="changeChevronClass"
+                    v-bind:class="{ 'chevron': ticket.expandChevron, 'hidden': !ticket.expandChevron }"
+                    @click="changeChevronClass(ticket)"
                   >
                     <expand-arrow />
                   </div>
 
                   <div
-                    @click="changeChevronClass"
-                    v-bind:class="{ 'chevron': collapseChevron, 'hidden': !collapseChevron }"
+                    @click="changeChevronClass(ticket)"
+                    v-bind:class="{ 'chevron': ticket.collapseChevron, 'hidden': !ticket.collapseChevron }"
                   >
                     <collapse-arrow />
                   </div>
 
                   <div
-                    v-bind:class="{ 'show-extra-content': collapseChevron, 'hide-extra-content': expandChevron }"
+                    v-bind:class="{ 'show-extra-content': ticket.collapseChevron, 'hide-extra-content': ticket.expandChevron }"
                   >
                     <div class="card-line-history">
                       <div class="row">
@@ -657,7 +657,7 @@ button[type="submit"] {
                 </div>
 
                 <div
-                  v-bind:class="{ 'chevron': expandChevron, 'hidden': !expandChevron }"
+                  v-bind:class="{ 'chevron': this.currentTicket.expandChevron, 'hidden': !this.currentTicket.expandChevron }"
                   @click="changeChevronClass"
                 >
                   <expand-arrow />
@@ -665,13 +665,13 @@ button[type="submit"] {
 
                 <div
                   @click="changeChevronClass"
-                  v-bind:class="{ 'chevron': collapseChevron, 'hidden': !collapseChevron }"
+                  v-bind:class="{ 'chevron': this.currentTicket.collapseChevron, 'hidden': !this.currentTicket.collapseChevron }"
                 >
                   <collapse-arrow />
                 </div>
 
                 <div
-                  v-bind:class="{ 'show-extra-content': collapseChevron, 'hide-extra-content': expandChevron }"
+                  v-bind:class="{ 'show-extra-content': this.currentTicket.collapseChevron, 'hide-extra-content': this.currentTicket.expandChevron }"
                 >
                   <div class="card-line-history">
                     <div class="row">
@@ -765,8 +765,6 @@ export default {
       openRequestTab: true,
       requestHistoryTab: false,
       selectedTicket: false,
-      expandChevron: true,
-      collapseChevron: false,
       course: {},
       selected: "",
       zoomLink: null,
@@ -823,7 +821,6 @@ export default {
         this.allOpenTicketsAmount = allOpenTickets.data.length;
       }
     },
-
     formatTime(time) {
       var timeStr = " AM";
       var splitTime = time.split(":");
@@ -834,13 +831,6 @@ export default {
       return hours + ":" + splitTime[1] + timeStr;
     },
     getFilterClass(status, course) {
-      // console.log("filtering course")
-      // console.log(course);
-      // if (course === null) {
-      //   console.log("open tickets");
-      //   return this.filterAllTickets(status);
-      //   // return this.filterOpenTickets(status);
-      // console.log(course);
       var tickets = [];
       if (course === null) {
         tickets = this.filterOpenTickets(status);
@@ -884,6 +874,8 @@ export default {
               " " +
               studentResponse.data.name.lastName;
             this.$set(ticket, "ownerName", studentName);
+            this.$set(ticket, "expandChevron", true);
+            this.$set(ticket, "collapseChevron", false);
           }
         }
       }
@@ -922,35 +914,17 @@ export default {
       }
       return "are";
     },
-    changeChevronClass: function(id) {
-
-      console.log("in change chevron");
-      if (this.getExpandChevron(id)) {
-        Ticket.update({
-          where: (ticket) => {
-            return ticket._id == id
-          },
-          data: {
-            expandChevron: false,
-            collapseChevron: true
-          }
-        })
-        // this.collapseChevron = true;
-        // this.expandChevron = false;
+    changeChevronClass: function(ticket) {
+      if (ticket.expandChevron) {
+        ticket.expandChevron = false;
+        ticket.collapseChevron = true;
       } else {
-        Ticket.update({
-          where: (ticket) => {
-            return ticket._id == id
-          },
-          data: {
-            expandChevron: true,
-            collapseChevron: false
-          }
-        })
+        ticket.expandChevron = true;
+        ticket.collapseChevron = false;
       }
     },
-    chevronToggle: function(ticketId){
-      return 
+    chevronToggle: function(ticketId) {
+      return;
     },
     clickCard: function(ticket, index, id) {
       // selectedTicketIndex = the same as the index passed in means
@@ -997,7 +971,6 @@ export default {
       //If the student does not accept the session in time return to beginning
 
       let x = setTimeout(() => {
-        // The student did not accept in time
         console.log("student did not accept in time");
         this.showCanceledRequestDialog = true;
         axios.put("/api/updateTicket/" + this.currentTicketId, {
@@ -1007,7 +980,6 @@ export default {
       }, this.countdownTime(ticketTime));
     },
     resetBackToOpenTicketsDisplay() {
-      console.log("going back to open tickets display");
       if (this.currentTicket) {
         console.log(
           "current ticket exists: removing current ticket " +
@@ -1027,10 +999,8 @@ export default {
     },
     countdownTime(ticketTime) {
       var studentChannel = client.channels.get(this.currentTicket.owner._id);
-      
-      studentChannel.subscribe("studentAcceptedSession", function(
-        message
-      ) {
+
+      studentChannel.subscribe("studentAcceptedSession", function(message) {
         console.log("accepted session");
         document.getElementById("hiddenButton").click();
         this.triggerAccept();
@@ -1066,7 +1036,6 @@ export default {
     },
     confirmCloseSession() {
       this.showCloseSessionDialog = false;
-      console.log("confirm close session");
       var studentChannel = client.channels.get(this.currentTicket.owner._id);
       studentChannel.publish("ticketMarkedClosed", {});
       this.resetBackToOpenTicketsDisplay();
@@ -1082,16 +1051,6 @@ export default {
           status: "Closed"
         });
       }
-      },
-    getCollapseChevron(id){
-      let tickets = Ticket.query().where('_id', id).get()
-      console.log(tickets[0].collapseChevron)
-      return tickets[0].collapseChevron
-    },
-     getExpandChevron(id){
-      let tickets = Ticket.query().where('_id', id).get()
-      console.log(tickets[0].expandChevron)
-      return tickets[0].expandChevron
     },
     async acceptTicket() {
       //remove the ticket from open tickets
@@ -1106,19 +1065,16 @@ export default {
 
     // Sets the class to filter by based on dropdown
     async setClass(course) {
-      console.log("setting class");
       if (course) {
         let chosenCourse = await axios.get("/api/courses/" + course);
         this.course = chosenCourse.data._id;
       }
-      console.log(this.course);
     },
     async loadClasses(classSelected) {
       if (classSelected) {
         let course = await axios.get("/api/courses/" + classSelected._id);
         var text = course.data.dep + " " + course.data.courseNum;
         this.staffCourses.push({ value: classSelected._id, text: text });
-        console.log(this.staffCourses);
       }
     }
   },
@@ -1137,20 +1093,16 @@ export default {
         this.tickets[i].status === "Closed" &&
         this.tickets[i].acceptedBy._id === this.staffId
       ) {
-        console.log("closed");
         this.ticketHistory.push(this.tickets[i]);
       }
     }
     this.ticketHistory.reverse();
-    console.log(this.staffCourses);
     if (staff) {
-      console.log(this.zoomLink);
       staff.data.classes.forEach(element => {
-        console.log(element);
         this.loadClasses(element);
       });
       //let course = this.staffCourses[0];
-      let course = staff.data.classes[0]
+      let course = staff.data.classes[0];
       this.course = course.value;
     }
   },
@@ -1161,8 +1113,6 @@ export default {
     this.staffId = queryString.split("=")[1];
     console.log(this.staffId);
     if (this.staffId) {
-    
-  
       this.staffCourses.push({ value: null, text: "Show All Courses" });
       // This gets ANY ticket submitted by ANY student
       var ticketChannel = client.channels.get("tickets");
@@ -1192,8 +1142,10 @@ export default {
   },
   computed: {
     chevron(id) {
-      let tickets = Ticket.query().where('_id', id).get()
-      console.log(tickets)
+      let tickets = Ticket.query()
+        .where("_id", id)
+        .get();
+      console.log(tickets);
     }
   }
 };
