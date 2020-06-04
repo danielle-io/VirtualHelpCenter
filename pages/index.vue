@@ -38,51 +38,55 @@ input[type="password"]:placeholder {
   color: #241e1e;
 }
 
-button[type="disabled-button"]{
+button[type="disabled-button"] {
   background-color: #d3d3d3 !important;
-   color: white;
-    letter-spacing: 0.5px;
-    font-weight: bolder;
-    font-size: 14px;
-    width: 85%;
-    height: 50px;
-    text-align: center !important;
-    text-decoration: none;
-    display: inline-block;
-    text-transform: uppercase;
-    -webkit-border-radius: 5px 5px 5px 5px;
-    border-radius: 7px 7px 7px 7px;
-    margin: 30px 20px 40px 20px;
-    -webkit-transition: all 0.3s ease-in-out;
-    -moz-transition: all 0.3s ease-in-out;
-    -ms-transition: all 0.3s ease-in-out;
-    -o-transition: all 0.3s ease-in-out;
-    transition: all 0.3s ease-in-out;
+  color: white;
+  letter-spacing: 0.5px;
+  font-weight: bolder;
+  font-size: 14px;
+  width: 85%;
+  height: 50px;
+  text-align: center !important;
+  text-decoration: none;
+  display: inline-block;
+  text-transform: uppercase;
+  -webkit-border-radius: 5px 5px 5px 5px;
+  border-radius: 7px 7px 7px 7px;
+  margin: 30px 20px 40px 20px;
+  -webkit-transition: all 0.3s ease-in-out;
+  -moz-transition: all 0.3s ease-in-out;
+  -ms-transition: all 0.3s ease-in-out;
+  -o-transition: all 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out;
 }
 
 button[type="button-color"] {
-    background: linear-gradient( 333deg, rgba(167, 115, 215, 0.72) 21%, rgba(169, 235, 244, 1) 75%);
-    /* border: none; */
-    color: white;
-    letter-spacing: 0.5px;
-    font-weight: bolder;
-    font-size: 14px;
-    width: 85%;
-    height: 50px;
-    text-align: center !important;
-    text-decoration: none;
-    display: inline-block;
-    text-transform: uppercase;
-    -webkit-box-shadow: 0 10px 30px 0 rgba(95, 186, 233, 0.4);
-    box-shadow: 0 10px 30px 0 rgba(137, 118, 241, 0.4);
-    -webkit-border-radius: 5px 5px 5px 5px;
-    border-radius: 7px 7px 7px 7px;
-    margin: 30px 20px 40px 20px;
-    -webkit-transition: all 0.3s ease-in-out;
-    -moz-transition: all 0.3s ease-in-out;
-    -ms-transition: all 0.3s ease-in-out;
-    -o-transition: all 0.3s ease-in-out;
-    transition: all 0.3s ease-in-out;
+  background: linear-gradient(
+    333deg,
+    rgba(167, 115, 215, 0.72) 21%,
+    rgba(169, 235, 244, 1) 75%
+  );
+  /* border: none; */
+  color: white;
+  letter-spacing: 0.5px;
+  font-weight: bolder;
+  font-size: 14px;
+  width: 85%;
+  height: 50px;
+  text-align: center !important;
+  text-decoration: none;
+  display: inline-block;
+  text-transform: uppercase;
+  -webkit-box-shadow: 0 10px 30px 0 rgba(95, 186, 233, 0.4);
+  box-shadow: 0 10px 30px 0 rgba(137, 118, 241, 0.4);
+  -webkit-border-radius: 5px 5px 5px 5px;
+  border-radius: 7px 7px 7px 7px;
+  margin: 30px 20px 40px 20px;
+  -webkit-transition: all 0.3s ease-in-out;
+  -moz-transition: all 0.3s ease-in-out;
+  -ms-transition: all 0.3s ease-in-out;
+  -o-transition: all 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out;
 }
 .fadeInDown {
   -webkit-animation-name: fadeInDown;
@@ -259,12 +263,14 @@ export default {
       let user = await axios.get("/api/users/getUserByEmail/" + this.email);
 
       if (user) {
+        console.log(user);
         this.userId = user.data._id;
         this.userType = user.data.userType;
 
         if (user.data.userType === "Staff") {
           window.location.href = "landingStaff/?userId=" + user.data._id;
         } else if (user.data.userType === "Student") {
+          console.log(user.data);
           window.location.href = "landingStudent/?userId=" + user.data._id;
         } else if (user.data.userType === "Admin") {
           window.location.href = "landingAdmin/?userId=" + user.data._id;

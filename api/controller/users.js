@@ -12,12 +12,14 @@ router.get("/users/:id", (req, res, next) => {
   });
 });
 
-
-router.put('/users/updateUser/:id', function(req, res, next) {
+router.put("/users/updateUser/:id", function(req, res, next) {
   const id = req.params.id;
   console.log("user id is " + id);
-  UserModel.updateOne({_id: id}, {$set: req.body,}, function(err, ticket){});
-})
+  UserModel.updateOne({ _id: id }, { $set: req.body }, function(
+    err,
+    ticket
+  ) {});
+});
 
 // POST user
 router.post("/insertUser", function(req, res, next) {
@@ -27,7 +29,7 @@ router.post("/insertUser", function(req, res, next) {
 
 router.get("/users/getUserByEmail/:id", function(req, res, next) {
   const id = req.params.id;
-  var query = UserModel.findOne({ 'email': id, 'deleted': 0 });
+  var query = UserModel.findOne({ email: id, deleted: 0 });
 
   query.exec(function(err, users) {
     if (err) return handleError(err);
@@ -37,8 +39,8 @@ router.get("/users/getUserByEmail/:id", function(req, res, next) {
 
 router.get("/users/getUserByType/:id", function(req, res, next) {
   const id = req.params.id;
-    console.log(id);
-  var query = UserModel.find({ 'userType': id, 'deleted': 0 }).sort('email');
+  console.log(id);
+  var query = UserModel.find({ userType: id, deleted: 0 }).sort("email");
 
   query.exec(function(err, users) {
     if (err) return handleError(err);
