@@ -361,7 +361,7 @@ button[type="submit"] {
                           <span
                             style="margin-left:0px;"
                             class="col"
-                          >{{ " " + formatTime((ticket.createdAt.split('T')[1]).substring(0,5))}}</span>
+                          >{{ ticket.updatedAt.toLocaleTimeString()}}</span>
                         </span>
                       </div>
 
@@ -374,7 +374,7 @@ button[type="submit"] {
                           <span
                             style="margin-left:0px;"
                             class="col"
-                          >{{ (ticket.createdAt.split('T')[0].split('-')[1] + '-' + ticket.createdAt.split('T')[0].split('-')[2] + '-' + ticket.createdAt.split('T')[0].split('-')[0])}}</span>
+                          >{{ ticket.updatedAt.toLocaleDateString().replace('/','-').replace('/','-')}}</span>
                         </span>
                       </div>
 
@@ -520,8 +520,7 @@ button[type="submit"] {
                         <date class="label-icons" />Date :
                       </span>
                       <span class="col-sm-9 text-body">
-                        {{ (ticket.createdAt.split('T')[0].split('-')[1] + '-' + ticket.createdAt.split('T')[0].split('-')[2] + '-' +
-                        ticket.createdAt.split('T')[0].split('-')[0])}}
+                        {{ ticket.updatedAt.toLocaleDateString().replace('/','-').replace('/','-')}}
                       </span>
                     </div>
                   </div>
@@ -533,7 +532,7 @@ button[type="submit"] {
                       </span>
                       <span
                         class="col-sm-9 text-body"
-                      >{{ " " + formatTime((ticket.createdAt.split('T')[1]).substring(0,5))}}</span>
+                      >{{ticket.updatedAt.toLocaleTimeString()}}</span>
                     </div>
                   </div>
 
@@ -669,7 +668,7 @@ button[type="submit"] {
                     </span>
                     <span
                       class="col-sm-9 text-body"
-                    >{{ (this.currentTicket.createdAt.split('T')[0].split('-')[1] + '-' + this.currentTicket.createdAt.split('T')[0].split('-')[2] + '-' + this.currentTicket.createdAt.split('T')[0].split('-')[0])}}</span>
+                    >{{ ticket.updatedAt.toLocaleDateString().replace('/','-').replace('/','-')}}</span>
                   </div>
                 </div>
 
@@ -680,7 +679,7 @@ button[type="submit"] {
                     </span>
                     <span
                       class="col-sm-9 text-body"
-                    >{{ " " + formatTime((this.currentTicket.createdAt.split('T')[1]).substring(0,5))}}</span>
+                    >{{ ticket.updatedAt.toLocaleTimeString()}}</span>
                   </div>
                 </div>
 
@@ -1001,7 +1000,7 @@ export default {
 
       // Remove the ticket from open tickets
       var ticketChannel = client.channels.get("tickets");
-      ticketChannel.publish("ticketInProgress", this.currentTicket);
+      ticketChannel.publish("ticketClosed", this.currentTicket);
 
       // Show connection screen once student receives countdown
       this.connecting = true;
@@ -1016,6 +1015,13 @@ export default {
         });
         this.resetBackToOpenTicketsDisplay();
       }, this.countdownTime(ticketTime));
+
+      studentChannel.subscribe("studentAcceptedSession", (message) => {
+        console.log("accepted session");
+        document.getElementById("hiddenButton").click();
+        this.triggerAccept();
+        clearTimeout(x);
+      });
     },
     resetBackToOpenTicketsDisplay() {
       if (this.currentTicket) {
@@ -1036,14 +1042,6 @@ export default {
       this.selectedTicket = false;
     },
     countdownTime(ticketTime) {
-      var studentChannel = client.channels.get(this.currentTicket.owner._id);
-
-      studentChannel.subscribe("studentAcceptedSession", function(message) {
-        console.log("accepted session");
-        document.getElementById("hiddenButton").click();
-        this.triggerAccept();
-        clearTimeout(x);
-      });
       //read updated time
       let currentTime = new Date();
       ticketTime.setMinutes(ticketTime.getMinutes() + 1);
@@ -1060,6 +1058,7 @@ export default {
       );
     },
     removeTicketFromTicketUI(id) {
+      console.log("ticket removed")
       this.tickets = this.tickets.filter(
         ticket => ticket.status === "Open" && ticket._id != id
       );
@@ -1124,9 +1123,12 @@ export default {
     this.zoomLink = staff.data.zoomLink;
     this.tickets = tickets.data;
     this.tickets.sort(this.compareTickets);
+
     for (var i = 0; i < this.tickets.length; i++) {
       await this.getStudentName(this.tickets[i], this.tickets[i].owner._id);
       // Add closed ticket to history
+        this.tickets[i].updatedAt = new Date(this.tickets[i].updatedAt);
+
       if (
         this.tickets[i].status === "Closed" &&
         this.tickets[i].acceptedBy._id === this.staffId
@@ -1160,11 +1162,12 @@ export default {
         this.getOpenTicketCount();
 
         // Add new ticket to existing tickets
+        message.data.updatedAt = new Date(message.data.updatedAt);
         this.getStudentName(message.data, message.data.owner._id);
         this.tickets.push(message.data);
       });
 
-      ticketChannel.subscribe("ticketInProgress", message => {
+      ticketChannel.subscribe("ticketClosed", message => {
         console.log("ticket was closed");
 
         // ticket will be remove from being displayed
