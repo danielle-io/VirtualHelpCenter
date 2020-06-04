@@ -395,21 +395,21 @@ button[type="submit"] {
                     </div>
 
                     <div
-                      v-bind:class="{ 'chevron': expandChevron, 'hidden': !expandChevron }"
-                      @click="changeChevronClass"
+                      v-bind:class="{ 'chevron': ticket.expandChevron, 'hidden': !ticket.expandChevron }"
+                      @click="changeChevronClass(ticket)"
                     >
                       <expand-arrow />
                     </div>
 
                     <div
-                      @click="changeChevronClass"
-                      v-bind:class="{ 'chevron': collapseChevron, 'hidden': !collapseChevron }"
+                      @click="changeChevronClass(ticket)"
+                      v-bind:class="{ 'chevron': ticket.collapseChevron, 'hidden': !ticket.collapseChevron }"
                     >
                       <collapse-arrow />
                     </div>
 
                     <div
-                      v-bind:class="{ 'show-extra-content': collapseChevron, 'hide-extra-content': expandChevron }"
+                      v-bind:class="{ 'show-extra-content': ticket.collapseChevron, 'hide-extra-content': !ticket.collapseChevron }"
                     >
                       <div class="card-line">
                         <span class="row">
@@ -535,21 +535,21 @@ button[type="submit"] {
                   </div>
 
                   <div
-                    v-bind:class="{ 'chevron': expandChevron, 'hidden': !expandChevron }"
-                    @click="changeChevronClass"
+                    v-bind:class="{ 'chevron': ticket.expandChevron, 'hidden': !ticket.expandChevron }"
+                    @click="changeChevronClass(ticket)"
                   >
                     <expand-arrow />
                   </div>
 
                   <div
-                    @click="changeChevronClass"
-                    v-bind:class="{ 'chevron': collapseChevron, 'hidden': !collapseChevron }"
+                    @click="changeChevronClass(ticket)"
+                    v-bind:class="{ 'chevron': ticket.collapseChevron, 'hidden': !ticket.collapseChevron }"
                   >
                     <collapse-arrow />
                   </div>
 
                   <div
-                    v-bind:class="{ 'show-extra-content': collapseChevron, 'hide-extra-content': expandChevron }"
+                    v-bind:class="{ 'show-extra-content': ticket.collapseChevron, 'hide-extra-content': ticket.expandChevron }"
                   >
                     <div class="card-line-history">
                       <div class="row">
@@ -657,7 +657,7 @@ button[type="submit"] {
                 </div>
 
                 <div
-                  v-bind:class="{ 'chevron': expandChevron, 'hidden': !expandChevron }"
+                  v-bind:class="{ 'chevron': this.currentTicket.expandChevron, 'hidden': !this.currentTicket.expandChevron }"
                   @click="changeChevronClass"
                 >
                   <expand-arrow />
@@ -665,13 +665,13 @@ button[type="submit"] {
 
                 <div
                   @click="changeChevronClass"
-                  v-bind:class="{ 'chevron': collapseChevron, 'hidden': !collapseChevron }"
+                  v-bind:class="{ 'chevron': this.currentTicket.collapseChevron, 'hidden': !this.currentTicket.collapseChevron }"
                 >
                   <collapse-arrow />
                 </div>
 
                 <div
-                  v-bind:class="{ 'show-extra-content': collapseChevron, 'hide-extra-content': expandChevron }"
+                  v-bind:class="{ 'show-extra-content': this.currentTicket.collapseChevron, 'hide-extra-content': this.currentTicket.expandChevron }"
                 >
                   <div class="card-line-history">
                     <div class="row">
@@ -733,10 +733,16 @@ import { BFormInput, BFormSelect, BFormTextarea, BButton } from "bootstrap-vue";
 import VueMaterial from "vue-material";
 import "vue-material/dist/vue-material.min.css";
 import "vue-material/dist/theme/default.css";
+
+import Ticket from "../ui/models/Ticket";
+
 Vue.use(VueMaterial);
 import * as Ably from "ably";
 const client = new Ably.Realtime(process.env.ABLY_KEY);
 export default {
+  // async fetch() {
+  //   //const tickets = await Ticket.api().get('/tickets');
+  // },
   head() {
     return {
       title: "Staff"
@@ -759,8 +765,6 @@ export default {
       openRequestTab: true,
       requestHistoryTab: false,
       selectedTicket: false,
-      expandChevron: true,
-      collapseChevron: false,
       course: {},
       selected: "",
       zoomLink: null,
@@ -817,7 +821,6 @@ export default {
         this.allOpenTicketsAmount = allOpenTickets.data.length;
       }
     },
-
     formatTime(time) {
       var timeStr = " AM";
       var splitTime = time.split(":");
@@ -828,13 +831,6 @@ export default {
       return hours + ":" + splitTime[1] + timeStr;
     },
     getFilterClass(status, course) {
-      // console.log("filtering course")
-      // console.log(course);
-      // if (course === null) {
-      //   console.log("open tickets");
-      //   return this.filterAllTickets(status);
-      //   // return this.filterOpenTickets(status);
-      // console.log(course);
       var tickets = [];
       if (course === null) {
         tickets = this.filterOpenTickets(status);
@@ -878,6 +874,8 @@ export default {
               " " +
               studentResponse.data.name.lastName;
             this.$set(ticket, "ownerName", studentName);
+            this.$set(ticket, "expandChevron", true);
+            this.$set(ticket, "collapseChevron", false);
           }
         }
       }
@@ -900,6 +898,7 @@ export default {
     //   }
     //   return
     // },
+
     getRequestOrRequests: function() {
       if (this.allOpenTicketsAmount === 1) {
         return "request";
@@ -915,15 +914,17 @@ export default {
       }
       return "are";
     },
-    changeChevronClass: function() {
-      console.log("in change chevron");
-      if (this.expandChevron) {
-        this.collapseChevron = true;
-        this.expandChevron = false;
+    changeChevronClass: function(ticket) {
+      if (ticket.expandChevron) {
+        ticket.expandChevron = false;
+        ticket.collapseChevron = true;
       } else {
-        this.expandChevron = true;
-        this.collapseChevron = false;
+        ticket.expandChevron = true;
+        ticket.collapseChevron = false;
       }
+    },
+    chevronToggle: function(ticketId) {
+      return;
     },
     clickCard: function(ticket, index, id) {
       // selectedTicketIndex = the same as the index passed in means
@@ -970,7 +971,6 @@ export default {
       //If the student does not accept the session in time return to beginning
 
       let x = setTimeout(() => {
-        // The student did not accept in time
         console.log("student did not accept in time");
         this.showCanceledRequestDialog = true;
         axios.put("/api/updateTicket/" + this.currentTicketId, {
@@ -980,7 +980,6 @@ export default {
       }, this.countdownTime(ticketTime));
     },
     resetBackToOpenTicketsDisplay() {
-      console.log("going back to open tickets display");
       if (this.currentTicket) {
         console.log(
           "current ticket exists: removing current ticket " +
@@ -1000,10 +999,8 @@ export default {
     },
     countdownTime(ticketTime) {
       var studentChannel = client.channels.get(this.currentTicket.owner._id);
-      
-      studentChannel.subscribe("studentAcceptedSession", function(
-        message
-      ) {
+
+      studentChannel.subscribe("studentAcceptedSession", function(message) {
         console.log("accepted session");
         document.getElementById("hiddenButton").click();
         this.triggerAccept();
@@ -1039,7 +1036,6 @@ export default {
     },
     confirmCloseSession() {
       this.showCloseSessionDialog = false;
-      console.log("confirm close session");
       var studentChannel = client.channels.get(this.currentTicket.owner._id);
       studentChannel.publish("ticketMarkedClosed", {});
       this.resetBackToOpenTicketsDisplay();
@@ -1069,25 +1065,24 @@ export default {
 
     // Sets the class to filter by based on dropdown
     async setClass(course) {
-      console.log("setting class");
       if (course) {
         let chosenCourse = await axios.get("/api/courses/" + course);
         this.course = chosenCourse.data._id;
       }
-      console.log(this.course);
     },
     async loadClasses(classSelected) {
       if (classSelected) {
         let course = await axios.get("/api/courses/" + classSelected._id);
         var text = course.data.dep + " " + course.data.courseNum;
         this.staffCourses.push({ value: classSelected._id, text: text });
-        console.log(this.staffCourses);
       }
     }
   },
   async created() {
     let tickets = await axios.get("/api/tickets");
-    let staff = await axios.get("/api/users/" + this.staffId);
+    Ticket.insert(tickets);
+    //let staff = await axios.get("/api/users/" + this.staffId);
+    let staff = await axios.get("/api/users/" + "5eade47047da2706382d53e6");
     this.zoomLink = staff.data.zoomLink;
     this.tickets = tickets.data;
     this.tickets.sort(this.compareTickets);
@@ -1098,19 +1093,16 @@ export default {
         this.tickets[i].status === "Closed" &&
         this.tickets[i].acceptedBy._id === this.staffId
       ) {
-        console.log("closed");
         this.ticketHistory.push(this.tickets[i]);
       }
     }
     this.ticketHistory.reverse();
-    console.log(this.staffCourses);
     if (staff) {
-      console.log(this.zoomLink);
       staff.data.classes.forEach(element => {
-        console.log(element);
         this.loadClasses(element);
       });
-      let course = this.staffCourses[0];
+      //let course = this.staffCourses[0];
+      let course = staff.data.classes[0];
       this.course = course.value;
     }
   },
@@ -1147,6 +1139,14 @@ export default {
       });
     }
     this.scrollToTop();
+  },
+  computed: {
+    chevron(id) {
+      let tickets = Ticket.query()
+        .where("_id", id)
+        .get();
+      console.log(tickets);
+    }
   }
 };
 </script>

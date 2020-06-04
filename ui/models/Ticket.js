@@ -19,7 +19,9 @@ export default class Ticket extends Model {
       title: this.string(''),
       createdAt: this.attr(''),
       course: this.attr('').nullable(),
-      acceptedBy: this.belongsTo(User, 'user_id')
+      acceptedBy: this.belongsTo(User, 'user_id'),
+      collapseChevron: this.boolean('false'),
+      expandChevron: this.boolean('true')
     }
   }
 }
