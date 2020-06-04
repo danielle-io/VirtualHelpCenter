@@ -877,9 +877,11 @@ Request History tab."
                   <div v-if="!this.editingRequest" class="row">
                     <Codemirror v-model="this.codeSnippet" />
                   </div>
+<!-- 
                   <div v-if="this.editingRequest" class="row">
-                    <Codemirror v-model="this.codeSnippet" v-bind:initialCode="ticket.codeSnippet" />
-                  </div>
+                    <Codemirror v-model="this.codeSnippet" v-bind:initialCode="this.codeSnippet" />
+                  </div> -->
+
                   <div class="row">
                     <label style="margin-bottom: 0px;" class="label-format">
                       <attachment class="label-icons" />Attachments

@@ -29,7 +29,6 @@
         }
     },
     data() {
-        console.log(this.initialCode)
       return {
         cmOption: {
           tabSize: 4,
