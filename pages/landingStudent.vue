@@ -581,7 +581,7 @@ Request History tab."
                               font-size: 20px;
                               margin-left: 6px;"
                       target="_blank"
-                      href="zoom.us"
+                      :href="this.zoomLink"
                     >
                       <open-in-new-window style="margin-right:8px !important; padding-right: 5px;" />
                       <span style="margin-left: 10px;">{{this.zoomLink}}</span>
@@ -773,7 +773,7 @@ Request History tab."
                           </span>Code:
                         </span>
                         <!-- <span style="padding-left: 20px !important;" class="col-sm-9 text-body"> -->
-                        <Codemirror v-model="codeSnippet" />
+                        <Codemirror v-bind:initialCode="codeSnippet" v-model="codeSnippet" />
 
                         <!-- </span> -->
                       </div>
@@ -874,9 +874,14 @@ Request History tab."
                     </label>
                   </div>
 
-                  <div class="row">
-                    <Codemirror v-model="codeSnippet" />
+                  <div v-if="!this.editingRequest" class="row">
+                    <Codemirror v-model="this.codeSnippet" />
                   </div>
+<!-- 
+                  <div v-if="this.editingRequest" class="row">
+                    <Codemirror v-model="this.codeSnippet" v-bind:initialCode="this.codeSnippet" />
+                  </div> -->
+
                   <div class="row">
                     <label style="margin-bottom: 0px;" class="label-format">
                       <attachment class="label-icons" />Attachments
@@ -1098,21 +1103,21 @@ Request History tab."
                     </div>
 
                     <div
-                      v-bind:class="{ 'chevron': expandChevron, 'hidden': !expandChevron }"
-                      @click="changeChevronClass"
+                      v-bind:class="{ 'chevron': ticket.expandChevron, 'hidden': !ticket.expandChevron }"
+                      @click="changeChevronClass(ticket)"
                     >
                       <expand-arrow />
                     </div>
 
                     <div
-                      @click="changeChevronClass"
-                      v-bind:class="{ 'chevron': collapseChevron, 'hidden': !collapseChevron }"
+                      @click="changeChevronClass(ticket)"
+                      v-bind:class="{ 'chevron': ticket.collapseChevron, 'hidden': !ticket.collapseChevron }"
                     >
                       <collapse-arrow />
                     </div>
 
                     <div
-                      v-bind:class="{ 'show-extra-content': collapseChevron, 'hide-extra-content': expandChevron }"
+                      v-bind:class="{ 'show-extra-content': ticket.collapseChevron, 'hide-extra-content': ticket.expandChevron }"
                     >
                       <div class="card-line-history">
                         <div class="row">
@@ -1120,6 +1125,53 @@ Request History tab."
                             <long-description class="label-icons" />Details:
                           </span>
                           <span class="col-sm-9 text-body">{{ ticket.longerDescription }}</span>
+                        </div>
+                      </div>
+
+                      <div v-if="ticket.codeSnippet">
+                        <div class="card-line">
+                          <div class="row">
+                            <span class="card-categories col-sm-3">
+                              <span style="margin-right: 6px;">
+                                <code-symbol />
+                              </span>Code:
+                            </span>
+                            <!-- <span style="padding-left: 20px !important;" class="col-sm-9 text-body"> -->
+                            <Codemirror
+                              v-bind:initialCode="ticket.codeSnippet"
+                              v-model="ticket.codeSnippet"
+                            />
+
+                            <!-- </span> -->
+                          </div>
+                        </div>
+                      </div>
+
+                      <div v-if="ticket.attachments && ticket.attachments.length > 0">
+                        <div class="card-line">
+                          <div class="row">
+                            <span class="card-categories col-sm-3">
+                              <span style="margin-right: 6px;">
+                                <attachment />
+                              </span>Files:
+                            </span>
+                            <span
+                              style="margin-left:20px !important;"
+                              v-for="(attachment, index) in (ticket.attachments)"
+                              :key="index"
+                            >
+                              <a
+                                style="cursor: pointer; color: rgb(45, 58, 130) !important; z-index: 999; 
+                              text-shadow: none !important;
+                              margin-top: 4px;
+                              margin-left: 6px;"
+                                @click="openPage(attachment.filePath, attachment.fileName)"
+                              >
+                                <open-in-new-window />
+                                {{attachment.fileName}}
+                              </a>
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -1378,14 +1430,13 @@ export default {
     triggerAccept: function() {
       this.showCountdown = true;
     },
-    changeChevronClass: function() {
-      console.log("in change chevron");
-      if (this.expandChevron) {
-        this.collapseChevron = true;
-        this.expandChevron = false;
+    changeChevronClass: function(ticket) {
+      if (ticket.expandChevron) {
+        ticket.expandChevron = false;
+        ticket.collapseChevron = true;
       } else {
-        this.expandChevron = true;
-        this.collapseChevron = false;
+        ticket.expandChevron = true;
+        ticket.collapseChevron = false;
       }
     },
     getRequestFormHeader: function() {
@@ -1560,6 +1611,10 @@ export default {
       this.createdAt = ticket.createdAt;
       this.ticketTime = ticket.updatedAt.toLocaleTimeString();;
       this.showTicket = true;
+      this.$set(ticket, "expandChevron", true);
+      this.$set(ticket, "collapseChevron", false);
+      this.expandChevron = true;
+      this.collapseChevron = false;
     },
     changeRequestState: function() {
       if (this.requestLandingPage === true && this.submitRequest === false) {
@@ -1685,6 +1740,11 @@ export default {
       })
 
       tickets.data.sort(this.compareTicketsRev);
+
+      tickets.data.forEach(element => {
+        this.$set(element, "expandChevron", true);
+        this.$set(element, "collapseChevron", false);
+      });
 
       this.ticketHistory = tickets.data.filter(
         ticket => ticket.status !== "Open" && ticket.owner._id == this.userId
