@@ -581,7 +581,7 @@ Request History tab."
                               font-size: 20px;
                               margin-left: 6px;"
                       target="_blank"
-                      href="zoom.us"
+                      :href="this.zoomLink"
                     >
                       <open-in-new-window style="margin-right:8px !important; padding-right: 5px;" />
                       <span style="margin-left: 10px;">{{this.zoomLink}}</span>
@@ -773,7 +773,7 @@ Request History tab."
                           </span>Code:
                         </span>
                         <!-- <span style="padding-left: 20px !important;" class="col-sm-9 text-body"> -->
-                        <Codemirror v-model="codeSnippet" />
+                        <Codemirror v-bind:initialCode="codeSnippet" v-model="codeSnippet" />
 
                         <!-- </span> -->
                       </div>
@@ -874,8 +874,11 @@ Request History tab."
                     </label>
                   </div>
 
-                  <div class="row">
-                    <Codemirror v-model="codeSnippet" />
+                  <div v-if="!this.editingRequest" class="row">
+                    <Codemirror v-model="this.codeSnippet" />
+                  </div>
+                  <div v-if="this.editingRequest" class="row">
+                    <Codemirror v-model="this.codeSnippet" v-bind:initialCode="ticket.codeSnippet" />
                   </div>
                   <div class="row">
                     <label style="margin-bottom: 0px;" class="label-format">
@@ -1120,6 +1123,53 @@ Request History tab."
                             <long-description class="label-icons" />Details:
                           </span>
                           <span class="col-sm-9 text-body">{{ ticket.longerDescription }}</span>
+                        </div>
+                      </div>
+
+                      <div v-if="ticket.codeSnippet">
+                        <div class="card-line">
+                          <div class="row">
+                            <span class="card-categories col-sm-3">
+                              <span style="margin-right: 6px;">
+                                <code-symbol />
+                              </span>Code:
+                            </span>
+                            <!-- <span style="padding-left: 20px !important;" class="col-sm-9 text-body"> -->
+                            <Codemirror
+                              v-bind:initialCode="ticket.codeSnippet"
+                              v-model="ticket.codeSnippet"
+                            />
+
+                            <!-- </span> -->
+                          </div>
+                        </div>
+                      </div>
+
+                      <div v-if="ticket.attachments && ticket.attachments.length > 0">
+                        <div class="card-line">
+                          <div class="row">
+                            <span class="card-categories col-sm-3">
+                              <span style="margin-right: 6px;">
+                                <attachment />
+                              </span>Files:
+                            </span>
+                            <span
+                              style="margin-left:20px !important;"
+                              v-for="(attachment, index) in (ticket.attachments)"
+                              :key="index"
+                            >
+                              <a
+                                style="cursor: pointer; color: rgb(45, 58, 130) !important; z-index: 999; 
+                              text-shadow: none !important;
+                              margin-top: 4px;
+                              margin-left: 6px;"
+                                @click="openPage(attachment.filePath, attachment.fileName)"
+                              >
+                                <open-in-new-window />
+                                {{attachment.fileName}}
+                              </a>
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </div>
