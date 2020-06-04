@@ -1,4 +1,9 @@
 <style scoped>
+.CodeMirror {
+  float: left;
+  width: 700px;
+  border: 1px solid rgb(230, 221, 221);
+}
 .material-design-icon {
   margin-right: 10px !important;
   margin-top: 3px;
@@ -462,6 +467,22 @@ button[type="submit"] {
                           </span>
                         </div>
                       </div>
+
+                      <div v-if="ticket.codeSnippet !== ''">
+                        <div class="card-line">
+                          <div class="row">
+                            <span class="ticket-categories col-sm-3">
+                              <code-symbol />
+                              <strong>Code:</strong>
+                            </span>
+                            <!-- <span style="padding-left: 20px !important;" class="col-sm-9 text-body"> -->
+                            <Codemirror
+                              v-bind:initialCode="ticket.codeSnippet"
+                              v-model="ticket.codeSnippet"
+                            />
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </md-card>
                 </div>
@@ -570,7 +591,7 @@ button[type="submit"] {
                     </div>
 
                     <div v-if="ticket.attachments.length > 0">
-                      <div class="card-line">
+                      <div class="card-line-history">
                         <span class="row">
                           <span class="card-categories col-sm-3">
                             <attachment class="label-icons" />Files:
@@ -592,6 +613,22 @@ button[type="submit"] {
                             </a>
                           </span>
                         </span>
+                      </div>
+                    </div>
+
+                    <div v-if="ticket.codeSnippet !== ''">
+                      <div class="card-line-history">
+                        <div class="row">
+                          <span class="card-categories col-sm-3">
+                            <code-symbol class="label-icons" />Code:
+                          </span>
+                          <Codemirror
+                            v-bind:initialCode="ticket.codeSnippet"
+                            v-model="ticket.codeSnippet"
+                          />
+
+                          <!-- </span> -->
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -733,6 +770,7 @@ import { BFormInput, BFormSelect, BFormTextarea, BButton } from "bootstrap-vue";
 import VueMaterial from "vue-material";
 import "vue-material/dist/vue-material.min.css";
 import "vue-material/dist/theme/default.css";
+import Codemirror from "../components/Codemirror";
 
 import Ticket from "../ui/models/Ticket";
 
@@ -753,8 +791,8 @@ export default {
     "b-form-select": BFormSelect,
     "b-button": BButton,
     "b-form-input": BFormInput,
-    "b-form-select": BFormSelect
-    // codemirror
+    "b-form-select": BFormSelect,
+    Codemirror: Codemirror
   },
   data() {
     return {

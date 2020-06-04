@@ -581,7 +581,7 @@ Request History tab."
                               font-size: 20px;
                               margin-left: 6px;"
                       target="_blank"
-                      :href="this.zoomLink"
+                      v-bind:href="this.zoomLink"
                     >
                       <open-in-new-window style="margin-right:8px !important; padding-right: 5px;" />
                       <span style="margin-left: 10px;">{{this.zoomLink}}</span>
@@ -873,14 +873,12 @@ Request History tab."
                       <code-symbol class="label-icons" />Code
                     </label>
                   </div>
-
-                  <div v-if="!this.editingRequest" class="row">
-                    <Codemirror v-model="this.codeSnippet" />
+                  <div v-if="this.editingRequest" class="row">
+                    <Codemirror v-bind:initialCode="codeSnippet" v-model="codeSnippet" />
                   </div>
-<!-- 
                   <div v-if="this.editingRequest" class="row">
                     <Codemirror v-model="this.codeSnippet" v-bind:initialCode="this.codeSnippet" />
-                  </div> -->
+                  </div>
 
                   <div class="row">
                     <label style="margin-bottom: 0px;" class="label-format">
@@ -1210,7 +1208,6 @@ const client = new Ably.Realtime(process.env.ABLY_KEY);
 import Vue from "vue";
 import axios from "~/plugins/axios";
 import firebase from "firebase";
-// import { codemirror } from "codemirror";
 import * as Ably from "ably";
 import {
   BFormInput,
@@ -1243,7 +1240,7 @@ export default {
   data() {
     return {
       el: "#requests",
-      codeSnippet: null,
+      codeSnippet: "",
       status: "Open",
       oneLineOverview: "",
       longerDescription: "",
