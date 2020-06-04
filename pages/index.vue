@@ -208,7 +208,7 @@ button[type="button-color"] {
             <div v-if="this.validateEmail() && this.password">
               <div style="text-align: center;">
                 <button
-                  @click="submitData()"
+                  @click.prevent="submitData()"
                   type="button-color"
                   style="margin-bottom: 10px; margin margin-top: 10px;"
                   class="fadeIn request-staff-buttons"
