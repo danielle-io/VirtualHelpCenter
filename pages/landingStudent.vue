@@ -872,12 +872,7 @@ Request History tab."
                     <label class="label-format">
                       <code-symbol class="label-icons" />Code
                     </label>
-                  </div>
-                  <div v-if="this.editingRequest" class="row">
                     <Codemirror v-bind:initialCode="codeSnippet" v-model="codeSnippet" />
-                  </div>
-                  <div v-if="this.editingRequest" class="row">
-                    <Codemirror v-model="this.codeSnippet" v-bind:initialCode="this.codeSnippet" />
                   </div>
 
                   <div class="row">
@@ -1606,7 +1601,7 @@ export default {
       this.attachments = ticket.attachments;
       this.status = ticket.status;
       this.createdAt = ticket.createdAt;
-      this.ticketTime = ticket.updatedAt.toLocaleTimeString();;
+      this.ticketTime = ticket.updatedAt.toLocaleTimeString();
       this.showTicket = true;
       this.$set(ticket, "expandChevron", true);
       this.$set(ticket, "collapseChevron", false);
@@ -1732,9 +1727,9 @@ export default {
         {}
       );
 
-      tickets.data.forEach(ticket=>{
+      tickets.data.forEach(ticket => {
         ticket.updatedAt = new Date(ticket.updatedAt);
-      })
+      });
 
       tickets.data.sort(this.compareTicketsRev);
 
@@ -1751,10 +1746,8 @@ export default {
         ticket => ticket.status === "Open" && ticket.owner._id == this.userId
       );
 
-
-
       if (this.openTickets.length > 0) {
-        console.log("setting fields")
+        console.log("setting fields");
         this.openTicket = this.openTickets[0];
         this.setFieldsFromTicket(this.openTicket);
         this.showTicket = true;

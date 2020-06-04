@@ -468,14 +468,13 @@ button[type="submit"] {
                         </div>
                       </div>
 
-                      <div v-if="ticket.codeSnippet !== ''">
+                      <div v-if="ticket.codeSnippet">
                         <div class="card-line">
                           <div class="row">
                             <span class="ticket-categories col-sm-3">
                               <code-symbol />
                               <strong>Code:</strong>
                             </span>
-                            <!-- <span style="padding-left: 20px !important;" class="col-sm-9 text-body"> -->
                             <Codemirror
                               v-bind:initialCode="ticket.codeSnippet"
                               v-model="ticket.codeSnippet"
@@ -519,9 +518,9 @@ button[type="submit"] {
                       <span class="card-categories col-sm-3">
                         <date class="label-icons" />Date :
                       </span>
-                      <span class="col-sm-9 text-body">
-                        {{ ticket.updatedAt.toLocaleDateString().replace('/','-').replace('/','-')}}
-                      </span>
+                      <span
+                        class="col-sm-9 text-body"
+                      >{{ ticket.updatedAt.toLocaleDateString().replace('/','-').replace('/','-')}}</span>
                     </div>
                   </div>
 
@@ -530,9 +529,7 @@ button[type="submit"] {
                       <span class="card-categories col-sm-3">
                         <clock class="label-icons" />Time:
                       </span>
-                      <span
-                        class="col-sm-9 text-body"
-                      >{{ticket.updatedAt.toLocaleTimeString()}}</span>
+                      <span class="col-sm-9 text-body">{{ticket.updatedAt.toLocaleTimeString()}}</span>
                     </div>
                   </div>
 
@@ -615,7 +612,7 @@ button[type="submit"] {
                       </div>
                     </div>
 
-                    <div v-if="ticket.codeSnippet !== ''">
+                    <div v-if="ticket.codeSnippet">
                       <div class="card-line-history">
                         <div class="row">
                           <span class="card-categories col-sm-3">
@@ -677,9 +674,7 @@ button[type="submit"] {
                     <span class="card-categories col-sm-3">
                       <clock class="label-icons" />Time:
                     </span>
-                    <span
-                      class="col-sm-9 text-body"
-                    >{{ ticket.updatedAt.toLocaleTimeString()}}</span>
+                    <span class="col-sm-9 text-body">{{ ticket.updatedAt.toLocaleTimeString()}}</span>
                   </div>
                 </div>
 
@@ -818,7 +813,8 @@ export default {
       showCanceledRequestDialog: false,
       showCloseSessionDialog: false,
       staffId: null,
-      allOpenTicketsAmount: null
+      allOpenTicketsAmount: null,
+      codeSnippet: ""
     };
   },
   methods: {
@@ -913,6 +909,7 @@ export default {
             this.$set(ticket, "ownerName", studentName);
             this.$set(ticket, "expandChevron", true);
             this.$set(ticket, "collapseChevron", false);
+            console.log(ticket.codeSnippet);
           }
         }
       }
@@ -1016,7 +1013,7 @@ export default {
         this.resetBackToOpenTicketsDisplay();
       }, this.countdownTime(ticketTime));
 
-      studentChannel.subscribe("studentAcceptedSession", (message) => {
+      studentChannel.subscribe("studentAcceptedSession", message => {
         console.log("accepted session");
         document.getElementById("hiddenButton").click();
         this.triggerAccept();
@@ -1058,7 +1055,7 @@ export default {
       );
     },
     removeTicketFromTicketUI(id) {
-      console.log("ticket removed")
+      console.log("ticket removed");
       this.tickets = this.tickets.filter(
         ticket => ticket.status === "Open" && ticket._id != id
       );
@@ -1127,7 +1124,7 @@ export default {
     for (var i = 0; i < this.tickets.length; i++) {
       await this.getStudentName(this.tickets[i], this.tickets[i].owner._id);
       // Add closed ticket to history
-        this.tickets[i].updatedAt = new Date(this.tickets[i].updatedAt);
+      this.tickets[i].updatedAt = new Date(this.tickets[i].updatedAt);
 
       if (
         this.tickets[i].status === "Closed" &&
@@ -1161,10 +1158,13 @@ export default {
         console.log("ticket was added");
         this.getOpenTicketCount();
 
+        if (message && message.data){
+          console.log(message.data);
+          message.data.updatedAt = new Date(message.data.updatedAt);
+          this.getStudentName(message.data, message.data.owner._id);
+          this.tickets.push(message.data);
+        }
         // Add new ticket to existing tickets
-        message.data.updatedAt = new Date(message.data.updatedAt);
-        this.getStudentName(message.data, message.data.owner._id);
-        this.tickets.push(message.data);
       });
 
       ticketChannel.subscribe("ticketClosed", message => {
