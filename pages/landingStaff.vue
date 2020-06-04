@@ -499,8 +499,7 @@ button[type="submit"] {
                         <date class="label-icons" />Date :
                       </span>
                       <span class="col-sm-9 text-body">
-                        {{ (ticket.createdAt.split('T')[0].split('-')[1] + '-' + ticket.createdAt.split('T')[0].split('-')[2] + '-' +
-                        ticket.createdAt.split('T')[0].split('-')[0])}}
+                        {{ ticket.updatedAt.toLocaleDateString().replace('/','-').replace('/','-')}}
                       </span>
                     </div>
                   </div>
@@ -512,7 +511,7 @@ button[type="submit"] {
                       </span>
                       <span
                         class="col-sm-9 text-body"
-                      >{{ " " + formatTime((ticket.createdAt.split('T')[1]).substring(0,5))}}</span>
+                      >{{ticket.updatedAt.toLocaleTimeString()}}</span>
                     </div>
                   </div>
 
@@ -632,7 +631,7 @@ button[type="submit"] {
                     </span>
                     <span
                       class="col-sm-9 text-body"
-                    >{{ (this.currentTicket.createdAt.split('T')[0].split('-')[1] + '-' + this.currentTicket.createdAt.split('T')[0].split('-')[2] + '-' + this.currentTicket.createdAt.split('T')[0].split('-')[0])}}</span>
+                    >{{ ticket.updatedAt.toLocaleDateString().replace('/','-').replace('/','-')}}</span>
                   </div>
                 </div>
 
@@ -643,7 +642,7 @@ button[type="submit"] {
                     </span>
                     <span
                       class="col-sm-9 text-body"
-                    >{{ " " + formatTime((this.currentTicket.createdAt.split('T')[1]).substring(0,5))}}</span>
+                    >{{ ticket.updatedAt.toLocaleTimeString()}}</span>
                   </div>
                 </div>
 
@@ -963,7 +962,7 @@ export default {
 
       // Remove the ticket from open tickets
       var ticketChannel = client.channels.get("tickets");
-      ticketChannel.publish("ticketInProgress", this.currentTicket);
+      ticketChannel.publish("ticketClosed", this.currentTicket);
 
       // Show connection screen once student receives countdown
       this.connecting = true;
@@ -1021,6 +1020,7 @@ export default {
       );
     },
     removeTicketFromTicketUI(id) {
+      console.log("ticket removed")
       this.tickets = this.tickets.filter(
         ticket => ticket.status === "Open" && ticket._id != id
       );
@@ -1124,11 +1124,12 @@ export default {
         this.getOpenTicketCount();
 
         // Add new ticket to existing tickets
+        message.data.updatedAt = new Date(message.data.updatedAt);
         this.getStudentName(message.data, message.data.owner._id);
         this.tickets.push(message.data);
       });
 
-      ticketChannel.subscribe("ticketInProgress", message => {
+      ticketChannel.subscribe("ticketClosed", message => {
         console.log("ticket was closed");
 
         // ticket will be remove from being displayed
