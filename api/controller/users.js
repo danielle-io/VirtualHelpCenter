@@ -31,7 +31,6 @@ router.get("/users/getUserByEmail/:id", function(req, res, next) {
 
   query.exec(function(err, users) {
     if (err) return handleError(err);
-    console.log(users); 
     res.send(users);
   });
 });

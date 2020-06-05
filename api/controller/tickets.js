@@ -35,7 +35,19 @@ router.get('/tickets/getTickets', function(req,res,next){
 })
 
 router.get('/tickets/getOpenTickets', function(req,res,next){
+    console.log("in open tickets function");
     var query = Ticket.find({ 'status': 'Open'}).sort('-createdAt');
+    query.exec(function(err, tickets) {
+      if (err) return handleError(err);
+      res.send(tickets);
+    });
+})
+
+router.get('/tickets/getClosedTicketsByStaff/:id', function(req,res,next){
+    const id = req.params.id;
+    console.log("ID IS " + id);
+
+    var query = Ticket.find({ 'status': 'Closed', 'acceptedBy._id': id}).sort('createdAt');
     query.exec(function(err, tickets) {
       if (err) return handleError(err);
       res.send(tickets);

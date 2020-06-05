@@ -621,7 +621,7 @@ Request History tab."
               </div>
 
               <div
-                v-if="this.openTicket && (!this.allOpenTicketsAmount || this.allOpenTicketsAmount === 0) "
+                v-if="this.openTicket && (!this.allOpenTicketsAmount || this.allOpenTicketsAmount === 0) && !this.connecting && !this.zoomLink "
                 class="sub-heading-text"
                 style="padding-top:7px; font-size: 17px;"
               >You are next in line! Please wait for the next available TA.</div>
@@ -1198,14 +1198,10 @@ var firebaseConfig = {
   appId: process.env.FB_APP_ID
 };
 
-// Initialize Firebase
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
-// const userId = "5ed34dbd99e64f3cc0b49397";
-// const userId = "5ec5f90d81b13d23065ead3e";
 const client = new Ably.Realtime(process.env.ABLY_KEY);
-
 import Vue from "vue";
 import axios from "~/plugins/axios";
 import firebase from "firebase";
@@ -1218,7 +1214,6 @@ import {
   BFormRadio,
   BFormRadioGroup
 } from "bootstrap-vue";
-
 import VueMaterial from "vue-material";
 import "vue-material/dist/vue-material.min.css";
 import "vue-material/dist/theme/default.css";

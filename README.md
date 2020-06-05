@@ -1,9 +1,6 @@
-# Virtual Help Center
-
-> UCI INF 117 Spring 2020 project for Prof. Pattis
+# Virtual Help 
 
 ## Build Setup
-
 ``` bash
 # install dependencies
 $ npm install # Or yarn install
@@ -17,26 +14,6 @@ $ npm start
 
 For detailed explanation on how things work, checkout the [Nuxt.js docs](https://github.com/nuxt/nuxt.js).
 
-## Mongo Atlas Setup
-Instructions for Mongo Atlas:
-Once logged in via the invite link navigate to Database Access to create a profile. Save the password and username.
-After that has been accomplished head over to Network Access and click "Add IP Address" button in order to white list your ip
-When you have pulled the project on your computer navigate to the .env_example. (Follow the instructions there)
+## Database Setup
+In order to make run the project, you'll need to set up a .env file with Mongo, Ably, and Firebase credentials.
 
-## Workflow 
-workflow ~ from **YOUR** branch:
-```bash
-# This will merge master onto your branch. make sure everything is tested and working before you do the next steps. 
-# only put working code on master, it should be working at all times.
-$ git fetch origin git merge origin/master
-
-$ git push origin your branch name
-
-$ git checkout master git merge origin/master
-
-# this is bc the first merge only merged into ur local branch
-$ git merge your branch name
-
-# test one more time, make sure everything is working correctly. 
-$ git push origin master
-```
