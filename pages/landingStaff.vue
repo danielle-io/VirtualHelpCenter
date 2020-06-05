@@ -1,9 +1,4 @@
 <style scoped>
-.CodeMirror {
-  float: left;
-  width: 700px;
-  border: 1px solid rgb(230, 221, 221);
-}
 .material-design-icon {
   margin-right: 10px !important;
   margin-top: 3px;
@@ -240,7 +235,7 @@ button[type="submit"] {
   <div>
     <client-only>
       <md-dialog-confirm
-        style="z-index: 9999; padding-left: 50px; padding-right:50px"
+        style="z-index: 9999 !important; padding-left: 50px; padding-right:50px"
         :md-active.sync="showCloseSessionDialog"
         md-title="Mark Session Complete"
         md-content="Are you ready to close the session?"
@@ -577,7 +572,7 @@ button[type="submit"] {
                       </div>
                     </div>
 
-                    <div class="card-line-history">
+                    <div v-if="ticket.ownerName" class="card-line-history">
                       <div class="row">
                         <span class="card-categories col-sm-3">
                           <student class="label-icons" />Name:
@@ -587,7 +582,7 @@ button[type="submit"] {
                     </div>
 
                     <div v-if="ticket.attachments.length > 0">
-                      <div class="card-line-history">
+                      <div class="card-line">
                         <span class="row">
                           <span class="card-categories col-sm-3">
                             <attachment class="label-icons" />Files:
@@ -665,7 +660,7 @@ button[type="submit"] {
                     </span>
                     <span
                       class="col-sm-9 text-body"
-                    >{{ ticket.updatedAt.toLocaleDateString().replace('/','-').replace('/','-')}}</span>
+                    >{{currentTicket.updatedAt.toLocaleDateString().replace('/','-').replace('/','-')}}</span>
                   </div>
                 </div>
 
@@ -674,7 +669,9 @@ button[type="submit"] {
                     <span class="card-categories col-sm-3">
                       <clock class="label-icons" />Time:
                     </span>
-                    <span class="col-sm-9 text-body">{{ ticket.updatedAt.toLocaleTimeString()}}</span>
+                    <span
+                      class="col-sm-9 text-body"
+                    >{{ currentTicket.updatedAt.toLocaleTimeString()}}</span>
                   </div>
                 </div>
 
@@ -764,7 +761,6 @@ import { BFormInput, BFormSelect, BFormTextarea, BButton } from "bootstrap-vue";
 import VueMaterial from "vue-material";
 import "vue-material/dist/vue-material.min.css";
 import "vue-material/dist/theme/default.css";
-import Codemirror from "../components/Codemirror";
 
 import Ticket from "../ui/models/Ticket";
 
@@ -777,7 +773,7 @@ export default {
   // },
   head() {
     return {
-      title: "Staff"
+      title: "Staff Home"
     };
   },
   components: {
@@ -785,8 +781,8 @@ export default {
     "b-form-select": BFormSelect,
     "b-button": BButton,
     "b-form-input": BFormInput,
-    "b-form-select": BFormSelect,
-    Codemirror: Codemirror
+    "b-form-select": BFormSelect
+    // codemirror
   },
   data() {
     return {
@@ -1072,7 +1068,6 @@ export default {
       this.showCloseSessionDialog = false;
       var studentChannel = client.channels.get(this.currentTicket.owner._id);
       studentChannel.publish("ticketMarkedClosed", {});
-      this.resetBackToOpenTicketsDisplay();
       // Update the ticket status to closed in the db
       if (this.currentTicket) {
         console.log(
@@ -1085,6 +1080,7 @@ export default {
           status: "Closed"
         });
       }
+      this.resetBackToOpenTicketsDisplay();
     },
     async acceptTicket() {
       //remove the ticket from open tickets
@@ -1126,12 +1122,12 @@ export default {
       // Add closed ticket to history
       this.tickets[i].updatedAt = new Date(this.tickets[i].updatedAt);
 
-      if (
-        this.tickets[i].status === "Closed" &&
-        this.tickets[i].acceptedBy._id === this.staffId
-      ) {
-        this.ticketHistory.push(this.tickets[i]);
-      }
+      // if (
+      //   this.tickets[i].status === "Closed" &&
+      //   this.tickets[i].acceptedBy._id === this.staffId
+      // ) {
+      //   this.ticketHistory.push(this.tickets[i]);
+      // }
     }
     this.ticketHistory.reverse();
     if (staff) {
@@ -1150,7 +1146,6 @@ export default {
     this.staffId = queryString.split("=")[1];
     console.log(this.staffId);
     if (this.staffId) {
-      this.staffCourses.push({ value: null, text: "Show All Courses" });
       // This gets ANY ticket submitted by ANY student
       var ticketChannel = client.channels.get("tickets");
 
@@ -1158,7 +1153,7 @@ export default {
         console.log("ticket was added");
         this.getOpenTicketCount();
 
-        if (message && message.data){
+        if (message && message.data) {
           console.log(message.data);
           message.data.updatedAt = new Date(message.data.updatedAt);
           this.getStudentName(message.data, message.data.owner._id);
@@ -1166,6 +1161,7 @@ export default {
         }
         // Add new ticket to existing tickets
       });
+      this.staffCourses.push({ value: null, text: "Show All Courses" });
 
       ticketChannel.subscribe("ticketClosed", message => {
         console.log("ticket was closed");

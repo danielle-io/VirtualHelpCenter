@@ -620,6 +620,12 @@ Request History tab."
                 </div>
               </div>
 
+              <div
+                v-if="this.openTicket && !this.allOpenTicketsAmount || this.allOpenTicketsAmount === 0 "
+                class="sub-heading-text"
+                style="padding-top:7px; font-size: 17px;"
+              >You are next in line! Please wait for the next available TA.</div>
+
               <div v-if="this.showCountdown && !this.studentAcceptedSession">
                 <div style="margin-top: 20px;" class="container-body-accept">
                   <div class="heading-text">Accept your session</div>
@@ -1222,6 +1228,11 @@ Vue.use(VueMaterial);
 import Ticket from "../ui/models/Ticket";
 
 export default {
+  head() {
+    return {
+      title: "Student Home"
+    };
+  },
   components: {
     "b-form-input": BFormInput,
     "b-form-select": BFormSelect,
@@ -1276,7 +1287,7 @@ export default {
       attachments: null,
       userId: null,
       studentName: null,
-      allOpenTicketsAmount: null
+      allOpenTicketsAmount: 0
     };
   },
   methods: {
@@ -1749,20 +1760,26 @@ export default {
       if (this.openTickets.length > 0) {
         console.log("setting fields");
         this.openTicket = this.openTickets[0];
+        this.getOpenTicketCount();
         this.setFieldsFromTicket(this.openTicket);
         this.showTicket = true;
       }
     },
 
     async getOpenTicketCount() {
+      console.log("getting open tickets");
+
       if (this.openTicket) {
-        console.log("getting open tickets");
         let allOpenTickets = await axios.get("/api/tickets/getOpenTickets");
         allOpenTickets = allOpenTickets.data;
-
+        console.log(this.openTicket);
         if (allOpenTickets) {
+          console.log("all open tickets");
           allOpenTickets = allOpenTickets.filter(
-            item => item.createdAt < this.openTicket.createdAt
+            item =>
+              // console.log(item.createdAt)
+              item.createdAt > this.openTicket.createdAt &&
+              item._id !== this.openTicket._id
           );
           this.allOpenTicketsAmount = allOpenTickets.length;
         }
@@ -1789,6 +1806,8 @@ export default {
     async cancelTicket() {
       if (this.openTicket) {
         this.ticketChannel.publish("ticketClosed", this.openTicket);
+        this.ticketChannel.publish("ticketUpdate", this.openTicket);
+
         this.openTicket.status = "Unresolved";
         this.ticketHistory.unshift(this.openTicket);
 
@@ -1820,7 +1839,6 @@ export default {
     if (this.userId) {
       this.getStudentInfo();
     }
-    this.getOpenTicketCount();
   },
   mounted() {}
 };
