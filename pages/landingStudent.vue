@@ -621,7 +621,7 @@ Request History tab."
               </div>
 
               <div
-                v-if="this.openTicket && !this.allOpenTicketsAmount || this.allOpenTicketsAmount === 0 "
+                v-if="this.openTicket && (!this.allOpenTicketsAmount || this.allOpenTicketsAmount === 0) "
                 class="sub-heading-text"
                 style="padding-top:7px; font-size: 17px;"
               >You are next in line! Please wait for the next available TA.</div>
@@ -1770,7 +1770,7 @@ export default {
       console.log("getting open tickets");
 
       if (this.openTicket) {
-        let allOpenTickets = await axios.get("/api/tickets/getOpenTickets");
+        var allOpenTickets = await axios.get("/api/tickets/getOpenTickets");
         allOpenTickets = allOpenTickets.data;
         console.log(this.openTicket);
         if (allOpenTickets) {
