@@ -621,7 +621,7 @@ Request History tab."
               </div>
 
               <div
-                v-if="this.openTicket && (!this.allOpenTicketsAmount || this.allOpenTicketsAmount === 0) && !this.connecting && !this.zoomLink "
+                v-if="this.openTicket && (!this.allOpenTicketsAmount || this.allOpenTicketsAmount === 0) && !this.zoomLink "
                 class="sub-heading-text"
                 style="padding-top:7px; font-size: 17px;"
               >You are next in line! Please wait for the next available TA.</div>
@@ -1068,7 +1068,7 @@ Request History tab."
                         </span>
                         <span
                           class="col-sm-9 text-body"
-                        >{{ ticket.updatedAt.toLocaleDateString().replace('/','-').replace('/','-')}}</span>
+                        >{{ (ticket.createdAt.split('T')[0].split('-')[1] + '-' + ticket.createdAt.split('T')[0].split('-')[2] + '-' + ticket.createdAt.split('T')[0].split('-')[0])}}</span>
                       </div>
                     </div>
 
@@ -1079,7 +1079,7 @@ Request History tab."
                         </span>
                         <span
                           class="col-sm-9 text-body"
-                        >{{ " " + ticket.updatedAt.toLocaleTimeString()}}</span>
+                        >{{ " " + removeSecondsFromTime(ticket.updatedAt.toLocaleTimeString())}}</span>
                       </div>
                     </div>
 
@@ -1318,6 +1318,7 @@ export default {
       this.submitRequest = true;
       this.requestLandingPage = true;
 
+      console.log("in saving");
       // Publish edited ticket
       this.ticketChannel.publish("ticketUpdate", this.openTicket);
     },
@@ -1459,6 +1460,12 @@ export default {
       }
       console.log("ticket rating is now " + ticket.rating);
     },
+    removeSecondsFromTime: function(currentTime) {
+      var timeNoSeconds = currentTime.split(":");
+      var strLength = currentTime.length;
+      var ending = currentTime.substring(strLength - 3);
+      return timeNoSeconds[0] + ":" + timeNoSeconds[1] + " " + ending;
+    },
     removeElement: function(index) {
       console.log(this.code == null);
       console.log("remove");
@@ -1498,6 +1505,7 @@ export default {
       });
 
       console.log("student channel " + this.userId);
+      
       studentChannel.subscribe("ticketMarkedClosed", message => {
         this.openTicket.status = "Closed";
         this.clearTicketWhenCanceledOrComplete();
@@ -1553,7 +1561,7 @@ export default {
     reSubmitTicket: function(ticket) {
       var currentDate = new Date().toString();
 
-      console.log("in resubmit " + ticket._id);
+      console.log("in resubmit " + ticket._id + " at time " + currentDate);
       var id = ticket._id;
 
       if (ticket.status !== "Closed") {
@@ -1590,12 +1598,14 @@ export default {
       this.openTicket = ticket;
       this.openTicket.createdAt = currentDate;
       this.createdAt = currentDate;
-      this.ticketTime = ticket.updatedAt.toLocaleTimeString();
+      this.ticketTime = this.removeSecondsFromTime(ticket.updatedAt.toLocaleTimeString());
       this.openTicket.status = "Open";
       this.status = "Open";
       this.getTickets();
       document.getElementById("landingTab").click();
 
+      console.log("resubmitting");
+      
       // Sends ticket to staff
       this.ticketChannel.publish("ticketUpdate", this.openTicket);
     },
@@ -1607,7 +1617,7 @@ export default {
       this.attachments = ticket.attachments;
       this.status = ticket.status;
       this.createdAt = ticket.createdAt;
-      this.ticketTime = ticket.updatedAt.toLocaleTimeString();
+      this.ticketTime = this.removeSecondsFromTime(ticket.updatedAt.toLocaleTimeString());
       this.showTicket = true;
       this.$set(ticket, "expandChevron", true);
       this.$set(ticket, "collapseChevron", false);
@@ -1620,6 +1630,7 @@ export default {
         this.requestLandingPage = false;
         return this.requestLandingPage;
       } else {
+        console.log("here in change request state");
         var channel = client.channels.get("staff");
         // Publish a message to the test channel
         channel.publish("ticketUpdate", "ticket updated");
@@ -1720,6 +1731,7 @@ export default {
           console.log(this.openTicket);
         }
 
+        console.log("submitting");
         // sends ticket to staff
         this.ticketChannel.publish("ticketUpdate", this.openTicket);
       }
@@ -1772,7 +1784,6 @@ export default {
           console.log("all open tickets");
           allOpenTickets = allOpenTickets.filter(
             item =>
-              // console.log(item.createdAt)
               item.createdAt > this.openTicket.createdAt &&
               item._id !== this.openTicket._id
           );
@@ -1801,7 +1812,6 @@ export default {
     async cancelTicket() {
       if (this.openTicket) {
         this.ticketChannel.publish("ticketClosed", this.openTicket);
-        this.ticketChannel.publish("ticketUpdate", this.openTicket);
 
         this.openTicket.status = "Unresolved";
         this.ticketHistory.unshift(this.openTicket);

@@ -1,4 +1,9 @@
 <style scoped>
+.CodeMirror {
+  float: left;
+  width: 700px;
+  border: 1px solid rgb(230, 221, 221);
+}
 .material-design-icon {
   margin-right: 10px !important;
   margin-top: 3px;
@@ -330,11 +335,10 @@ button[type="submit"] {
                 open {{this.getRequestOrRequests()}}.
               </div>
 
+              <!-- .slice(this.startingIndex, this.endingIndex) -->
+
               <div v-if="this.openTickets.length > 0">
-                <div
-                  v-for="(ticket, index) in filterByCourse(this.openTickets).slice(this.startingIndex, this.endingIndex)"
-                  :key="ticket._id"
-                >
+                <div v-for="(ticket, index) in filterByCourse(this.openTickets)" :key="ticket._id">
                   <!-- Selected index allows only that card to show when selected -->
                   <!-- Selected-card class is bound to the card selection  -->
                   <md-card
@@ -352,7 +356,7 @@ button[type="submit"] {
                         </span>
                       </div>
 
-                      <!-- <div class="card-line">
+                      <div class="card-line">
                         <span class="row">
                           <span class="ticket-categories col-sm-3">
                             <clock />
@@ -361,9 +365,9 @@ button[type="submit"] {
                           <span
                             style="margin-left:0px;"
                             class="col"
-                          >{{ ticket.updatedAt.toLocaleTimeString()}}</span>
+                          >{{ " " + removeSecondsFromTime(ticket.updatedAt.toLocaleTimeString())}}</span>
                         </span>
-                      </div>-->
+                      </div>
 
                       <!-- <div class="card-line">
                         <span class="row">
@@ -374,7 +378,7 @@ button[type="submit"] {
                           <span
                             style="margin-left:0px;"
                             class="col"
-                          >{{ ticket.updatedAt.toLocaleDateString().replace('/','-').replace('/','-')}}</span>
+                          >{{ (ticket.createdAt.split('T')[0].split('-')[1] + '-' + ticket.createdAt.split('T')[0].split('-')[2] + '-' + ticket.createdAt.split('T')[0].split('-')[0])}}</span>
                         </span>
                       </div>-->
 
@@ -513,32 +517,25 @@ button[type="submit"] {
                 style="border: 1px solid #dde0e681; margin-bottom: 10px; padding-bottom: 8px; border-radius: 8px; padding-top:8px; box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.05);"
               >
                 <div class="md-card-content" style="margin-bottom:20px;">
-                  <!-- <div class="card-line-history">
+                  <div class="card-line-history">
                     <div class="row">
                       <span class="card-categories col-sm-3">
                         <date class="label-icons" />Date :
                       </span>
                       <span
                         class="col-sm-9 text-body"
-                      >{{ ticket.updatedAt.toLocaleDateString().replace('/','-').replace('/','-')}}</span>
+                      >{{ (ticket.createdAt.split('T')[0].split('-')[1] + '-' + ticket.createdAt.split('T')[0].split('-')[2] + '-' + ticket.createdAt.split('T')[0].split('-')[0])}}</span>
                     </div>
-                  </div> -->
-
-                  <!-- <div class="card-line-history">
-                    <div class="row">
-                      <span class="card-categories col-sm-3">
-                        <clock class="label-icons" />Time:
-                      </span>
-                      <span class="col-sm-9 text-body">{{ticket.updatedAt.toLocaleTimeString()}}</span>
-                    </div>
-                  </div> -->
+                  </div>
 
                   <div class="card-line-history">
                     <div class="row">
                       <span class="card-categories col-sm-3">
-                        <bell class="label-icons" />Status:
+                        <clock class="label-icons" />Time:
                       </span>
-                      <span class="col-sm-9 text-body">{{ ticket.status }}</span>
+                      <span
+                        class="col-sm-9 text-body"
+                      >{{ " " + removeSecondsFromTime(ticket.updatedAt.toLocaleTimeString())}}</span>
                     </div>
                   </div>
 
@@ -577,7 +574,10 @@ button[type="submit"] {
                       </div>
                     </div>
 
-                    <div v-if="ticket.ownerName" class="card-line-history">
+                    <div
+                      v-if="ticket.ownerName && ticket.ownerName !== undefined"
+                      class="card-line-history"
+                    >
                       <div class="row">
                         <span class="card-categories col-sm-3">
                           <student class="label-icons" />Name:
@@ -663,7 +663,7 @@ button[type="submit"] {
                     </span>
                     <span
                       class="col-sm-9 text-body"
-                    >{{currentTicket.updatedAt.toLocaleDateString().replace('/','-').replace('/','-')}}</span>
+                    >{{ (ticket.createdAt.split('T')[0].split('-')[1] + '-' + ticket.createdAt.split('T')[0].split('-')[2] + '-' + ticket.createdAt.split('T')[0].split('-')[0])}}</span>
                   </div>
                 </div>
 
@@ -674,7 +674,7 @@ button[type="submit"] {
                     </span>
                     <span
                       class="col-sm-9 text-body"
-                    >{{ currentTicket.updatedAt.toLocaleTimeString()}}</span>
+                    >{{ " " + removeSecondsFromTime(ticket.updatedAt.toLocaleTimeString())}}</span>
                   </div>
                 </div>
 
@@ -784,8 +784,8 @@ export default {
     "b-form-select": BFormSelect,
     "b-button": BButton,
     "b-form-input": BFormInput,
-    "b-form-select": BFormSelect
-    // codemirror
+    "b-form-select": BFormSelect,
+    Codemirror: Codemirror
   },
   data() {
     return {
@@ -815,22 +815,6 @@ export default {
     };
   },
   methods: {
-    // filterOpenTickets(status) {
-    //   if (this.tickets) {
-    //     console.log("filtering open tickets");
-    //     return this.tickets.filter(ticket => ticket.status === status);
-    //   } else {
-    //     this.filteredTickets = [];
-    //     return;
-    //   }
-    // },
-    // filterAllTickets(status) {
-    //   this.filteredTickets = [];
-    //   this.staffCourses.forEach(element => {
-    //     return this.tickets.filter(ticket => ticket.course._id === status);
-    //   });
-    //   return this.filteredTickets;
-    // },
     triggerAccept: function() {
       this.studentAccepted = true;
       console.log("accepted " + this.studentAccepted);
@@ -842,6 +826,24 @@ export default {
       });
     },
 
+    convertTime: function(currentTime) {
+      console.log("before " + currentTime);
+      var time = new Date(currentTime);
+      // console.log(time);
+      console.log(time.toLocaleTimeString());
+      var timeNoSeconds = time.toLocaleTimeString().split(":");
+      var strLength = time.toLocaleTimeString().length;
+      var ending = time.toLocaleTimeString().substring(strLength - 3);
+      return timeNoSeconds[0] + ":" + timeNoSeconds[1] + " " + ending;
+    },
+
+    convertTimeSeconds: function(currentTime) {
+      var timeNoSeconds = currentTime.split(":");
+      var strLength = currentTime.length;
+      var ending = currentTime.substring(strLength - 3);
+      return timeNoSeconds[0] + ":" + timeNoSeconds[1] + " " + ending;
+    },
+
     // Get all the tickets that relate to the courses the TA teaches
     async getOpenTickets() {
       console.log("getting open tickets");
@@ -851,10 +853,9 @@ export default {
       if (allOpenTickets && this.staff) {
         // Remove tickets for courses the staff doesn't teach
         for (var i = 0; i < allOpenTickets.data.length; i++) {
-          console.log("EACH " + allOpenTickets.data[i]);
+          console.log("EACH " + allOpenTickets.data[i].course._id);
 
           if (this.isTicketForARelevantCourse(allOpenTickets.data[i])) {
-            console.log("VALID CLASS " + allOpenTickets.data[i]);
             this.openTickets.push(allOpenTickets.data[i]);
           }
         }
@@ -891,6 +892,7 @@ export default {
         }
       }
     },
+
     // formatTime(time) {
     //   var timeStr = " AM";
     //   var splitTime = time.split(":");
@@ -912,23 +914,10 @@ export default {
     openPage: function(attachmentUrl) {
       window.open(attachmentUrl, "_blank");
     },
-    // filterCourseTickets(status, course) {
-    //   if (this.tickets) {
-    //     if (typeof course !== "undefined") {
-    //       return this.tickets.filter(
-    //         ticket => ticket.status === status && ticket.course._id === course
-    //       );
-    //     } else {
-    //       return this.tickets.filter(ticket => ticket.status === status);
-    //     }
-    //   } else {
-    //     this.filteredTickets = [];
-    //     return;
-    //   }
-    // },
     scrollToTop() {
       document.getElementById("tabs").scrollIntoView();
     },
+
     async getStudentName(ticket, ticketOwnerId) {
       var studentName = "";
       if (ticketOwnerId && ticket) {
@@ -942,6 +931,7 @@ export default {
             this.$set(ticket, "ownerName", studentName);
             this.$set(ticket, "expandChevron", true);
             this.$set(ticket, "collapseChevron", false);
+            // this.$set(ticket, "date", false);
           }
         }
       }
@@ -975,7 +965,8 @@ export default {
       return "requests";
     },
     getSingleOrPlural: function() {
-      if (this.openTicket.length === 1) {
+      if (this.openTickets.length === 1) {
+        console.log(this.openTickets);
         return "is";
       }
       return "are";
@@ -1068,17 +1059,11 @@ export default {
       this.selectedTicket = false;
     },
     isTicketForARelevantCourse(ticket) {
-      console.log(ticket);
-      this.staff.classes.forEach(course => {
-        if (course._id !== 0) {
-          console.log(
-            "COURSE + COURSE " + course._id + " " + ticket.course._id
-          );
-          if (course._id === ticket.course._id) {
-            return true;
-          }
+      for (var i = 0; i < this.staff.classes.length; i++) {
+        if (this.staff.classes[i]._id === ticket.course._id) {
+          return true;
         }
-      });
+      }
       return false;
     },
     countdownTime(ticketTime) {
@@ -1097,27 +1082,27 @@ export default {
         1000
       );
     },
+    removeSecondsFromTime: function(currentTime) {
+      var timeNoSeconds = currentTime.split(":");
+      var strLength = currentTime.length;
+      var ending = currentTime.substring(strLength - 3);
+      return timeNoSeconds[0] + ":" + timeNoSeconds[1] + " " + ending;
+    },
     checkClassSelected() {
       console.log(this.courseFilter);
     },
     removeTicketFromTicketUI(id) {
-      console.log("ticket removed");
-      this.openTickets = this.openTickets.filter(
-        ticket => ticket.status === "Open" && ticket._id != id
-      );
+      console.log("ticket removed, id is " + id);
+      this.openTickets = this.openTickets.filter(ticket => ticket._id !== id);
     },
     filterByCourse(tickets) {
-      console.log("FILTERING COURSE IS " + this.courseFilter.value);
       if (tickets) {
-        // A course filter is applied
-        if (this.courseFilter.value !== 0) {
+        if (this.courseFilter !== 0) {
           return tickets.filter(
-            ticket => ticket.course._id === this.courseFilter.value
+            ticket => ticket.course._id === this.courseFilter
           );
-
-          // For select all
-          return tickets;
         }
+        return tickets;
       }
     },
 
@@ -1127,12 +1112,9 @@ export default {
       studentChannel.publish("ticketMarkedClosed", {});
       // Update the ticket status to closed in the db
       if (this.currentTicket) {
-        console.log(
-          "current ticket exists: removing current ticket " +
-            JSON.stringify(this.currentTicket)
-        );
         var id = this.currentTicket._id;
         this.removeTicketFromTicketUI(id);
+
         axios.put("/api/updateTicket/" + id, {
           status: "Closed"
         });
@@ -1140,27 +1122,21 @@ export default {
       this.resetBackToOpenTicketsDisplay();
     },
     async acceptTicket() {
-      //remove the ticket from open tickets
+      // Remove the ticket from open tickets
       console.log("removing ticket");
       var ticketChannel = client.channels.get("tickets");
 
       ticketChannel.publish("ticketClosed", this.currentTicket);
+
       axios.put("/api/updateTicket/" + this.currentTicketId, {
         status: "Pending"
       });
     },
 
-    // Sets the class to filter by based on dropdown
-    // async setClass(course) {
-    //   if (course) {
-    //     let chosenCourse = await axios.get("/api/courses/" + course);
-    //     this.course = chosenCourse.data._id;
-    //   }
-    // },
-
     // Load courses the TA teaches into the dropdown
     async loadCourses(courseItem) {
       if (courseItem) {
+        console.log("LOADING COURSE");
         let courseInfo = await axios.get("/api/courses/" + courseItem._id);
         var text = courseInfo.data.dep + " " + courseInfo.data.courseNum;
         this.staffCourses.push({ value: courseItem._id, text: text });
@@ -1169,27 +1145,11 @@ export default {
   },
 
   async created() {
-    // let openTickets = await axios.get("/api/tickets");
-    // openTickets = openTickets.filter(
-    //   ticket => ticket.status === status && ticket.course._id === course
-    // );
-    // Remove any tickets that are for classes the TA does not teach
-
-    // Ticket.insert(tickets);
-    if (this.staff) {
-      this.staff.classes.forEach(element => {
-        this.loadCourses(element);
-        this.zoomLink = this.staff.zoomLink;
-      });
-    }
-
     var ticketChannel = client.channels.get("tickets");
 
     ticketChannel.subscribe("ticketClosed", message => {
       console.log("ticket was closed");
 
-      // TODO: make sure ticket is removed from open and put in closed
-      // ticket will be remove from being displayed
       this.removeTicketFromTicketUI(message.data._id);
     });
 
@@ -1199,44 +1159,39 @@ export default {
     });
 
     ticketChannel.subscribe("ticketUpdate", message => {
-      console.log("ticket was added");
-      // this.getOpenTickets();
-
-      // Add new ticket to the queue
       if (message && message.data) {
+        console.log("ticket was added");
+        // Add new ticket to the queue
         console.log(message.data);
         message.data.updatedAt = new Date(message.data.updatedAt);
         this.getStudentName(message.data, message.data.owner._id);
         this.openTickets.push(message.data);
+        this.getOpenTickets();
       }
     });
 
     // This gets ANY ticket submitted by ANY student
-
     this.staffCourses.push({ value: 0, text: "Show All Courses" });
-    this.courseFilter = this.staffCourses[0].value;
+    this.courseFilter = 0;
   },
-  async beforeMount() {
+  beforeMount() {
     const queryString = window.location.search;
     this.staffId = queryString.split("=")[1];
 
     if (this.staffId) {
-      let staff = await axios.get("/api/users/" + this.staffId);
+      let staff = axios.get("/api/users/" + this.staffId);
       this.staff = staff.data;
-      console.log("STAFF " + JSON.stringify(this.staff));
-      console.log("getting closed tickets");
-      this.getClosedTickets();
-      this.getOpenTickets();
+
+      if (this.staff) {
+        this.staff.classes.forEach(element => {
+          this.loadCourses(element);
+          this.getClosedTickets();
+          this.getOpenTickets();
+        });
+        this.zoomLink = this.staff.zoomLink;
+      }
     }
     this.scrollToTop();
-  },
-  computed: {
-    // chevron(id) {
-    //   let tickets = Ticket.query()
-    //     .where("_id", id)
-    //     .get();
-    //   console.log(tickets);
-    // }
   }
 };
 </script>
