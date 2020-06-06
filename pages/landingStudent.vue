@@ -1072,14 +1072,12 @@ Request History tab."
                       </div>
                     </div>
 
-                    <div v-if="ticket.updatedAt" class="card-line-history">
+                    <div v-if="ticket.createdAt" class="card-line-history">
                       <div class="row">
                         <span class="card-categories col-sm-3">
                           <clock class="label-icons" />Time:
                         </span>
-                        <span
-                          class="col-sm-9 text-body"
-                        >{{ " " + removeSecondsFromTime(ticket.updatedAt.toLocaleTimeString())}}</span>
+                        <span class="col-sm-9 text-body">{{ " " + getTicketTime(ticket.createdAt)}}</span>
                       </div>
                     </div>
 
@@ -1400,6 +1398,11 @@ export default {
       this.scrollToTop();
       return this.requestHistoryTab;
     },
+    getTicketTime: function(ticketTime) {
+      // Take in a string and turn it back into a date object
+      var dateObj = new Date(ticketTime);
+      return this.removeSecondsFromTime(dateObj.toLocaleTimeString());
+    },
     getButtonText: function() {
       if (this.editingRequest) {
         return "Save Changes";
@@ -1505,7 +1508,7 @@ export default {
       });
 
       console.log("student channel " + this.userId);
-      
+
       studentChannel.subscribe("ticketMarkedClosed", message => {
         this.openTicket.status = "Closed";
         this.clearTicketWhenCanceledOrComplete();
@@ -1529,13 +1532,13 @@ export default {
     },
     countdownTime: function() {
       // Read updated time
-      let ticketTime = new Date(this.openTicket.updatedAt);
+      let timeOnTicket = new Date(this.openTicket.updatedAt);
 
       let currentTime = new Date();
-      ticketTime.setMinutes(ticketTime.getMinutes() + 1);
+      timeOnTicket.setMinutes(timeOnTicket.getMinutes() + 1);
       return (
-        ticketTime.getMinutes() * 60 +
-        ticketTime.getSeconds() -
+        timeOnTicket.getMinutes() * 60 +
+        timeOnTicket.getSeconds() -
         (currentTime.getMinutes() * 60 + currentTime.getSeconds())
       );
     },
@@ -1598,14 +1601,14 @@ export default {
       this.openTicket = ticket;
       this.openTicket.createdAt = currentDate;
       this.createdAt = currentDate;
-      this.ticketTime = this.removeSecondsFromTime(ticket.updatedAt.toLocaleTimeString());
+      this.ticketTime = this.getTicketTime(ticket.updatedAt);
       this.openTicket.status = "Open";
       this.status = "Open";
       this.getTickets();
       document.getElementById("landingTab").click();
 
       console.log("resubmitting");
-      
+
       // Sends ticket to staff
       this.ticketChannel.publish("ticketUpdate", this.openTicket);
     },
@@ -1617,7 +1620,9 @@ export default {
       this.attachments = ticket.attachments;
       this.status = ticket.status;
       this.createdAt = ticket.createdAt;
-      this.ticketTime = this.removeSecondsFromTime(ticket.updatedAt.toLocaleTimeString());
+      this.ticketTime = this.removeSecondsFromTime(
+        ticket.updatedAt.toLocaleTimeString()
+      );
       this.showTicket = true;
       this.$set(ticket, "expandChevron", true);
       this.$set(ticket, "collapseChevron", false);
@@ -1745,11 +1750,11 @@ export default {
         {}
       );
 
-      tickets.data.forEach(ticket => {
-        ticket.updatedAt = new Date(ticket.updatedAt);
-      });
+      // tickets.data.forEach(ticket => {
+      //   ticket.updatedAt = new Date(ticket.updatedAt);
+      // });
 
-      tickets.data.sort(this.compareTicketsRev);
+      // tickets.data.sort(this.compareTicketsRev);
 
       tickets.data.forEach(element => {
         this.$set(element, "expandChevron", true);

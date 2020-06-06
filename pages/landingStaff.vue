@@ -321,7 +321,6 @@ button[type="submit"] {
 
           <div v-if="this.openRequestTab">
             <div style="margin-top: 10px;" class="ticket-container">
-              
               <div class="sub-heading-text">
                 There {{this.getSingleOrPlural()}} currently
                 <span
@@ -360,11 +359,11 @@ button[type="submit"] {
                           <span
                             style="margin-left:0px;"
                             class="col"
-                          >{{ " " + removeSecondsFromTime(ticket.updatedAt.toLocaleTimeString())}}</span>
+                          >{{ " " + getTicketTime(ticket.createdAt)}}</span>
                         </span>
                       </div>
 
-                      <!-- <div class="card-line">
+                      <div class="card-line">
                         <span class="row">
                           <span class="ticket-categories col-sm-3">
                             <date />
@@ -375,7 +374,7 @@ button[type="submit"] {
                             class="col"
                           >{{ (ticket.createdAt.split('T')[0].split('-')[1] + '-' + ticket.createdAt.split('T')[0].split('-')[2] + '-' + ticket.createdAt.split('T')[0].split('-')[0])}}</span>
                         </span>
-                      </div>-->
+                      </div>
 
                       <!-- <div class="card-line">
                       <span class="row">
@@ -528,9 +527,7 @@ button[type="submit"] {
                       <span class="card-categories col-sm-3">
                         <clock class="label-icons" />Time:
                       </span>
-                      <span
-                        class="col-sm-9 text-body"
-                      >{{ " " + removeSecondsFromTime(ticket.updatedAt.toLocaleTimeString())}}</span>
+                      <span class="col-sm-9 text-body">{{ " " + getTicketTime(ticket.createdAt)}}</span>
                     </div>
                   </div>
 
@@ -581,30 +578,28 @@ button[type="submit"] {
                       </div>
                     </div>
 
-                    <div v-if="ticket.attachments.length > 0">
-                      <div class="card-line">
-                        <span class="row">
-                          <span class="card-categories col-sm-3">
-                            <attachment class="label-icons" />Files:
-                          </span>
-
-                          <span
-                            class="col"
-                            v-for="(attachment, index) in (ticket.attachments)"
-                            :key="index"
-                          >
-                            <a
-                              class="text-body"
-                              style="cursor: pointer; color: rgb(45, 58, 130) !important; z-index: 999; 
-                              text-shadow: none !important; font-size: 14px;@@"
-                              @click="openPage(attachment.filePath, attachment.fileName)"
-                            >
-                              <open-in-new-window />
-                              {{attachment.fileName}}
-                            </a>
-                          </span>
+                    <div v-if="ticket.attachments.length > 0" class="card-line-history">
+                      <span class="row">
+                        <span class="card-categories col-sm-3">
+                          <attachment class="label-icons" />Files:
                         </span>
-                      </div>
+
+                        <span
+                          class="col"
+                          v-for="(attachment, index) in (ticket.attachments)"
+                          :key="index"
+                        >
+                          <a
+                            class="text-body"
+                            style="cursor: pointer; color: rgb(45, 58, 130) !important; z-index: 999; 
+                              text-shadow: none !important; font-size: 14px;@@"
+                            @click="openPage(attachment.filePath, attachment.fileName)"
+                          >
+                            <open-in-new-window />
+                            {{attachment.fileName}}
+                          </a>
+                        </span>
+                      </span>
                     </div>
 
                     <div v-if="ticket.codeSnippet">
@@ -667,9 +662,7 @@ button[type="submit"] {
                     <span class="card-categories col-sm-3">
                       <clock class="label-icons" />Time:
                     </span>
-                    <span
-                      class="col-sm-9 text-body"
-                    >{{ " " + removeSecondsFromTime(ticket.updatedAt.toLocaleTimeString())}}</span>
+                    <span class="col-sm-9 text-body">{{ " " + getTicketTime(ticket.createdAt)}}</span>
                   </div>
                 </div>
 
@@ -837,6 +830,13 @@ export default {
       var strLength = currentTime.length;
       var ending = currentTime.substring(strLength - 3);
       return timeNoSeconds[0] + ":" + timeNoSeconds[1] + " " + ending;
+    },
+    getTicketTime(ticketTime) {
+      console.log(ticketTime);
+      console.log(typeof ticketTime);
+      // Take in a string and turn it back into a date object
+      var dateObj = new Date(ticketTime);
+      return this.removeSecondsFromTime(dateObj.toLocaleTimeString());
     },
 
     // Get all the tickets that relate to the courses the TA teaches
@@ -1135,6 +1135,10 @@ export default {
         this.staffCourses.push({ value: courseItem._id, text: text });
       }
     }
+  },
+
+  formatTime(time, prefix = "") {
+    return typeof time == "object" ? prefix + time.toLocaleDateString() : "";
   },
 
   async created() {

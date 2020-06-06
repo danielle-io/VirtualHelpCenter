@@ -56,16 +56,16 @@ router.get('/tickets/getClosedTicketsByStaff/:id', function(req,res,next){
 
 router.get('/tickets/getTicketsByUser/:id', function(req,res,next){
     const id = req.params.id;
-    Ticket.find({'owner._id' : id}, (err, tickets)=>{
-        console.log(tickets);
-        res.send(tickets)
-    })
+    var query = Ticket.find({ 'owner._id': id}).sort('-createdAt');
+    query.exec(function(err, tickets) {
+      if (err) return handleError(err);
+      res.send(tickets);
+    });
 })
 
 
 router.put('/updateTicket/:id', function(req, res, next) {
     const id = req.params.id;
-    console.log("ticket id is " + id);
     Ticket.updateOne({_id: id}, {$set: req.body,}, function(err, ticket){});
 })
 
