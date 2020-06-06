@@ -321,13 +321,8 @@ button[type="submit"] {
 
           <div v-if="this.openRequestTab">
             <div style="margin-top: 10px;" class="ticket-container">
-              <div
-                v-if="!this.openTickets"
-                class="sub-heading-text"
-                style="padding-top: 10px;"
-              >There are currently no open requests</div>
-
-              <div v-if="this.openTickets && this.openTickets.length" class="sub-heading-text">
+              
+              <div class="sub-heading-text">
                 There {{this.getSingleOrPlural()}} currently
                 <span
                   style="font-weight: 600"
@@ -846,6 +841,7 @@ export default {
 
     // Get all the tickets that relate to the courses the TA teaches
     async getOpenTickets() {
+      this.openTickets = [];
       console.log("getting open tickets");
 
       var allOpenTickets = await axios.get("/api/tickets/getOpenTickets");
@@ -958,9 +954,6 @@ export default {
     getRequestOrRequests: function() {
       if (this.openTickets.length === 1) {
         return "request";
-      }
-      if (this.openTickets.length === 0) {
-        return "no";
       }
       return "requests";
     },
@@ -1174,12 +1167,12 @@ export default {
     this.staffCourses.push({ value: 0, text: "Show All Courses" });
     this.courseFilter = 0;
   },
-  beforeMount() {
+  async beforeMount() {
     const queryString = window.location.search;
     this.staffId = queryString.split("=")[1];
 
     if (this.staffId) {
-      let staff = axios.get("/api/users/" + this.staffId);
+      let staff = await axios.get("/api/users/" + this.staffId);
       this.staff = staff.data;
 
       if (this.staff) {
