@@ -340,8 +340,10 @@ button[type="submit"] {
                     v-bind:class="{ 'selected-card': selectedTicketIndex === index}"
                   >
                     <div style="cursor: pointer;" @click="clickCard(ticket, index, ticket._id)">
-                     
-                      <div class="card-line" v-if="ticket.ownerName && ticket.ownerName !== undefined">
+                      <div
+                        class="card-line"
+                        v-if="ticket.ownerName && ticket.ownerName !== undefined"
+                      >
                         <span class="row">
                           <span class="ticket-categories col-sm-3">
                             <student />
@@ -373,7 +375,7 @@ button[type="submit"] {
                           <span
                             style="margin-left:0px;"
                             class="col"
-                          >{{ (ticket.createdAt.split('T')[0].split('-')[1] + '-' + ticket.createdAt.split('T')[0].split('-')[2] + '-' + ticket.createdAt.split('T')[0].split('-')[0])}}</span>
+                          >{{ ticket.createdAt.split('T')[0].split('-')[1] + '-' + ticket.createdAt.split('T')[0].split('-')[2] + '-' + ticket.createdAt.split('T')[0].split('-')[0]}}</span>
                         </span>
                       </div>
 
@@ -639,7 +641,7 @@ button[type="submit"] {
                 <div class="card-line-history">
                   <div class="row">
                     <span class="card-categories col-sm-3">
-                      <date class="label-icons" />Date :
+                      <date class="label-icons" />Date:
                     </span>
                     <span
                       class="col-sm-9 text-body"
@@ -711,7 +713,7 @@ button[type="submit"] {
               >
                 <span
                   style="font-size: 28px; color: #53a59e;  justify-content: center;
-  align-items: center; cursor:pointer;"
+                align-items: center; cursor:pointer;"
                 >
                   <check-circle
                     @click="showCloseSessionDialog = true"
@@ -737,21 +739,17 @@ button[type="submit"] {
 <script lang="text/javascript" src="https://cdn.ably.io/lib/ably.min-1.js"></script>
 <script>
 import Vue from "vue";
+import Codemirror from "../components/Codemirror";
 import axios from "~/plugins/axios";
 import { BFormInput, BFormSelect, BFormTextarea, BButton } from "bootstrap-vue";
 import VueMaterial from "vue-material";
 import "vue-material/dist/vue-material.min.css";
 import "vue-material/dist/theme/default.css";
-// import Ticket from "../ui/models/Ticket";
-import Codemirror from "../components/Codemirror";
 
 Vue.use(VueMaterial);
 import * as Ably from "ably";
 const client = new Ably.Realtime(process.env.ABLY_KEY);
 export default {
-  // async fetch() {
-  //   //const tickets = await Ticket.api().get('/tickets');
-  // },
   head() {
     return {
       title: "Staff Home"
@@ -818,33 +816,30 @@ export default {
     },
 
     // Get all the tickets that relate to the courses the TA teaches
-    async getOpenTickets() {
-      this.openTickets = [];
-      console.log("getting open tickets");
+    async getOpenTickets(num) {
+      if (num === 0) {
+        // this.openTickets = [];
+        console.log("getting open tickets");
 
-      var allOpenTickets = await axios.get("/api/tickets/getOpenTickets");
+        var allOpenTickets = await axios.get("/api/tickets/getOpenTickets");
 
-      if (allOpenTickets && this.staff) {
-        // Remove tickets for courses the staff doesn't teach
-        for (var i = 0; i < allOpenTickets.data.length; i++) {
-          console.log("EACH " + allOpenTickets.data[i].course._id);
+        if (allOpenTickets && this.staff) {
+          // Remove tickets for courses the staff doesn't teach
+          for (var i = 0; i < allOpenTickets.data.length; i++) {
+            console.log("EACH " + allOpenTickets.data[i].course._id);
 
-          if (this.isTicketForARelevantCourse(allOpenTickets.data[i])) {
-            console.log("PUSHING");
-            this.openTickets.push(allOpenTickets.data[i]);
+            if (this.isTicketForARelevantCourse(allOpenTickets.data[i])) {
+              console.log("PUSHING");
+              this.openTickets.push(allOpenTickets.data[i]);
+              this.getStudentName(
+                this.openTickets[i],
+                this.openTickets[i].owner._id
+              );
+              this.openTickets[i].updatedAt = new Date(
+                this.openTickets[i].updatedAt
+              );
+            }
           }
-        }
-
-        // Add student names to all open tickets
-        for (var i = 0; i < this.openTickets.length; i++) {
-          console.log("getting name for ticket");
-          this.getStudentName(
-            this.openTickets[i],
-            this.openTickets[i].owner._id
-          );
-          this.openTickets[i].updatedAt = new Date(
-            this.openTickets[i].updatedAt
-          );
         }
       }
     },
@@ -1094,14 +1089,42 @@ export default {
         var text = courseInfo.data.dep + " " + courseInfo.data.courseNum;
         this.staffCourses.push({ value: courseItem._id, text: text });
       }
+    },
+    formatTime(time, prefix = "") {
+      return typeof time == "object" ? prefix + time.toLocaleDateString() : "";
     }
   },
-
-  formatTime(time, prefix = "") {
-    return typeof time == "object" ? prefix + time.toLocaleDateString() : "";
+  beforemount() {
+    console.log("before mount");
   },
 
+  mounted() {
+    console.log("mounted");
+    this.scrollToTop();
+  },
   async created() {
+    
+    // Counter prevents getOpenTickets from running twice
+    var num = 0;
+    const queryString = window.location.search;
+    this.staffId = queryString.split("=")[1];
+    this.staffCourses.push({ value: 0, text: "Show All Courses" });
+    this.courseFilter = 0;
+
+    if (this.staffId) {
+      let staff = await axios.get("/api/users/" + this.staffId);
+      this.staff = staff.data;
+      this.zoomLink = this.staff.zoomLink;
+
+      this.staff.classes.forEach(element => {
+        this.loadCourses(element);
+        this.getClosedTickets();
+        this.getOpenTickets(num);
+        num += 1;
+      });
+    }
+
+    // This gets ANY ticket submitted by ANY student
     var ticketChannel = client.channels.get("tickets");
 
     ticketChannel.subscribe("ticketClosed", message => {
@@ -1125,32 +1148,6 @@ export default {
         this.openTickets.push(message.data);
       }
     });
-
-    // This gets ANY ticket submitted by ANY student
-    this.staffCourses.push({ value: 0, text: "Show All Courses" });
-    this.courseFilter = 0;
-  },
-  async beforeMount() {
-    const queryString = window.location.search;
-    this.staffId = queryString.split("=")[1];
-
-    if (this.staffId) {
-      let staff = await axios.get("/api/users/" + this.staffId);
-      this.staff = staff.data;
-
-      if (this.staff) {
-        this.staff.classes.forEach(element => {
-          this.loadCourses(element);
-          this.getClosedTickets();
-          console.log("OPEN TICKETS " + this.openTickets);
-          if (!this.openTickets || this.openTickets === []) {
-            this.getOpenTickets();
-          }
-        });
-        this.zoomLink = this.staff.zoomLink;
-      }
-    }
-    this.scrollToTop();
   }
 };
 </script>

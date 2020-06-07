@@ -712,7 +712,7 @@ Request History tab."
                       <span
                         style="padding-left: 35px !important;"
                         class="col-sm-9 text-body"
-                      >{{this.ticketTime}}</span>
+                      >{{ this.smallerSpaces + this.ticketTime}}</span>
                     </div>
                   </div>
 
@@ -779,10 +779,7 @@ Request History tab."
                             <code-symbol />
                           </span>Code:
                         </span>
-                        <!-- <span style="padding-left: 20px !important;" class="col-sm-9 text-body"> -->
                         <Codemirror v-bind:initialCode="codeSnippet" v-model="codeSnippet" />
-
-                        <!-- </span> -->
                       </div>
                     </div>
                   </div>
@@ -1069,7 +1066,7 @@ Request History tab."
                         </span>
                         <span
                           class="col-sm-9 text-body"
-                        >{{ smallerSpaces + (ticket.createdAt.split('T')[0].split('-')[1] + '-' + ticket.createdAt.split('T')[0].split('-')[2] + '-' + ticket.createdAt.split('T')[0].split('-')[0])}}</span>
+                        >{{ spaces + (ticket.createdAt.split('T')[0].split('-')[1] + '-' + ticket.createdAt.split('T')[0].split('-')[2] + '-' + ticket.createdAt.split('T')[0].split('-')[0])}}</span>
                       </div>
                     </div>
 
@@ -1078,7 +1075,9 @@ Request History tab."
                         <span class="card-categories col-sm-2">
                           <clock class="label-icons" />Time:
                         </span>
-                        <span class="col-sm-9 text-body">{{ smallerSpaces + getTicketTime(ticket.createdAt)}}</span>
+                        <span
+                          class="col-sm-9 text-body"
+                        >{{ spaces + getTicketTime(ticket.createdAt)}}</span>
                       </div>
                     </div>
 
@@ -1240,7 +1239,8 @@ export default {
   data() {
     return {
       el: "#requests",
-      smallerSpaces: "\xa0\xa0\xa0\xa0\xa0",
+      spaces: "\xa0\xa0\xa0\xa0\xa0",
+      smallerSpaces: "\xa0\xa0\xa0",
       codeSnippet: "",
       status: "Open",
       oneLineOverview: "",
@@ -1472,7 +1472,6 @@ export default {
       return timeNoSeconds[0] + ":" + timeNoSeconds[1] + " " + ending;
     },
     removeElement: function(index) {
-      console.log(this.code == null);
       console.log("remove");
       this.rows.splice(index, 1);
     },
@@ -1564,16 +1563,13 @@ export default {
     },
 
     reSubmitTicket: function(ticket) {
-      var currentDate = new Date().toString();
-
-      console.log("in resubmit " + ticket._id + " at time " + currentDate);
       var id = ticket._id;
 
       if (ticket.status !== "Closed") {
         axios
           .put("/api/updateTicket/" + id, {
             status: "Open",
-            createdAt: currentDate
+            createdAt: new Date().toString()
           })
           .then(() => {});
       }
@@ -1591,7 +1587,7 @@ export default {
           oneLineOverview: ticket.oneLineOverview,
           longerDescription: ticket.longerDescription,
           codeSnippet: ticket.codeSnippet,
-          createdAt: currentDate,
+          createdAt: new Date().toString(),
           attachments: ticket.attachments,
           rating: 0,
           ratingExplanation: "",
@@ -1601,9 +1597,9 @@ export default {
       this.setFieldsFromTicket(ticket);
       this.showTicket = true;
       this.openTicket = ticket;
-      this.openTicket.createdAt = currentDate;
-      this.createdAt = currentDate;
-      this.ticketTime = this.getTicketTime(ticket.createdAt);
+      (this.openTicket.createdAt = new Date().toString()),
+        (this.createdAt = new Date().toString()),
+        (this.ticketTime = this.getTicketTime(ticket.createdAt));
       this.openTicket.status = "Open";
       this.status = "Open";
       this.getTickets();
