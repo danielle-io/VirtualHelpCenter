@@ -340,7 +340,8 @@ button[type="submit"] {
                     v-bind:class="{ 'selected-card': selectedTicketIndex === index}"
                   >
                     <div style="cursor: pointer;" @click="clickCard(ticket, index, ticket._id)">
-                      <div class="card-line">
+                     
+                      <div class="card-line" v-if="ticket.ownerName && ticket.ownerName !== undefined">
                         <span class="row">
                           <span class="ticket-categories col-sm-3">
                             <student />
@@ -375,16 +376,6 @@ button[type="submit"] {
                           >{{ (ticket.createdAt.split('T')[0].split('-')[1] + '-' + ticket.createdAt.split('T')[0].split('-')[2] + '-' + ticket.createdAt.split('T')[0].split('-')[0])}}</span>
                         </span>
                       </div>
-
-                      <!-- <div class="card-line">
-                      <span class="row">
-                        <span class="ticket-categories col-sm-3">
-                          <bell class="label-icons-smaller" />
-                          <strong>Status:</strong>
-                        </span>
-                        <span style="margin-left:0px;" class="col-sm-6">{{ " " + ticket.status }}</span>
-                      </span>
-                      </div>-->
 
                       <div class="card-line">
                         <span class="row">
@@ -510,30 +501,32 @@ button[type="submit"] {
                 <div class="md-card-content" style="margin-bottom:20px;">
                   <div class="card-line-history">
                     <div class="row">
-                      <span class="card-categories col-sm-3">
+                      <span class="card-categories col-sm-2">
                         <date class="label-icons" />Date :
                       </span>
                       <span
                         class="col-sm-9 text-body"
-                      >{{ (ticket.createdAt.split('T')[0].split('-')[1] + '-' + ticket.createdAt.split('T')[0].split('-')[2] + '-' + ticket.createdAt.split('T')[0].split('-')[0])}}</span>
+                      >{{ (smallerSpaces + ticket.createdAt.split('T')[0].split('-')[1] + '-' + ticket.createdAt.split('T')[0].split('-')[2] + '-' + ticket.createdAt.split('T')[0].split('-')[0])}}</span>
                     </div>
                   </div>
 
                   <div class="card-line-history">
                     <div class="row">
-                      <span class="card-categories col-sm-3">
+                      <span class="card-categories col-sm-2">
                         <clock class="label-icons" />Time:
                       </span>
-                      <span class="col-sm-9 text-body">{{ " " + getTicketTime(ticket.createdAt)}}</span>
+                      <span
+                        class="col-sm-9 text-body"
+                      >{{smallerSpaces + getTicketTime(ticket.createdAt)}}</span>
                     </div>
                   </div>
 
                   <div class="card-line-history">
                     <div class="row">
-                      <span class="card-categories col-sm-3">
+                      <span class="card-categories col-sm-2">
                         <short-description class="label-icons" />Overview:
                       </span>
-                      <span class="col-sm-9 text-body">{{ ticket.oneLineOverview }}</span>
+                      <span class="col-sm-9 text-body">{{ smallerSpaces + ticket.oneLineOverview }}</span>
                     </div>
                   </div>
 
@@ -554,6 +547,18 @@ button[type="submit"] {
                   <div
                     v-bind:class="{ 'show-extra-content': ticket.collapseChevron, 'hide-extra-content': ticket.expandChevron }"
                   >
+                    <div
+                      v-if="ticket.ownerName && ticket.ownerName !== undefined"
+                      class="card-line-history"
+                    >
+                      <div class="row">
+                        <span class="card-categories col-sm-2">
+                          <student class="label-icons" />Student:
+                        </span>
+                        <span class="col-sm-9 text-body">{{spaces + ticket.ownerName }}</span>
+                      </div>
+                    </div>
+
                     <div v-if="ticket.longerDescription" class="card-line-history">
                       <div class="row">
                         <span class="card-categories col-sm-3">
@@ -563,21 +568,9 @@ button[type="submit"] {
                       </div>
                     </div>
 
-                    <div
-                      v-if="ticket.ownerName && ticket.ownerName !== undefined"
-                      class="card-line-history"
-                    >
-                      <div class="row">
-                        <span class="card-categories col-sm-3">
-                          <student class="label-icons" />Name:
-                        </span>
-                        <span class="col-sm-9 text-body">{{ ticket.ownerName }}</span>
-                      </div>
-                    </div>
-
                     <div v-if="ticket.attachments.length > 0" class="card-line-history">
                       <span class="row">
-                        <span class="card-categories col-sm-3">
+                        <span class="card-categories col-sm-2">
                           <attachment class="label-icons" />Files:
                         </span>
 
@@ -692,8 +685,7 @@ button[type="submit"] {
                   <div class="card-line-history">
                     <div class="row">
                       <span class="card-categories col-sm-3">
-                        <long-description class="label-icons" />
-                        Details: {{" "}}
+                        <long-description class="label-icons" />Details:
                       </span>
                       <span class="col-sm-9 text-body">{{ this.currentTicket.longerDescription }}</span>
                     </div>
@@ -702,7 +694,7 @@ button[type="submit"] {
                   <div class="card-line-history">
                     <div class="row">
                       <span class="card-categories col-sm-3">
-                        <student class="label-icons" />Name:
+                        <student class="label-icons" />Student:
                       </span>
                       <span class="col-sm-9 text-body">{{ this.currentTicket.ownerName }}</span>
                     </div>
@@ -797,7 +789,9 @@ export default {
       showCanceledRequestDialog: false,
       showCloseSessionDialog: false,
       staffId: null,
-      codeSnippet: ""
+      codeSnippet: "",
+      spaces: "\xa0\xa0\xa0\xa0\xa0\xa0",
+      smallerSpaces: "\xa0\xa0\xa0"
     };
   },
   methods: {
@@ -811,18 +805,6 @@ export default {
         }
       });
     },
-
-    convertTime: function(currentTime) {
-      console.log("before " + currentTime);
-      var time = new Date(currentTime);
-      // console.log(time);
-      console.log(time.toLocaleTimeString());
-      var timeNoSeconds = time.toLocaleTimeString().split(":");
-      var strLength = time.toLocaleTimeString().length;
-      var ending = time.toLocaleTimeString().substring(strLength - 3);
-      return timeNoSeconds[0] + ":" + timeNoSeconds[1] + " " + ending;
-    },
-
     convertTimeSeconds: function(currentTime) {
       var timeNoSeconds = currentTime.split(":");
       var strLength = currentTime.length;
@@ -830,8 +812,6 @@ export default {
       return timeNoSeconds[0] + ":" + timeNoSeconds[1] + " " + ending;
     },
     getTicketTime(ticketTime) {
-      console.log(ticketTime);
-      console.log(typeof ticketTime);
       // Take in a string and turn it back into a date object
       var dateObj = new Date(ticketTime);
       return this.removeSecondsFromTime(dateObj.toLocaleTimeString());
@@ -850,6 +830,7 @@ export default {
           console.log("EACH " + allOpenTickets.data[i].course._id);
 
           if (this.isTicketForARelevantCourse(allOpenTickets.data[i])) {
+            console.log("PUSHING");
             this.openTickets.push(allOpenTickets.data[i]);
           }
         }
@@ -886,25 +867,6 @@ export default {
         }
       }
     },
-
-    // formatTime(time) {
-    //   var timeStr = " AM";
-    //   var splitTime = time.split(":");
-    //   if (splitTime[0] > 12) {
-    //     timeStr = " PM";
-    //   }
-    //   var hours = ((splitTime[0] + 11) % 12) + 1;
-    //   return hours + ":" + splitTime[1] + timeStr;
-    // },
-    // getFilterClass(status, course) {
-    //   var tickets = [];
-    //   if (course === null) {
-    //     tickets = this.filterOpenTickets(status);
-    //   } else {
-    //     return this.filterCourseTickets(status, course);
-    //   }
-    //   return tickets;
-    // },
     openPage: function(attachmentUrl) {
       window.open(attachmentUrl, "_blank");
     },
@@ -1161,7 +1123,6 @@ export default {
         message.data.updatedAt = new Date(message.data.updatedAt);
         this.getStudentName(message.data, message.data.owner._id);
         this.openTickets.push(message.data);
-        this.getOpenTickets();
       }
     });
 
@@ -1181,7 +1142,10 @@ export default {
         this.staff.classes.forEach(element => {
           this.loadCourses(element);
           this.getClosedTickets();
-          this.getOpenTickets();
+          console.log("OPEN TICKETS " + this.openTickets);
+          if (!this.openTickets || this.openTickets === []) {
+            this.getOpenTickets();
+          }
         });
         this.zoomLink = this.staff.zoomLink;
       }

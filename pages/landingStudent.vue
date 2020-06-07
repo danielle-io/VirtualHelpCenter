@@ -91,7 +91,7 @@
 
 .card-line-history {
   margin-bottom: 4px;
-  font-size: 16px;
+  font-size: 15px;
   flex-wrap: wrap;
   text-align: left;
   margin-left: 10px;
@@ -120,6 +120,7 @@
 }
 
 .card-categories {
+  font-size: 14px;
   color: #53a59e;
   font-weight: 500;
 }
@@ -1061,29 +1062,29 @@ Request History tab."
                       </div>
                     </div>
 
-                    <div v-if="ticket.updatedAt" class="card-line-history">
+                    <div v-if="ticket.createdAt" class="card-line-history">
                       <div class="row">
-                        <span class="card-categories col-sm-3">
+                        <span class="card-categories col-sm-2">
                           <date class="label-icons" />Date:
                         </span>
                         <span
                           class="col-sm-9 text-body"
-                        >{{ (ticket.createdAt.split('T')[0].split('-')[1] + '-' + ticket.createdAt.split('T')[0].split('-')[2] + '-' + ticket.createdAt.split('T')[0].split('-')[0])}}</span>
+                        >{{ smallerSpaces + (ticket.createdAt.split('T')[0].split('-')[1] + '-' + ticket.createdAt.split('T')[0].split('-')[2] + '-' + ticket.createdAt.split('T')[0].split('-')[0])}}</span>
                       </div>
                     </div>
 
                     <div v-if="ticket.createdAt" class="card-line-history">
                       <div class="row">
-                        <span class="card-categories col-sm-3">
+                        <span class="card-categories col-sm-2">
                           <clock class="label-icons" />Time:
                         </span>
-                        <span class="col-sm-9 text-body">{{ " " + getTicketTime(ticket.createdAt)}}</span>
+                        <span class="col-sm-9 text-body">{{ smallerSpaces + getTicketTime(ticket.createdAt)}}</span>
                       </div>
                     </div>
 
                     <div class="card-line-history">
                       <div class="row">
-                        <span class="card-categories col-sm-3">
+                        <span class="card-categories col-sm-2">
                           <bell class="label-icons" />Status:
                         </span>
                         <span class="col-sm-9 text-body">{{ ticket.status }}</span>
@@ -1092,7 +1093,7 @@ Request History tab."
 
                     <div class="card-line-history">
                       <div class="row">
-                        <span class="card-categories col-sm-3">
+                        <span class="card-categories col-sm-2">
                           <short-description class="label-icons" />Overview:
                         </span>
                         <span class="col-sm-9 text-body">{{ ticket.oneLineOverview }}</span>
@@ -1239,6 +1240,7 @@ export default {
   data() {
     return {
       el: "#requests",
+      smallerSpaces: "\xa0\xa0\xa0\xa0\xa0",
       codeSnippet: "",
       status: "Open",
       oneLineOverview: "",
@@ -1601,7 +1603,7 @@ export default {
       this.openTicket = ticket;
       this.openTicket.createdAt = currentDate;
       this.createdAt = currentDate;
-      this.ticketTime = this.getTicketTime(ticket.updatedAt);
+      this.ticketTime = this.getTicketTime(ticket.createdAt);
       this.openTicket.status = "Open";
       this.status = "Open";
       this.getTickets();
@@ -1620,9 +1622,7 @@ export default {
       this.attachments = ticket.attachments;
       this.status = ticket.status;
       this.createdAt = ticket.createdAt;
-      this.ticketTime = this.removeSecondsFromTime(
-        ticket.updatedAt.toLocaleTimeString()
-      );
+      this.ticketTime = this.getTicketTime(ticket.createdAt);
       this.showTicket = true;
       this.$set(ticket, "expandChevron", true);
       this.$set(ticket, "collapseChevron", false);
