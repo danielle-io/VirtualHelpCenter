@@ -418,12 +418,9 @@ button[type="submit"] {
                         <span class="row">
                           <span class="ticket-categories col-sm-3">
                             <long-description />
-                            <strong>Details:</strong>
+                            <strong>Details: {{" "}}</strong>
                           </span>
-                          <span
-                            style="margin-left: 16px;"
-                            class="col"
-                          >{{ " " + ticket.longerDescription}}</span>
+                          <span style="margin-left: 16px;" class="col">{{ticket.longerDescription}}</span>
                         </span>
                       </div>
 
@@ -557,7 +554,7 @@ button[type="submit"] {
                   <div
                     v-bind:class="{ 'show-extra-content': ticket.collapseChevron, 'hide-extra-content': ticket.expandChevron }"
                   >
-                    <div class="card-line-history">
+                    <div v-if="ticket.longerDescription" class="card-line-history">
                       <div class="row">
                         <span class="card-categories col-sm-3">
                           <long-description class="label-icons" />Details:
@@ -695,7 +692,8 @@ button[type="submit"] {
                   <div class="card-line-history">
                     <div class="row">
                       <span class="card-categories col-sm-3">
-                        <long-description class="label-icons" />Details:
+                        <long-description class="label-icons" />
+                        Details: {{" "}}
                       </span>
                       <span class="col-sm-9 text-body">{{ this.currentTicket.longerDescription }}</span>
                     </div>
