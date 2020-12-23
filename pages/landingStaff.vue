@@ -254,14 +254,13 @@ button[type="submit"] {
     </client-only>
 
     <client-only>
-      <md-dialog
-        style="margin-left: 200px; margin-right: 200px;"
+      <md-dialog-alert
+        style="z-index: 9999 !important; margin-left: 200px; margin-right: 200px;"
         :md-active.sync="showCanceledRequestDialog"
         md-title="Request Canceled"
         md-content="Due to missing the acceptance window, the student's request has been removed from the queue. You may select a new request to complete, if one is available."
         md-confirm-text="Okay"
         clickOutsideToClose="true"
-        class="accept-button"
         @md-confirm="showCanceledRequestDialog = false;"
       />
     </client-only>
@@ -353,7 +352,7 @@ button[type="submit"] {
                         </span>
                       </div>
 
-                      <div class="card-line">
+                      <div v-if="ticket && ticket.createdAt" class="card-line">
                         <span class="row">
                           <span class="ticket-categories col-sm-3">
                             <clock />
@@ -366,16 +365,15 @@ button[type="submit"] {
                         </span>
                       </div>
 
-                      <div class="card-line">
+                      <div v-if="ticket && ticket.createdAt" class="card-line">
                         <span class="row">
                           <span class="ticket-categories col-sm-3">
                             <date />
                             <strong>Date:</strong>
                           </span>
-                          <span
-                            style="margin-left:0px;"
-                            class="col"
-                          >{{ ticket.createdAt.split('T')[0].split('-')[1] + '-' + ticket.createdAt.split('T')[0].split('-')[2] + '-' + ticket.createdAt.split('T')[0].split('-')[0]}}</span>
+                        <span style="margin-left:0px;" class="col">06-07-2020</span>
+
+                          <!-- <span style="margin-left:0px;" class="col">{{ getDate(ticket)}}</span> -->
                         </span>
                       </div>
 
@@ -476,7 +474,7 @@ button[type="submit"] {
               </div>
 
               <button
-                v-if="this.selectedTicketIndex != -1"
+                v-if="this.selectedTicketIndex !== -1 && this.openTickets.length > 0"
                 type="submit"
                 class="request-staff-buttons"
                 @click="sendZoomLink"
@@ -500,19 +498,24 @@ button[type="submit"] {
               <md-card
                 style="border: 1px solid #dde0e681; margin-bottom: 10px; padding-bottom: 8px; border-radius: 8px; padding-top:8px; box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.05);"
               >
-                <div class="md-card-content" style="margin-bottom:20px;">
+                <div
+                  v-if="ticket && ticket.createdAt"
+                  class="md-card-content"
+                  style="margin-bottom:20px;"
+                >
                   <div class="card-line-history">
                     <div class="row">
                       <span class="card-categories col-sm-2">
-                        <date class="label-icons" />Date :
+                        <date class="label-icons" />Date:
                       </span>
-                      <span
-                        class="col-sm-9 text-body"
-                      >{{ (smallerSpaces + ticket.createdAt.split('T')[0].split('-')[1] + '-' + ticket.createdAt.split('T')[0].split('-')[2] + '-' + ticket.createdAt.split('T')[0].split('-')[0])}}</span>
+                      <span class="col-sm-9 text-body">{{ smallerSpaces}}06-07-2020</span>
+
+                    
+                      <!-- <span class="col-sm-9 text-body">{{ (smallerSpaces + getDate(ticket))}}</span> -->
                     </div>
                   </div>
 
-                  <div class="card-line-history">
+                  <div v-if="ticket && ticket.createdAt" class="card-line-history">
                     <div class="row">
                       <span class="card-categories col-sm-2">
                         <clock class="label-icons" />Time:
@@ -637,24 +640,32 @@ button[type="submit"] {
             <md-card
               style="border: 1px solid #dde0e681; margin-bottom: 10px; padding-bottom: 8px; border-radius: 8px; padding-top:8px; box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.05);"
             >
-              <div class="md-card-content" style="margin-bottom:20px;">
+              <div
+                v-if="this.currentTicket && this.currentTicket.createdAt"
+                class="md-card-content"
+                style="margin-bottom:20px;"
+              >
                 <div class="card-line-history">
                   <div class="row">
                     <span class="card-categories col-sm-3">
                       <date class="label-icons" />Date:
                     </span>
-                    <span
-                      class="col-sm-9 text-body"
-                    >{{ (ticket.createdAt.split('T')[0].split('-')[1] + '-' + ticket.createdAt.split('T')[0].split('-')[2] + '-' + ticket.createdAt.split('T')[0].split('-')[0])}}</span>
+                    <span class="col-sm-9 text-body">06-07-2020</span>
+                    <!-- <span class="col-sm-9 text-body">{{ getDate(this.currentTicket)}}</span> -->
                   </div>
                 </div>
 
-                <div class="card-line-history">
+                <div
+                  v-if="this.currentTicket && this.currentTicket.createdAt"
+                  class="card-line-history"
+                >
                   <div class="row">
                     <span class="card-categories col-sm-3">
                       <clock class="label-icons" />Time:
                     </span>
-                    <span class="col-sm-9 text-body">{{ " " + getTicketTime(ticket.createdAt)}}</span>
+                    <span
+                      class="col-sm-9 text-body"
+                    >{{ " " + getTicketTime(this.currentTicket.createdAt)}}</span>
                   </div>
                 </div>
 
@@ -803,6 +814,17 @@ export default {
         }
       });
     },
+    getDate(ticket) {
+      console.log("DATE " + ticket.createdAt);
+      // var dateObj = new Date(ticket.createdAt);
+      // console.log("DATE " + dateObj);
+
+      var full = ticket.createdAt.split("T")[0];
+      var month = full.split("-")[1];
+      var day = full.split("-")[2];
+      var year = full.split("-")[0];
+      return month + "-" + day + "-" + year;
+    },
     convertTimeSeconds: function(currentTime) {
       var timeNoSeconds = currentTime.split(":");
       var strLength = currentTime.length;
@@ -811,6 +833,7 @@ export default {
     },
     getTicketTime(ticketTime) {
       // Take in a string and turn it back into a date object
+      console.log("TIME WAS " + ticketTime);
       var dateObj = new Date(ticketTime);
       return this.removeSecondsFromTime(dateObj.toLocaleTimeString());
     },
@@ -1103,7 +1126,6 @@ export default {
     this.scrollToTop();
   },
   async created() {
-    
     // Counter prevents getOpenTickets from running twice
     var num = 0;
     const queryString = window.location.search;
