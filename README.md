@@ -1,12 +1,3 @@
-# Virtual Help Center
-
-## Build Setup
-
-
-
-For detailed explanation on how things work, checkout the [Nuxt.js docs](https://github.com/nuxt/nuxt.js).
-
-
 <h1>Virtual Help Center :crescent_moon:</h1>
 Application Video Demo: https://www.youtube.com/watch?v=5_vFra2uvFY&feature=youtu.be
 
@@ -35,6 +26,8 @@ $ npm run dev
 # build for production and launch server
 $ npm start
 ```
+For detailed explanation on how things work, checkout the [Nuxt.js docs](https://github.com/nuxt/nuxt.js).
+
 
 <h2>App Images</h2>
 <h3>Student and TA Pairing</h3>
