@@ -1,4 +1,4 @@
-<h1>Virtual Help Center :crescent_moon:</h1>
+<h1>Virtual Help Center :computer:	</h1>
 Application Video Demo: https://www.youtube.com/watch?v=5_vFra2uvFY&feature=youtu.be
 
 <h2>About</h2>
