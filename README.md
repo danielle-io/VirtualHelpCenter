@@ -11,7 +11,7 @@ The application allows TAs and students to <strong>see their session histories</
 <h2>Build Setup:</h2>
 In order to implement all functionality of the application, you will need a 
 <ul>
-  <li>Ably key (for real-time database implemetation</li>
+  <li>Ably key (for real-time database implemetation)</li>
   <li>MongoDb key (for accessing and storing user data)</li>
   <li>Firebase key (for student file storage and retrieval)</li>
 </ul>
