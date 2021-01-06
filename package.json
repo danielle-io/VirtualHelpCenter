@@ -19,7 +19,7 @@
     "@vuex-orm/plugin-axios": "^0.9.3",
     "@zoomus/websdk": "^1.7.7",
     "ably": "^1.1.24",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "body-parser": "^1.19.0",
     "bootstrap": "^4.4.1",
     "bootstrap-vue": "^2.13.1",
